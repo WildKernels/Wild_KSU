@@ -30,7 +30,8 @@ import com.rifsxd.ksunext.R
 data class ImageCropSettings(
     val scale: Float = 1f,
     val offsetX: Float = 0f,
-    val offsetY: Float = 0f
+    val offsetY: Float = 0f,
+    val rotation: Float = 0f
 )
 
 @Composable

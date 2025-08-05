@@ -11,6 +11,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.RotateRight
+import androidx.compose.material.icons.filled.FitScreen
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -45,10 +47,11 @@ fun AdvancedImageCropDialog(
     val context = LocalContext.current
     val prefs = context.getSharedPreferences("settings", android.content.Context.MODE_PRIVATE)
     
-    // Simplified transformation states - only scale and position
+    // Transformation states - scale, position, and rotation
     var scale by remember { mutableFloatStateOf(prefs.getFloat("background_scale_x", 1.0f)) }
     var offsetX by remember { mutableFloatStateOf(prefs.getFloat("background_pos_x", 0.0f)) }
     var offsetY by remember { mutableFloatStateOf(prefs.getFloat("background_pos_y", 0.0f)) }
+    var rotation by remember { mutableFloatStateOf(prefs.getFloat("background_rotation", 0.0f)) }
     
     // Get current transparency for preview only - default to 0.0f (solid)
     val backgroundTransparency = prefs.getFloat("background_transparency", 0.0f)
@@ -107,7 +110,8 @@ fun AdvancedImageCropDialog(
                             scaleX = scale,
                             scaleY = scale,
                             translationX = offsetX,
-                            translationY = offsetY
+                            translationY = offsetY,
+                            rotationZ = rotation
                         ),
                     contentScale = ContentScale.Fit
                 )
@@ -116,8 +120,8 @@ fun AdvancedImageCropDialog(
                 UITemplateOverlay(backgroundTransparency = backgroundTransparency)
             }
             
-            // Simple bottom controls - Reset and Confirm buttons only
-            Row(
+            // Enhanced bottom controls with rotation and auto-fit
+            Column(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .fillMaxWidth()
@@ -125,40 +129,90 @@ fun AdvancedImageCropDialog(
                         Color.Black.copy(alpha = 0.8f),
                         RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
                     )
-                    .padding(16.dp),
-                horizontalArrangement = Arrangement.SpaceEvenly
+                    .padding(16.dp)
             ) {
-                OutlinedButton(
-                    onClick = {
-                        // Reset to original saved values or defaults
-                        scale = prefs.getFloat("background_scale_x", 1.0f)
-                        offsetX = prefs.getFloat("background_pos_x", 0.0f)
-                        offsetY = prefs.getFloat("background_pos_y", 0.0f)
-                    },
-                    colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.White),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, Color.White.copy(alpha = 0.5f))
+                // First row - Quick action buttons
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    Icon(Icons.Default.Refresh, contentDescription = null)
+                    // Rotate button
+                    OutlinedButton(
+                        onClick = {
+                            rotation = (rotation + 90f) % 360f
+                        },
+                        colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.White),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, Color.White.copy(alpha = 0.5f)),
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Icon(Icons.Default.RotateRight, contentDescription = null)
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text("Rotate")
+                    }
+                    
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("Reset")
+                    
+                    // Auto-fit button
+                    OutlinedButton(
+                        onClick = {
+                            // Auto-fit: reset scale to 1.0, center the image
+                            scale = 1.0f
+                            offsetX = 0.0f
+                            offsetY = 0.0f
+                        },
+                        colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.White),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, Color.White.copy(alpha = 0.5f)),
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Icon(Icons.Default.FitScreen, contentDescription = null)
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text("Auto Fit")
+                    }
                 }
                 
-                Button(
-                    onClick = {
-                        // Save transformations only
-                        ImageCropUtils.saveConstrainedScale(prefs, "background_scale_x", scale)
-                        ImageCropUtils.saveConstrainedScale(prefs, "background_scale_y", scale)
-                        ImageCropUtils.saveConstrainedTranslation(prefs, "background_pos_x", offsetX)
-                        ImageCropUtils.saveConstrainedTranslation(prefs, "background_pos_y", offsetY)
-                        // Set rotation to 0 since we removed rotation controls
-                        ImageCropUtils.saveConstrainedRotation(prefs, "background_rotation", 0.0f)
-                        onSave()
-                    },
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                Spacer(modifier = Modifier.height(12.dp))
+                
+                // Second row - Reset and Confirm buttons
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    Icon(Icons.Default.Check, contentDescription = null)
+                    OutlinedButton(
+                        onClick = {
+                            // Reset to original saved values or defaults
+                            scale = prefs.getFloat("background_scale_x", 1.0f)
+                            offsetX = prefs.getFloat("background_pos_x", 0.0f)
+                            offsetY = prefs.getFloat("background_pos_y", 0.0f)
+                            rotation = prefs.getFloat("background_rotation", 0.0f)
+                        },
+                        colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.White),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, Color.White.copy(alpha = 0.5f)),
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Icon(Icons.Default.Refresh, contentDescription = null)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("Reset")
+                    }
+                    
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("Confirm")
+                    
+                    Button(
+                        onClick = {
+                            // Save all transformations including rotation
+                            ImageCropUtils.saveConstrainedScale(prefs, "background_scale_x", scale)
+                            ImageCropUtils.saveConstrainedScale(prefs, "background_scale_y", scale)
+                            ImageCropUtils.saveConstrainedTranslation(prefs, "background_pos_x", offsetX)
+                            ImageCropUtils.saveConstrainedTranslation(prefs, "background_pos_y", offsetY)
+                            ImageCropUtils.saveConstrainedRotation(prefs, "background_rotation", rotation)
+                            onSave()
+                        },
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Icon(Icons.Default.Check, contentDescription = null)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("Confirm")
+                    }
                 }
             }
         }

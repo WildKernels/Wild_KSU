@@ -32,16 +32,18 @@ object ImageCropUtils {
             putFloat("background_scale_x", settings.scale)
             putFloat("background_pos_x", settings.offsetX)
             putFloat("background_pos_y", settings.offsetY)
+            putFloat("background_rotation", settings.rotation)
             apply()
         }
-        Log.d(TAG, "Saved crop settings: scale=${settings.scale}, offsetX=${settings.offsetX}, offsetY=${settings.offsetY}")
+        Log.d(TAG, "Saved crop settings: scale=${settings.scale}, offsetX=${settings.offsetX}, offsetY=${settings.offsetY}, rotation=${settings.rotation}")
     }
     
     fun loadImageCropSettings(prefs: SharedPreferences): ImageCropSettings {
         return ImageCropSettings(
             scale = prefs.getFloat("background_scale_x", 1f),
             offsetX = prefs.getFloat("background_pos_x", 0f),
-            offsetY = prefs.getFloat("background_pos_y", 0f)
+            offsetY = prefs.getFloat("background_pos_y", 0f),
+            rotation = prefs.getFloat("background_rotation", 0f)
         )
     }
     
@@ -117,7 +119,8 @@ object ImageCropUtils {
                 scaleX = constrainScale(cropSettings.scale),
                 scaleY = constrainScale(cropSettings.scale),
                 translationX = constrainTranslation(cropSettings.offsetX),
-                translationY = constrainTranslation(cropSettings.offsetY)
+                translationY = constrainTranslation(cropSettings.offsetY),
+                rotationZ = constrainRotation(cropSettings.rotation)
             )
         }
     }
