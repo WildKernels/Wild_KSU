@@ -155,70 +155,144 @@ private fun UITemplateOverlay() {
         modifier = Modifier.fillMaxSize()
     ) {
         val strokeWidth = 2.dp.toPx()
-        val cardColor = Color.White.copy(alpha = 0.4f)
+        val primaryCardColor = Color.Green.copy(alpha = 0.3f)
+        val secondaryCardColor = Color.White.copy(alpha = 0.25f)
+        val infoCardColor = Color.White.copy(alpha = 0.2f)
         val outlineColor = Color.White.copy(alpha = 0.6f)
         
         val width = size.width
         val height = size.height
-        val padding = 32.dp.toPx()
-        val cardHeight = 80.dp.toPx()
+        val padding = 16.dp.toPx()
         val cardSpacing = 16.dp.toPx()
         
-        // Draw template cards to show where UI elements will be positioned
-        // Top area - Status cards
-        var currentY = padding + 60.dp.toPx() // Account for status bar
+        // Account for top bar and status bar
+        var currentY = padding + 80.dp.toPx()
         
-        // Draw 3 status cards in top area
-        for (i in 0..2) {
-            val cardY = currentY + (i * (cardHeight + cardSpacing))
-            drawRoundRect(
-                color = cardColor,
-                topLeft = androidx.compose.ui.geometry.Offset(padding, cardY),
-                size = androidx.compose.ui.geometry.Size(width - 2 * padding, cardHeight),
-                cornerRadius = androidx.compose.ui.geometry.CornerRadius(12.dp.toPx())
-            )
-            // Draw outline
-            drawRoundRect(
-                color = outlineColor,
-                topLeft = androidx.compose.ui.geometry.Offset(padding, cardY),
-                size = androidx.compose.ui.geometry.Size(width - 2 * padding, cardHeight),
-                cornerRadius = androidx.compose.ui.geometry.CornerRadius(12.dp.toPx()),
-                style = Stroke(strokeWidth)
-            )
-        }
-        
-        // Bottom area - Navigation and controls
-        val bottomY = height - 200.dp.toPx()
-        
-        // Bottom navigation area
+        // 1. Primary Status Card (Working card)
+        val primaryCardHeight = 100.dp.toPx()
         drawRoundRect(
-            color = cardColor,
-            topLeft = androidx.compose.ui.geometry.Offset(padding, bottomY),
-            size = androidx.compose.ui.geometry.Size(width - 2 * padding, 120.dp.toPx()),
+            color = primaryCardColor,
+            topLeft = androidx.compose.ui.geometry.Offset(padding, currentY),
+            size = androidx.compose.ui.geometry.Size(width - 2 * padding, primaryCardHeight),
             cornerRadius = androidx.compose.ui.geometry.CornerRadius(12.dp.toPx())
         )
         drawRoundRect(
             color = outlineColor,
-            topLeft = androidx.compose.ui.geometry.Offset(padding, bottomY),
-            size = androidx.compose.ui.geometry.Size(width - 2 * padding, 120.dp.toPx()),
+            topLeft = androidx.compose.ui.geometry.Offset(padding, currentY),
+            size = androidx.compose.ui.geometry.Size(width - 2 * padding, primaryCardHeight),
             cornerRadius = androidx.compose.ui.geometry.CornerRadius(12.dp.toPx()),
             style = Stroke(strokeWidth)
         )
         
-        // Add text label using native canvas
-        drawContext.canvas.nativeCanvas.apply {
-            val paint = android.graphics.Paint().apply {
-                color = Color.White.copy(alpha = 0.8f).toArgb()
-                textSize = 14.sp.toPx()
-                textAlign = android.graphics.Paint.Align.CENTER
-                isAntiAlias = true
-            }
-            drawText(
-                "UI Elements Preview",
-                width / 2,
-                padding + 30.dp.toPx(),
-                paint
-            )
+        currentY += primaryCardHeight + cardSpacing
+        
+        // 2. Two Secondary Cards (Superusers and Modules)
+        val secondaryCardHeight = 80.dp.toPx()
+        val secondaryCardWidth = (width - 2 * padding - cardSpacing) / 2
+        
+        // Superusers card
+        drawRoundRect(
+            color = secondaryCardColor,
+            topLeft = androidx.compose.ui.geometry.Offset(padding, currentY),
+            size = androidx.compose.ui.geometry.Size(secondaryCardWidth, secondaryCardHeight),
+            cornerRadius = androidx.compose.ui.geometry.CornerRadius(12.dp.toPx())
+        )
+        drawRoundRect(
+            color = outlineColor,
+            topLeft = androidx.compose.ui.geometry.Offset(padding, currentY),
+            size = androidx.compose.ui.geometry.Size(secondaryCardWidth, secondaryCardHeight),
+            cornerRadius = androidx.compose.ui.geometry.CornerRadius(12.dp.toPx()),
+            style = Stroke(strokeWidth)
+        )
+        
+        // Modules card
+        drawRoundRect(
+            color = secondaryCardColor,
+            topLeft = androidx.compose.ui.geometry.Offset(padding + secondaryCardWidth + cardSpacing, currentY),
+            size = androidx.compose.ui.geometry.Size(secondaryCardWidth, secondaryCardHeight),
+            cornerRadius = androidx.compose.ui.geometry.CornerRadius(12.dp.toPx())
+        )
+        drawRoundRect(
+            color = outlineColor,
+            topLeft = androidx.compose.ui.geometry.Offset(padding + secondaryCardWidth + cardSpacing, currentY),
+            size = androidx.compose.ui.geometry.Size(secondaryCardWidth, secondaryCardHeight),
+            cornerRadius = androidx.compose.ui.geometry.CornerRadius(12.dp.toPx()),
+            style = Stroke(strokeWidth)
+        )
+        
+        currentY += secondaryCardHeight + cardSpacing
+        
+        // 3. Info Card (System information)
+        val infoCardHeight = 200.dp.toPx()
+        drawRoundRect(
+            color = infoCardColor,
+            topLeft = androidx.compose.ui.geometry.Offset(padding, currentY),
+            size = androidx.compose.ui.geometry.Size(width - 2 * padding, infoCardHeight),
+            cornerRadius = androidx.compose.ui.geometry.CornerRadius(12.dp.toPx())
+        )
+        drawRoundRect(
+            color = outlineColor,
+            topLeft = androidx.compose.ui.geometry.Offset(padding, currentY),
+            size = androidx.compose.ui.geometry.Size(width - 2 * padding, infoCardHeight),
+            cornerRadius = androidx.compose.ui.geometry.CornerRadius(12.dp.toPx()),
+            style = Stroke(strokeWidth)
+        )
+        
+        // Bottom navigation area
+        val bottomY = height - 80.dp.toPx()
+        val navHeight = 60.dp.toPx()
+        
+        drawRoundRect(
+            color = secondaryCardColor,
+            topLeft = androidx.compose.ui.geometry.Offset(0f, bottomY),
+            size = androidx.compose.ui.geometry.Size(width, navHeight),
+            cornerRadius = androidx.compose.ui.geometry.CornerRadius(0f)
+        )
+        drawRoundRect(
+            color = outlineColor,
+            topLeft = androidx.compose.ui.geometry.Offset(0f, bottomY),
+            size = androidx.compose.ui.geometry.Size(width, navHeight),
+            cornerRadius = androidx.compose.ui.geometry.CornerRadius(0f),
+            style = Stroke(strokeWidth)
+        )
+        
+        // Add text labels
+        val textPaint = android.graphics.Paint().apply {
+            color = Color.White.copy(alpha = 0.9f).toArgb()
+            textSize = 11.sp.toPx()
+            isAntiAlias = true
+            isFakeBoldText = true
         }
+        
+        // Label for primary card
+        drawContext.canvas.nativeCanvas.drawText(
+            "Working Status",
+            padding + 12.dp.toPx(),
+            padding + 80.dp.toPx() + 25.dp.toPx(),
+            textPaint
+        )
+        
+        // Labels for secondary cards
+        drawContext.canvas.nativeCanvas.drawText(
+            "Superusers",
+            padding + 12.dp.toPx(),
+            padding + 80.dp.toPx() + primaryCardHeight + cardSpacing + 25.dp.toPx(),
+            textPaint
+        )
+        
+        drawContext.canvas.nativeCanvas.drawText(
+            "Modules",
+            padding + secondaryCardWidth + cardSpacing + 12.dp.toPx(),
+            padding + 80.dp.toPx() + primaryCardHeight + cardSpacing + 25.dp.toPx(),
+            textPaint
+        )
+        
+        // Label for info card
+        drawContext.canvas.nativeCanvas.drawText(
+            "System Info",
+            padding + 12.dp.toPx(),
+            padding + 80.dp.toPx() + primaryCardHeight + cardSpacing + secondaryCardHeight + cardSpacing + 25.dp.toPx(),
+            textPaint
+        )
     }
 }
