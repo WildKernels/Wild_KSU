@@ -28,13 +28,14 @@ import com.rifsxd.ksunext.ui.util.ImageCropUtils
 fun BackgroundImageWrapper(
     backgroundImageUri: String?,
     backgroundFitMode: String,
+    backgroundTransparency: Float = 1.0f,
     content: @Composable () -> Unit
 ) {
     val context = LocalContext.current
     val prefs = remember { context.getSharedPreferences("settings", Context.MODE_PRIVATE) }
     
     // Debug logging
-    Log.d("BackgroundImage", "URI: $backgroundImageUri")
+    Log.d("BackgroundImage", "URI: $backgroundImageUri, FitMode: $backgroundFitMode")
     
     Box(modifier = Modifier.fillMaxSize()) {
         // Display background image if available
@@ -80,26 +81,39 @@ fun BackgroundImageWrapper(
                 
                 Log.d("BackgroundImage", "Image loaded: $imageLoaded, Error: $imageError")
                 
-                // Apply simple crop transformations from saved settings
+                // Apply transformations using enhanced ImageCropUtils
                 val imageModifier = Modifier
                     .fillMaxSize()
                     .let { modifier ->
-                        val cropSettings = ImageCropUtils.loadImageCropSettings(prefs)
-                        modifier.graphicsLayer(
-                            scaleX = cropSettings.scale,
-                            scaleY = cropSettings.scale,
-                            translationX = cropSettings.offsetX,
-                            translationY = cropSettings.offsetY
-                        )
+                        val transformation = ImageCropUtils.getImageTransformation(prefs, backgroundFitMode)
+                        modifier.transformation()
                     }
                 
-                Log.d("BackgroundImage", "Applying crop transformations")
+                Log.d("BackgroundImage", "Applying transformation for fit mode: $backgroundFitMode")
+                
+                val contentScale = when (backgroundFitMode) {
+                    "zoom_to_fit" -> ContentScale.Crop
+                    "edge_to_edge" -> ContentScale.FillBounds
+                    "custom_crop" -> ContentScale.Fit
+                    else -> ContentScale.FillBounds
+                }
                 
                 Image(
                     painter = painter,
                     contentDescription = null,
                     modifier = imageModifier,
-                    contentScale = ContentScale.Crop
+                    contentScale = contentScale
+                )
+                
+                // Add overlay with transparency control for content readability
+                // Transparency slider controls how dark the overlay is (0 = no overlay, 1 = maximum overlay)
+                val overlayAlpha = (1.0f - backgroundTransparency) * 0.7f // Max overlay alpha of 0.7
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(
+                            Color.Black.copy(alpha = overlayAlpha)
+                        )
                 )
             }
         }

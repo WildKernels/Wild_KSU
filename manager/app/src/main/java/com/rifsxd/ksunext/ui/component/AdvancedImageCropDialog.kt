@@ -5,12 +5,12 @@ import android.net.Uri
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -27,16 +27,13 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import coil.compose.rememberAsyncImagePainter
-import coil.request.ImageRequest
 import com.rifsxd.ksunext.ui.util.ImageCropUtils
-import kotlin.math.cos
-import kotlin.math.sin
-import android.util.Log
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -53,35 +50,23 @@ fun AdvancedImageCropDialog(
     var offsetX by remember { mutableFloatStateOf(prefs.getFloat("background_pos_x", 0.0f)) }
     var offsetY by remember { mutableFloatStateOf(prefs.getFloat("background_pos_y", 0.0f)) }
     
-    // Debug logging
-    Log.d("AdvancedImageCropDialog", "Image URI: $imageUri")
-    
-    var imageLoaded by remember { mutableStateOf(false) }
-    var imageError by remember { mutableStateOf<String?>(null) }
+    // Get current transparency for preview only - default to 0.0f (solid)
+    val backgroundTransparency = prefs.getFloat("background_transparency", 0.0f)
     
     val painter = rememberAsyncImagePainter(
-        model = ImageRequest.Builder(context)
-            .data(imageUri)
-            .crossfade(true)
-            .listener(
-                onStart = { 
-                    Log.d("AdvancedImageCropDialog", "Started loading image")
-                    imageLoaded = false
-                    imageError = null
-                },
-                onSuccess = { _, _ -> 
-                    Log.d("AdvancedImageCropDialog", "Successfully loaded image")
-                    imageLoaded = true
-                    imageError = null
-                },
-                onError = { _, result -> 
-                    Log.e("AdvancedImageCropDialog", "Failed to load image: ${result.throwable}")
-                    imageLoaded = false
-                    imageError = result.throwable.message
-                }
-            )
-            .build()
+        model = imageUri,
+        onError = { error ->
+            android.util.Log.e("AdvancedImageCropDialog", "Failed to load image URI: $imageUri, Error: ${error.result.throwable?.message}")
+        },
+        onSuccess = { 
+            android.util.Log.d("AdvancedImageCropDialog", "Image loaded successfully from URI: $imageUri")
+        }
     )
+    
+    // Log the imageUri for debugging
+    LaunchedEffect(imageUri) {
+        android.util.Log.d("AdvancedImageCropDialog", "Dialog opened with imageUri: $imageUri")
+    }
     val (minScale, maxScale) = ImageCropUtils.getScaleLimits()
     val (minTranslation, maxTranslation) = ImageCropUtils.getTranslationLimits()
     
@@ -113,72 +98,25 @@ fun AdvancedImageCropDialog(
                     },
                 contentAlignment = Alignment.Center
             ) {
-                // Show loading or error state
-                if (!imageLoaded && imageError == null) {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            CircularProgressIndicator(color = Color.White)
-                            Spacer(modifier = Modifier.height(16.dp))
-                            Text(
-                                text = "Loading image...",
-                                color = Color.White,
-                                style = MaterialTheme.typography.bodyMedium
-                            )
-                        }
-                    }
-                } else if (imageError != null) {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Icon(
-                                Icons.Default.Error,
-                                contentDescription = null,
-                                tint = Color.Red,
-                                modifier = Modifier.size(48.dp)
-                            )
-                            Spacer(modifier = Modifier.height(16.dp))
-                            Text(
-                                text = "Failed to load image",
-                                color = Color.White,
-                                style = MaterialTheme.typography.bodyMedium
-                            )
-                            Text(
-                                text = imageError ?: "Unknown error",
-                                color = Color.Gray,
-                                style = MaterialTheme.typography.bodySmall
-                            )
-                        }
-                    }
-                } else {
-                    Image(
-                        painter = painter,
-                        contentDescription = "Background Image Preview",
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .graphicsLayer(
-                                scaleX = scale,
-                                scaleY = scale,
-                                translationX = offsetX,
-                                translationY = offsetY
-                            ),
-                        contentScale = ContentScale.Fit
-                    )
-                }
+                Image(
+                    painter = painter,
+                    contentDescription = "Background Image Preview",
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .graphicsLayer(
+                            scaleX = scale,
+                            scaleY = scale,
+                            translationX = offsetX,
+                            translationY = offsetY
+                        ),
+                    contentScale = ContentScale.Fit
+                )
                 
                 // Template overlay showing where UI elements will be
-                UITemplateOverlay()
+                UITemplateOverlay(backgroundTransparency = backgroundTransparency)
             }
             
-            // Simple bottom controls - only Reset and Confirm buttons
+            // Simple bottom controls - Reset and Confirm buttons only
             Row(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
@@ -192,12 +130,13 @@ fun AdvancedImageCropDialog(
             ) {
                 OutlinedButton(
                     onClick = {
-                        // Reset to defaults
-                        scale = 1.0f
-                        offsetX = 0.0f
-                        offsetY = 0.0f
+                        // Reset to original saved values or defaults
+                        scale = prefs.getFloat("background_scale_x", 1.0f)
+                        offsetX = prefs.getFloat("background_pos_x", 0.0f)
+                        offsetY = prefs.getFloat("background_pos_y", 0.0f)
                     },
-                    colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.White)
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.White),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, Color.White.copy(alpha = 0.5f))
                 ) {
                     Icon(Icons.Default.Refresh, contentDescription = null)
                     Spacer(modifier = Modifier.width(8.dp))
@@ -206,7 +145,7 @@ fun AdvancedImageCropDialog(
                 
                 Button(
                     onClick = {
-                        // Save transformations for position_adjust mode
+                        // Save transformations only
                         ImageCropUtils.saveConstrainedScale(prefs, "background_scale_x", scale)
                         ImageCropUtils.saveConstrainedScale(prefs, "background_scale_y", scale)
                         ImageCropUtils.saveConstrainedTranslation(prefs, "background_pos_x", offsetX)
@@ -227,15 +166,19 @@ fun AdvancedImageCropDialog(
 }
 
 @Composable
-private fun UITemplateOverlay() {
+private fun UITemplateOverlay(backgroundTransparency: Float = 0.0f) {
     Canvas(
         modifier = Modifier.fillMaxSize()
     ) {
         val strokeWidth = 2.dp.toPx()
-        val primaryCardColor = Color.Green.copy(alpha = 0.3f)
-        val secondaryCardColor = Color.White.copy(alpha = 0.25f)
-        val infoCardColor = Color.White.copy(alpha = 0.2f)
-        val outlineColor = Color.White.copy(alpha = 0.6f)
+        // Use transparency value to show how cards will look with background transparency
+        // When transparency is 0.0f (solid), show normal preview alpha
+        // When transparency is > 0.0f, show how transparent the background will be
+        val previewAlpha = if (backgroundTransparency > 0.0f) (1.0f - backgroundTransparency) else 0.3f
+        val primaryCardColor = Color.Green.copy(alpha = previewAlpha * 0.8f)
+        val secondaryCardColor = Color.White.copy(alpha = previewAlpha * 0.7f)
+        val infoCardColor = Color.White.copy(alpha = previewAlpha * 0.6f)
+        val outlineColor = Color.White.copy(alpha = 0.8f)
         
         val width = size.width
         val height = size.height
