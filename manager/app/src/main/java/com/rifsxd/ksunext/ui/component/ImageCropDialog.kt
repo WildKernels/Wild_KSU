@@ -9,6 +9,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Fullscreen
+import androidx.compose.material.icons.filled.FitScreen
+import androidx.compose.material.icons.filled.ZoomOutMap
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -74,6 +76,34 @@ fun ImageCropDialog(
                     )
                     
                     Row {
+                        // Fit to screen button
+                        IconButton(
+                            onClick = {
+                                scale = 1f
+                                offsetX = 0f
+                                offsetY = 0f
+                            }
+                        ) {
+                            Icon(
+                                Icons.Default.FitScreen,
+                                contentDescription = stringResource(R.string.fit_to_screen)
+                            )
+                        }
+                        
+                        // Zoom to screen button
+                        IconButton(
+                            onClick = {
+                                scale = 1.5f
+                                offsetX = 0f
+                                offsetY = 0f
+                            }
+                        ) {
+                            Icon(
+                                Icons.Default.ZoomOutMap,
+                                contentDescription = stringResource(R.string.zoom_to_screen)
+                            )
+                        }
+                        
                         // Reset button
                         IconButton(
                             onClick = {

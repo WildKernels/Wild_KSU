@@ -85,8 +85,8 @@ fun BackgroundImageWrapper(
                 val imageModifier = Modifier
                     .fillMaxSize()
                     .let { modifier ->
-                        val transformation = ImageCropUtils.getImageTransformation(prefs, backgroundFitMode)
-                        modifier.transformation()
+                        val transformation = ImageCropUtils.getSimpleCropTransformation(prefs)
+                        modifier.transformation
                     }
                 
                 Log.d("BackgroundImage", "Applying transformation for fit mode: $backgroundFitMode")
