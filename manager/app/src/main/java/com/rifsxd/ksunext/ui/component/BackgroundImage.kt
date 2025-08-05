@@ -17,7 +17,6 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import android.preference.PreferenceManager
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.rifsxd.ksunext.ui.util.ImageCropUtils
@@ -29,7 +28,7 @@ fun BackgroundImageWrapper(
     content: @Composable () -> Unit
 ) {
     val context = LocalContext.current
-    val prefs = remember { PreferenceManager.getDefaultSharedPreferences(context) }
+    val prefs = remember { context.getSharedPreferences("settings", Context.MODE_PRIVATE) }
     
     // Debug logging
     Log.d("BackgroundImage", "URI: $backgroundImageUri, FitMode: $backgroundFitMode")
