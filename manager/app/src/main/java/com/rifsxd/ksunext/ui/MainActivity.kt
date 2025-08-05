@@ -118,6 +118,7 @@ class MainActivity : ComponentActivity() {
             // Read background image preferences
             val backgroundImageUri = prefs.getString("background_image_uri", null)
             val backgroundFitMode = prefs.getString("background_fit_mode", "edge_to_edge") ?: "edge_to_edge"
+            val backgroundTransparency = prefs.getFloat("background_transparency", 1.0f)
             
             // Debug logging
             android.util.Log.d("MainActivity", "Background URI from prefs: $backgroundImageUri")
@@ -130,11 +131,13 @@ class MainActivity : ComponentActivity() {
             }
 
             KernelSUTheme (
-                amoledMode = amoledMode
+                amoledMode = amoledMode,
+                isCustomBackgroundEnabled = !backgroundImageUri.isNullOrEmpty()
             ) {
                 BackgroundImageWrapper(
                     backgroundImageUri = backgroundImageUri,
-                    backgroundFitMode = backgroundFitMode
+                    backgroundFitMode = backgroundFitMode,
+                    backgroundTransparency = backgroundTransparency
                 ) {
                 val navController = rememberNavController()
                 val snackBarHostState = remember { SnackbarHostState() }

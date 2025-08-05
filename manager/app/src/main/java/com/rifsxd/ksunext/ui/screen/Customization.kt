@@ -9,11 +9,16 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -33,16 +38,20 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Slider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
@@ -509,6 +518,58 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                     }
                 )
                 
+                // Background Transparency Slider
+                var backgroundTransparency by rememberSaveable {
+                    mutableFloatStateOf(
+                        prefs.getFloat("background_transparency", 1.0f)
+                    )
+                }
+                
+                ListItem(
+                    leadingContent = { Icon(Icons.Filled.Opacity, stringResource(R.string.background_transparency)) },
+                    headlineContent = { Text(
+                        text = stringResource(R.string.background_transparency),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold,
+                    ) },
+                    supportingContent = { 
+                        Column {
+                            Text(stringResource(R.string.background_transparency_summary))
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text(
+                                    text = "0%",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    modifier = Modifier.width(32.dp)
+                                )
+                                Slider(
+                                    value = backgroundTransparency,
+                                    onValueChange = { value ->
+                                        backgroundTransparency = value
+                                        prefs.edit().putFloat("background_transparency", value).apply()
+                                    },
+                                    valueRange = 0.0f..1.0f,
+                                    modifier = Modifier.weight(1f)
+                                )
+                                Text(
+                                    text = "100%",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    modifier = Modifier.width(32.dp),
+                                    textAlign = TextAlign.End
+                                )
+                            }
+                            Text(
+                                text = "${(backgroundTransparency * 100).toInt()}%",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.align(Alignment.CenterHorizontally)
+                            )
+                        }
+                    }
+                )
 
             }
         }

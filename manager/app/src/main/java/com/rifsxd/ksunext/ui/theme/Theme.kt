@@ -44,6 +44,7 @@ fun KernelSUTheme(
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = true,
     amoledMode: Boolean = false,
+    isCustomBackgroundEnabled: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
@@ -51,8 +52,8 @@ fun KernelSUTheme(
             val context = LocalContext.current
             val dynamicScheme = dynamicDarkColorScheme(context)
             dynamicScheme.copy(
-                background = AMOLED_BLACK,
-                surface = AMOLED_BLACK,
+                background = if (isCustomBackgroundEnabled) Color.Transparent else AMOLED_BLACK,
+                surface = if (isCustomBackgroundEnabled) Color.Transparent else AMOLED_BLACK,
                 surfaceVariant = dynamicScheme.surfaceVariant.blend(AMOLED_BLACK, 0.6f),
                 surfaceContainer = dynamicScheme.surfaceContainer.blend(AMOLED_BLACK, 0.6f),
                 surfaceContainerLow = dynamicScheme.surfaceContainerLow.blend(AMOLED_BLACK, 0.6f),
@@ -66,12 +67,20 @@ fun KernelSUTheme(
         }
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+            val baseScheme = if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+            if (isCustomBackgroundEnabled) {
+                baseScheme.copy(
+                    background = Color.Transparent,
+                    surface = Color.Transparent
+                )
+            } else {
+                baseScheme
+            }
         }
         amoledMode && darkTheme -> {
             DarkColorScheme.copy(
-                background = AMOLED_BLACK,
-                surface = AMOLED_BLACK,
+                background = if (isCustomBackgroundEnabled) Color.Transparent else AMOLED_BLACK,
+                surface = if (isCustomBackgroundEnabled) Color.Transparent else AMOLED_BLACK,
                 surfaceVariant = DARK_GREY.blend(AMOLED_BLACK, 0.8f),
                 surfaceContainer = DARK_GREY.blend(AMOLED_BLACK, 0.8f),
                 surfaceContainerLow = DARK_GREY.blend(AMOLED_BLACK, 0.8f),
@@ -80,8 +89,26 @@ fun KernelSUTheme(
                 surfaceContainerHighest = DARK_GREY.blend(AMOLED_BLACK, 0.8f),
             )
         }
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
+        darkTheme -> {
+            if (isCustomBackgroundEnabled) {
+                DarkColorScheme.copy(
+                    background = Color.Transparent,
+                    surface = Color.Transparent
+                )
+            } else {
+                DarkColorScheme
+            }
+        }
+        else -> {
+            if (isCustomBackgroundEnabled) {
+                LightColorScheme.copy(
+                    background = Color.Transparent,
+                    surface = Color.Transparent
+                )
+            } else {
+                LightColorScheme
+            }
+        }
     }
 
     SystemBarStyle(
