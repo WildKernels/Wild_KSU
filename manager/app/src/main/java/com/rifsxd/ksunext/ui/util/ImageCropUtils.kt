@@ -107,44 +107,18 @@ object ImageCropUtils {
         }
     }
     
-    fun getImageTransformation(
-        prefs: SharedPreferences,
-        fitMode: String
+    // Simplified transformation for crop settings only
+    fun getSimpleCropTransformation(
+        prefs: SharedPreferences
     ): androidx.compose.ui.Modifier.() -> androidx.compose.ui.Modifier {
         return {
-            when (fitMode) {
-                "custom_crop" -> {
-                    val scaleX = constrainScale(prefs.getFloat("background_scale_x", 1.0f))
-                    val scaleY = constrainScale(prefs.getFloat("background_scale_y", 1.0f))
-                    val offsetX = constrainTranslation(prefs.getFloat("background_offset_x", 0.0f))
-                    val offsetY = constrainTranslation(prefs.getFloat("background_offset_y", 0.0f))
-                    val rotation = constrainRotation(prefs.getFloat("background_rotation", 0.0f))
-                    
-                    graphicsLayer(
-                        scaleX = scaleX,
-                        scaleY = scaleY,
-                        translationX = offsetX,
-                        translationY = offsetY,
-                        rotationZ = rotation
-                    )
-                }
-                "zoom_fit" -> {
-                    val zoom = constrainScale(prefs.getFloat("background_zoom", 1.0f))
-                    graphicsLayer(
-                        scaleX = zoom,
-                        scaleY = zoom
-                    )
-                }
-                "position_adjust" -> {
-                    val offsetX = constrainTranslation(prefs.getFloat("background_pos_x", 0.0f))
-                    val offsetY = constrainTranslation(prefs.getFloat("background_pos_y", 0.0f))
-                    graphicsLayer(
-                        translationX = offsetX,
-                        translationY = offsetY
-                    )
-                }
-                else -> this
-            }
+            val cropSettings = loadImageCropSettings(prefs)
+            graphicsLayer(
+                scaleX = constrainScale(cropSettings.scale),
+                scaleY = constrainScale(cropSettings.scale),
+                translationX = constrainTranslation(cropSettings.offsetX),
+                translationY = constrainTranslation(cropSettings.offsetY)
+            )
         }
     }
     

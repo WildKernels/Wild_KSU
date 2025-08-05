@@ -34,7 +34,7 @@ fun BackgroundImageWrapper(
     val prefs = remember { context.getSharedPreferences("settings", Context.MODE_PRIVATE) }
     
     // Debug logging
-    Log.d("BackgroundImage", "URI: $backgroundImageUri, FitMode: $backgroundFitMode")
+    Log.d("BackgroundImage", "URI: $backgroundImageUri")
     
     Box(modifier = Modifier.fillMaxSize()) {
         // Display background image if available
@@ -80,28 +80,26 @@ fun BackgroundImageWrapper(
                 
                 Log.d("BackgroundImage", "Image loaded: $imageLoaded, Error: $imageError")
                 
-                // Apply transformations using enhanced ImageCropUtils
+                // Apply simple crop transformations from saved settings
                 val imageModifier = Modifier
                     .fillMaxSize()
                     .let { modifier ->
-                        val transformation = ImageCropUtils.getImageTransformation(prefs, backgroundFitMode)
-                        modifier.transformation()
+                        val cropSettings = ImageCropUtils.loadImageCropSettings(prefs)
+                        modifier.graphicsLayer(
+                            scaleX = cropSettings.scale,
+                            scaleY = cropSettings.scale,
+                            translationX = cropSettings.offsetX,
+                            translationY = cropSettings.offsetY
+                        )
                     }
                 
-                Log.d("BackgroundImage", "Applying transformation for fit mode: $backgroundFitMode")
-                
-                val contentScale = when (backgroundFitMode) {
-                    "zoom_to_fit" -> ContentScale.Crop
-                    "edge_to_edge" -> ContentScale.FillBounds
-                    "custom_crop" -> ContentScale.Fit
-                    else -> ContentScale.FillBounds
-                }
+                Log.d("BackgroundImage", "Applying crop transformations")
                 
                 Image(
                     painter = painter,
                     contentDescription = null,
                     modifier = imageModifier,
-                    contentScale = contentScale
+                    contentScale = ContentScale.Crop
                 )
             }
         }

@@ -407,52 +407,7 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                 )
             }
 
-            val backgroundFitModeDialog = rememberCustomDialog { dismiss ->
-                val fitModeOptions = listOf(
-                    "edge_to_edge" to stringResource(R.string.background_fit_edge_to_edge),
-                    "zoom_to_fit" to stringResource(R.string.background_fit_zoom_to_fit),
-                    "zoom_fit" to "Zoom Fit",
-                    "position_adjust" to "Position Adjust",
-                    "custom_crop" to stringResource(R.string.crop_background_image)
-                )
-                
-                val options = fitModeOptions.map { (mode, displayName) ->
-                    ListOption(
-                        titleText = displayName,
-                        selected = backgroundFitMode == mode
-                    )
-                }
-                
-                var selectedIndex by remember { 
-                    mutableIntStateOf(fitModeOptions.indexOfFirst { (mode, _) -> backgroundFitMode == mode })
-                }
-                
-                ListDialog(
-                    state = rememberUseCaseState(
-                        visible = true,
-                        onFinishedRequest = {
-                            if (selectedIndex >= 0 && selectedIndex < fitModeOptions.size) {
-                                val newMode = fitModeOptions[selectedIndex].first
-                                prefs.edit().putString("background_fit_mode", newMode).apply()
-                                backgroundFitMode = newMode
-                            }
-                            dismiss()
-                        },
-                        onCloseRequest = {
-                            dismiss()
-                        }
-                    ),
-                    header = Header.Default(
-                        title = stringResource(R.string.background_image_fit_mode),
-                    ),
-                    selection = ListSelection.Single(
-                        showRadioButtons = true,
-                        options = options
-                    ) { index, _ ->
-                        selectedIndex = index
-                    }
-                )
-            }
+
 
             // Background Image Selection
             ListItem(
@@ -482,40 +437,22 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                 }
             )
 
-            // Background Fit Mode (only show if background image is selected)
+            // Background Image Crop (only show if background image is selected)
             if (backgroundImageUri != null) {
-                val currentFitModeDisplay = when (backgroundFitMode) {
-                    "edge_to_edge" -> stringResource(R.string.background_fit_edge_to_edge)
-                    "zoom_to_fit" -> stringResource(R.string.background_fit_zoom_to_fit)
-                    "zoom_fit" -> "Zoom Fit"
-                    "position_adjust" -> "Position Adjust"
-                    "custom_crop" -> stringResource(R.string.crop_background_image)
-                    else -> stringResource(R.string.background_fit_edge_to_edge)
-                }
-                
                 ListItem(
-                    leadingContent = { Icon(Icons.Filled.AspectRatio, stringResource(R.string.background_image_fit_mode)) },
+                    leadingContent = { Icon(Icons.Filled.Crop, stringResource(R.string.crop_background_image)) },
                     headlineContent = { Text(
-                        text = stringResource(R.string.background_image_fit_mode),
+                        text = stringResource(R.string.crop_background_image),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.SemiBold,
                     ) },
-                    supportingContent = { Text(currentFitModeDisplay) },
-                    trailingContent = {
-                        if (backgroundFitMode == "custom_crop" || backgroundFitMode == "position_adjust") {
-                            IconButton(onClick = {
-                                // Re-open crop dialog for current image
-                                backgroundImageUri?.let { uriString ->
-                                    selectedImageUri = Uri.parse(uriString)
-                                    showCropDialog = true
-                                }
-                            }) {
-                                Icon(Icons.Filled.Crop, stringResource(R.string.crop_background_image))
-                            }
-                        }
-                    },
+                    supportingContent = { Text(stringResource(R.string.pinch_to_zoom_instruction)) },
                     modifier = Modifier.clickable {
-                        backgroundFitModeDialog.show()
+                        // Open crop dialog for current image
+                        backgroundImageUri?.let { uriString ->
+                            selectedImageUri = Uri.parse(uriString)
+                            showCropDialog = true
+                        }
                     }
                 )
                 
