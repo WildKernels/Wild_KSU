@@ -101,17 +101,18 @@ fun BackgroundImageWrapper(
                 Image(
                     painter = painter,
                     contentDescription = null,
-                    modifier = imageModifier.graphicsLayer(alpha = backgroundTransparency),
+                    modifier = imageModifier,
                     contentScale = contentScale
                 )
                 
-                // Add a very light semi-transparent overlay to ensure content readability
-                // Only add overlay if the image is successfully loaded
+                // Add overlay with transparency control for content readability
+                // Transparency slider controls how dark the overlay is (0 = no overlay, 1 = maximum overlay)
+                val overlayAlpha = (1.0f - backgroundTransparency) * 0.7f // Max overlay alpha of 0.7
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
                         .background(
-                            Color.Black.copy(alpha = 0.02f)
+                            Color.Black.copy(alpha = overlayAlpha)
                         )
                 )
             }
