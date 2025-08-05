@@ -94,7 +94,7 @@ fun BackgroundImageWrapper(
                     painter = painter,
                     contentDescription = null,
                     modifier = imageModifier,
-                    contentScale = contentScale
+                    contentScale = ContentScale.FillBounds
                 )
             }
         }

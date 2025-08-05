@@ -114,7 +114,7 @@ fun AdvancedImageCropDialog(
                             translationY = offsetY,
                             rotationZ = rotation
                         ),
-                    contentScale = ContentScale.Crop
+                    contentScale = ContentScale.FillBounds
                 )
                 
                 // Template overlay showing where UI elements will be
@@ -140,8 +140,8 @@ fun AdvancedImageCropDialog(
                     // Auto-fit button - properly fills screen without black bars
                     OutlinedButton(
                         onClick = {
-                            // Auto-fit: scale to fill screen, center the image, no rotation
-                            scale = 1.2f // Slightly larger to ensure no black bars
+                            // Auto fit - center and scale to fit screen properly
+                            scale = 1.0f // Use 1.0f since FillBounds will handle stretching
                             offsetX = 0.0f
                             offsetY = 0.0f
                             rotation = 0.0f

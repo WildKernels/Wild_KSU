@@ -87,7 +87,9 @@ object ImageCropUtils {
     ): Bitmap {
         try {
             val matrix = Matrix().apply {
+                // Apply transformations in the correct order: scale, rotate, translate
                 postScale(settings.scale, settings.scale)
+                postRotate(constrainRotation(settings.rotation))
                 postTranslate(settings.offsetX, settings.offsetY)
             }
             
@@ -101,7 +103,7 @@ object ImageCropUtils {
             val paint = Paint(Paint.ANTI_ALIAS_FLAG)
             canvas.drawBitmap(bitmap, matrix, paint)
             
-            Log.d(TAG, "Applied crop transformation: scale=${settings.scale}, offsetX=${settings.offsetX}, offsetY=${settings.offsetY}")
+            Log.d(TAG, "Applied crop transformation: scale=${settings.scale}, offsetX=${settings.offsetX}, offsetY=${settings.offsetY}, rotation=${settings.rotation}")
             return croppedBitmap
         } catch (e: Exception) {
             Log.e(TAG, "Error applying crop transformation", e)
