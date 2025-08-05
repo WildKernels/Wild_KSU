@@ -120,7 +120,7 @@ class MainActivity : ComponentActivity() {
             
             // Read background image preferences with reactive state
             var backgroundImageUri by remember { mutableStateOf(prefs.getString("background_image_uri", null)) }
-            var backgroundFitMode by remember { mutableStateOf(prefs.getString("background_fit_mode", "edge_to_edge") ?: "edge_to_edge") }
+            var backgroundFitMode by remember { mutableStateOf(prefs.getString("background_fit_mode", "position_adjust") ?: "position_adjust") }
             var backgroundTransparency by remember { mutableStateOf(prefs.getFloat("background_transparency", 1.0f)) }
             
             // Listen for preference changes
@@ -132,7 +132,7 @@ class MainActivity : ComponentActivity() {
                             android.util.Log.d("MainActivity", "Background URI changed to: $backgroundImageUri")
                         }
                         "background_fit_mode" -> {
-                            backgroundFitMode = prefs.getString("background_fit_mode", "edge_to_edge") ?: "edge_to_edge"
+                            backgroundFitMode = prefs.getString("background_fit_mode", "position_adjust") ?: "position_adjust"
                             android.util.Log.d("MainActivity", "Background fit mode changed to: $backgroundFitMode")
                         }
                         "background_transparency" -> {
