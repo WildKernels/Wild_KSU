@@ -508,33 +508,7 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                     }
                 )
                 
-                // Background Image Position Adjustment
-                var showImageEditor by remember { mutableStateOf(false) }
-                
-                ListItem(
-                    leadingContent = { Icon(Icons.Filled.Edit, stringResource(R.string.background_image_edit)) },
-                    headlineContent = { Text(
-                        text = stringResource(R.string.background_image_edit),
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.SemiBold,
-                    ) },
-                    supportingContent = { Text(stringResource(R.string.background_image_edit_summary)) },
-                    modifier = Modifier.clickable {
-                        showImageEditor = true
-                    }
-                )
-                
-                if (showImageEditor) {
-                    ImageEditorDialog(
-                        imageUri = Uri.parse(backgroundImageUri),
-                        onDismiss = { showImageEditor = false },
-                        onConfirm = { newUri ->
-                            prefs.edit().putString("background_image_uri", newUri.toString()).apply()
-                            backgroundImageUri = newUri.toString()
-                            showImageEditor = false
-                        }
-                    )
-                }
+
             }
         }
     }

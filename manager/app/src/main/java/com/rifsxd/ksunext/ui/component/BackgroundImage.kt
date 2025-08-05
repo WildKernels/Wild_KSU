@@ -17,7 +17,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.preference.PreferenceManager
+import android.preference.PreferenceManager
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.rifsxd.ksunext.ui.util.ImageCropUtils
