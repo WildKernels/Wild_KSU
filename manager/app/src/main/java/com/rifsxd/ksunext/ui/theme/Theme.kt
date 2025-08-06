@@ -47,7 +47,6 @@ fun KernelSUTheme(
     isCustomBackgroundEnabled: Boolean = false,
     backgroundTransparency: Float = 1.0f,
     uiTransparency: Float = 1.0f,
-    topBarTransparency: Float = 1.0f,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
@@ -67,7 +66,7 @@ fun KernelSUTheme(
             dynamicScheme.copy(
                 background = if (isCustomBackgroundEnabled) Color.Transparent else AMOLED_BLACK,
                 surface = if (isCustomBackgroundEnabled) Color.Transparent else AMOLED_BLACK,
-                surfaceVariant = if (isCustomBackgroundEnabled) baseSurfaceVariant.copy(alpha = topBarTransparency) else baseSurfaceVariant,
+                surfaceVariant = if (isCustomBackgroundEnabled) baseSurfaceVariant.copy(alpha = uiTransparency) else baseSurfaceVariant,
                 surfaceContainer = if (isCustomBackgroundEnabled) baseSurfaceContainer.copy(alpha = uiTransparency) else baseSurfaceContainer,
                 surfaceContainerLow = if (isCustomBackgroundEnabled) baseSurfaceContainerLow.copy(alpha = uiTransparency) else baseSurfaceContainerLow,
                 surfaceContainerLowest = if (isCustomBackgroundEnabled) baseSurfaceContainerLowest.copy(alpha = uiTransparency) else baseSurfaceContainerLowest,
@@ -85,7 +84,7 @@ fun KernelSUTheme(
                 baseScheme.copy(
                     background = Color.Transparent,
                     surface = Color.Transparent,
-                    surfaceVariant = baseScheme.surfaceVariant.copy(alpha = topBarTransparency),
+                    surfaceVariant = baseScheme.surfaceVariant.copy(alpha = uiTransparency),
                     surfaceContainer = baseScheme.surfaceContainer.copy(alpha = uiTransparency),
                     surfaceContainerLow = baseScheme.surfaceContainerLow.copy(alpha = uiTransparency),
                     surfaceContainerLowest = baseScheme.surfaceContainerLowest.copy(alpha = uiTransparency),
@@ -104,7 +103,7 @@ fun KernelSUTheme(
             DarkColorScheme.copy(
                 background = if (isCustomBackgroundEnabled) Color.Transparent else AMOLED_BLACK,
                 surface = if (isCustomBackgroundEnabled) Color.Transparent else AMOLED_BLACK,
-                surfaceVariant = if (isCustomBackgroundEnabled) baseSurfaceVariant.copy(alpha = topBarTransparency) else baseSurfaceVariant,
+                surfaceVariant = if (isCustomBackgroundEnabled) baseSurfaceVariant.copy(alpha = uiTransparency) else baseSurfaceVariant,
                 surfaceContainer = if (isCustomBackgroundEnabled) baseSurfaceVariant.copy(alpha = uiTransparency) else baseSurfaceVariant,
                 surfaceContainerLow = if (isCustomBackgroundEnabled) baseSurfaceVariant.copy(alpha = uiTransparency) else baseSurfaceVariant,
                 surfaceContainerLowest = if (isCustomBackgroundEnabled) baseSurfaceVariant.copy(alpha = uiTransparency) else baseSurfaceVariant,
@@ -117,7 +116,7 @@ fun KernelSUTheme(
                 DarkColorScheme.copy(
                     background = Color.Transparent,
                     surface = Color.Transparent,
-                    surfaceVariant = DarkColorScheme.surfaceVariant.copy(alpha = topBarTransparency),
+                    surfaceVariant = DarkColorScheme.surfaceVariant.copy(alpha = uiTransparency),
                     surfaceContainer = DarkColorScheme.surfaceContainer.copy(alpha = uiTransparency),
                     surfaceContainerLow = DarkColorScheme.surfaceContainerLow.copy(alpha = uiTransparency),
                     surfaceContainerLowest = DarkColorScheme.surfaceContainerLowest.copy(alpha = uiTransparency),
@@ -136,7 +135,7 @@ fun KernelSUTheme(
                 LightColorScheme.copy(
                     background = Color.Transparent,
                     surface = Color.Transparent,
-                    surfaceVariant = LightColorScheme.surfaceVariant.copy(alpha = topBarTransparency),
+                    surfaceVariant = LightColorScheme.surfaceVariant.copy(alpha = uiTransparency),
                     surfaceContainer = LightColorScheme.surfaceContainer.copy(alpha = uiTransparency),
                     surfaceContainerLow = LightColorScheme.surfaceContainerLow.copy(alpha = uiTransparency),
                     surfaceContainerLowest = LightColorScheme.surfaceContainerLowest.copy(alpha = uiTransparency),
