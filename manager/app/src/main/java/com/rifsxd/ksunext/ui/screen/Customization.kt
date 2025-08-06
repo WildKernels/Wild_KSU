@@ -301,7 +301,6 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                     prefs.getBoolean("enable_amoled", false)
                 )
             }
-            var showRestartDialog by remember { mutableStateOf(false) }
             if (isSystemInDarkTheme()) {
                 SwitchItem(
                     icon = Icons.Filled.Contrast,
@@ -311,36 +310,6 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                 ) { checked ->
                     prefs.edit().putBoolean("enable_amoled", checked).apply()
                     enableAmoled = checked
-                    showRestartDialog = true
-                }
-                if (showRestartDialog) {
-                    AlertDialog(
-                        onDismissRequest = { showRestartDialog = false },
-                        title = { Text(
-                            text = stringResource(R.string.restart_required),
-                            style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.SemiBold
-                        ) },
-                        text = { Text(stringResource(R.string.restart_app_message)) },
-                        confirmButton = {
-                            TextButton(onClick = {
-                                showRestartDialog = false
-                                // Restart the app
-                                val packageManager = context.packageManager
-                                val intent = packageManager.getLaunchIntentForPackage(context.packageName)
-                                intent?.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
-                                context.startActivity(intent)
-                                Runtime.getRuntime().exit(0)
-                            }) {
-                                Text(stringResource(R.string.restart_app))
-                            }
-                        },
-                        dismissButton = {
-                            TextButton(onClick = { showRestartDialog = false }) {
-                                Text(stringResource(R.string.later))
-                            }
-                        }
-                    )
                 }
             }
 

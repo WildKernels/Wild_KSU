@@ -114,13 +114,13 @@ class MainActivity : ComponentActivity() {
         }
 
         setContent {
-            // Read AMOLED mode preference
+            // Get SharedPreferences
             val prefs = getSharedPreferences("settings", Context.MODE_PRIVATE)
-            val amoledMode = prefs.getBoolean("enable_amoled", false)
             
-            // Use remember and mutableStateOf for reactive background preferences
+            // Use remember and mutableStateOf for reactive preferences
             // Darkness slider: 1.0f = 100% (full black overlay), 0.0f = 0% (no overlay)
             // UI transparency: 0.0f = 0% (fully transparent), 1.0f = 100% (fully opaque)
+            var amoledMode by remember { mutableStateOf(prefs.getBoolean("enable_amoled", false)) }
             var backgroundImageUri by remember { mutableStateOf(prefs.getString("background_image_uri", null)) }
             var backgroundTransparency by remember { mutableStateOf(prefs.getFloat("background_transparency", 1.0f)) } // Default 100% darkness
             var uiTransparency by remember { mutableStateOf(prefs.getFloat("ui_transparency", 0.0f)) } // Default 0% UI transparency
@@ -129,6 +129,10 @@ class MainActivity : ComponentActivity() {
             LaunchedEffect(Unit) {
                 val listener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
                     when (key) {
+                        "enable_amoled" -> {
+                            amoledMode = prefs.getBoolean("enable_amoled", false)
+                            android.util.Log.d("MainActivity", "AMOLED mode updated: $amoledMode")
+                        }
                         "background_image_uri" -> {
                             backgroundImageUri = prefs.getString("background_image_uri", null)
                             android.util.Log.d("MainActivity", "Background URI updated: $backgroundImageUri")
@@ -147,6 +151,7 @@ class MainActivity : ComponentActivity() {
             }
             
             // Debug logging
+            android.util.Log.d("MainActivity", "AMOLED mode: $amoledMode")
             android.util.Log.d("MainActivity", "Background URI from prefs: $backgroundImageUri")
             android.util.Log.d("MainActivity", "Background transparency: $backgroundTransparency")
             android.util.Log.d("MainActivity", "UI transparency: $uiTransparency")
