@@ -281,7 +281,8 @@ private fun TopBar(
     onBack: () -> Unit = {},
     scrollBehavior: TopAppBarScrollBehavior? = null
 ) {
-    val containerColor = remember { MaterialTheme.colorScheme.surfaceContainer }
+    val surfaceContainer = MaterialTheme.colorScheme.surfaceContainer
+    val containerColor = remember(surfaceContainer) { surfaceContainer }
     
     TopAppBar(
         title = { Text(
