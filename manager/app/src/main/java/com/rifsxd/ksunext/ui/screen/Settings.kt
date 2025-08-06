@@ -225,13 +225,7 @@ fun SettingScreen(navigator: DestinationsNavigator) {
             val isSUS_SU = hasSuSFs_SUS_SU() == "Supported"
             if (suSFS == "Supported") {
                 if (isSUS_SU) {
-                    var isEnabled by rememberSaveable {
-                        mutableStateOf(susfsSUS_SU_Mode() == "2")
-                    }
-
-                    LaunchedEffect(Unit) {
-                        isEnabled = susfsSUS_SU_Mode() == "2"
-                    }
+                    val isEnabled by observePreferenceAsState(prefs, "enable_sus_su", false)
 
                     SwitchItem(
                         icon = Icons.Filled.VisibilityOff,
@@ -245,18 +239,11 @@ fun SettingScreen(navigator: DestinationsNavigator) {
                             susfsSUS_SU_0()
                         }
                         prefs.edit().putBoolean("enable_sus_su", it).apply()
-                        isEnabled = it
                     }
                 }
             }
 
-            var useOverlayFs by rememberSaveable {
-                mutableStateOf(readMountSystemFile())
-            }
-
-            LaunchedEffect(Unit) {
-                useOverlayFs = readMountSystemFile()
-            }
+            val useOverlayFs by observePreferenceAsState(prefs, "use_overlay_fs", false)
 
             var showRebootDialog by remember { mutableStateOf(false) }
 
@@ -270,8 +257,7 @@ fun SettingScreen(navigator: DestinationsNavigator) {
                     checked = useOverlayFs
                 ) {
                     prefs.edit().putBoolean("use_overlay_fs", it).apply()
-                    useOverlayFs = it
-                    if (useOverlayFs) {
+                    if (it) {
                         moduleBackup()
                         updateMountSystemFile(true)
                     } else {
@@ -309,11 +295,7 @@ fun SettingScreen(navigator: DestinationsNavigator) {
             }
 
 
-            var checkUpdate by rememberSaveable {
-                mutableStateOf(
-                    prefs.getBoolean("check_update", false)
-                )
-            }
+            val checkUpdate by observePreferenceAsState(prefs, "check_update", false)
             SwitchItem(
                 icon = Icons.Filled.Update,
                 title = stringResource(id = R.string.settings_check_update),
@@ -321,7 +303,6 @@ fun SettingScreen(navigator: DestinationsNavigator) {
                 checked = checkUpdate
             ) {
                 prefs.edit().putBoolean("check_update", it).apply()
-                checkUpdate = it
             }
 
             if (isOverlayAvailable && useOverlayFs) {

@@ -564,7 +564,7 @@ private fun InfoCard(autoExpand: Boolean = false) {
 
     var expanded by rememberSaveable { mutableStateOf(false) }
 
-    val developerOptionsEnabled = prefs.getBoolean("enable_developer_options", false)
+    val developerOptionsEnabled by observePreferenceAsState(prefs, "enable_developer_options", false)
 
     LaunchedEffect(autoExpand) {
         if (autoExpand) {

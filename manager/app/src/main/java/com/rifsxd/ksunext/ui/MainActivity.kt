@@ -111,14 +111,14 @@ class MainActivity : ComponentActivity() {
         }
 
         setContent {
-            // Read AMOLED mode preference
+            // Read preferences with reactive state management
             val prefs = getSharedPreferences("settings", Context.MODE_PRIVATE)
-            val amoledMode = prefs.getBoolean("enable_amoled", false)
             
-            // Read background image preferences
-            val backgroundImageUri = prefs.getString("background_image_uri", null)
-            val backgroundFitMode = prefs.getString("background_fit_mode", "edge_to_edge") ?: "edge_to_edge"
-            val backgroundTransparency = prefs.getFloat("background_transparency", 1.0f)
+            // Use reactive state for preferences that can change
+            val amoledMode by observePreferenceAsState(prefs, "enable_amoled", false)
+            val backgroundImageUri by observePreferenceAsState(prefs, "background_image_uri", null)
+            val backgroundFitMode by observePreferenceAsState(prefs, "background_fit_mode", "edge_to_edge")
+            val backgroundTransparency by observePreferenceAsState(prefs, "background_transparency", 1.0f)
             
             // Debug logging
             android.util.Log.d("MainActivity", "Background URI from prefs: $backgroundImageUri")

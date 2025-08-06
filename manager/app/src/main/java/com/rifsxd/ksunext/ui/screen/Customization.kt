@@ -39,8 +39,6 @@ import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
-import androidx.compose.material3.SliderDefaults
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.LaunchedEffect
@@ -281,11 +279,7 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                 }
             )
 
-            var useBanner by rememberSaveable {
-                mutableStateOf(
-                    prefs.getBoolean("use_banner", true)
-                )
-            }
+            val useBanner by observePreferenceAsState(prefs, "use_banner", true)
             if (ksuVersion != null) {
                 SwitchItem(
                     icon = Icons.Filled.ViewCarousel,
@@ -294,15 +288,10 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                     checked = useBanner
                 ) {
                     prefs.edit().putBoolean("use_banner", it).apply()
-                    useBanner = it
                 }
             }
 
-            var enableAmoled by rememberSaveable {
-                mutableStateOf(
-                    prefs.getBoolean("enable_amoled", false)
-                )
-            }
+            val enableAmoled by observePreferenceAsState(prefs, "enable_amoled", false)
             var showRestartDialog by remember { mutableStateOf(false) }
             if (isSystemInDarkTheme()) {
                 SwitchItem(
@@ -312,7 +301,6 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                     checked = enableAmoled
                 ) { checked ->
                     prefs.edit().putBoolean("enable_amoled", checked).apply()
-                    enableAmoled = checked
                     showRestartDialog = true
                 }
                 if (showRestartDialog) {
@@ -346,18 +334,9 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                 }
             }
 
-            // Background Image Setting
-            var backgroundImageUri by rememberSaveable {
-                mutableStateOf(
-                    prefs.getString("background_image_uri", null)
-                )
-            }
-            
-            var backgroundFitMode by rememberSaveable {
-                mutableStateOf(
-                    prefs.getString("background_fit_mode", "edge_to_edge") ?: "edge_to_edge"
-                )
-            }
+            // Background Image Setting - Use reactive state management
+            val backgroundImageUri by observePreferenceAsState(prefs, "background_image_uri", null)
+            val backgroundFitMode by observePreferenceAsState(prefs, "background_fit_mode", "edge_to_edge")
 
             // State for crop dialog
             var showCropDialog by remember { mutableStateOf(false) }
@@ -380,7 +359,6 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                             // Handle permission error - fallback to direct save
                             e.printStackTrace()
                             prefs.edit().putString("background_image_uri", uri.toString()).apply()
-                            backgroundImageUri = uri.toString()
                         }
                     }
                 }
@@ -401,8 +379,6 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                             putString("background_fit_mode", "position_adjust")
                             apply()
                         }
-                        backgroundImageUri = selectedImageUri.toString()
-                        backgroundFitMode = "position_adjust"
                         showCropDialog = false
                         selectedImageUri = null
                     }
@@ -436,7 +412,6 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                             if (selectedIndex >= 0 && selectedIndex < fitModeOptions.size) {
                                 val newMode = fitModeOptions[selectedIndex].first
                                 prefs.edit().putString("background_fit_mode", newMode).apply()
-                                backgroundFitMode = newMode
                             }
                             dismiss()
                         },
@@ -469,7 +444,6 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                     if (backgroundImageUri != null) {
                         IconButton(onClick = {
                             prefs.edit().remove("background_image_uri").apply()
-                            backgroundImageUri = null
                         }) {
                             Icon(Icons.Filled.Delete, stringResource(R.string.background_image_remove))
                         }
@@ -521,12 +495,8 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                     }
                 )
                 
-                // Background Transparency Slider
-                var backgroundTransparency by rememberSaveable {
-                    mutableFloatStateOf(
-                        prefs.getFloat("background_transparency", 1.0f)
-                    )
-                }
+                // Background Transparency Slider - Use reactive state management
+                val backgroundTransparency by observePreferenceAsState(prefs, "background_transparency", 1.0f)
                 
                 ListItem(
                     leadingContent = { Icon(Icons.Filled.Opacity, stringResource(R.string.background_transparency)) },
@@ -551,16 +521,10 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                                 Slider(
                                     value = backgroundTransparency,
                                     onValueChange = { value ->
-                                        backgroundTransparency = value
                                         prefs.edit().putFloat("background_transparency", value).apply()
                                     },
                                     valueRange = 0.0f..1.0f,
-                                    modifier = Modifier.weight(1f),
-                                    thumb = {
-                                        SliderDefaults.Thumb(
-                                            interactionSource = remember { MutableInteractionSource() }
-                                        )
-                                    }
+                                    modifier = Modifier.weight(1f)
                                 )
                                 Text(
                                     text = "100%",
@@ -600,9 +564,6 @@ private fun TopBar(
                 onClick = onBack
             ) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null) }
         },
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainer
-        ),
         windowInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal),
         scrollBehavior = scrollBehavior
     )
