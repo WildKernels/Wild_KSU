@@ -196,67 +196,7 @@ fun ModuleScreen(navigator: DestinationsNavigator) {
             }
     }
 
-    Scaffold(
-        floatingActionButton = {
-            if (!hideInstallButton) {
-                AnimatedVisibility(
-                    visible = showFab,
-                    enter = scaleIn(
-                        animationSpec = tween(200),
-                        initialScale = 0.8f
-                    ) + fadeIn(animationSpec = tween(400)),
-                    exit = scaleOut(
-                        animationSpec = tween(200),
-                        targetScale = 0.8f
-                    ) + fadeOut(animationSpec = tween(400))
-                ) {
-                    val moduleInstall = stringResource(id = R.string.module_install)
-                    val selectZipLauncher = rememberLauncherForActivityResult(
-                        contract = ActivityResultContracts.StartActivityForResult()
-                    ) { result ->
-                        if (result.resultCode != RESULT_OK) {
-                            return@rememberLauncherForActivityResult
-                        }
-                        val data = result.data ?: return@rememberLauncherForActivityResult
-                        val clipData = data.clipData
-
-                        val uris = mutableListOf<Uri>()
-                        if (clipData != null) {
-                            for (i in 0 until clipData.itemCount) {
-                                clipData.getItemAt(i)?.uri?.let { uris.add(it) }
-                            }
-                        } else {
-                            data.data?.let { uris.add(it) }
-                        }
-
-                        if (uris.isEmpty()) return@rememberLauncherForActivityResult
-
-                        viewModel.updateZipUris(uris)
-
-                        navigator.navigate(FlashScreenDestination(FlashIt.FlashModules(uris)))
-                        viewModel.clearZipUris()
-                        viewModel.markNeedRefresh()
-                    }
-
-                    ExtendedFloatingActionButton(
-                        onClick = {
-                            // Select the zip files to install
-                            val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
-                                type = "application/zip"
-                                putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
-                            }
-                            selectZipLauncher.launch(intent)
-                        },
-                        icon = { Icon(Icons.Filled.Add, moduleInstall) },
-                        text = { Text(text = moduleInstall) },
-                    )
-                }
-            }
-        },
-
-        snackbarHost = { SnackbarHost(hostState = snackBarHost) }
-    ) { innerPadding ->
-
+    Box(modifier = Modifier.fillMaxSize()) {
         when {
             hasMagisk -> {
                 Box(
@@ -277,7 +217,7 @@ fun ModuleScreen(navigator: DestinationsNavigator) {
                     navigator,
                     viewModel = viewModel,
                     modifier = Modifier,
-                    boxModifier = Modifier.padding(innerPadding),
+                    boxModifier = Modifier,
                     onInstallModule = {
                         navigator.navigate(FlashScreenDestination(FlashIt.FlashModules(listOf(it))))
                     },
@@ -294,6 +234,65 @@ fun ModuleScreen(navigator: DestinationsNavigator) {
                     context = context,
                     snackBarHost = snackBarHost,
                     listState = listState
+                )
+            }
+        }
+
+        // Floating Action Button positioned over the content
+        if (!hideInstallButton) {
+            AnimatedVisibility(
+                visible = showFab,
+                enter = scaleIn(
+                    animationSpec = tween(200),
+                    initialScale = 0.8f
+                ) + fadeIn(animationSpec = tween(400)),
+                exit = scaleOut(
+                    animationSpec = tween(200),
+                    targetScale = 0.8f
+                ) + fadeOut(animationSpec = tween(400)),
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(16.dp)
+            ) {
+                val moduleInstall = stringResource(id = R.string.module_install)
+                val selectZipLauncher = rememberLauncherForActivityResult(
+                    contract = ActivityResultContracts.StartActivityForResult()
+                ) { result ->
+                    if (result.resultCode != RESULT_OK) {
+                        return@rememberLauncherForActivityResult
+                    }
+                    val data = result.data ?: return@rememberLauncherForActivityResult
+                    val clipData = data.clipData
+
+                    val uris = mutableListOf<Uri>()
+                    if (clipData != null) {
+                        for (i in 0 until clipData.itemCount) {
+                            clipData.getItemAt(i)?.uri?.let { uris.add(it) }
+                        }
+                    } else {
+                        data.data?.let { uris.add(it) }
+                    }
+
+                    if (uris.isEmpty()) return@rememberLauncherForActivityResult
+
+                    viewModel.updateZipUris(uris)
+
+                    navigator.navigate(FlashScreenDestination(FlashIt.FlashModules(uris)))
+                    viewModel.clearZipUris()
+                    viewModel.markNeedRefresh()
+                }
+
+                ExtendedFloatingActionButton(
+                    onClick = {
+                        // Select the zip files to install
+                        val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
+                            type = "application/zip"
+                            putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+                        }
+                        selectZipLauncher.launch(intent)
+                    },
+                    icon = { Icon(Icons.Filled.Add, moduleInstall) },
+                    text = { Text(text = moduleInstall) },
                 )
             }
         }
@@ -485,9 +484,7 @@ private fun ModuleList(
     ) {
         LazyColumn(
             state = listState,
-            modifier = Modifier
-                .fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            modifier = Modifier.fillMaxSize()
         ) {
             when {
                 viewModel.moduleList.isEmpty() -> {

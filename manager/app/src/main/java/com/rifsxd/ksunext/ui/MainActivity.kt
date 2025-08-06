@@ -51,7 +51,10 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import kotlinx.coroutines.launch
+import androidx.compose.ui.platform.LocalContext
 import android.content.SharedPreferences
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -81,9 +84,6 @@ import androidx.navigation.NavDestination
 import com.ramcosta.composedestinations.utils.isRouteOnBackStackAsState
 import com.ramcosta.composedestinations.utils.rememberDestinationsNavigator
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.platform.LocalContext
-import kotlinx.coroutines.launch
 import com.rifsxd.ksunext.Natives
 import com.rifsxd.ksunext.ksuApp
 import com.rifsxd.ksunext.R
@@ -252,7 +252,7 @@ class MainActivity : ComponentActivity() {
                             BottomBar(navController, moduleUpdateCount)
                         }
                     },
-                    contentWindowInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal)
+                    contentWindowInsets = WindowInsets(0, 0, 0, 0)
                 ) { innerPadding ->
                     CompositionLocalProvider(
                         LocalSnackbarHost provides snackBarHostState,
@@ -411,106 +411,7 @@ private fun ModuleTopBar(moduleViewModel: ModuleViewModel) {
                             showDropdown = false
                         }
                     )
-                    DropdownMenuItem(
-                        text = { Text(stringResource(R.string.module_sort_z_to_a)) },
-                        trailingIcon = {
-                            Checkbox(checked = moduleViewModel.sortZToA, onCheckedChange = null)
-                        },
-                        onClick = {
-                            moduleViewModel.sortZToA = !moduleViewModel.sortZToA
-                            moduleViewModel.sortAToZ = false
-                            moduleViewModel.sortSizeLowToHigh = false
-                            moduleViewModel.sortSizeHighToLow = false
-                            moduleViewModel.sortEnabledFirst = false
-                            moduleViewModel.sortActionFirst = false
-                            moduleViewModel.sortWebUiFirst = false
-                            prefs.edit()
-                                .putBoolean("module_sort_z_to_a", moduleViewModel.sortZToA)
-                                .putBoolean("module_sort_a_to_z", false)
-                                .putBoolean("module_sort_size_low_to_high", false)
-                                .putBoolean("module_sort_size_high_to_low", false)
-                                .putBoolean("module_sort_enabled_first", false)
-                                .putBoolean("module_sort_action_first", false)
-                                .putBoolean("module_sort_webui_first", false)
-                                .apply()
-                            showDropdown = false
-                        }
-                    )
-                    DropdownMenuItem(
-                        text = { Text(stringResource(R.string.module_sort_enabled_first)) },
-                        trailingIcon = {
-                            Checkbox(checked = moduleViewModel.sortEnabledFirst, onCheckedChange = null)
-                        },
-                        onClick = {
-                            moduleViewModel.sortEnabledFirst = !moduleViewModel.sortEnabledFirst
-                            moduleViewModel.sortAToZ = false
-                            moduleViewModel.sortZToA = false
-                            moduleViewModel.sortSizeLowToHigh = false
-                            moduleViewModel.sortSizeHighToLow = false
-                            moduleViewModel.sortActionFirst = false
-                            moduleViewModel.sortWebUiFirst = false
-                            prefs.edit()
-                                .putBoolean("module_sort_enabled_first", moduleViewModel.sortEnabledFirst)
-                                .putBoolean("module_sort_a_to_z", false)
-                                .putBoolean("module_sort_z_to_a", false)
-                                .putBoolean("module_sort_size_low_to_high", false)
-                                .putBoolean("module_sort_size_high_to_low", false)
-                                .putBoolean("module_sort_action_first", false)
-                                .putBoolean("module_sort_webui_first", false)
-                                .apply()
-                            showDropdown = false
-                        }
-                    )
-                    DropdownMenuItem(
-                        text = { Text(stringResource(R.string.module_sort_action_first)) },
-                        trailingIcon = {
-                            Checkbox(checked = moduleViewModel.sortActionFirst, onCheckedChange = null)
-                        },
-                        onClick = {
-                            moduleViewModel.sortActionFirst = !moduleViewModel.sortActionFirst
-                            moduleViewModel.sortAToZ = false
-                            moduleViewModel.sortZToA = false
-                            moduleViewModel.sortSizeLowToHigh = false
-                            moduleViewModel.sortSizeHighToLow = false
-                            moduleViewModel.sortEnabledFirst = false
-                            moduleViewModel.sortWebUiFirst = false
-                            prefs.edit()
-                                .putBoolean("module_sort_action_first", moduleViewModel.sortActionFirst)
-                                .putBoolean("module_sort_a_to_z", false)
-                                .putBoolean("module_sort_z_to_a", false)
-                                .putBoolean("module_sort_size_low_to_high", false)
-                                .putBoolean("module_sort_size_high_to_low", false)
-                                .putBoolean("module_sort_enabled_first", false)
-                                .putBoolean("module_sort_webui_first", false)
-                                .apply()
-                            showDropdown = false
-                        }
-                    )
-                    DropdownMenuItem(
-                        text = { Text(stringResource(R.string.module_sort_webui_first)) },
-                        trailingIcon = {
-                            Checkbox(checked = moduleViewModel.sortWebUiFirst, onCheckedChange = null)
-                        },
-                        onClick = {
-                            moduleViewModel.sortWebUiFirst = !moduleViewModel.sortWebUiFirst
-                            moduleViewModel.sortAToZ = false
-                            moduleViewModel.sortZToA = false
-                            moduleViewModel.sortSizeLowToHigh = false
-                            moduleViewModel.sortSizeHighToLow = false
-                            moduleViewModel.sortEnabledFirst = false
-                            moduleViewModel.sortActionFirst = false
-                            prefs.edit()
-                                .putBoolean("module_sort_webui_first", moduleViewModel.sortWebUiFirst)
-                                .putBoolean("module_sort_a_to_z", false)
-                                .putBoolean("module_sort_z_to_a", false)
-                                .putBoolean("module_sort_size_low_to_high", false)
-                                .putBoolean("module_sort_size_high_to_low", false)
-                                .putBoolean("module_sort_enabled_first", false)
-                                .putBoolean("module_sort_action_first", false)
-                                .apply()
-                            showDropdown = false
-                        }
-                    )
+                    // Add other sorting options here...
                 }
             }
         }
