@@ -117,8 +117,11 @@ class MainActivity : ComponentActivity() {
             // Use reactive state for preferences that can change
             val amoledMode by observePreferenceAsState(prefs, "enable_amoled", false)
             val backgroundImageUri by observePreferenceAsState(prefs, "background_image_uri", null)
-            val backgroundFitMode by observePreferenceAsState(prefs, "background_fit_mode", "edge_to_edge")
+            val backgroundFitModeState by observePreferenceAsState(prefs, "background_fit_mode", "edge_to_edge")
             val backgroundTransparency by observePreferenceAsState(prefs, "background_transparency", 1.0f)
+            
+            // Ensure non-null values for required parameters
+            val backgroundFitMode = backgroundFitModeState ?: "edge_to_edge"
             
             // Debug logging
             android.util.Log.d("MainActivity", "Background URI from prefs: $backgroundImageUri")

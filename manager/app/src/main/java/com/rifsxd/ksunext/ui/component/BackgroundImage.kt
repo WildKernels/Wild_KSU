@@ -88,11 +88,11 @@ fun BackgroundImageWrapper(
                         if (backgroundFitMode == "custom_crop" || backgroundFitMode == "position_adjust") {
                             val settings = ImageCropUtils.loadImageCropSettings(prefs)
                             modifier.graphicsLayer(
-                                scaleX = settings.scaleX,
-                                scaleY = settings.scaleY,
-                                translationX = settings.translationX,
-                                translationY = settings.translationY,
-                                rotationZ = settings.rotationZ
+                                scaleX = settings.scale,
+                                scaleY = settings.scale,
+                                translationX = settings.offsetX,
+                                translationY = settings.offsetY,
+                                rotationZ = settings.rotation
                             )
                         } else {
                             modifier
