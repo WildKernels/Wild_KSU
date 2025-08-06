@@ -245,4 +245,5 @@
     <string name="background_image_edit_summary">Adjust the position and scale of the background image</string>
     <string name="image_editor_hint">Pinch to zoom, drag to move the image. Use the fullscreen button to reset.</string>
     <string name="reset_to_fullscreen">Reset to fullscreen</string>
+    <string name="crop_background_image">Crop background image</string>
 </resources>
