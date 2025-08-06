@@ -23,7 +23,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.*
-import androidx.compose.material.icons.automirrored.outlined.*
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -356,7 +355,7 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
             
             var backgroundFitMode by rememberSaveable {
                 mutableStateOf(
-                    prefs.getString("background_fit_mode", "position_adjust") ?: "position_adjust"
+                    prefs.getString("background_fit_mode", "edge_to_edge") ?: "edge_to_edge"
                 )
             }
 
@@ -410,7 +409,52 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                 )
             }
 
-
+            val backgroundFitModeDialog = rememberCustomDialog { dismiss ->
+                val fitModeOptions = listOf(
+                    "edge_to_edge" to stringResource(R.string.background_fit_edge_to_edge),
+                    "zoom_to_fit" to stringResource(R.string.background_fit_zoom_to_fit),
+                    "zoom_fit" to "Zoom Fit",
+                    "position_adjust" to "Position Adjust",
+                    "custom_crop" to stringResource(R.string.crop_background_image)
+                )
+                
+                val options = fitModeOptions.map { (mode, displayName) ->
+                    ListOption(
+                        titleText = displayName,
+                        selected = backgroundFitMode == mode
+                    )
+                }
+                
+                var selectedIndex by remember { 
+                    mutableIntStateOf(fitModeOptions.indexOfFirst { (mode, _) -> backgroundFitMode == mode })
+                }
+                
+                ListDialog(
+                    state = rememberUseCaseState(
+                        visible = true,
+                        onFinishedRequest = {
+                            if (selectedIndex >= 0 && selectedIndex < fitModeOptions.size) {
+                                val newMode = fitModeOptions[selectedIndex].first
+                                prefs.edit().putString("background_fit_mode", newMode).apply()
+                                backgroundFitMode = newMode
+                            }
+                            dismiss()
+                        },
+                        onCloseRequest = {
+                            dismiss()
+                        }
+                    ),
+                    header = Header.Default(
+                        title = stringResource(R.string.background_image_fit_mode),
+                    ),
+                    selection = ListSelection.Single(
+                        showRadioButtons = true,
+                        options = options
+                    ) { index, _ ->
+                        selectedIndex = index
+                    }
+                )
+            }
 
             // Background Image Selection
             ListItem(
@@ -442,7 +486,14 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
 
             // Background Fit Mode (only show if background image is selected)
             if (backgroundImageUri != null) {
-                val currentFitModeDisplay = "Position Adjust"
+                val currentFitModeDisplay = when (backgroundFitMode) {
+                    "edge_to_edge" -> stringResource(R.string.background_fit_edge_to_edge)
+                    "zoom_to_fit" -> stringResource(R.string.background_fit_zoom_to_fit)
+                    "zoom_fit" -> "Zoom Fit"
+                    "position_adjust" -> "Position Adjust"
+                    "custom_crop" -> stringResource(R.string.crop_background_image)
+                    else -> stringResource(R.string.background_fit_edge_to_edge)
+                }
                 
                 ListItem(
                     leadingContent = { Icon(Icons.Filled.AspectRatio, stringResource(R.string.background_image_fit_mode)) },
@@ -453,24 +504,27 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                     ) },
                     supportingContent = { Text(currentFitModeDisplay) },
                     trailingContent = {
-                        IconButton(onClick = {
-                            // Re-open crop dialog for current image
-                            backgroundImageUri?.let { uriString ->
-                                selectedImageUri = Uri.parse(uriString)
-                                showCropDialog = true
+                        if (backgroundFitMode == "custom_crop" || backgroundFitMode == "position_adjust") {
+                            IconButton(onClick = {
+                                // Re-open crop dialog for current image
+                                backgroundImageUri?.let { uriString ->
+                                    selectedImageUri = Uri.parse(uriString)
+                                    showCropDialog = true
+                                }
+                            }) {
+                                Icon(Icons.Filled.Crop, stringResource(R.string.crop_background_image))
                             }
-                        }) {
-                            Icon(Icons.Filled.Crop, stringResource(R.string.crop_background_image))
                         }
+                    },
+                    modifier = Modifier.clickable {
+                        backgroundFitModeDialog.show()
                     }
                 )
                 
                 // Background Transparency Slider
                 var backgroundTransparency by rememberSaveable {
                     mutableFloatStateOf(
-                        // Convert stored alpha (0.0-1.0) to transparency percentage (0-100)
-                        // where 0% = solid (alpha 1.0) and 100% = transparent (alpha 0.0)
-                        (1.0f - prefs.getFloat("background_transparency", 1.0f)) * 100f
+                        prefs.getFloat("background_transparency", 1.0f)
                     )
                 }
                 
@@ -498,15 +552,11 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                                     value = backgroundTransparency,
                                     onValueChange = { value ->
                                         backgroundTransparency = value
-                                        // Convert transparency percentage back to alpha value
-                                        // 0% transparency = 1.0 alpha, 100% transparency = 0.0 alpha
-                                        val alphaValue = 1.0f - (value / 100f)
-                                        prefs.edit().putFloat("background_transparency", alphaValue).apply()
+                                        prefs.edit().putFloat("background_transparency", value).apply()
                                     },
-                                    valueRange = 0.0f..100.0f,
+                                    valueRange = 0.0f..1.0f,
                                     modifier = Modifier.weight(1f),
                                     thumb = {
-                                        // Custom round thumb
                                         SliderDefaults.Thumb(
                                             interactionSource = remember { MutableInteractionSource() }
                                         )
@@ -520,7 +570,7 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                                 )
                             }
                             Text(
-                                text = "${backgroundTransparency.toInt()}%",
+                                text = "${(backgroundTransparency * 100).toInt()}%",
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.align(Alignment.CenterHorizontally)
@@ -541,15 +591,19 @@ private fun TopBar(
     scrollBehavior: TopAppBarScrollBehavior? = null
 ) {
     TopAppBar(
-        title = { Text(stringResource(R.string.customization)) },
-        navigationIcon = {
+        title = { Text(
+                text = stringResource(R.string.customization),
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Black,
+            ) }, navigationIcon = {
             IconButton(
                 onClick = onBack
-            ) { Icon(Icons.AutoMirrored.Outlined.ArrowBack, contentDescription = null) }
+            ) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null) }
         },
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.surface
+            containerColor = MaterialTheme.colorScheme.surfaceContainer
         ),
+        windowInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal),
         scrollBehavior = scrollBehavior
     )
 }

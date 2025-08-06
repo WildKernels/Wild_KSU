@@ -28,6 +28,7 @@ import com.rifsxd.ksunext.ui.util.ImageCropUtils
 fun BackgroundImageWrapper(
     backgroundImageUri: String?,
     backgroundFitMode: String,
+    backgroundTransparency: Float = 1.0f,
     content: @Composable () -> Unit
 ) {
     val context = LocalContext.current
@@ -38,26 +39,25 @@ fun BackgroundImageWrapper(
     
     Box(modifier = Modifier.fillMaxSize()) {
         // Display background image if available
-        if (!backgroundImageUri.isNullOrEmpty()) {
-            Log.d("BackgroundImage", "Loading image from URI: $backgroundImageUri")
-            
-            // Validate URI
-            val uri = try {
-                Uri.parse(backgroundImageUri)
-            } catch (e: Exception) {
-                Log.e("BackgroundImage", "Invalid URI: $backgroundImageUri", e)
-                null
-            }
-            
-            if (uri != null) {
-                Log.d("BackgroundImage", "Parsed URI scheme: ${uri.scheme}, authority: ${uri.authority}")
+        backgroundImageUri?.let { uriString ->
+            if (uriString.isNotEmpty()) {
+                Log.d("BackgroundImage", "Loading image from URI: $uriString")
                 
-                var imageLoaded by remember(backgroundImageUri) { mutableStateOf(false) }
-                var imageError by remember(backgroundImageUri) { mutableStateOf<String?>(null) }
+                // Validate URI
+                try {
+                    val uri = Uri.parse(uriString)
+                    Log.d("BackgroundImage", "Parsed URI scheme: ${uri.scheme}, authority: ${uri.authority}")
+                } catch (e: Exception) {
+                    Log.e("BackgroundImage", "Invalid URI: $uriString", e)
+                    return@let
+                }
+                
+                var imageLoaded by remember { mutableStateOf(false) }
+                var imageError by remember { mutableStateOf<String?>(null) }
                 
                 val painter = rememberAsyncImagePainter(
                     model = ImageRequest.Builder(context)
-                        .data(uri)
+                        .data(Uri.parse(uriString))
                         .crossfade(true)
                         .listener(
                             onStart = { 
@@ -81,18 +81,39 @@ fun BackgroundImageWrapper(
                 
                 Log.d("BackgroundImage", "Image loaded: $imageLoaded, Error: $imageError")
                 
-                // Apply transformations using enhanced ImageCropUtils for position_adjust mode
+                // Apply transformations using enhanced ImageCropUtils
                 val imageModifier = Modifier
                     .fillMaxSize()
-                    .let { ImageCropUtils.getSimpleCropTransformation(prefs)(it) }
+                    .let { modifier ->
+                        val transformation = ImageCropUtils.getImageTransformation(prefs, backgroundFitMode)
+                        modifier.transformation()
+                    }
                 
                 Log.d("BackgroundImage", "Applying transformation for fit mode: $backgroundFitMode")
+                
+                val contentScale = when (backgroundFitMode) {
+                    "zoom_to_fit" -> ContentScale.Crop
+                    "edge_to_edge" -> ContentScale.FillBounds
+                    "custom_crop" -> ContentScale.Fit
+                    else -> ContentScale.FillBounds
+                }
                 
                 Image(
                     painter = painter,
                     contentDescription = null,
                     modifier = imageModifier,
-                    contentScale = ContentScale.FillBounds
+                    contentScale = contentScale
+                )
+                
+                // Add overlay with transparency control for content readability
+                // Transparency slider controls how dark the overlay is (0 = no overlay, 1 = maximum overlay)
+                val overlayAlpha = (1.0f - backgroundTransparency) * 0.7f // Max overlay alpha of 0.7
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(
+                            Color.Black.copy(alpha = overlayAlpha)
+                        )
                 )
             }
         }

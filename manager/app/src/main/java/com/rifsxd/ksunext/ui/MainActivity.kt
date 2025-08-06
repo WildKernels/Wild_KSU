@@ -1,7 +1,6 @@
 package com.rifsxd.ksunext.ui
 
 import android.content.Intent
-import android.content.SharedPreferences
 import android.net.Uri
 import android.content.Context
 import android.os.Build
@@ -37,9 +36,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -118,31 +115,10 @@ class MainActivity : ComponentActivity() {
             val prefs = getSharedPreferences("settings", Context.MODE_PRIVATE)
             val amoledMode = prefs.getBoolean("enable_amoled", false)
             
-            // Read background image preferences with reactive state
-            var backgroundImageUri by remember { mutableStateOf(prefs.getString("background_image_uri", null)) }
-            var backgroundFitMode by remember { mutableStateOf(prefs.getString("background_fit_mode", "position_adjust") ?: "position_adjust") }
-            var backgroundTransparency by remember { mutableStateOf(prefs.getFloat("background_transparency", 1.0f)) }
-            
-            // Listen for preference changes
-            LaunchedEffect(Unit) {
-                val listener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
-                    when (key) {
-                        "background_image_uri" -> {
-                            backgroundImageUri = prefs.getString("background_image_uri", null)
-                            android.util.Log.d("MainActivity", "Background URI changed to: $backgroundImageUri")
-                        }
-                        "background_fit_mode" -> {
-                            backgroundFitMode = prefs.getString("background_fit_mode", "position_adjust") ?: "position_adjust"
-                            android.util.Log.d("MainActivity", "Background fit mode changed to: $backgroundFitMode")
-                        }
-                        "background_transparency" -> {
-                            backgroundTransparency = prefs.getFloat("background_transparency", 1.0f)
-                            android.util.Log.d("MainActivity", "Background transparency changed to: $backgroundTransparency")
-                        }
-                    }
-                }
-                prefs.registerOnSharedPreferenceChangeListener(listener)
-            }
+            // Read background image preferences
+            val backgroundImageUri = prefs.getString("background_image_uri", null)
+            val backgroundFitMode = prefs.getString("background_fit_mode", "edge_to_edge") ?: "edge_to_edge"
+            val backgroundTransparency = prefs.getFloat("background_transparency", 1.0f)
             
             // Debug logging
             android.util.Log.d("MainActivity", "Background URI from prefs: $backgroundImageUri")
@@ -156,12 +132,12 @@ class MainActivity : ComponentActivity() {
 
             KernelSUTheme (
                 amoledMode = amoledMode,
-                isCustomBackgroundEnabled = !backgroundImageUri.isNullOrEmpty(),
-                backgroundTransparency = backgroundTransparency
+                isCustomBackgroundEnabled = !backgroundImageUri.isNullOrEmpty()
             ) {
                 BackgroundImageWrapper(
                     backgroundImageUri = backgroundImageUri,
-                    backgroundFitMode = backgroundFitMode
+                    backgroundFitMode = backgroundFitMode,
+                    backgroundTransparency = backgroundTransparency
                 ) {
                 val navController = rememberNavController()
                 val snackBarHostState = remember { SnackbarHostState() }
