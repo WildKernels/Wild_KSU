@@ -89,7 +89,7 @@ fun BackgroundImageWrapper(
                     .let { modifier ->
                         if (backgroundFitMode == "custom_crop") {
                             val transformation = ImageCropUtils.getImageTransformation(prefs, backgroundFitMode)
-                            modifier.transformation()
+                            transformation(modifier)
                         } else {
                             modifier
                         }
@@ -112,7 +112,7 @@ fun BackgroundImageWrapper(
                 
                 // Add overlay with transparency control for content readability
                 // Background darkness slider controls how dark the overlay is (0 = no overlay, 1 = maximum overlay)
-                val overlayAlpha = backgroundTransparency * 0.8f // Max overlay alpha of 0.8
+                val overlayAlpha = backgroundTransparency * 0.7f // Max overlay alpha of 0.7
                 Log.d("BackgroundImage", "Background transparency: $backgroundTransparency, Overlay alpha: $overlayAlpha")
                 
                 if (overlayAlpha > 0.0f) {
