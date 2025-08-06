@@ -535,6 +535,8 @@ private fun TopBar(
     onBack: () -> Unit = {},
     scrollBehavior: TopAppBarScrollBehavior? = null
 ) {
+    val containerColor = remember { MaterialTheme.colorScheme.surfaceContainer }
+    
     TopAppBar(
         title = { Text(
                 text = stringResource(R.string.customization),
@@ -548,7 +550,7 @@ private fun TopBar(
         windowInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal),
         scrollBehavior = scrollBehavior,
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainer
+            containerColor = containerColor
         )
     )
 }
