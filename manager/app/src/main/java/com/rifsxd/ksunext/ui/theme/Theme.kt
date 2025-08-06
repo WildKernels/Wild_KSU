@@ -15,6 +15,10 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.material3.CardDefaults
+import androidx.compose.ui.unit.dp
+import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.CompositionLocalProvider
 
 private val DarkColorScheme = darkColorScheme(
     primary = PRIMARY,
@@ -27,6 +31,9 @@ private val LightColorScheme = lightColorScheme(
     secondary = PRIMARY_LIGHT,
     tertiary = SECONDARY_LIGHT
 )
+
+// CompositionLocal for UI transparency
+val LocalUITransparency = compositionLocalOf { 0.0f }
 
 fun Color.blend(other: Color, ratio: Float): Color {
     val inverse = 1f - ratio
@@ -160,8 +167,12 @@ fun KernelSUTheme(
     MaterialTheme(
         colorScheme = colorScheme,
         typography = Typography,
-        content = content
-    )
+    ) {
+        CompositionLocalProvider(
+            LocalUITransparency provides uiTransparency,
+            content = content
+        )
+    }
 }
 
 @Composable
@@ -191,4 +202,22 @@ private fun SystemBarStyle(
             }
         )
     }
+}
+
+/**
+ * Get dynamic card elevation based on transparency level
+ * When transparency is high (> 0.7), elevation becomes 0 to remove borders
+ */
+@Composable
+fun getTransparencyAwareCardElevation(): androidx.compose.material3.CardElevation {
+    val uiTransparency = LocalUITransparency.current
+    val elevation = if (uiTransparency > 0.7f) 0.dp else 6.dp
+    return CardDefaults.elevatedCardElevation(
+        defaultElevation = elevation,
+        pressedElevation = elevation,
+        focusedElevation = elevation,
+        hoveredElevation = elevation,
+        draggedElevation = elevation,
+        disabledElevation = 0.dp
+    )
 }

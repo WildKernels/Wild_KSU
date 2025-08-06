@@ -34,13 +34,15 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.text.font.FontWeight
 import com.rifsxd.ksunext.BuildConfig
 import com.rifsxd.ksunext.R
+import com.rifsxd.ksunext.ui.theme.getTransparencyAwareCardElevation
 
 @Preview
 @Composable
 fun AboutCard() {
     ElevatedCard(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(8.dp)
+        shape = RoundedCornerShape(8.dp),
+        elevation = getTransparencyAwareCardElevation()
     ) {
         Row(
             modifier = Modifier

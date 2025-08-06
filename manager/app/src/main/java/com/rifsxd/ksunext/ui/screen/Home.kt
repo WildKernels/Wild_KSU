@@ -56,6 +56,7 @@ import com.rifsxd.ksunext.R
 import com.rifsxd.ksunext.ui.component.rememberConfirmDialog
 import com.rifsxd.ksunext.ui.util.*
 import com.rifsxd.ksunext.ui.util.module.LatestVersionInfo
+import com.rifsxd.ksunext.ui.theme.getTransparencyAwareCardElevation
 import java.util.*
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -146,7 +147,8 @@ private fun SuperuserCard() {
     ElevatedCard(
         colors = CardDefaults.elevatedCardColors(
             containerColor = MaterialTheme.colorScheme.secondaryContainer
-        )
+        ),
+        elevation = getTransparencyAwareCardElevation()
     ) {
         Box(
             modifier = Modifier
@@ -182,7 +184,8 @@ private fun ModuleCard() {
     ElevatedCard(
         colors = CardDefaults.elevatedCardColors(
             containerColor = MaterialTheme.colorScheme.secondaryContainer
-        )
+        ),
+        elevation = getTransparencyAwareCardElevation()
     ) {
         Box(
             modifier = Modifier
@@ -390,7 +393,8 @@ private fun StatusCard(
         colors = CardDefaults.elevatedCardColors(containerColor = run {
             if (ksuVersion != null) MaterialTheme.colorScheme.primaryContainer
             else MaterialTheme.colorScheme.errorContainer
-        })
+        }),
+        elevation = getTransparencyAwareCardElevation()
     ) {
         Row(
             modifier = Modifier
@@ -538,7 +542,8 @@ fun WarningCard(
     ElevatedCard(
         colors = CardDefaults.elevatedCardColors(
             containerColor = color
-        )
+        ),
+        elevation = getTransparencyAwareCardElevation()
     ) {
         Row(
             modifier = Modifier
@@ -575,7 +580,8 @@ private fun InfoCard(autoExpand: Boolean = false) {
     ElevatedCard(
         colors = CardDefaults.elevatedCardColors(
             containerColor = MaterialTheme.colorScheme.surfaceContainer
-        )
+        ),
+        elevation = getTransparencyAwareCardElevation()
     ) {
         Column(
             modifier = Modifier
@@ -746,7 +752,8 @@ fun NextCard() {
     ElevatedCard(
         colors = CardDefaults.elevatedCardColors(
             containerColor = MaterialTheme.colorScheme.surfaceContainer
-        )
+        ),
+        elevation = getTransparencyAwareCardElevation()
     ) {
         Row(
             modifier = Modifier
@@ -779,7 +786,8 @@ fun EXperimentalCard() {
     ElevatedCard(
         colors = CardDefaults.elevatedCardColors(
             containerColor = MaterialTheme.colorScheme.surfaceContainer
-        )
+        ),
+        elevation = getTransparencyAwareCardElevation()
     ) {
         Row(
             modifier = Modifier
@@ -829,7 +837,8 @@ fun IssueReportCard() {
     ElevatedCard(
         colors = CardDefaults.elevatedCardColors(
             containerColor = MaterialTheme.colorScheme.surfaceContainer
-        )
+        ),
+        elevation = getTransparencyAwareCardElevation()
     ) {
         Row(
             modifier = Modifier
