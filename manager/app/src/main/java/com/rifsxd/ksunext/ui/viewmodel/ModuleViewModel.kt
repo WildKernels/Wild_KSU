@@ -66,7 +66,7 @@ class ModuleViewModel : ViewModel() {
 
     var search by mutableStateOf("")
 
-    var sortAToZ by mutableStateOf(false)
+    var sortAToZ by mutableStateOf(true)
     var sortZToA by mutableStateOf(false)
     var sortSizeLowToHigh by mutableStateOf(false)
     var sortSizeHighToLow by mutableStateOf(false)

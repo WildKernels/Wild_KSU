@@ -417,7 +417,7 @@ private fun ModuleTopBar(moduleViewModel: ModuleViewModel) {
                                 .putBoolean("module_sort_enabled_first", false)
                                 .putBoolean("module_sort_action_first", false)
                                 .putBoolean("module_sort_webui_first", false)
-                                .apply()
+                                .commit()
                             scope.launch { moduleViewModel.fetchModuleList() }
                             showDropdown = false
                         }
@@ -443,7 +443,7 @@ private fun ModuleTopBar(moduleViewModel: ModuleViewModel) {
                                 .putBoolean("module_sort_enabled_first", false)
                                 .putBoolean("module_sort_action_first", false)
                                 .putBoolean("module_sort_webui_first", false)
-                                .apply()
+                                .commit()
                             scope.launch { moduleViewModel.fetchModuleList() }
                             showDropdown = false
                         }
@@ -469,7 +469,7 @@ private fun ModuleTopBar(moduleViewModel: ModuleViewModel) {
                                 .putBoolean("module_sort_enabled_first", moduleViewModel.sortEnabledFirst)
                                 .putBoolean("module_sort_action_first", false)
                                 .putBoolean("module_sort_webui_first", false)
-                                .apply()
+                                .commit()
                             scope.launch { moduleViewModel.fetchModuleList() }
                             showDropdown = false
                         }
@@ -495,7 +495,7 @@ private fun ModuleTopBar(moduleViewModel: ModuleViewModel) {
                                 .putBoolean("module_sort_enabled_first", false)
                                 .putBoolean("module_sort_action_first", moduleViewModel.sortActionFirst)
                                 .putBoolean("module_sort_webui_first", false)
-                                .apply()
+                                .commit()
                             scope.launch { moduleViewModel.fetchModuleList() }
                             showDropdown = false
                         }
@@ -521,7 +521,7 @@ private fun ModuleTopBar(moduleViewModel: ModuleViewModel) {
                                 .putBoolean("module_sort_enabled_first", false)
                                 .putBoolean("module_sort_action_first", false)
                                 .putBoolean("module_sort_webui_first", moduleViewModel.sortWebUiFirst)
-                                .apply()
+                                .commit()
                             scope.launch { moduleViewModel.fetchModuleList() }
                             showDropdown = false
                         }
