@@ -73,8 +73,14 @@ class ModuleViewModel : ViewModel() {
     var sortEnabledFirst by mutableStateOf(false)
     var sortActionFirst by mutableStateOf(false)
     var sortWebUiFirst by mutableStateOf(false)
+    
+    // Trigger to force recomposition when sorting changes
+    private var sortingTrigger by mutableStateOf(0)
 
     val moduleList by derivedStateOf {
+        // Include sortingTrigger to force recomposition when sorting changes
+        sortingTrigger
+        
         val comparator = when {
             sortWebUiFirst -> compareByDescending<ModuleInfo> { it.hasWebUi }
             sortEnabledFirst -> compareByDescending<ModuleInfo> { it.enabled }
@@ -122,6 +128,10 @@ class ModuleViewModel : ViewModel() {
         sortEnabledFirst = prefs.getBoolean("module_sort_enabled_first", false)
         sortActionFirst = prefs.getBoolean("module_sort_action_first", false)
         sortWebUiFirst = prefs.getBoolean("module_sort_webui_first", false)
+    }
+    
+    fun triggerSortingRefresh() {
+        sortingTrigger++
     }
 
     fun fetchModuleList() {
