@@ -56,6 +56,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import android.content.SharedPreferences
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -384,7 +385,11 @@ private fun ModuleTopBar(moduleViewModel: ModuleViewModel) {
                 )
                 DropdownMenu(
                     expanded = showDropdown,
-                    onDismissRequest = { showDropdown = false }
+                    onDismissRequest = { showDropdown = false },
+                    modifier = Modifier.clip(MaterialTheme.shapes.medium),
+                    shape = MaterialTheme.shapes.medium,
+                    tonalElevation = 0.dp,
+                    shadowElevation = 0.dp
                 ) {
                     DropdownMenuItem(
                         text = { Text(stringResource(R.string.module_sort_a_to_z)) },
@@ -445,7 +450,11 @@ private fun SuperUserTopBar(superUserViewModel: SuperUserViewModel, navigator: D
                 )
                 DropdownMenu(
                     expanded = showDropdown, 
-                    onDismissRequest = { showDropdown = false }
+                    onDismissRequest = { showDropdown = false },
+                    modifier = Modifier.clip(MaterialTheme.shapes.medium),
+                    shape = MaterialTheme.shapes.medium,
+                    tonalElevation = 0.dp,
+                    shadowElevation = 0.dp
                 ) {
                     DropdownMenuItem(
                         text = { Text(stringResource(R.string.refresh)) }, 
