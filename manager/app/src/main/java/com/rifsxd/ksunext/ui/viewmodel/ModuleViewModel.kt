@@ -1,5 +1,7 @@
 package com.rifsxd.ksunext.ui.viewmodel
 
+import android.content.Context
+import android.content.SharedPreferences
 import android.net.Uri
 import android.os.SystemClock
 import android.util.Log
@@ -109,6 +111,17 @@ class ModuleViewModel : ViewModel() {
 
     fun clearZipUris() {
         zipUris = emptyList()
+    }
+
+    fun initializeSortingPreferences(context: Context) {
+        val prefs = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
+        sortAToZ = prefs.getBoolean("module_sort_a_to_z", true)
+        sortZToA = prefs.getBoolean("module_sort_z_to_a", false)
+        sortSizeLowToHigh = prefs.getBoolean("module_sort_size_low_to_high", false)
+        sortSizeHighToLow = prefs.getBoolean("module_sort_size_high_to_low", false)
+        sortEnabledFirst = prefs.getBoolean("module_sort_enabled_first", false)
+        sortActionFirst = prefs.getBoolean("module_sort_action_first", false)
+        sortWebUiFirst = prefs.getBoolean("module_sort_webui_first", false)
     }
 
     fun fetchModuleList() {

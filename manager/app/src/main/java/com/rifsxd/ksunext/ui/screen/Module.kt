@@ -145,14 +145,7 @@ fun ModuleScreen(navigator: DestinationsNavigator) {
     val prefs = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
 
     LaunchedEffect(Unit) {
-        viewModel.sortAToZ = prefs.getBoolean("module_sort_a_to_z", true)
-        viewModel.sortZToA = prefs.getBoolean("module_sort_z_to_a", false)
-        viewModel.sortSizeLowToHigh = prefs.getBoolean("module_sort_size_low_to_high", false)
-        viewModel.sortSizeHighToLow = prefs.getBoolean("module_sort_size_high_to_low", false)
-        viewModel.sortEnabledFirst = prefs.getBoolean("module_sort_enabled_first", false)
-        viewModel.sortActionFirst = prefs.getBoolean("module_sort_action_first", false)
-        viewModel.sortWebUiFirst = prefs.getBoolean("module_sort_webui_first", false)
-        
+        viewModel.initializeSortingPreferences(context)
         if (viewModel.moduleList.isEmpty() || viewModel.isNeedRefresh) {
             viewModel.fetchModuleList()
         }
