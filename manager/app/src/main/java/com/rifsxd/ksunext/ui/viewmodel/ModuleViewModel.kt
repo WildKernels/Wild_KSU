@@ -124,6 +124,10 @@ class ModuleViewModel : ViewModel() {
         sortWebUiFirst = prefs.getBoolean("module_sort_webui_first", false)
     }
 
+    fun reloadSortingPreferences(context: Context) {
+        initializeSortingPreferences(context)
+    }
+
     fun fetchModuleList() {
         
         viewModelScope.launch {
