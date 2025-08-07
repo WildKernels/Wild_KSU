@@ -89,44 +89,42 @@ fun HomeScreen(navigator: DestinationsNavigator) {
             }
         }
 
-        if (ksuVersion != null && rootAvailable()) {
-            item {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(IntrinsicSize.Min),
-                    horizontalArrangement = Arrangement.spacedBy(14.dp)
-                ) {
-                    Box(modifier = Modifier.weight(1f)) { SuperuserCard() }
-                    Box(modifier = Modifier.weight(1f)) { ModuleCard() }
-                }
-            }
-        }
-
-        if (isManager && Natives.requireNewKernel()) {
-            item {
-                WarningCard(
-                    stringResource(id = R.string.require_kernel_version).format(
-                        ksuVersion, Natives.MINIMAL_SUPPORTED_KERNEL
-                    )
-                )
-            }
-        }
-
-        if (ksuVersion != null && !rootAvailable()) {
-            item {
-                WarningCard(
-                    stringResource(id = R.string.grant_root_failed)
-                )
-            }
-        }
-
         item {
-            val checkUpdate =
-                LocalContext.current.getSharedPreferences("settings", Context.MODE_PRIVATE)
-                    .getBoolean("check_update", false)
-            if (checkUpdate) {
-                UpdateCard()
+            Column(
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                if (ksuVersion != null && rootAvailable()) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(IntrinsicSize.Min),
+                        horizontalArrangement = Arrangement.spacedBy(14.dp)
+                    ) {
+                        Box(modifier = Modifier.weight(1f)) { SuperuserCard() }
+                        Box(modifier = Modifier.weight(1f)) { ModuleCard() }
+                    }
+                }
+
+                if (isManager && Natives.requireNewKernel()) {
+                    WarningCard(
+                        stringResource(id = R.string.require_kernel_version).format(
+                            ksuVersion, Natives.MINIMAL_SUPPORTED_KERNEL
+                        )
+                    )
+                }
+
+                if (ksuVersion != null && !rootAvailable()) {
+                    WarningCard(
+                        stringResource(id = R.string.grant_root_failed)
+                    )
+                }
+
+                val checkUpdate =
+                    LocalContext.current.getSharedPreferences("settings", Context.MODE_PRIVATE)
+                        .getBoolean("check_update", false)
+                if (checkUpdate) {
+                    UpdateCard()
+                }
             }
         }
 
