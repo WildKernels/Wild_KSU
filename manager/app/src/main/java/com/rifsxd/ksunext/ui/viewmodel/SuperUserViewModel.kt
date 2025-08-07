@@ -79,7 +79,7 @@ class SuperUserViewModel : ViewModel() {
 
     fun updateShowSystemApps(newValue: Boolean) {
         showSystemApps = newValue
-        prefs.edit { putBoolean("show_system_apps", newValue) }
+        prefs.edit().putBoolean("show_system_apps", newValue).commit()
     }
 
     private val sortedList by derivedStateOf {
