@@ -7,24 +7,24 @@ import androidx.compose.ui.unit.dp
 import com.rifsxd.ksunext.ui.theme.LocalUIBlur
 
 /**
- * UI blur effect that works on the same layer as UI transparency.
- * This applies a very subtle blur to card backgrounds and UI elements,
- * creating a light frosted glass effect that complements transparency.
+ * UI blur effect - currently disabled to prevent text blurring.
+ * 
+ * The UI blur was causing text and content to become blurry and hard to read.
+ * Instead, the frosted glass effect is achieved through the transparency system
+ * in Theme.kt which makes backgrounds semi-transparent while keeping text sharp.
+ * 
+ * If you want blur effects, use the background blur setting which blurs the
+ * background image behind the entire app.
  */
 @Composable
 fun Modifier.applyUIBlur(): Modifier {
-    val uiBlur = LocalUIBlur.current
-    return if (uiBlur > 0f) {
-        // Apply very subtle blur - much lower intensity to avoid over-blurring
-        // This creates a light frosted glass effect on card backgrounds only
-        this.blur(radius = (uiBlur * 0.05f).dp)
-    } else {
-        this
-    }
+    // Disabled to prevent text blurring - transparency provides the frosted glass effect
+    return this
 }
 
 /**
- * Applies custom blur effect with specified radius
+ * Applies custom blur effect with specified radius.
+ * Use this for specific blur effects where text readability is not a concern.
  */
 fun Modifier.applyBlur(blurRadius: Float): Modifier {
     return if (blurRadius > 0f) {
