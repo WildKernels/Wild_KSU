@@ -394,17 +394,6 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                 )
             }
 
-            // Background Section Header
-            Text(
-                text = "Background",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp)
-            )
-
             // Background Image Selection
             ListItem(
                 leadingContent = { Icon(Icons.Filled.Image, stringResource(R.string.settings_background_image)) },
@@ -449,14 +438,15 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                     }
             )
 
-            // Background Transparency Slider (Darkness) - Always available
-            var backgroundTransparency by rememberSaveable {
-                mutableFloatStateOf(
-                    prefs.getFloat("background_transparency", 1.0f)
-                )
-            }
-            
-            ListItem(
+            // Background Transparency Slider (Darkness) - Only show when background image is enabled
+            if (backgroundImageUri != null) {
+                var backgroundTransparency by rememberSaveable {
+                    mutableFloatStateOf(
+                        prefs.getFloat("background_transparency", 1.0f)
+                    )
+                }
+                
+                ListItem(
                 leadingContent = { Icon(Icons.Filled.Opacity, stringResource(R.string.background_transparency)) },
                 headlineContent = { Text(
                     text = stringResource(R.string.background_transparency),
@@ -501,16 +491,16 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                         )
                     }
                 }
-            )
-
-            // Background Blur Slider
-            var backgroundBlur by rememberSaveable {
-                mutableFloatStateOf(
-                    prefs.getFloat("background_blur", 0.0f)
                 )
-            }
-            
-            ListItem(
+
+                // Background Blur Slider
+                var backgroundBlur by rememberSaveable {
+                    mutableFloatStateOf(
+                        prefs.getFloat("background_blur", 0.0f)
+                    )
+                }
+                
+                ListItem(
                 leadingContent = { Icon(Icons.Filled.BlurCircular, "Background Blur") },
                 headlineContent = { Text(
                     text = "Background Blur",
@@ -555,18 +545,8 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                         )
                     }
                 }
-            )
-
-            // UI Section Header
-            Text(
-                text = "UI",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp)
-            )
+                )
+            }
 
             // UI Transparency Slider - Always available
             var uiTransparency by rememberSaveable {
