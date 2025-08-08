@@ -16,20 +16,15 @@ import androidx.compose.ui.zIndex
 import com.rifsxd.ksunext.ui.theme.LocalUIBlur
 
 /**
- * UI blur effect that applies a subtle blur to maintain text readability.
- * Uses 0-100% scale where 100% = 25px blur (same as background blur maximum).
- * Applied with reduced intensity (10%) to keep text sharp while providing frosted glass effect.
+ * UI blur effect - DISABLED to prevent text blurring.
+ * Use BackdropBlurCard instead for components with text content.
+ * This ensures text remains sharp while providing backdrop blur effect.
  */
 @Composable
 fun Modifier.applyUIBlur(): Modifier {
-    val uiBlur = LocalUIBlur.current
-    return if (uiBlur > 0f) {
-        // Apply very subtle blur (10% intensity) to maintain text readability
-        // This creates a frosted glass effect without significantly blurring text
-        this.blur(radius = (uiBlur * 25f * 0.1f).dp)
-    } else {
-        this
-    }
+    // Disabled to prevent text blurring
+    // Use BackdropBlurCard for components that need blur with readable text
+    return this
 }
 
 /**
@@ -47,31 +42,63 @@ fun BackdropBlurBox(
     val uiBlur = LocalUIBlur.current
     
     Box(modifier = modifier) {
-        // Background layer with blur effect
+        // Background layer with blur
+        if (uiBlur > 0f) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clip(shape)
+                    .background(backgroundColor.copy(alpha = 0.8f))
+                    .blur(radius = (uiBlur * 25f).dp)
+                    .zIndex(-1f)
+            )
+        } else {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clip(shape)
+                    .background(backgroundColor)
+                    .zIndex(-1f)
+            )
+        }
+        
+        // Content layer (sharp, no blur)
+        content()
+    }
+}
+
+/**
+ * A Card composable that applies backdrop blur to its background while keeping content sharp.
+ * This should be used instead of applying applyUIBlur() to cards with text content.
+ */
+@Composable
+fun BackdropBlurCard(
+    modifier: Modifier = Modifier,
+    backgroundColor: Color = MaterialTheme.colorScheme.surfaceContainer,
+    shape: Shape = RoundedCornerShape(12.dp),
+    content: @Composable () -> Unit
+) {
+    val uiBlur = LocalUIBlur.current
+    
+    Box(modifier = modifier) {
+        // Blurred background layer
+        if (uiBlur > 0f) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clip(shape)
+                    .background(backgroundColor.copy(alpha = 0.9f))
+                    .blur(radius = (uiBlur * 25f).dp)
+            )
+        }
+        
+        // Sharp content layer with subtle background
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .clip(shape)
-                .background(
-                    if (uiBlur > 0f) {
-                        backgroundColor.copy(alpha = 0.7f)
-                    } else {
-                        backgroundColor
-                    }
-                )
-                .let { mod ->
-                    if (uiBlur > 0f) {
-                        // Apply blur to background layer only
-                        mod.blur(radius = (uiBlur * 25f).dp)
-                    } else {
-                        mod
-                    }
-                }
-                .zIndex(-1f)
-        )
-        
-        // Sharp content layer on top
-        Box(modifier = Modifier.zIndex(1f)) {
+                .background(backgroundColor.copy(alpha = if (uiBlur > 0f) 0.1f else 1f))
+        ) {
             content()
         }
     }
