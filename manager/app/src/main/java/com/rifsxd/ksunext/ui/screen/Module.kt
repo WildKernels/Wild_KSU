@@ -127,7 +127,7 @@ import com.rifsxd.ksunext.ui.util.toggleModule
 import com.rifsxd.ksunext.ui.util.uninstallModule
 import com.rifsxd.ksunext.ui.util.restoreModule
 import com.rifsxd.ksunext.ui.util.zygiskRequired
-import com.rifsxd.ksunext.ui.util.applyUIBlur
+
 import com.rifsxd.ksunext.ui.viewmodel.ModuleViewModel
 import com.rifsxd.ksunext.ui.webui.WebUIActivity
 import com.dergoogler.mmrl.ui.component.LabelItem

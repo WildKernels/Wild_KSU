@@ -32,8 +32,7 @@ private val LightColorScheme = lightColorScheme(
     tertiary = SECONDARY_LIGHT
 )
 
-// CompositionLocal for UI blur
-val LocalUIBlur = compositionLocalOf { 0.0f }
+// UI blur functionality removed
 
 
 
@@ -56,7 +55,6 @@ fun KernelSUTheme(
     isCustomBackgroundEnabled: Boolean = false,
     backgroundTransparency: Float = 1.0f,
     uiTransparency: Float = 1.0f,
-    uiBlur: Float = 0.0f,
     content: @Composable () -> Unit
 ) {
     // Always apply UI transparency, regardless of background settings
@@ -155,13 +153,11 @@ fun KernelSUTheme(
         darkMode = darkTheme
     )
 
-    CompositionLocalProvider(LocalUIBlur provides uiBlur) {
-        MaterialTheme(
-            colorScheme = colorScheme,
-            typography = Typography,
-            content = content
-        )
-    }
+    MaterialTheme(
+        colorScheme = colorScheme,
+        typography = Typography,
+        content = content
+    )
 }
 
 @Composable

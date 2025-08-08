@@ -101,7 +101,7 @@ import com.rifsxd.ksunext.ui.util.LocaleHelper
 import com.rifsxd.ksunext.ui.util.rootAvailable
 import com.rifsxd.ksunext.ui.util.install
 import com.rifsxd.ksunext.ui.util.isSuCompatDisabled
-import com.rifsxd.ksunext.ui.util.applyUIBlur
+
 import com.rifsxd.ksunext.ui.screen.FlashIt
 import com.rifsxd.ksunext.ui.viewmodel.ModuleViewModel
 import com.rifsxd.ksunext.ui.viewmodel.SuperUserViewModel
@@ -166,7 +166,6 @@ class MainActivity : ComponentActivity() {
             var backgroundTransparency by remember { mutableStateOf(prefs.getFloat("background_transparency", 1.0f)) } // Default 100% darkness
             var uiTransparency by remember { mutableStateOf(prefs.getFloat("ui_transparency", 0.0f)) } // Default 0% UI transparency
             var backgroundBlur by remember { mutableStateOf(prefs.getFloat("background_blur", 0.0f)) } // Default 0px blur
-            var uiBlur by remember { mutableStateOf(prefs.getFloat("ui_blur", 0.0f)) } // Default 0px blur
             
             // Listen for preference changes
             DisposableEffect(Unit) {
@@ -195,9 +194,6 @@ class MainActivity : ComponentActivity() {
                         }
                         "background_blur" -> {
                             backgroundBlur = prefs.getFloat("background_blur", 0.0f)
-                        }
-                        "ui_blur" -> {
-                            uiBlur = prefs.getFloat("ui_blur", 0.0f)
                         }
                     }
                 }
@@ -230,8 +226,7 @@ class MainActivity : ComponentActivity() {
                 dynamicColor = isDynamicColor,
                 amoledMode = isAmoledMode,
                 isCustomBackgroundEnabled = !backgroundImageUri.isNullOrEmpty(),
-                uiTransparency = uiTransparency,
-                uiBlur = uiBlur
+                uiTransparency = uiTransparency
             ) {
                 BackgroundImageWrapper(
                     backgroundImageUri = backgroundImageUri,

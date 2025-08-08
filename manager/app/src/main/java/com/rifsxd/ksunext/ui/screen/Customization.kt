@@ -81,7 +81,7 @@ import com.rifsxd.ksunext.ui.util.ImageCropUtils
 import com.rifsxd.ksunext.ui.util.LocaleHelper
 import com.rifsxd.ksunext.ui.util.LocalSnackbarHost
 import com.rifsxd.ksunext.ui.util.*
-import com.rifsxd.ksunext.ui.util.applyUIBlur
+
 import java.util.Locale
 
 /**
@@ -619,23 +619,21 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                 }
             )
 
-            // UI Blur Slider
+            // UI Blur Slider (Non-functional - kept for future implementation)
             var uiBlur by rememberSaveable {
-                mutableFloatStateOf(
-                    prefs.getFloat("ui_blur", 0.0f)
-                )
+                mutableFloatStateOf(0.0f) // Always 0, no longer reads from preferences
             }
             
             ListItem(
                 leadingContent = { Icon(Icons.Filled.BlurOn, "UI Blur") },
                 headlineContent = { Text(
-                    text = "UI Blur",
+                    text = "UI Blur (Coming Soon)",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold,
                 ) },
                 supportingContent = { 
                     Column {
-                        Text("Add blur effect to the UI layer (same intensity as background blur)")
+                        Text("UI blur functionality is currently disabled")
                         Spacer(modifier = Modifier.height(8.dp))
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
@@ -648,12 +646,10 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                             )
                             Slider(
                                 value = uiBlur,
-                                onValueChange = { value ->
-                                    uiBlur = value
-                                    prefs.edit().putFloat("ui_blur", value).commit()
-                                },
+                                onValueChange = { /* No functionality */ },
                                 valueRange = 0.0f..1.0f,
-                                modifier = Modifier.weight(1f)
+                                modifier = Modifier.weight(1f),
+                                enabled = false // Disable the slider
                             )
                             Text(
                                 text = "100%",
@@ -663,9 +659,9 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                             )
                         }
                         Text(
-                            text = "${(uiBlur * 100).toInt()}%",
+                            text = "0%",
                             style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.primary,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.align(Alignment.CenterHorizontally)
                         )
                     }

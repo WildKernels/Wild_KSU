@@ -95,7 +95,7 @@ import com.rifsxd.ksunext.ui.util.getBugreportFile
 import com.rifsxd.ksunext.ui.util.*
 import com.rifsxd.ksunext.ui.util.isGlobalNamespaceEnabled
 import com.rifsxd.ksunext.ui.util.setGlobalNamespaceEnabled
-import com.rifsxd.ksunext.ui.util.applyUIBlur
+
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
