@@ -403,7 +403,7 @@ private fun ModuleTopBar(moduleViewModel: ModuleViewModel) {
                     shape = MaterialTheme.shapes.medium,
                     tonalElevation = 0.dp,
                     shadowElevation = 0.dp,
-                    offset = DpOffset(0.dp, 8.dp)
+                    offset = DpOffset(0.dp, 12.dp)
                 ) {
                     DropdownMenuItem(
                         text = { Text(stringResource(R.string.module_sort_a_to_z)) },
@@ -550,7 +550,7 @@ private fun SuperUserTopBar(superUserViewModel: SuperUserViewModel, navigator: D
                     shape = MaterialTheme.shapes.medium,
                     tonalElevation = 0.dp,
                     shadowElevation = 0.dp,
-                    offset = DpOffset(0.dp, 8.dp)
+                    offset = DpOffset(0.dp, 12.dp)
                 ) {
                     DropdownMenuItem(
                         text = { Text(stringResource(R.string.refresh)) }, 
