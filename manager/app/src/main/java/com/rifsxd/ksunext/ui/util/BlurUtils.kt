@@ -73,12 +73,11 @@ fun BackdropBlurBox(
 }
 
 /**
- * A Card composable that applies blur to the background layer while keeping content sharp.
- * This mimics the transparency approach but for blur effects.
- * Use this instead of ElevatedCard with applyUIBlur() to prevent text blurring.
+ * A layered card that applies blur effect only to the background while keeping content completely sharp.
+ * This creates a frosted glass effect without affecting text readability.
  */
 @Composable
-fun BlurredCard(
+fun LayeredBlurCard(
     modifier: Modifier = Modifier,
     backgroundColor: Color = MaterialTheme.colorScheme.surfaceContainer,
     shape: Shape = RoundedCornerShape(12.dp),
@@ -88,25 +87,22 @@ fun BlurredCard(
     val uiBlur = LocalUIBlur.current
     
     Box(modifier = modifier) {
-        // Background blur layer - only visible when blur is enabled
+        // Blurred background layer - completely separate from content
         if (uiBlur > 0f) {
             Box(
                 modifier = Modifier
-                    .fillMaxSize()
+                    .matchParentSize()
                     .clip(shape)
-                    .background(backgroundColor.copy(alpha = 0.8f)) // Slightly transparent for better blur effect
-                    .blur(radius = (uiBlur * 25f).dp) // Full blur intensity like background blur
-                    .zIndex(0f)
+                    .background(backgroundColor)
+                    .blur(radius = (uiBlur * 25f).dp) // Full blur intensity
             )
         }
         
-        // Card content layer - always sharp
+        // Transparent content layer - NO blur applied here
         androidx.compose.material3.ElevatedCard(
-            modifier = Modifier
-                .fillMaxSize()
-                .zIndex(1f),
+            modifier = Modifier.matchParentSize(),
             colors = androidx.compose.material3.CardDefaults.elevatedCardColors(
-                containerColor = if (uiBlur > 0f) backgroundColor.copy(alpha = 0.3f) else backgroundColor
+                containerColor = if (uiBlur > 0f) Color.Transparent else backgroundColor
             ),
             shape = shape,
             elevation = elevation
