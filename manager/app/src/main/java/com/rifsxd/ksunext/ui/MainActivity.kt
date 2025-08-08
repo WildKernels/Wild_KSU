@@ -159,7 +159,7 @@ class MainActivity : ComponentActivity() {
             // Use remember and mutableStateOf for reactive preferences
             // Darkness slider: 1.0f = 100% (full black overlay), 0.0f = 0% (no overlay)
             // UI transparency: 0.0f = 0% (fully transparent), 1.0f = 100% (fully opaque)
-            var amoledMode by remember { mutableStateOf(prefs.getBoolean("enable_amoled", false)) }
+            var themeMode by remember { mutableStateOf(prefs.getString("theme_mode", "system_default") ?: "system_default") }
             var backgroundImageUri by remember { mutableStateOf(prefs.getString("background_image_uri", null)) }
             var backgroundTransparency by remember { mutableStateOf(prefs.getFloat("background_transparency", 1.0f)) } // Default 100% darkness
             var uiTransparency by remember { mutableStateOf(prefs.getFloat("ui_transparency", 0.0f)) } // Default 0% UI transparency
@@ -168,8 +168,17 @@ class MainActivity : ComponentActivity() {
             DisposableEffect(Unit) {
                 val listener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
                     when (key) {
+                        "theme_mode" -> {
+                            themeMode = prefs.getString("theme_mode", "system_default") ?: "system_default"
+                        }
                         "enable_amoled" -> {
-                            amoledMode = prefs.getBoolean("enable_amoled", false)
+                            // For backward compatibility, update theme_mode when enable_amoled changes
+                            val isAmoled = prefs.getBoolean("enable_amoled", false)
+                            if (isAmoled && themeMode != "amoled") {
+                                themeMode = "amoled"
+                            } else if (!isAmoled && themeMode == "amoled") {
+                                themeMode = "system_default"
+                            }
                         }
                         "background_image_uri" -> {
                             backgroundImageUri = prefs.getString("background_image_uri", null)
@@ -195,8 +204,21 @@ class MainActivity : ComponentActivity() {
                 moduleViewModel.checkUpdate(it).first.isNotEmpty()
             }
 
+            // Calculate theme parameters based on theme mode
+            val isDarkTheme = when (themeMode) {
+                "light" -> false
+                "dark", "amoled" -> true
+                "dynamic" -> isSystemInDarkTheme()
+                else -> isSystemInDarkTheme() // system_default
+            }
+            
+            val isAmoledMode = themeMode == "amoled"
+            val isDynamicColor = themeMode == "dynamic"
+            
             KernelSUTheme (
-                amoledMode = amoledMode,
+                darkTheme = isDarkTheme,
+                dynamicColor = isDynamicColor,
+                amoledMode = isAmoledMode,
                 isCustomBackgroundEnabled = !backgroundImageUri.isNullOrEmpty(),
                 uiTransparency = uiTransparency
             ) {

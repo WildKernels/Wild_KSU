@@ -403,12 +403,27 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                 ) },
                 supportingContent = { Text(stringResource(R.string.settings_background_image_summary)) },
                 trailingContent = {
-                    if (backgroundImageUri != null) {
-                        IconButton(onClick = {
-                            prefs.edit().remove("background_image_uri").commit()
-                            backgroundImageUri = null
-                        }) {
-                            Icon(Icons.Filled.Delete, stringResource(R.string.background_image_remove))
+                    Row {
+                        // Crop button (only show if background image is selected)
+                        if (backgroundImageUri != null) {
+                            IconButton(onClick = {
+                                // Open crop dialog for current image
+                                backgroundImageUri?.let { uriString ->
+                                    selectedImageUri = Uri.parse(uriString)
+                                    showCropDialog = true
+                                }
+                            }) {
+                                Icon(Icons.Filled.Crop, stringResource(R.string.crop_background_image))
+                            }
+                        }
+                        // Delete button (only show if background image is selected)
+                        if (backgroundImageUri != null) {
+                            IconButton(onClick = {
+                                prefs.edit().remove("background_image_uri").commit()
+                                backgroundImageUri = null
+                            }) {
+                                Icon(Icons.Filled.Delete, stringResource(R.string.background_image_remove))
+                            }
                         }
                     }
                 },
@@ -421,79 +436,58 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                 }
             )
 
-            // Background Image Crop (only show if background image is selected)
-            if (backgroundImageUri != null) {
-                ListItem(
-                    leadingContent = { Icon(Icons.Filled.Crop, stringResource(R.string.crop_background_image)) },
-                    headlineContent = { Text(
-                        text = stringResource(R.string.crop_background_image),
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.SemiBold,
-                    ) },
-                    supportingContent = { Text("Adjust position, scale, and rotation of background image") },
-                    modifier = Modifier.clickable {
-                        // Open crop dialog for current image
-                        backgroundImageUri?.let { uriString ->
-                            selectedImageUri = Uri.parse(uriString)
-                            showCropDialog = true
-                        }
-                    }
+            // Background Transparency Slider - Always available
+            var backgroundTransparency by rememberSaveable {
+                mutableFloatStateOf(
+                    prefs.getFloat("background_transparency", 1.0f)
                 )
-                
-                // Background Transparency Slider
-                var backgroundTransparency by rememberSaveable {
-                    mutableFloatStateOf(
-                        prefs.getFloat("background_transparency", 1.0f)
-                    )
-                }
-                
-                ListItem(
-                    leadingContent = { Icon(Icons.Filled.Opacity, stringResource(R.string.background_transparency)) },
-                    headlineContent = { Text(
-                        text = stringResource(R.string.background_transparency),
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.SemiBold,
-                    ) },
-                    supportingContent = { 
-                        Column {
-                            Text(stringResource(R.string.background_transparency_summary))
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.fillMaxWidth()
-                            ) {
-                                Text(
-                                    text = "0%",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    modifier = Modifier.width(32.dp)
-                                )
-                                Slider(
-                                    value = backgroundTransparency,
-                                    onValueChange = { value ->
-                                        backgroundTransparency = value
-                                        prefs.edit().putFloat("background_transparency", value).commit()
-                                    },
-                                    valueRange = 0.0f..1.0f,
-                                    modifier = Modifier.weight(1f)
-                                )
-                                Text(
-                                    text = "100%",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    modifier = Modifier.width(32.dp),
-                                    textAlign = TextAlign.End
-                                )
-                            }
+            }
+            
+            ListItem(
+                leadingContent = { Icon(Icons.Filled.Opacity, stringResource(R.string.background_transparency)) },
+                headlineContent = { Text(
+                    text = stringResource(R.string.background_transparency),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
+                ) },
+                supportingContent = { 
+                    Column {
+                        Text(stringResource(R.string.background_transparency_summary))
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
                             Text(
-                                text = "${(backgroundTransparency * 100).toInt()}%",
+                                text = "0%",
                                 style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.align(Alignment.CenterHorizontally)
+                                modifier = Modifier.width(32.dp)
+                            )
+                            Slider(
+                                value = backgroundTransparency,
+                                onValueChange = { value ->
+                                    backgroundTransparency = value
+                                    prefs.edit().putFloat("background_transparency", value).commit()
+                                },
+                                valueRange = 0.0f..1.0f,
+                                modifier = Modifier.weight(1f)
+                            )
+                            Text(
+                                text = "100%",
+                                style = MaterialTheme.typography.bodySmall,
+                                modifier = Modifier.width(32.dp),
+                                textAlign = TextAlign.End
                             )
                         }
+                        Text(
+                            text = "${(backgroundTransparency * 100).toInt()}%",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.align(Alignment.CenterHorizontally)
+                        )
                     }
-                )
-
-            }
+                }
+            )
 
             // UI Transparency Slider - Always available
             var uiTransparency by rememberSaveable {
