@@ -402,8 +402,9 @@ private fun ModuleTopBar(moduleViewModel: ModuleViewModel) {
                             Checkbox(checked = moduleViewModel.sortAToZ, onCheckedChange = null)
                         },
                         onClick = {
+                            val currentValue = prefs.getBoolean("module_sort_a_to_z", true)
                             prefs.edit()
-                                .putBoolean("module_sort_a_to_z", !moduleViewModel.sortAToZ)
+                                .putBoolean("module_sort_a_to_z", !currentValue)
                                 .putBoolean("module_sort_z_to_a", false)
                                 .putBoolean("module_sort_size_low_to_high", false)
                                 .putBoolean("module_sort_size_high_to_low", false)
@@ -422,9 +423,10 @@ private fun ModuleTopBar(moduleViewModel: ModuleViewModel) {
                             Checkbox(checked = moduleViewModel.sortZToA, onCheckedChange = null)
                         },
                         onClick = {
+                            val currentValue = prefs.getBoolean("module_sort_z_to_a", false)
                             prefs.edit()
                                 .putBoolean("module_sort_a_to_z", false)
-                                .putBoolean("module_sort_z_to_a", !moduleViewModel.sortZToA)
+                                .putBoolean("module_sort_z_to_a", !currentValue)
                                 .putBoolean("module_sort_size_low_to_high", false)
                                 .putBoolean("module_sort_size_high_to_low", false)
                                 .putBoolean("module_sort_enabled_first", false)
@@ -442,12 +444,13 @@ private fun ModuleTopBar(moduleViewModel: ModuleViewModel) {
                             Checkbox(checked = moduleViewModel.sortEnabledFirst, onCheckedChange = null)
                         },
                         onClick = {
+                            val currentValue = prefs.getBoolean("module_sort_enabled_first", false)
                             prefs.edit()
                                 .putBoolean("module_sort_a_to_z", false)
                                 .putBoolean("module_sort_z_to_a", false)
                                 .putBoolean("module_sort_size_low_to_high", false)
                                 .putBoolean("module_sort_size_high_to_low", false)
-                                .putBoolean("module_sort_enabled_first", !moduleViewModel.sortEnabledFirst)
+                                .putBoolean("module_sort_enabled_first", !currentValue)
                                 .putBoolean("module_sort_action_first", false)
                                 .putBoolean("module_sort_webui_first", false)
                                 .commit()
@@ -462,13 +465,14 @@ private fun ModuleTopBar(moduleViewModel: ModuleViewModel) {
                             Checkbox(checked = moduleViewModel.sortActionFirst, onCheckedChange = null)
                         },
                         onClick = {
+                            val currentValue = prefs.getBoolean("module_sort_action_first", false)
                             prefs.edit()
                                 .putBoolean("module_sort_a_to_z", false)
                                 .putBoolean("module_sort_z_to_a", false)
                                 .putBoolean("module_sort_size_low_to_high", false)
                                 .putBoolean("module_sort_size_high_to_low", false)
                                 .putBoolean("module_sort_enabled_first", false)
-                                .putBoolean("module_sort_action_first", !moduleViewModel.sortActionFirst)
+                                .putBoolean("module_sort_action_first", !currentValue)
                                 .putBoolean("module_sort_webui_first", false)
                                 .commit()
                             moduleViewModel.reloadSortingPreferences(context)
@@ -482,6 +486,7 @@ private fun ModuleTopBar(moduleViewModel: ModuleViewModel) {
                             Checkbox(checked = moduleViewModel.sortWebUiFirst, onCheckedChange = null)
                         },
                         onClick = {
+                            val currentValue = prefs.getBoolean("module_sort_webui_first", false)
                             prefs.edit()
                                 .putBoolean("module_sort_a_to_z", false)
                                 .putBoolean("module_sort_z_to_a", false)
@@ -489,7 +494,7 @@ private fun ModuleTopBar(moduleViewModel: ModuleViewModel) {
                                 .putBoolean("module_sort_size_high_to_low", false)
                                 .putBoolean("module_sort_enabled_first", false)
                                 .putBoolean("module_sort_action_first", false)
-                                .putBoolean("module_sort_webui_first", !moduleViewModel.sortWebUiFirst)
+                                .putBoolean("module_sort_webui_first", !currentValue)
                                 .commit()
                             moduleViewModel.reloadSortingPreferences(context)
                             scope.launch { moduleViewModel.fetchModuleList() }
@@ -505,6 +510,8 @@ private fun ModuleTopBar(moduleViewModel: ModuleViewModel) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SuperUserTopBar(superUserViewModel: SuperUserViewModel, navigator: DestinationsNavigator) {
+    val context = LocalContext.current
+    val prefs = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
     val scope = rememberCoroutineScope()
     
     SearchAppBar(
@@ -553,7 +560,8 @@ private fun SuperUserTopBar(superUserViewModel: SuperUserViewModel, navigator: D
                             )
                         }, 
                         onClick = {
-                            superUserViewModel.updateShowSystemApps(!superUserViewModel.showSystemApps)
+                            val currentValue = prefs.getBoolean("show_system_apps", false)
+                            superUserViewModel.updateShowSystemApps(!currentValue)
                             showDropdown = false
                         }
                     )
