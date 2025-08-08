@@ -16,15 +16,16 @@ import androidx.compose.ui.zIndex
 import com.rifsxd.ksunext.ui.theme.LocalUIBlur
 
 /**
- * UI blur effect that creates a backdrop blur behind content.
- * This applies a subtle blur effect to create a frosted glass appearance
- * while keeping text and content sharp and readable.
+ * UI blur effect that matches the background blur intensity.
+ * Uses 0-100% scale where 100% = 25px blur (same as background blur maximum).
+ * This creates a frosted glass appearance with the same intensity as background blur.
  */
 @Composable
 fun Modifier.applyUIBlur(): Modifier {
     val uiBlur = LocalUIBlur.current
     return if (uiBlur > 0f) {
-        this.blur(radius = (uiBlur * 0.3f).dp)
+        // Convert 0-1.0f range to 0-25px to match background blur intensity
+        this.blur(radius = (uiBlur * 25f).dp)
     } else {
         this
     }
@@ -51,7 +52,7 @@ fun BackdropBlurBox(
                     .fillMaxSize()
                     .clip(shape)
                     .background(backgroundColor.copy(alpha = 0.8f))
-                    .blur(radius = (uiBlur * 0.4f).dp)
+                    .blur(radius = (uiBlur * 25f).dp)
                     .zIndex(-1f)
             )
         } else {

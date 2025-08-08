@@ -641,14 +641,14 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                 ) },
                 supportingContent = { 
                     Column {
-                        Text("Add blur effect to the UI layer (same layer as UI transparency)")
+                        Text("Add blur effect to the UI layer (same intensity as background blur)")
                         Spacer(modifier = Modifier.height(8.dp))
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             Text(
-                                text = "0px",
+                                text = "0%",
                                 style = MaterialTheme.typography.bodySmall,
                                 modifier = Modifier.width(32.dp)
                             )
@@ -658,18 +658,18 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                                     uiBlur = value
                                     prefs.edit().putFloat("ui_blur", value).commit()
                                 },
-                                valueRange = 0.0f..25.0f,
+                                valueRange = 0.0f..1.0f,
                                 modifier = Modifier.weight(1f)
                             )
                             Text(
-                                text = "25px",
+                                text = "100%",
                                 style = MaterialTheme.typography.bodySmall,
                                 modifier = Modifier.width(32.dp),
                                 textAlign = TextAlign.End
                             )
                         }
                         Text(
-                            text = "${uiBlur.toInt()}px",
+                            text = "${(uiBlur * 100).toInt()}%",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.align(Alignment.CenterHorizontally)
