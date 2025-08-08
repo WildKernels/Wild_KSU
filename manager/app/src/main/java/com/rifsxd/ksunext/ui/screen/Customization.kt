@@ -529,7 +529,7 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             Text(
-                                text = "0px",
+                                text = "0%",
                                 style = MaterialTheme.typography.bodySmall,
                                 modifier = Modifier.width(32.dp)
                             )
@@ -539,18 +539,18 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                                     backgroundBlur = value
                                     prefs.edit().putFloat("background_blur", value).commit()
                                 },
-                                valueRange = 0.0f..25.0f,
+                                valueRange = 0.0f..1.0f,
                                 modifier = Modifier.weight(1f)
                             )
                             Text(
-                                text = "25px",
+                                text = "100%",
                                 style = MaterialTheme.typography.bodySmall,
                                 modifier = Modifier.width(32.dp),
                                 textAlign = TextAlign.End
                             )
                         }
                         Text(
-                            text = "${backgroundBlur.toInt()}px",
+                            text = "${(backgroundBlur * 100).toInt()}%",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.align(Alignment.CenterHorizontally)

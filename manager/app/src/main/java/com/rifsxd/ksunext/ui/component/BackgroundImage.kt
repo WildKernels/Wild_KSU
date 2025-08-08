@@ -96,8 +96,9 @@ fun BackgroundImageWrapper(
                     }
                     .let { modifier ->
                         // Apply blur if specified
+                        // Convert 0-1.0f range to 0-25px to match UI blur intensity
                         if (backgroundBlur > 0f) {
-                            modifier.blur(backgroundBlur.dp)
+                            modifier.blur((backgroundBlur * 25f).dp)
                         } else {
                             modifier
                         }

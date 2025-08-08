@@ -16,24 +16,21 @@ import androidx.compose.ui.zIndex
 import com.rifsxd.ksunext.ui.theme.LocalUIBlur
 
 /**
- * UI blur effect that matches the background blur intensity.
- * Uses 0-100% scale where 100% = 25px blur (same as background blur maximum).
- * This creates a frosted glass appearance with the same intensity as background blur.
+ * UI blur effect - DISABLED to prevent text blurring.
+ * The blur effect should be applied to background layers only.
+ * Use BackdropBlurBox for components that need backdrop blur with sharp text.
  */
 @Composable
 fun Modifier.applyUIBlur(): Modifier {
-    val uiBlur = LocalUIBlur.current
-    return if (uiBlur > 0f) {
-        // Convert 0-1.0f range to 0-25px to match background blur intensity
-        this.blur(radius = (uiBlur * 25f).dp)
-    } else {
-        this
-    }
+    // Return unmodified to prevent text blurring
+    // Blur should be applied to background layers, not content layers
+    return this
 }
 
 /**
  * Creates a backdrop blur wrapper that applies blur to a background layer
  * while keeping the content layer sharp and readable.
+ * This provides the frosted glass effect without blurring text.
  */
 @Composable
 fun BackdropBlurBox(
@@ -45,29 +42,48 @@ fun BackdropBlurBox(
     val uiBlur = LocalUIBlur.current
     
     Box(modifier = modifier) {
-        // Blurred background layer
-        if (uiBlur > 0f) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .clip(shape)
-                    .background(backgroundColor.copy(alpha = 0.8f))
-                    .blur(radius = (uiBlur * 25f).dp)
-                    .zIndex(-1f)
-            )
-        } else {
-            // Fallback non-blurred background
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .clip(shape)
-                    .background(backgroundColor)
-                    .zIndex(-1f)
-            )
-        }
+        // Background layer with blur effect
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .clip(shape)
+                .background(
+                    if (uiBlur > 0f) {
+                        backgroundColor.copy(alpha = 0.7f)
+                    } else {
+                        backgroundColor
+                    }
+                )
+                .let { mod ->
+                    if (uiBlur > 0f) {
+                        // Apply blur to background layer only
+                        mod.blur(radius = (uiBlur * 25f).dp)
+                    } else {
+                        mod
+                    }
+                }
+                .zIndex(-1f)
+        )
         
-        // Sharp content layer
-        content()
+        // Sharp content layer on top
+        Box(modifier = Modifier.zIndex(1f)) {
+            content()
+        }
+    }
+}
+
+/**
+ * Applies blur to background elements only.
+ * This should be used for background layers, not for components containing text.
+ */
+@Composable
+fun Modifier.applyBackgroundBlur(): Modifier {
+    val uiBlur = LocalUIBlur.current
+    return if (uiBlur > 0f) {
+        // Convert 0-1.0f range to 0-25px to match background blur intensity
+        this.blur(radius = (uiBlur * 25f).dp)
+    } else {
+        this
     }
 }
 
