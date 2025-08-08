@@ -16,15 +16,20 @@ import androidx.compose.ui.zIndex
 import com.rifsxd.ksunext.ui.theme.LocalUIBlur
 
 /**
- * UI blur effect - DISABLED to prevent text blurring.
- * The blur effect should be applied to background layers only.
- * Use BackdropBlurBox for components that need backdrop blur with sharp text.
+ * UI blur effect that applies a subtle blur to maintain text readability.
+ * Uses 0-100% scale where 100% = 25px blur (same as background blur maximum).
+ * Applied with reduced intensity (10%) to keep text sharp while providing frosted glass effect.
  */
 @Composable
 fun Modifier.applyUIBlur(): Modifier {
-    // Return unmodified to prevent text blurring
-    // Blur should be applied to background layers, not content layers
-    return this
+    val uiBlur = LocalUIBlur.current
+    return if (uiBlur > 0f) {
+        // Apply very subtle blur (10% intensity) to maintain text readability
+        // This creates a frosted glass effect without significantly blurring text
+        this.blur(radius = (uiBlur * 25f * 0.1f).dp)
+    } else {
+        this
+    }
 }
 
 /**
