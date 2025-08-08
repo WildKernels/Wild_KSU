@@ -20,6 +20,8 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.draw.blur
+import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.rifsxd.ksunext.ui.util.ImageCropUtils
@@ -29,6 +31,7 @@ fun BackgroundImageWrapper(
     backgroundImageUri: String?,
     backgroundFitMode: String,
     backgroundTransparency: Float = 1.0f,
+    backgroundBlur: Float = 0.0f,
     content: @Composable () -> Unit
 ) {
     val context = LocalContext.current
@@ -91,6 +94,14 @@ fun BackgroundImageWrapper(
                         val transformation = ImageCropUtils.getImageTransformation(prefs, effectiveFitMode)
                         modifier.transformation()
                     }
+                    .let { modifier ->
+                        // Apply blur if specified
+                        if (backgroundBlur > 0f) {
+                            modifier.blur(backgroundBlur.dp)
+                        } else {
+                            modifier
+                        }
+                    }
                 
                 Log.d("BackgroundImage", "Applying transformation for fit mode: $effectiveFitMode")
                 
@@ -107,20 +118,21 @@ fun BackgroundImageWrapper(
                     modifier = imageModifier,
                     contentScale = contentScale
                 )
-                
-                // Add overlay with darkness control for content readability
-                // Darkness slider: 1.0f = 100% (full black overlay), 0.0f = 0% (no overlay)
-                val overlayAlpha = backgroundTransparency // Direct mapping: 1.0f = full black, 0.0f = transparent
-                Log.d("BackgroundImage", "Overlay alpha: $overlayAlpha (from transparency: $backgroundTransparency)")
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(
-                            Color.Black.copy(alpha = overlayAlpha)
-                        )
-                )
             }
         }
+        
+        // Always add overlay with darkness control for content readability
+        // This works both with and without background images
+        // Darkness slider: 1.0f = 100% (full black overlay), 0.0f = 0% (no overlay)
+        val overlayAlpha = backgroundTransparency // Direct mapping: 1.0f = full black, 0.0f = transparent
+        Log.d("BackgroundImage", "Overlay alpha: $overlayAlpha (from transparency: $backgroundTransparency)")
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    Color.Black.copy(alpha = overlayAlpha)
+                )
+        )
         
         // Content on top of background
         content()

@@ -541,6 +541,112 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                     }
                 }
             )
+
+            // UI Blur Slider
+            var uiBlur by rememberSaveable {
+                mutableFloatStateOf(
+                    prefs.getFloat("ui_blur", 0.0f)
+                )
+            }
+            
+            ListItem(
+                leadingContent = { Icon(Icons.Filled.BlurOn, "UI Blur") },
+                headlineContent = { Text(
+                    text = "UI Blur",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
+                ) },
+                supportingContent = { 
+                    Column {
+                        Text("Add blur effect to UI elements")
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(
+                                text = "0px",
+                                style = MaterialTheme.typography.bodySmall,
+                                modifier = Modifier.width(32.dp)
+                            )
+                            Slider(
+                                value = uiBlur,
+                                onValueChange = { value ->
+                                    uiBlur = value
+                                    prefs.edit().putFloat("ui_blur", value).commit()
+                                },
+                                valueRange = 0.0f..25.0f,
+                                modifier = Modifier.weight(1f)
+                            )
+                            Text(
+                                text = "25px",
+                                style = MaterialTheme.typography.bodySmall,
+                                modifier = Modifier.width(32.dp),
+                                textAlign = TextAlign.End
+                            )
+                        }
+                        Text(
+                            text = "${uiBlur.toInt()}px",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.align(Alignment.CenterHorizontally)
+                        )
+                    }
+                }
+            )
+
+            // Background Blur Slider
+            var backgroundBlur by rememberSaveable {
+                mutableFloatStateOf(
+                    prefs.getFloat("background_blur", 0.0f)
+                )
+            }
+            
+            ListItem(
+                leadingContent = { Icon(Icons.Filled.BlurCircular, "Background Blur") },
+                headlineContent = { Text(
+                    text = "Background Blur",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
+                ) },
+                supportingContent = { 
+                    Column {
+                        Text("Add blur effect to background image")
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(
+                                text = "0px",
+                                style = MaterialTheme.typography.bodySmall,
+                                modifier = Modifier.width(32.dp)
+                            )
+                            Slider(
+                                value = backgroundBlur,
+                                onValueChange = { value ->
+                                    backgroundBlur = value
+                                    prefs.edit().putFloat("background_blur", value).commit()
+                                },
+                                valueRange = 0.0f..25.0f,
+                                modifier = Modifier.weight(1f)
+                            )
+                            Text(
+                                text = "25px",
+                                style = MaterialTheme.typography.bodySmall,
+                                modifier = Modifier.width(32.dp),
+                                textAlign = TextAlign.End
+                            )
+                        }
+                        Text(
+                            text = "${backgroundBlur.toInt()}px",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.align(Alignment.CenterHorizontally)
+                        )
+                    }
+                }
+            )
         }
     }
 }

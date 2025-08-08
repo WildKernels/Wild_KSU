@@ -11,7 +11,9 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
@@ -29,6 +31,9 @@ private val LightColorScheme = lightColorScheme(
     secondary = PRIMARY_LIGHT,
     tertiary = SECONDARY_LIGHT
 )
+
+// CompositionLocal for UI blur
+val LocalUIBlur = compositionLocalOf { 0.0f }
 
 
 
@@ -51,6 +56,7 @@ fun KernelSUTheme(
     isCustomBackgroundEnabled: Boolean = false,
     backgroundTransparency: Float = 1.0f,
     uiTransparency: Float = 1.0f,
+    uiBlur: Float = 0.0f,
     content: @Composable () -> Unit
 ) {
     // Always apply UI transparency, regardless of background settings
@@ -149,11 +155,13 @@ fun KernelSUTheme(
         darkMode = darkTheme
     )
 
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = Typography,
-        content = content
-    )
+    CompositionLocalProvider(LocalUIBlur provides uiBlur) {
+        MaterialTheme(
+            colorScheme = colorScheme,
+            typography = Typography,
+            content = content
+        )
+    }
 }
 
 @Composable
