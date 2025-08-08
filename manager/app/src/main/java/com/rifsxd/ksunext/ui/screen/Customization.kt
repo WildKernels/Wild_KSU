@@ -456,61 +456,61 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                         }
                     }
                 )
-                
-                // UI Transparency Slider
-                var uiTransparency by rememberSaveable {
-                    mutableFloatStateOf(
-                        prefs.getFloat("ui_transparency", 0.0f)
-                    )
-                }
-                
-                ListItem(
-                    leadingContent = { Icon(Icons.Filled.Tune, "UI Transparency") },
-                    headlineContent = { Text(
-                        text = "UI Transparency",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.SemiBold,
-                    ) },
-                    supportingContent = { 
-                        Column {
-                            Text("Adjust the transparency of UI elements over the background")
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.fillMaxWidth()
-                            ) {
-                                Text(
-                                    text = "0%",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    modifier = Modifier.width(32.dp)
-                                )
-                                Slider(
-                                    value = uiTransparency,
-                                    onValueChange = { value ->
-                                        uiTransparency = value
-                                        prefs.edit().putFloat("ui_transparency", value).commit()
-                                    },
-                                    valueRange = 0.0f..1.0f,
-                                    modifier = Modifier.weight(1f)
-                                )
-                                Text(
-                                    text = "100%",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    modifier = Modifier.width(32.dp),
-                                    textAlign = TextAlign.End
-                                )
-                            }
-                            Text(
-                                text = "${(uiTransparency * 100).toInt()}%",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.align(Alignment.CenterHorizontally)
-                            )
-                        }
-                    }
-                )
 
             }
+            
+            // UI Transparency Slider - Always available
+            var uiTransparency by rememberSaveable {
+                mutableFloatStateOf(
+                    prefs.getFloat("ui_transparency", 0.0f)
+                )
+            }
+            
+            ListItem(
+                leadingContent = { Icon(Icons.Filled.Tune, "UI Transparency") },
+                headlineContent = { Text(
+                    text = "UI Transparency",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
+                ) },
+                supportingContent = { 
+                    Column {
+                        Text("Adjust the transparency of UI elements")
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(
+                                text = "0%",
+                                style = MaterialTheme.typography.bodySmall,
+                                modifier = Modifier.width(32.dp)
+                            )
+                            Slider(
+                                value = uiTransparency,
+                                onValueChange = { value ->
+                                    uiTransparency = value
+                                    prefs.edit().putFloat("ui_transparency", value).commit()
+                                },
+                                valueRange = 0.0f..1.0f,
+                                modifier = Modifier.weight(1f)
+                            )
+                            Text(
+                                text = "100%",
+                                style = MaterialTheme.typography.bodySmall,
+                                modifier = Modifier.width(32.dp),
+                                textAlign = TextAlign.End
+                            )
+                        }
+                        Text(
+                            text = "${(uiTransparency * 100).toInt()}%",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.align(Alignment.CenterHorizontally)
+                        )
+                    }
+                }
+            )
         }
     }
 }
