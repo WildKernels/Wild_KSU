@@ -24,9 +24,9 @@ import com.rifsxd.ksunext.ui.theme.LocalUIBlur
 fun Modifier.applyUIBlur(): Modifier {
     val uiBlur = LocalUIBlur.current
     return if (uiBlur > 0f) {
-        // Apply very minimal blur (5% intensity) to maintain text readability
-        // This creates a subtle frosted glass effect without significantly affecting text
-        this.blur(radius = (uiBlur * 25f * 0.05f).dp)
+        // Apply moderate blur (30% intensity) for visible frosted glass effect
+        // This provides a good balance between visual effect and text readability
+        this.blur(radius = (uiBlur * 25f * 0.3f).dp)
     } else {
         this
     }

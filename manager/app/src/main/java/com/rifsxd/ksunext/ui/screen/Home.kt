@@ -60,7 +60,6 @@ import com.rifsxd.ksunext.ui.util.*
 import com.rifsxd.ksunext.ui.util.module.LatestVersionInfo
 import com.rifsxd.ksunext.ui.theme.getCardElevation
 import com.rifsxd.ksunext.ui.util.applyUIBlur
-import com.rifsxd.ksunext.ui.util.BlurredCard
 
 import java.util.*
 
@@ -145,8 +144,11 @@ fun HomeScreen(navigator: DestinationsNavigator) {
 @Composable
 private fun SuperuserCard() {
     val count = getSuperuserCount()
-    BlurredCard(
-        backgroundColor = MaterialTheme.colorScheme.secondaryContainer
+    ElevatedCard(
+        modifier = Modifier.applyUIBlur(),
+        colors = CardDefaults.elevatedCardColors(
+            containerColor = MaterialTheme.colorScheme.secondaryContainer
+        )
     ) {
         Box(
             modifier = Modifier
@@ -179,8 +181,11 @@ private fun SuperuserCard() {
 @Composable
 private fun ModuleCard() {
     val count = getModuleCount()
-    BlurredCard(
-        backgroundColor = MaterialTheme.colorScheme.secondaryContainer
+    ElevatedCard(
+        modifier = Modifier.applyUIBlur(),
+        colors = CardDefaults.elevatedCardColors(
+            containerColor = MaterialTheme.colorScheme.secondaryContainer
+        )
     ) {
         Box(
             modifier = Modifier
