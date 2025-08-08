@@ -41,6 +41,7 @@ import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
 import androidx.compose.runtime.Composable
 
 import androidx.compose.runtime.getValue
@@ -482,7 +483,8 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                                     prefs.edit().putFloat("background_transparency", value).commit()
                                 },
                                 valueRange = 0.0f..1.0f,
-                                modifier = Modifier.weight(1f)
+                                modifier = Modifier.weight(1f),
+                                colors = SliderDefaults.colors()
                             )
                             Text(
                                 text = "100%",
@@ -535,7 +537,8 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                                     prefs.edit().putFloat("background_blur", value).commit()
                                 },
                                 valueRange = 0.0f..1.0f,
-                                modifier = Modifier.weight(1f)
+                                modifier = Modifier.weight(1f),
+                                colors = SliderDefaults.colors()
                             )
                             Text(
                                 text = "100%",
@@ -599,7 +602,8 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                                     prefs.edit().putFloat("ui_transparency", value).commit()
                                 },
                                 valueRange = 0.0f..1.0f,
-                                modifier = Modifier.weight(1f)
+                                modifier = Modifier.weight(1f),
+                                colors = SliderDefaults.colors()
                             )
                             Text(
                                 text = "100%",
@@ -648,7 +652,8 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                                 onValueChange = { /* No functionality */ },
                                 valueRange = 0.0f..1.0f,
                                 modifier = Modifier.weight(1f),
-                                enabled = false // Disable the slider
+                                enabled = false, // Disable the slider
+                                colors = SliderDefaults.colors()
                             )
                             Text(
                                 text = "100%",
