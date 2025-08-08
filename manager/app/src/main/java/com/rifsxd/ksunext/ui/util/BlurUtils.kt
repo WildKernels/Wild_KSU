@@ -2,6 +2,8 @@ package com.rifsxd.ksunext.ui.util
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
+import androidx.compose.ui.unit.dp
 import com.rifsxd.ksunext.ui.theme.LocalUIBlur
 
 /**
