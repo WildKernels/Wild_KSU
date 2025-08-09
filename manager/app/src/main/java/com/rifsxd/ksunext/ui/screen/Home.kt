@@ -77,6 +77,7 @@ fun HomeScreen(navigator: DestinationsNavigator) {
     val context = LocalContext.current
     val prefs = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
     val developerOptionsEnabled = prefs.getBoolean("enable_developer_options", false)
+    val showHelpCard = prefs.getBoolean("show_help_card", true)
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -136,8 +137,10 @@ fun HomeScreen(navigator: DestinationsNavigator) {
             InfoCard(autoExpand = developerOptionsEnabled)
         }
 
-        item {
-            IssueReportCard()
+        if (showHelpCard) {
+            item {
+                IssueReportCard()
+            }
         }
     }
 }
@@ -459,6 +462,18 @@ private fun InfoCard(autoExpand: Boolean = false) {
     val context = LocalContext.current
 
     val prefs = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
+    
+    // Get customization preferences
+    val alwaysExpanded = prefs.getBoolean("info_card_always_expanded", false)
+    val showManagerVersion = prefs.getBoolean("info_card_show_manager_version", true)
+    val showHookMode = prefs.getBoolean("info_card_show_hook_mode", true)
+    val showMountSystem = prefs.getBoolean("info_card_show_mount_system", true)
+    val showSusfsStatus = prefs.getBoolean("info_card_show_susfs_status", true)
+    val showZygiskStatus = prefs.getBoolean("info_card_show_zygisk_status", true)
+    val showKernelVersion = prefs.getBoolean("info_card_show_kernel_version", true)
+    val showAndroidVersion = prefs.getBoolean("info_card_show_android_version", true)
+    val showAbi = prefs.getBoolean("info_card_show_abi", true)
+    val showSelinuxStatus = prefs.getBoolean("info_card_show_selinux_status", true)
 
     val isManager = Natives.becomeManager(ksuApp.packageName)
     val ksuVersion = if (isManager) Natives.version else null
@@ -467,8 +482,8 @@ private fun InfoCard(autoExpand: Boolean = false) {
 
     val developerOptionsEnabled by observePreferenceAsState(prefs, "enable_developer_options", false)
 
-    LaunchedEffect(autoExpand) {
-        if (autoExpand) {
+    LaunchedEffect(autoExpand, alwaysExpanded) {
+        if (autoExpand || alwaysExpanded) {
             expanded = true
         }
     }   
@@ -517,21 +532,23 @@ private fun InfoCard(autoExpand: Boolean = false) {
             }
 
             Column {
-                val managerVersion = getManagerVersion(context)
-                InfoCardItem(
-                    label = stringResource(R.string.home_manager_version),
-                    content = if (
-                        developerOptionsEnabled &&
-                        Natives.version >= Natives.MINIMAL_SUPPORTED_MANAGER_UID
-                    ) {
-                        "${managerVersion.first} (${managerVersion.second}) | UID: ${Natives.getManagerUid()}"
-                    } else {
-                        "${managerVersion.first} (${managerVersion.second})"
-                    },
-                    icon = painterResource(R.drawable.ic_ksu_next),
-                )
+                if (showManagerVersion) {
+                    val managerVersion = getManagerVersion(context)
+                    InfoCardItem(
+                        label = stringResource(R.string.home_manager_version),
+                        content = if (
+                            developerOptionsEnabled &&
+                            Natives.version >= Natives.MINIMAL_SUPPORTED_MANAGER_UID
+                        ) {
+                            "${managerVersion.first} (${managerVersion.second}) | UID: ${Natives.getManagerUid()}"
+                        } else {
+                            "${managerVersion.first} (${managerVersion.second})"
+                        },
+                        icon = painterResource(R.drawable.ic_ksu_next),
+                    )
+                }
 
-                if (ksuVersion != null &&
+                if (showHookMode && ksuVersion != null &&
                     Natives.version >= Natives.MINIMAL_SUPPORTED_HOOK_MODE) {
 
                     val hookMode =
@@ -539,7 +556,7 @@ private fun InfoCard(autoExpand: Boolean = false) {
                             .takeUnless { it.isNullOrBlank() }
                             ?: stringResource(R.string.unavailable)
 
-                    Spacer(Modifier.height(16.dp))
+                    if (showManagerVersion) Spacer(Modifier.height(16.dp))
 
                     InfoCardItem(
                         label   = stringResource(R.string.hook_mode),
@@ -548,15 +565,16 @@ private fun InfoCard(autoExpand: Boolean = false) {
                     )
                 }
 
-                if (ksuVersion != null) {
-                    Spacer(Modifier.height(16.dp))
+                if (showMountSystem && ksuVersion != null) {
+                    if (showManagerVersion || showHookMode) Spacer(Modifier.height(16.dp))
                     InfoCardItem(
                         label = stringResource(R.string.home_mount_system),
                         content = currentMountSystem().ifEmpty { stringResource(R.string.unavailable) },
                         icon = Icons.Filled.SettingsSuggest,
                     )
-                    
+                }
 
+                if (showSusfsStatus && ksuVersion != null) {
                     val suSFS = getSuSFS()
                     if (suSFS == "Supported") {
                         val isSUS_SU = hasSuSFs_SUS_SU() == "Supported"
@@ -566,25 +584,25 @@ private fun InfoCard(autoExpand: Boolean = false) {
                                 if (mode == "2") stringResource(R.string.enabled) else stringResource(R.string.disabled)
                             "| SuS SU: $modeString"
                         } else ""
-                        Spacer(Modifier.height(16.dp))
+                        if (showManagerVersion || showHookMode || showMountSystem) Spacer(Modifier.height(16.dp))
                         InfoCardItem(
                             label = stringResource(R.string.home_susfs_version),
                             content = "${stringResource(R.string.susfs_supported)} | ${getSuSFSVersion()} (${getSuSFSVariant()}) $susSUMode",
                             icon = painterResource(R.drawable.ic_sus),
                         )
                     }
-
-                    if (Natives.isZygiskEnabled()) {
-                        Spacer(Modifier.height(16.dp))
-                        InfoCardItem(
-                            label = stringResource(R.string.zygisk_status),
-                            content = stringResource(R.string.enabled),
-                            icon = Icons.Filled.Vaccines
-                        )
-                    }
                 }
 
-                if (!expanded) {
+                if (showZygiskStatus && ksuVersion != null && Natives.isZygiskEnabled()) {
+                    if (showManagerVersion || showHookMode || showMountSystem || showSusfsStatus) Spacer(Modifier.height(16.dp))
+                    InfoCardItem(
+                        label = stringResource(R.string.zygisk_status),
+                        content = stringResource(R.string.enabled),
+                        icon = Icons.Filled.Vaccines
+                    )
+                }
+
+                if (!expanded && !alwaysExpanded) {
                     Spacer(Modifier.height(16.dp))
                     Row(
                         modifier = Modifier
@@ -603,36 +621,47 @@ private fun InfoCard(autoExpand: Boolean = false) {
                     }
                 }
 
-                AnimatedVisibility(visible = expanded) {
+                AnimatedVisibility(visible = expanded || alwaysExpanded) {
                     val uname = Os.uname()
                     Column {
-                        Spacer(Modifier.height(16.dp))
-                        InfoCardItem(
-                            label = stringResource(R.string.home_kernel),
-                            content = "${uname.release} (${uname.machine})",
-                            icon = painterResource(R.drawable.ic_linux),
-                        )
+                        if (showKernelVersion || showAndroidVersion || showAbi || showSelinuxStatus) {
+                            Spacer(Modifier.height(16.dp))
+                        }
+                        
+                        if (showKernelVersion) {
+                            InfoCardItem(
+                                label = stringResource(R.string.home_kernel),
+                                content = "${uname.release} (${uname.machine})",
+                                icon = painterResource(R.drawable.ic_linux),
+                            )
+                        }
 
-                        Spacer(Modifier.height(16.dp))
-                        InfoCardItem(
-                            label = stringResource(R.string.home_android),
-                            content = "${Build.VERSION.RELEASE} (${Build.VERSION.SDK_INT})",
-                            icon = Icons.Filled.Android,
-                        )
+                        if (showAndroidVersion) {
+                            if (showKernelVersion) Spacer(Modifier.height(16.dp))
+                            InfoCardItem(
+                                label = stringResource(R.string.home_android),
+                                content = "${Build.VERSION.RELEASE} (${Build.VERSION.SDK_INT})",
+                                icon = Icons.Filled.Android,
+                            )
+                        }
 
-                        Spacer(Modifier.height(16.dp))
-                        InfoCardItem(
-                            label = stringResource(R.string.home_abi),
-                            content = Build.SUPPORTED_ABIS.joinToString(", "),
-                            icon = Icons.Filled.Memory,
-                        )
+                        if (showAbi) {
+                            if (showKernelVersion || showAndroidVersion) Spacer(Modifier.height(16.dp))
+                            InfoCardItem(
+                                label = stringResource(R.string.home_abi),
+                                content = Build.SUPPORTED_ABIS.joinToString(", "),
+                                icon = Icons.Filled.Memory,
+                            )
+                        }
 
-                        Spacer(Modifier.height(16.dp))
-                        InfoCardItem(
-                            label = stringResource(R.string.home_selinux_status),
-                            content = getSELinuxStatus(),
-                            icon = Icons.Filled.Security,
-                        )
+                        if (showSelinuxStatus) {
+                            if (showKernelVersion || showAndroidVersion || showAbi) Spacer(Modifier.height(16.dp))
+                            InfoCardItem(
+                                label = stringResource(R.string.home_selinux_status),
+                                content = getSELinuxStatus(),
+                                icon = Icons.Filled.Security,
+                            )
+                        }
                     }
                 }
             }
@@ -726,9 +755,37 @@ fun EXperimentalCard() {
 
 @Composable
 fun IssueReportCard() {
+    val context = LocalContext.current
+    val prefs = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
+    val selectedIconType = prefs.getString("selected_icon_type", "SEASONAL") ?: "SEASONAL"
+    
     val uriHandler = LocalUriHandler.current
     val githubIssueUrl = stringResource(R.string.issue_report_github_link)
     val telegramUrl = stringResource(R.string.issue_report_telegram_link)
+
+    // Get icon based on type and season
+    fun getIcon(iconType: String): ImageVector {
+        return when (iconType) {
+            "OFF" -> Icons.Filled.VisibilityOff
+            "SEASONAL" -> getSeasonalIcon()
+            "WINTER" -> Icons.Filled.AcUnit
+            "SPRING" -> Icons.Filled.Spa
+            "SUMMER" -> Icons.Filled.WbSunny
+            "FALL" -> Icons.Filled.Forest
+            else -> getSeasonalIcon()
+        }
+    }
+
+    // Get seasonal icon based on current month
+    fun getSeasonalIcon(): ImageVector {
+        val calendar = Calendar.getInstance()
+        return when (calendar.get(Calendar.MONTH)) {
+            Calendar.DECEMBER, Calendar.JANUARY, Calendar.FEBRUARY -> Icons.Filled.AcUnit // Winter
+            Calendar.MARCH, Calendar.APRIL, Calendar.MAY -> Icons.Filled.Spa // Spring
+            Calendar.JUNE, Calendar.JULY, Calendar.AUGUST -> Icons.Filled.WbSunny // Summer
+            else -> Icons.Filled.Forest // Fall
+        }
+    }
 
     ElevatedCard(
         colors = CardDefaults.elevatedCardColors(
@@ -742,6 +799,16 @@ fun IssueReportCard() {
                 .padding(24.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            // Add home screen icon style if not OFF
+            if (selectedIconType != "OFF") {
+                Icon(
+                    imageVector = getIcon(selectedIconType),
+                    contentDescription = "Help Card Icon",
+                    modifier = Modifier.padding(end = 16.dp),
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
+            
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = stringResource(R.string.issue_report_title),

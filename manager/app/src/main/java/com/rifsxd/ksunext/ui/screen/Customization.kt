@@ -863,6 +863,197 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                 }
             )
 
+            // InfoCard Customization Section
+            var infoCardAlwaysExpanded by rememberSaveable {
+                mutableStateOf(prefs.getBoolean("info_card_always_expanded", false))
+            }
+            var showManagerVersion by rememberSaveable {
+                mutableStateOf(prefs.getBoolean("info_card_show_manager_version", true))
+            }
+            var showHookMode by rememberSaveable {
+                mutableStateOf(prefs.getBoolean("info_card_show_hook_mode", true))
+            }
+            var showMountSystem by rememberSaveable {
+                mutableStateOf(prefs.getBoolean("info_card_show_mount_system", true))
+            }
+            var showSusfsStatus by rememberSaveable {
+                mutableStateOf(prefs.getBoolean("info_card_show_susfs_status", true))
+            }
+            var showZygiskStatus by rememberSaveable {
+                mutableStateOf(prefs.getBoolean("info_card_show_zygisk_status", true))
+            }
+            var showKernelVersion by rememberSaveable {
+                mutableStateOf(prefs.getBoolean("info_card_show_kernel_version", true))
+            }
+            var showAndroidVersion by rememberSaveable {
+                mutableStateOf(prefs.getBoolean("info_card_show_android_version", true))
+            }
+            var showAbi by rememberSaveable {
+                mutableStateOf(prefs.getBoolean("info_card_show_abi", true))
+            }
+            var showSelinuxStatus by rememberSaveable {
+                mutableStateOf(prefs.getBoolean("info_card_show_selinux_status", true))
+            }
+            var showHelpCard by rememberSaveable {
+                mutableStateOf(prefs.getBoolean("help_card_show", true))
+            }
+
+            OutlinedCard(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                colors = CardDefaults.outlinedCardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceContainer
+                )
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp)
+                ) {
+                    Text(
+                        text = stringResource(R.string.info_card_customization),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+                    Text(
+                        text = stringResource(R.string.info_card_customization_summary),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
+
+                    // Always Expanded Toggle
+                    SwitchItem(
+                        title = stringResource(R.string.info_card_always_expanded),
+                        summary = stringResource(R.string.info_card_always_expanded_summary),
+                        checked = infoCardAlwaysExpanded
+                    ) {
+                        prefs.edit().putBoolean("info_card_always_expanded", it).apply()
+                        infoCardAlwaysExpanded = it
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    // Individual InfoCard Items
+                    SwitchItem(
+                        title = stringResource(R.string.info_card_show_manager_version),
+                        summary = null,
+                        checked = showManagerVersion
+                    ) {
+                        prefs.edit().putBoolean("info_card_show_manager_version", it).apply()
+                        showManagerVersion = it
+                    }
+
+                    SwitchItem(
+                        title = stringResource(R.string.info_card_show_hook_mode),
+                        summary = null,
+                        checked = showHookMode
+                    ) {
+                        prefs.edit().putBoolean("info_card_show_hook_mode", it).apply()
+                        showHookMode = it
+                    }
+
+                    SwitchItem(
+                        title = stringResource(R.string.info_card_show_mount_system),
+                        summary = null,
+                        checked = showMountSystem
+                    ) {
+                        prefs.edit().putBoolean("info_card_show_mount_system", it).apply()
+                        showMountSystem = it
+                    }
+
+                    SwitchItem(
+                        title = stringResource(R.string.info_card_show_susfs_status),
+                        summary = null,
+                        checked = showSusfsStatus
+                    ) {
+                        prefs.edit().putBoolean("info_card_show_susfs_status", it).apply()
+                        showSusfsStatus = it
+                    }
+
+                    SwitchItem(
+                        title = stringResource(R.string.info_card_show_zygisk_status),
+                        summary = null,
+                        checked = showZygiskStatus
+                    ) {
+                        prefs.edit().putBoolean("info_card_show_zygisk_status", it).apply()
+                        showZygiskStatus = it
+                    }
+
+                    SwitchItem(
+                        title = stringResource(R.string.info_card_show_kernel_version),
+                        summary = null,
+                        checked = showKernelVersion
+                    ) {
+                        prefs.edit().putBoolean("info_card_show_kernel_version", it).apply()
+                        showKernelVersion = it
+                    }
+
+                    SwitchItem(
+                        title = stringResource(R.string.info_card_show_android_version),
+                        summary = null,
+                        checked = showAndroidVersion
+                    ) {
+                        prefs.edit().putBoolean("info_card_show_android_version", it).apply()
+                        showAndroidVersion = it
+                    }
+
+                    SwitchItem(
+                        title = stringResource(R.string.info_card_show_abi),
+                        summary = null,
+                        checked = showAbi
+                    ) {
+                        prefs.edit().putBoolean("info_card_show_abi", it).apply()
+                        showAbi = it
+                    }
+
+                    SwitchItem(
+                        title = stringResource(R.string.info_card_show_selinux_status),
+                        summary = null,
+                        checked = showSelinuxStatus
+                    ) {
+                        prefs.edit().putBoolean("info_card_show_selinux_status", it).apply()
+                        showSelinuxStatus = it
+                    }
+                }
+            }
+
+            // Help Card Customization
+            OutlinedCard(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                colors = CardDefaults.outlinedCardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceContainer
+                )
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp)
+                ) {
+                    Text(
+                        text = stringResource(R.string.help_card_customization),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+                    Text(
+                        text = stringResource(R.string.help_card_customization_summary),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
+
+                    SwitchItem(
+                        title = stringResource(R.string.help_card_show),
+                        summary = null,
+                        checked = showHelpCard
+                    ) {
+                        prefs.edit().putBoolean("help_card_show", it).apply()
+                        showHelpCard = it
+                    }
+                }
+            }
+
             // Home Icon Customization
             var selectedIconType by rememberSaveable {
                 mutableStateOf(

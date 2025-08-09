@@ -266,4 +266,24 @@
     <string name="dpi_confirm_summary">New DPI: %d (Current: %d)</string>
     <string name="dpi_applied_success">DPI settings applied successfully</string>
     <string name="dpi_apply_failed">Failed to apply DPI settings</string>
+    
+    <!-- InfoCard Customization -->
+    <string name="info_card_customization">System Info Card</string>
+    <string name="info_card_customization_summary">Customize which system information is displayed on the home screen</string>
+    <string name="info_card_always_expanded">Always expanded</string>
+    <string name="info_card_always_expanded_summary">Keep the info card expanded at all times</string>
+    <string name="info_card_show_manager_version">Show manager version</string>
+    <string name="info_card_show_hook_mode">Show hook mode</string>
+    <string name="info_card_show_mount_system">Show mount system</string>
+    <string name="info_card_show_susfs_status">Show SuSFS status</string>
+    <string name="info_card_show_zygisk_status">Show Zygisk status</string>
+    <string name="info_card_show_kernel_version">Show kernel version</string>
+    <string name="info_card_show_android_version">Show Android version</string>
+    <string name="info_card_show_abi">Show ABI</string>
+    <string name="info_card_show_selinux_status">Show SELinux status</string>
+    
+    <!-- Help Card Customization -->
+    <string name="help_card_customization">Help Card</string>
+    <string name="help_card_customization_summary">Show or hide the help card at the bottom of the home screen</string>
+    <string name="help_card_show">Show help card</string>
 </resources>
