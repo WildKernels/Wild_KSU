@@ -1,5 +1,6 @@
 package com.rifsxd.ksunext.ui.screen
 
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -218,14 +219,6 @@ fun InfoCardSettingsScreen(
                                 .padding(16.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            // Drag handle
-                            Icon(
-                                imageVector = Icons.Filled.Menu,
-                                contentDescription = "Drag to reorder",
-                                modifier = Modifier.padding(end = 12.dp),
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                            
                             // Icon
                             Icon(
                                 imageVector = item.icon,
@@ -243,29 +236,10 @@ fun InfoCardSettingsScreen(
                             )
                             
                             Row(
-                                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                // Move to top button
-                                IconButton(
-                                    onClick = { 
-                                        if (index > 0) {
-                                            val newOrder = itemOrder.toMutableList()
-                                            val item = newOrder.removeAt(index)
-                                            newOrder.add(0, item)
-                                            itemOrder = newOrder
-                                        }
-                                    },
-                                    enabled = index > 0
-                                ) {
-                                    Icon(
-                                        Icons.Filled.KeyboardDoubleArrowUp, 
-                                        "Move to top",
-                                        tint = if (index > 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-                                }
-                                
-                                // Move up button
+                                // Move up button (tap = move up 1, long press = move to top)
                                 IconButton(
                                     onClick = { 
                                         if (index > 0) {
@@ -276,7 +250,26 @@ fun InfoCardSettingsScreen(
                                             itemOrder = newOrder
                                         }
                                     },
-                                    enabled = index > 0
+                                    enabled = index > 0,
+                                    modifier = Modifier.combinedClickable(
+                                        onClick = {
+                                            if (index > 0) {
+                                                val newOrder = itemOrder.toMutableList()
+                                                val temp = newOrder[index]
+                                                newOrder[index] = newOrder[index - 1]
+                                                newOrder[index - 1] = temp
+                                                itemOrder = newOrder
+                                            }
+                                        },
+                                        onLongClick = {
+                                            if (index > 0) {
+                                                val newOrder = itemOrder.toMutableList()
+                                                val item = newOrder.removeAt(index)
+                                                newOrder.add(0, item)
+                                                itemOrder = newOrder
+                                            }
+                                        }
+                                    )
                                 ) {
                                     Icon(
                                         Icons.Filled.KeyboardArrowUp, 
@@ -285,7 +278,7 @@ fun InfoCardSettingsScreen(
                                     )
                                 }
                                 
-                                // Move down button  
+                                // Move down button (tap = move down 1, long press = move to bottom)
                                 IconButton(
                                     onClick = { 
                                         if (index < itemOrder.size - 1) {
@@ -296,30 +289,30 @@ fun InfoCardSettingsScreen(
                                             itemOrder = newOrder
                                         }
                                     },
-                                    enabled = index < itemOrder.size - 1
+                                    enabled = index < itemOrder.size - 1,
+                                    modifier = Modifier.combinedClickable(
+                                        onClick = {
+                                            if (index < itemOrder.size - 1) {
+                                                val newOrder = itemOrder.toMutableList()
+                                                val temp = newOrder[index]
+                                                newOrder[index] = newOrder[index + 1]
+                                                newOrder[index + 1] = temp
+                                                itemOrder = newOrder
+                                            }
+                                        },
+                                        onLongClick = {
+                                            if (index < itemOrder.size - 1) {
+                                                val newOrder = itemOrder.toMutableList()
+                                                val item = newOrder.removeAt(index)
+                                                newOrder.add(item)
+                                                itemOrder = newOrder
+                                            }
+                                        }
+                                    )
                                 ) {
                                     Icon(
                                         Icons.Filled.KeyboardArrowDown, 
                                         "Move down",
-                                        tint = if (index < itemOrder.size - 1) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-                                }
-                                
-                                // Move to bottom button
-                                IconButton(
-                                    onClick = { 
-                                        if (index < itemOrder.size - 1) {
-                                            val newOrder = itemOrder.toMutableList()
-                                            val item = newOrder.removeAt(index)
-                                            newOrder.add(item)
-                                            itemOrder = newOrder
-                                        }
-                                    },
-                                    enabled = index < itemOrder.size - 1
-                                ) {
-                                    Icon(
-                                        Icons.Filled.KeyboardDoubleArrowDown, 
-                                        "Move to bottom",
                                         tint = if (index < itemOrder.size - 1) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                 }
