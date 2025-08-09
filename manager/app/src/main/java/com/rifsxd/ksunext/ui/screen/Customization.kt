@@ -70,6 +70,19 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.zIndex
+import kotlin.math.roundToInt
 import androidx.lifecycle.compose.dropUnlessResumed
 import com.maxkeppeker.sheets.core.models.base.Header
 import com.maxkeppeker.sheets.core.models.base.rememberUseCaseState
@@ -1089,82 +1102,106 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                             HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
                             
                             Text(
-                                text = "Items (drag to reorder)",
-                                style = MaterialTheme.typography.bodyMedium,
-                                fontWeight = FontWeight.Medium,
-                                modifier = Modifier.padding(bottom = 8.dp)
-                            )
-                            
-                            itemOrder.forEachIndexed { index, itemKey ->
-                                val item = infoCardItems.find { it.key == itemKey }
-                                if (item != null) {
-                                    Row(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(vertical = 2.dp),
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-                                        // Toggle switch
-                                        Switch(
-                                            checked = item.enabled,
-                                            onCheckedChange = item.onToggle,
-                                            modifier = Modifier.padding(end = 8.dp)
-                                        )
-                                        
-                                        // Item name
-                                        Text(
-                                            text = stringResource(item.titleRes),
-                                            style = MaterialTheme.typography.bodyMedium,
-                                            modifier = Modifier.weight(1f)
-                                        )
-                                        
-                                        // Move buttons
-                                        Row {
-                                            // Move up button
-                                            IconButton(
-                                                onClick = {
-                                                    if (index > 0) {
-                                                        val newOrder = itemOrder.toMutableList()
-                                                        val temp = newOrder[index]
-                                                        newOrder[index] = newOrder[index - 1]
-                                                        newOrder[index - 1] = temp
-                                                        itemOrder = newOrder
-                                                    }
-                                                },
-                                                enabled = index > 0
-                                            ) {
-                                                Icon(
-                                                    imageVector = Icons.Filled.KeyboardArrowUp,
-                                                    contentDescription = "Move up",
-                                                    tint = if (index > 0) MaterialTheme.colorScheme.primary 
-                                                          else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
-                                                )
-                                            }
-                                            
-                                            // Move down button
-                                            IconButton(
-                                                onClick = {
-                                                    if (index < itemOrder.size - 1) {
-                                                        val newOrder = itemOrder.toMutableList()
-                                                        val temp = newOrder[index]
-                                                        newOrder[index] = newOrder[index + 1]
-                                                        newOrder[index + 1] = temp
-                                                        itemOrder = newOrder
-                                                    }
-                                                },
-                                                enabled = index < itemOrder.size - 1
-                                            ) {
-                                                Icon(
-                                                    imageVector = Icons.Filled.KeyboardArrowDown,
-                                                    contentDescription = "Move down",
-                                                    tint = if (index < itemOrder.size - 1) MaterialTheme.colorScheme.primary 
-                                                          else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
-                                                )
-                                            }
-                                        }
-                                    }
+                text = "Items (drag to reorder)",
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Medium,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+            
+            // Drag and drop state
+            var draggedIndex by remember { mutableStateOf<Int?>(null) }
+            var dragOffset by remember { mutableStateOf(Offset.Zero) }
+            
+            itemOrder.forEachIndexed { index, itemKey ->
+                val item = infoCardItems.find { it.key == itemKey }
+                if (item != null) {
+                    val isDragging = draggedIndex == index
+                    val itemHeight = 56.dp // Approximate height of each item
+                    
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 2.dp)
+                            .zIndex(if (isDragging) 1f else 0f)
+                            .offset {
+                                if (isDragging) {
+                                    IntOffset(
+                                        x = dragOffset.x.roundToInt(),
+                                        y = dragOffset.y.roundToInt()
+                                    )
+                                } else {
+                                    IntOffset.Zero
                                 }
                             }
+                            .graphicsLayer {
+                                scaleX = if (isDragging) 1.05f else 1f
+                                scaleY = if (isDragging) 1.05f else 1f
+                                shadowElevation = if (isDragging) 8.dp.toPx() else 0f
+                            }
+                            .pointerInput(index) {
+                                detectDragGestures(
+                                    onDragStart = { offset ->
+                                        draggedIndex = index
+                                        dragOffset = Offset.Zero
+                                    },
+                                    onDragEnd = {
+                                        draggedIndex?.let { fromIndex ->
+                                            val toIndex = (fromIndex + (dragOffset.y / itemHeight.toPx()).roundToInt())
+                                                .coerceIn(0, itemOrder.size - 1)
+                                            
+                                            if (fromIndex != toIndex) {
+                                                val newOrder = itemOrder.toMutableList()
+                                                val draggedItem = newOrder.removeAt(fromIndex)
+                                                newOrder.add(toIndex, draggedItem)
+                                                itemOrder = newOrder
+                                            }
+                                        }
+                                        draggedIndex = null
+                                        dragOffset = Offset.Zero
+                                    },
+                                    onDrag = { change ->
+                                        dragOffset += change
+                                    }
+                                )
+                            },
+                        colors = CardDefaults.cardColors(
+                            containerColor = if (isDragging) 
+                                MaterialTheme.colorScheme.surfaceVariant 
+                            else 
+                                MaterialTheme.colorScheme.surface
+                        )
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp, vertical = 8.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            // Drag handle
+                            Icon(
+                                imageVector = Icons.Filled.DragHandle,
+                                contentDescription = "Drag to reorder",
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.padding(end = 8.dp)
+                            )
+                            
+                            // Toggle switch
+                            Switch(
+                                checked = item.enabled,
+                                onCheckedChange = item.onToggle,
+                                modifier = Modifier.padding(end = 12.dp)
+                            )
+                            
+                            // Item name
+                            Text(
+                                text = stringResource(item.titleRes),
+                                style = MaterialTheme.typography.bodyMedium,
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
+                    }
+                }
+            }
                         }
                     },
                     confirmButton = {
