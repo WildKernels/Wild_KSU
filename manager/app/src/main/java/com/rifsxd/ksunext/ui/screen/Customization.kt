@@ -653,9 +653,7 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                                     Text(
                                         text = label,
                                         style = MaterialTheme.typography.labelSmall,
-                                        fontSize = 10.sp,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis
+                                        fontSize = 10.sp
                                     )
                                 }
                             }
@@ -846,8 +844,8 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                         // Reset button
                         TextButton(
                             onClick = { 
-                                // Reset to default DPI (320) - this will trigger the apply button to show
-                                currentDpi = 320
+                                // Reset to system DPI - this will trigger the apply button to show
+                                currentDpi = systemDpi
                             },
                             colors = ButtonDefaults.textButtonColors(
                                 contentColor = MaterialTheme.colorScheme.primary
