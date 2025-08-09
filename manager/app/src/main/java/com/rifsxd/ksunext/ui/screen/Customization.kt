@@ -49,6 +49,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 
 import androidx.compose.runtime.getValue
@@ -1041,17 +1042,57 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                     onDismissRequest = { dismiss() },
                     title = {
                         Text(
-                            text = "Reorder System Info Items",
+                            text = "System Info Card Settings",
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.SemiBold
                         )
                     },
                     text = {
-                        Column {
+                        Column(
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
                             Text(
-                                text = "Arrange the order of items in the system info card",
+                                text = "Configure and arrange system info card items",
                                 style = MaterialTheme.typography.bodyMedium,
                                 modifier = Modifier.padding(bottom = 16.dp)
+                            )
+                            
+                            // Always Expanded Toggle
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 8.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(
+                                        text = stringResource(R.string.info_card_always_expanded),
+                                        style = MaterialTheme.typography.bodyLarge,
+                                        fontWeight = FontWeight.Medium
+                                    )
+                                    Text(
+                                        text = stringResource(R.string.info_card_always_expanded_summary),
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                                Switch(
+                                    checked = infoCardAlwaysExpanded,
+                                    onCheckedChange = {
+                                        prefs.edit().putBoolean("info_card_always_expanded", it).apply()
+                                        infoCardAlwaysExpanded = it
+                                    }
+                                )
+                            }
+                            
+                            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+                            
+                            Text(
+                                text = "Items (drag to reorder)",
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = FontWeight.Medium,
+                                modifier = Modifier.padding(bottom = 8.dp)
                             )
                             
                             itemOrder.forEachIndexed { index, itemKey ->
@@ -1060,16 +1101,24 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                                     Row(
                                         modifier = Modifier
                                             .fillMaxWidth()
-                                            .padding(vertical = 4.dp),
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.SpaceBetween
+                                            .padding(vertical = 2.dp),
+                                        verticalAlignment = Alignment.CenterVertically
                                     ) {
+                                        // Toggle switch
+                                        Switch(
+                                            checked = item.enabled,
+                                            onCheckedChange = item.onToggle,
+                                            modifier = Modifier.padding(end = 8.dp)
+                                        )
+                                        
+                                        // Item name
                                         Text(
                                             text = stringResource(item.titleRes),
                                             style = MaterialTheme.typography.bodyMedium,
                                             modifier = Modifier.weight(1f)
                                         )
                                         
+                                        // Move buttons
                                         Row {
                                             // Move up button
                                             IconButton(
@@ -1173,17 +1222,17 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
 
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    // Reorder button
+                    // Settings button
                     ListItem(
                         headlineContent = {
                             Text(
-                                text = "Reorder System Info Items",
+                                text = "System Info Card Settings",
                                 style = MaterialTheme.typography.bodyLarge
                             )
                         },
                         supportingContent = {
                             Text(
-                                text = "Customize the order of items in the system info card",
+                                text = "Configure toggles, order, and expansion settings",
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -1193,8 +1242,8 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                                 onClick = { reorderDialog.show() }
                             ) {
                                 Icon(
-                                    imageVector = Icons.Filled.Reorder,
-                                    contentDescription = "Reorder items",
+                                    imageVector = Icons.Filled.Settings,
+                                    contentDescription = "Configure settings",
                                     tint = MaterialTheme.colorScheme.primary
                                 )
                             }
