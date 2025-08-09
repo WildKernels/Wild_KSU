@@ -79,6 +79,7 @@ fun TemplateEditorScreen(
     }
 
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
+    val context = LocalContext.current
 
     BackHandler {
         navigator.navigateBack(result = !readOnly)
@@ -100,11 +101,9 @@ fun TemplateEditorScreen(
                 onSave = {
                     if (isCreation) {
                         if (saveTemplate(template, isCreation = true)) {
-                            val context = LocalContext.current
                             Toast.makeText(context, R.string.app_profile_template_import_success, Toast.LENGTH_SHORT).show()
                             navigator.navigateBack(result = true)
                         } else {
-                            val context = LocalContext.current
                             Toast.makeText(context, R.string.app_profile_template_save_failed, Toast.LENGTH_SHORT).show()
                         }
                     }
