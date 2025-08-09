@@ -11,7 +11,6 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -142,24 +141,12 @@ fun InfoCardSettingsScreen(
         prefs.edit().putString("info_card_items_order", itemOrder.joinToString(",")).apply()
     }
 
-    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
-
-    Scaffold(
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-        topBar = {
-            TopBar(
-                onBack = { navigator.navigateUp() },
-                scrollBehavior = scrollBehavior
-            )
-        }
-    ) { paddingValues ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues),
-            contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize(),
+        contentPadding = PaddingValues(16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
             // Always Expanded Toggle
             item {
                 Card(
@@ -172,30 +159,27 @@ fun InfoCardSettingsScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(20.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
+                        Icon(
+                            imageVector = Icons.Filled.ExpandMore,
+                            contentDescription = null,
+                            modifier = Modifier.padding(end = 16.dp),
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                        Column(
+                            modifier = Modifier.weight(1f)
                         ) {
-                            Icon(
-                                imageVector = Icons.Filled.ExpandMore,
-                                contentDescription = null,
-                                modifier = Modifier.padding(end = 16.dp),
-                                tint = MaterialTheme.colorScheme.primary
+                            Text(
+                                text = stringResource(R.string.info_card_always_expanded),
+                                style = MaterialTheme.typography.bodyLarge,
+                                fontWeight = FontWeight.Medium
                             )
-                            Column(modifier = Modifier.weight(1f)) {
-                                Text(
-                                    text = stringResource(R.string.info_card_always_expanded),
-                                    style = MaterialTheme.typography.bodyLarge,
-                                    fontWeight = FontWeight.Medium
-                                )
-                                Text(
-                                    text = stringResource(R.string.info_card_always_expanded_summary),
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            }
+                            Text(
+                                text = stringResource(R.string.info_card_always_expanded_summary),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
                         }
                         Switch(
                             checked = infoCardAlwaysExpanded,
@@ -231,9 +215,17 @@ fun InfoCardSettingsScreen(
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(20.dp),
+                                .padding(16.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
+                            // Drag handle
+                            Icon(
+                                imageVector = Icons.Filled.Menu,
+                                contentDescription = "Drag to reorder",
+                                modifier = Modifier.padding(end = 12.dp),
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            
                             // Icon
                             Icon(
                                 imageVector = item.icon,
@@ -251,9 +243,28 @@ fun InfoCardSettingsScreen(
                             )
                             
                             Row(
-                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                horizontalArrangement = Arrangement.spacedBy(4.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
+                                // Move to top button
+                                IconButton(
+                                    onClick = { 
+                                        if (index > 0) {
+                                            val newOrder = itemOrder.toMutableList()
+                                            val item = newOrder.removeAt(index)
+                                            newOrder.add(0, item)
+                                            itemOrder = newOrder
+                                        }
+                                    },
+                                    enabled = index > 0
+                                ) {
+                                    Icon(
+                                        Icons.Filled.KeyboardDoubleArrowUp, 
+                                        "Move to top",
+                                        tint = if (index > 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                                
                                 // Move up button
                                 IconButton(
                                     onClick = { 
@@ -294,6 +305,25 @@ fun InfoCardSettingsScreen(
                                     )
                                 }
                                 
+                                // Move to bottom button
+                                IconButton(
+                                    onClick = { 
+                                        if (index < itemOrder.size - 1) {
+                                            val newOrder = itemOrder.toMutableList()
+                                            val item = newOrder.removeAt(index)
+                                            newOrder.add(item)
+                                            itemOrder = newOrder
+                                        }
+                                    },
+                                    enabled = index < itemOrder.size - 1
+                                ) {
+                                    Icon(
+                                        Icons.Filled.KeyboardDoubleArrowDown, 
+                                        "Move to bottom",
+                                        tint = if (index < itemOrder.size - 1) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                                
                                 // Toggle switch
                                 Switch(
                                     checked = item.enabled,
@@ -306,38 +336,6 @@ fun InfoCardSettingsScreen(
             }
         }
     }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun TopBar(
-    onBack: () -> Unit = {},
-    scrollBehavior: TopAppBarScrollBehavior? = null
-) {
-    val surfaceContainer = MaterialTheme.colorScheme.surfaceContainer
-    val containerColor = remember(surfaceContainer) { surfaceContainer }
-    
-    TopAppBar(
-        title = { 
-            Text(
-                text = stringResource(R.string.info_card_customization),
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Black,
-            ) 
-        }, 
-        navigationIcon = {
-            IconButton(
-                onClick = onBack
-            ) { 
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null) 
-            }
-        },
-        scrollBehavior = scrollBehavior,
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = containerColor
-        )
-    )
-}
 
 @Preview
 @Composable

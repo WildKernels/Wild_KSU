@@ -752,6 +752,7 @@ private fun RegularTopBar(
         TemplateEditorScreenDestination.route -> stringResource(R.string.app_profile_template_edit) to true
         AppProfileTemplateScreenDestination.route -> stringResource(R.string.settings_profile_template) to true
         InstallScreenDestination.route -> stringResource(R.string.install) to true
+        InfoCardSettingsScreenDestination.route -> stringResource(R.string.info_card_customization) to true
         FlashScreenDestination.route -> {
             val title = when (flashViewModel.flashingStatus) {
                 FlashingStatus.FLASHING -> stringResource(R.string.flashing)
