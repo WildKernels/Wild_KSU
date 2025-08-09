@@ -114,12 +114,14 @@ import com.rifsxd.ksunext.ui.util.isSuCompatDisabled
 import com.rifsxd.ksunext.ui.screen.FlashIt
 import com.rifsxd.ksunext.ui.viewmodel.ModuleViewModel
 import com.rifsxd.ksunext.ui.viewmodel.SuperUserViewModel
+import com.rifsxd.ksunext.ui.viewmodel.FlashViewModel
 import kotlinx.coroutines.launch
 import java.util.*
 
 // CompositionLocal providers for ViewModels
 val LocalModuleViewModel = compositionLocalOf<ModuleViewModel> { error("ModuleViewModel not provided") }
 val LocalSuperUserViewModel = compositionLocalOf<SuperUserViewModel> { error("SuperUserViewModel not provided") }
+val LocalFlashViewModel = compositionLocalOf<FlashViewModel> { error("FlashViewModel not provided") }
 
 // Seasonal icon function
 private fun getSeasonalIcon(): ImageVector {
@@ -232,6 +234,7 @@ class MainActivity : ComponentActivity() {
 
             val moduleViewModel: ModuleViewModel = viewModel()
             val superUserViewModel: SuperUserViewModel = viewModel()
+            val flashViewModel: FlashViewModel = viewModel()
             val moduleUpdateCount = moduleViewModel.moduleList.count { 
                 moduleViewModel.checkUpdate(it).first.isNotEmpty()
             }
@@ -310,6 +313,7 @@ class MainActivity : ComponentActivity() {
                                 navigator = navigator,
                                 moduleViewModel = moduleViewModel,
                                 superUserViewModel = superUserViewModel,
+                                flashViewModel = flashViewModel,
                                 modifier = Modifier
                             )
                         }
@@ -329,6 +333,7 @@ class MainActivity : ComponentActivity() {
                         LocalSnackbarHost provides snackBarHostState,
                         LocalModuleViewModel provides moduleViewModel,
                         LocalSuperUserViewModel provides superUserViewModel,
+                        LocalFlashViewModel provides flashViewModel,
                     ) {
                         DestinationsNavHost(
                             modifier = Modifier
@@ -416,6 +421,7 @@ private fun UnifiedTopBar(
     navigator: DestinationsNavigator,
     moduleViewModel: ModuleViewModel,
     superUserViewModel: SuperUserViewModel,
+    flashViewModel: FlashViewModel,
     modifier: Modifier = Modifier
 ) {
     when (currentDestination?.route) {
@@ -426,7 +432,7 @@ private fun UnifiedTopBar(
             SuperUserTopBar(superUserViewModel = superUserViewModel, navigator = navigator, modifier = modifier)
         }
         else -> {
-            RegularTopBar(currentDestination = currentDestination, navigator = navigator, modifier = modifier)
+            RegularTopBar(currentDestination = currentDestination, navigator = navigator, flashViewModel = flashViewModel, modifier = modifier)
         }
     }
 }
@@ -647,7 +653,7 @@ private fun SuperUserTopBar(superUserViewModel: SuperUserViewModel, navigator: D
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun RegularTopBar(currentDestination: NavDestination?, navigator: DestinationsNavigator, modifier: Modifier = Modifier) {
+private fun RegularTopBar(currentDestination: NavDestination?, navigator: DestinationsNavigator, flashViewModel: FlashViewModel, modifier: Modifier = Modifier) {
     val surfaceContainer = MaterialTheme.colorScheme.surfaceContainer
     val containerColor = remember(surfaceContainer) { surfaceContainer }
     
@@ -662,7 +668,13 @@ private fun RegularTopBar(currentDestination: NavDestination?, navigator: Destin
         TemplateEditorScreenDestination.route -> stringResource(R.string.app_profile_template_edit) to true
         AppProfileTemplateScreenDestination.route -> stringResource(R.string.settings_profile_template) to true
         InstallScreenDestination.route -> stringResource(R.string.install) to true
-        FlashScreenDestination.route -> stringResource(R.string.flashing) to true
+        FlashScreenDestination.route -> {
+            when (flashViewModel.flashingStatus.value) {
+                FlashingStatus.FLASHING -> stringResource(R.string.flashing)
+                FlashingStatus.SUCCESS -> "flashing success"
+                FlashingStatus.FAILED -> "flashing fail"
+            }
+        } to true
         else -> "" to false
     }
     

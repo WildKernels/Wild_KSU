@@ -33,8 +33,10 @@ import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -73,6 +75,8 @@ import com.rifsxd.ksunext.ui.util.installBoot
 import com.rifsxd.ksunext.ui.util.reboot
 import com.rifsxd.ksunext.ui.util.restoreBoot
 import com.rifsxd.ksunext.ui.util.uninstallPermanently
+import com.rifsxd.ksunext.ui.viewmodel.FlashViewModel
+import com.rifsxd.ksunext.ui.LocalFlashViewModel
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -128,9 +132,8 @@ fun FlashScreen(
     val scope = rememberCoroutineScope()
     val scrollState = rememberScrollState()
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
-    var flashing by rememberSaveable {
-        mutableStateOf(FlashingStatus.FLASHING)
-    }
+    val flashViewModel = LocalFlashViewModel.current
+    val flashing by flashViewModel.flashingStatus.collectAsState()
 
     val context = LocalContext.current
 
@@ -138,6 +141,11 @@ fun FlashScreen(
     val developerOptionsEnabled = prefs.getBoolean("enable_developer_options", false)
 
     val activity = context.findActivity()
+
+    // Reset flashing status when screen is entered
+    LaunchedEffect(Unit) {
+        flashViewModel.resetStatus()
+    }
 
     val view = LocalView.current
     DisposableEffect(flashing) {
@@ -211,7 +219,7 @@ fun FlashScreen(
                     text += "\n\n\n"
                     showFloatAction = true
                 }
-                flashing = if (code == 0) FlashingStatus.SUCCESS else FlashingStatus.FAILED
+                flashViewModel.updateStatus(if (code == 0) FlashingStatus.SUCCESS else FlashingStatus.FAILED)
             }
         }
     }
