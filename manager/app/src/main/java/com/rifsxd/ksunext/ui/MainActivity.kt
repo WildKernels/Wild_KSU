@@ -118,7 +118,8 @@ import com.rifsxd.ksunext.ui.util.LocaleHelper
 import com.rifsxd.ksunext.ui.util.rootAvailable
 import com.rifsxd.ksunext.ui.util.install
 import com.rifsxd.ksunext.ui.util.isSuCompatDisabled
-import com.rifsxd.ksunext.util.reboot
+import com.rifsxd.ksunext.ui.util.reboot
+import com.rifsxd.ksunext.ui.util.LkmSelection
 
 import com.rifsxd.ksunext.ui.screen.FlashIt
 import com.rifsxd.ksunext.ui.viewmodel.ModuleViewModel
@@ -809,7 +810,7 @@ private fun RegularTopBar(
                 IconButton(
                     onClick = {
                         // Navigate to Flash screen for LKM baking
-                        navigator.navigate(FlashScreenDestination)
+                        navigator.navigate(FlashScreenDestination(FlashIt.FlashBoot(boot = null, lkm = LkmSelection.KmiNone, ota = false)))
                     }
                 ) {
                     Icon(
