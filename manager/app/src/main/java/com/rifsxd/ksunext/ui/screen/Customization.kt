@@ -647,7 +647,6 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                     "SPRING" to "Spring", 
                     "SUMMER" to "Summer",
                     "FALL" to "Fall",
-                    "CANNABIS" to "Cannabis",
                     "YIN_YANG" to "Yin Yang",
                     "ECO" to "Eco",
                     "CIRCLE" to "Circle"

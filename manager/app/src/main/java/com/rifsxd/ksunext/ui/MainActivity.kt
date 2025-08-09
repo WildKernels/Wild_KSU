@@ -833,7 +833,8 @@ private fun RegularTopBar(
                     
                     DropdownMenu(
                         expanded = showRestartMenu,
-                        onDismissRequest = { showRestartMenu = false }
+                        onDismissRequest = { showRestartMenu = false },
+                        offset = DpOffset(0.dp, 16.dp)
                     ) {
                         // Normal reboot
                         DropdownMenuItem(
