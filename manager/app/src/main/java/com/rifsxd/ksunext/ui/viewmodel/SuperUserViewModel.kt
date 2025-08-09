@@ -47,6 +47,7 @@ class SuperUserViewModel : ViewModel() {
         val label: String,
         val packageInfo: PackageInfo,
         val profile: Natives.Profile?,
+        val isFavorite: Boolean = false,
     ) : Parcelable {
         val packageName: String
             get() = packageInfo.packageName
@@ -76,15 +77,31 @@ class SuperUserViewModel : ViewModel() {
         private set
     var isRefreshing by mutableStateOf(false)
         private set
+    
+    private var favoriteApps by mutableStateOf(
+        prefs.getStringSet("favorite_apps", emptySet())?.toMutableSet() ?: mutableSetOf()
+    )
 
     fun updateShowSystemApps(newValue: Boolean) {
         prefs.edit().putBoolean("show_system_apps", newValue).commit()
         showSystemApps = prefs.getBoolean("show_system_apps", false)
     }
+    
+    fun toggleFavorite(packageName: String) {
+        val newFavorites = favoriteApps.toMutableSet()
+        if (newFavorites.contains(packageName)) {
+            newFavorites.remove(packageName)
+        } else {
+            newFavorites.add(packageName)
+        }
+        favoriteApps = newFavorites
+        prefs.edit().putStringSet("favorite_apps", newFavorites).apply()
+    }
 
     private val sortedList by derivedStateOf {
         val comparator = compareBy<AppInfo> {
             when {
+                favoriteApps.contains(it.packageName) -> -1 // Favorites first
                 it.profile != null && it.profile.allowSu -> 0
                 it.profile != null && (
                     if (it.profile.allowSu) !it.profile.rootUseDefault else !it.profile.nonRootUseDefault
@@ -99,7 +116,8 @@ class SuperUserViewModel : ViewModel() {
 
     val appList by derivedStateOf {
         sortedList.map { app ->
-            profileOverrides[app.packageName]?.let { app.copy(profile = it) } ?: app
+            val updatedProfile = profileOverrides[app.packageName]?.let { app.copy(profile = it) } ?: app
+            updatedProfile.copy(isFavorite = favoriteApps.contains(app.packageName))
         }.filter {
             it.label.contains(search, true) || it.packageName.contains(
                 search,
@@ -176,6 +194,7 @@ class SuperUserViewModel : ViewModel() {
                     label = appInfo.loadLabel(pm).toString(),
                     packageInfo = it,
                     profile = profile,
+                    isFavorite = favoriteApps.contains(it.packageName)
                 )
             }.filter { it.packageName != ksuApp.packageName }
             Log.i(TAG, "load cost: ${SystemClock.elapsedRealtime() - start}")

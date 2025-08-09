@@ -8,6 +8,9 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Bookmark
+import androidx.compose.material.icons.filled.BookmarkBorder
 import androidx.compose.material3.*
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.*
@@ -76,6 +79,7 @@ private fun AppItem(
     app: SuperUserViewModel.AppInfo,
     onClickListener: () -> Unit,
 ) {
+    val viewModel = LocalSuperUserViewModel.current
     ListItem(
         modifier = Modifier.clickable(onClick = onClickListener),
         headlineContent = { Text(
@@ -140,6 +144,17 @@ private fun AppItem(
                     .width(48.dp)
                     .height(48.dp)
             )
+        },
+        trailingContent = {
+            IconButton(
+                onClick = { viewModel.toggleFavorite(app.packageName) }
+            ) {
+                Icon(
+                    imageVector = if (app.isFavorite) Icons.Filled.Bookmark else Icons.Filled.BookmarkBorder,
+                    contentDescription = if (app.isFavorite) "Remove from favorites" else "Add to favorites",
+                    tint = if (app.isFavorite) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
         },
     )
 }
