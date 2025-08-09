@@ -17,6 +17,9 @@ import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.displayCutout
@@ -44,6 +47,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Snowflake
+import androidx.compose.material.icons.filled.LocalFlorist
+import androidx.compose.material.icons.filled.WbSunny
+import androidx.compose.material.icons.filled.Eco
+import androidx.compose.material.icons.filled.Android
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -106,10 +114,25 @@ import com.rifsxd.ksunext.ui.screen.FlashIt
 import com.rifsxd.ksunext.ui.viewmodel.ModuleViewModel
 import com.rifsxd.ksunext.ui.viewmodel.SuperUserViewModel
 import kotlinx.coroutines.launch
+import java.util.*
 
 // CompositionLocal providers for ViewModels
 val LocalModuleViewModel = compositionLocalOf<ModuleViewModel> { error("ModuleViewModel not provided") }
 val LocalSuperUserViewModel = compositionLocalOf<SuperUserViewModel> { error("SuperUserViewModel not provided") }
+
+// Seasonal icon function
+private fun getSeasonalIcon(): ImageVector {
+    val calendar = Calendar.getInstance()
+    val month = calendar.get(Calendar.MONTH)
+    
+    return when (month) {
+        Calendar.DECEMBER, Calendar.JANUARY, Calendar.FEBRUARY -> Icons.Filled.Snowflake // Winter
+        Calendar.MARCH, Calendar.APRIL, Calendar.MAY -> Icons.Filled.LocalFlorist // Spring
+        Calendar.JUNE, Calendar.JULY, Calendar.AUGUST -> Icons.Filled.WbSunny // Summer
+        Calendar.SEPTEMBER, Calendar.OCTOBER, Calendar.NOVEMBER -> Icons.Filled.Eco // Fall
+        else -> Icons.Filled.Android // Fallback
+    }
+}
 
 class MainActivity : ComponentActivity() {
 
@@ -642,6 +665,22 @@ private fun RegularTopBar(currentDestination: NavDestination?, navigator: Destin
         else -> "" to false
     }
     
+    // Animation state for the seasonal icon (only for home screen)
+    val isHomeScreen = currentDestination?.route == HomeScreenDestination.route
+    var rotationState by remember { mutableStateOf(0f) }
+    val rotation by animateFloatAsState(
+        targetValue = rotationState,
+        animationSpec = tween(durationMillis = 1000),
+        label = "rotation"
+    )
+    
+    // Auto-rotate on initial composition for home screen
+    LaunchedEffect(isHomeScreen) {
+        if (isHomeScreen) {
+            rotationState = 360f
+        }
+    }
+    
     TopAppBar(
         modifier = modifier,
         title = { 
@@ -657,6 +696,22 @@ private fun RegularTopBar(currentDestination: NavDestination?, navigator: Destin
                     onClick = { navigator.navigateUp() }
                 ) { 
                     Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null) 
+                }
+            }
+        },
+        actions = {
+            // Show animated seasonal icon only on home screen
+            if (isHomeScreen) {
+                IconButton(
+                    onClick = { 
+                        rotationState += 360f
+                    }
+                ) {
+                    Icon(
+                        imageVector = getSeasonalIcon(),
+                        contentDescription = "Seasonal Icon",
+                        modifier = Modifier.graphicsLayer(rotationZ = rotation)
+                    )
                 }
             }
         },
