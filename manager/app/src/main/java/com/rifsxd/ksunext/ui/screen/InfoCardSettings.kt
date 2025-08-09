@@ -1,6 +1,9 @@
 package com.rifsxd.ksunext.ui.screen
 
+import androidx.compose.animation.core.*
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -12,20 +15,25 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import android.content.Context
+import kotlinx.coroutines.delay
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
 import com.rifsxd.ksunext.R
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Destination<RootGraph>
 @Composable
 fun InfoCardSettingsScreen(
@@ -33,6 +41,7 @@ fun InfoCardSettingsScreen(
 ) {
     val context = LocalContext.current
     val prefs = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
+    val hapticFeedback = LocalHapticFeedback.current
     
     // State variables for all info card settings
     var infoCardAlwaysExpanded by rememberSaveable {
@@ -204,11 +213,21 @@ fun InfoCardSettingsScreen(
             }
 
             // Info card items
-            itemsIndexed(itemOrder) { index, itemKey ->
+            itemsIndexed(
+                items = itemOrder,
+                key = { _, itemKey -> itemKey }
+            ) { index, itemKey ->
                 val item = infoCardItems.find { it.key == itemKey }
                 if (item != null) {
                     Card(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .animateItemPlacement(
+                                animationSpec = spring(
+                                    dampingRatio = Spring.DampingRatioMediumBouncy,
+                                    stiffness = Spring.StiffnessMedium
+                                )
+                            ),
                         colors = CardDefaults.cardColors(
                             containerColor = MaterialTheme.colorScheme.surfaceContainer
                         )
@@ -240,9 +259,13 @@ fun InfoCardSettingsScreen(
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 // Move up button (tap = move up 1, long press = move to top)
-                                IconButton(
-                                    onClick = { 
+                                ReorderButton(
+                                    icon = Icons.Filled.KeyboardArrowUp,
+                                    contentDescription = "Move up",
+                                    enabled = index > 0,
+                                    onTap = {
                                         if (index > 0) {
+                                            hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
                                             val newOrder = itemOrder.toMutableList()
                                             val temp = newOrder[index]
                                             newOrder[index] = newOrder[index - 1]
@@ -250,38 +273,25 @@ fun InfoCardSettingsScreen(
                                             itemOrder = newOrder
                                         }
                                     },
-                                    enabled = index > 0,
-                                    modifier = Modifier.combinedClickable(
-                                        onClick = {
-                                            if (index > 0) {
-                                                val newOrder = itemOrder.toMutableList()
-                                                val temp = newOrder[index]
-                                                newOrder[index] = newOrder[index - 1]
-                                                newOrder[index - 1] = temp
-                                                itemOrder = newOrder
-                                            }
-                                        },
-                                        onLongClick = {
-                                            if (index > 0) {
-                                                val newOrder = itemOrder.toMutableList()
-                                                val item = newOrder.removeAt(index)
-                                                newOrder.add(0, item)
-                                                itemOrder = newOrder
-                                            }
+                                    onLongPress = {
+                                        if (index > 0) {
+                                            hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
+                                            val newOrder = itemOrder.toMutableList()
+                                            val item = newOrder.removeAt(index)
+                                            newOrder.add(0, item)
+                                            itemOrder = newOrder
                                         }
-                                    )
-                                ) {
-                                    Icon(
-                                        Icons.Filled.KeyboardArrowUp, 
-                                        "Move up",
-                                        tint = if (index > 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-                                }
+                                    }
+                                )
                                 
                                 // Move down button (tap = move down 1, long press = move to bottom)
-                                IconButton(
-                                    onClick = { 
+                                ReorderButton(
+                                    icon = Icons.Filled.KeyboardArrowDown,
+                                    contentDescription = "Move down",
+                                    enabled = index < itemOrder.size - 1,
+                                    onTap = {
                                         if (index < itemOrder.size - 1) {
+                                            hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
                                             val newOrder = itemOrder.toMutableList()
                                             val temp = newOrder[index]
                                             newOrder[index] = newOrder[index + 1]
@@ -289,33 +299,16 @@ fun InfoCardSettingsScreen(
                                             itemOrder = newOrder
                                         }
                                     },
-                                    enabled = index < itemOrder.size - 1,
-                                    modifier = Modifier.combinedClickable(
-                                        onClick = {
-                                            if (index < itemOrder.size - 1) {
-                                                val newOrder = itemOrder.toMutableList()
-                                                val temp = newOrder[index]
-                                                newOrder[index] = newOrder[index + 1]
-                                                newOrder[index + 1] = temp
-                                                itemOrder = newOrder
-                                            }
-                                        },
-                                        onLongClick = {
-                                            if (index < itemOrder.size - 1) {
-                                                val newOrder = itemOrder.toMutableList()
-                                                val item = newOrder.removeAt(index)
-                                                newOrder.add(item)
-                                                itemOrder = newOrder
-                                            }
+                                    onLongPress = {
+                                        if (index < itemOrder.size - 1) {
+                                            hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
+                                            val newOrder = itemOrder.toMutableList()
+                                            val item = newOrder.removeAt(index)
+                                            newOrder.add(item)
+                                            itemOrder = newOrder
                                         }
-                                    )
-                                ) {
-                                    Icon(
-                                        Icons.Filled.KeyboardArrowDown, 
-                                        "Move down",
-                                        tint = if (index < itemOrder.size - 1) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-                                }
+                                    }
+                                )
                                 
                                 // Toggle switch
                                 Switch(
@@ -329,6 +322,57 @@ fun InfoCardSettingsScreen(
             }
         }
     }
+
+@Composable
+private fun ReorderButton(
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    contentDescription: String,
+    enabled: Boolean,
+    onTap: () -> Unit,
+    onLongPress: () -> Unit
+) {
+    var isPressed by remember { mutableStateOf(false) }
+    val scale by animateFloatAsState(
+        targetValue = if (isPressed) 0.9f else 1f,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessLow
+        ),
+        label = "button_scale"
+    )
+    
+    Box(
+        modifier = Modifier
+            .size(48.dp)
+            .scale(scale)
+            .pointerInput(enabled) {
+                if (enabled) {
+                    detectTapGestures(
+                        onPress = {
+                            isPressed = true
+                            val released = try {
+                                tryAwaitRelease()
+                            } catch (e: Exception) {
+                                false
+                            }
+                            isPressed = false
+                            released
+                        },
+                        onTap = { onTap() },
+                        onLongPress = { onLongPress() }
+                    )
+                }
+            },
+        contentAlignment = Alignment.Center
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = contentDescription,
+            tint = if (enabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.size(24.dp)
+        )
+    }
+}
 
 @Preview
 @Composable
