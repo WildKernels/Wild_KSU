@@ -555,7 +555,10 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                                 ) {
                                     Text(
                                         text = label,
-                                        style = MaterialTheme.typography.labelSmall
+                                        style = MaterialTheme.typography.labelMedium,
+                                        fontSize = 12.sp,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
                                     )
                                 }
                             }
@@ -650,7 +653,10 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                                 ) {
                                     Text(
                                         text = label,
-                                        style = MaterialTheme.typography.labelSmall
+                                        style = MaterialTheme.typography.labelMedium,
+                                        fontSize = 12.sp,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
                                     )
                                 }
                             }
@@ -746,7 +752,10 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                                 ) {
                                     Text(
                                         text = label,
-                                        style = MaterialTheme.typography.labelSmall
+                                        style = MaterialTheme.typography.labelMedium,
+                                        fontSize = 12.sp,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
                                     )
                                 }
                             }
@@ -801,14 +810,22 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                                 (context as? Activity)?.recreate()
                             }
                         ) {
-                            Text(stringResource(R.string.dpi_apply_settings))
+                            Text(
+                                stringResource(R.string.dpi_apply_settings),
+                                style = MaterialTheme.typography.labelLarge,
+                                fontSize = 14.sp
+                            )
                         }
                     },
                     dismissButton = {
                         TextButton(
                             onClick = { showDpiConfirmDialog = false }
                         ) {
-                            Text(stringResource(R.string.cancel))
+                            Text(
+                                stringResource(R.string.cancel),
+                                style = MaterialTheme.typography.labelLarge,
+                                fontSize = 14.sp
+                            )
                         }
                     }
                 )
@@ -837,7 +854,11 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                                 contentColor = MaterialTheme.colorScheme.primary
                             )
                         ) {
-                            Text("Reset", style = MaterialTheme.typography.labelMedium)
+                            Text(
+                                "Reset", 
+                                style = MaterialTheme.typography.labelLarge,
+                                fontSize = 14.sp
+                            )
                         }
                     }
                 },
@@ -937,7 +958,8 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                             ) {
                                 Text(
                                     text = stringResource(R.string.dpi_apply_settings),
-                                    style = MaterialTheme.typography.labelMedium
+                                    style = MaterialTheme.typography.labelLarge,
+                                    fontSize = 14.sp
                                 )
                             }
                         }
@@ -1242,12 +1264,20 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                                 dismiss()
                             }
                         ) {
-                            Text("Save")
+                            Text(
+                                "Save",
+                                style = MaterialTheme.typography.labelLarge,
+                                fontSize = 14.sp
+                            )
                         }
                     },
                     dismissButton = {
                         TextButton(onClick = { dismiss() }) {
-                            Text("Cancel")
+                            Text(
+                                "Cancel",
+                                style = MaterialTheme.typography.labelLarge,
+                                fontSize = 14.sp
+                            )
                         }
                     },
                     modifier = Modifier.fillMaxWidth(0.95f) // Make dialog wider
