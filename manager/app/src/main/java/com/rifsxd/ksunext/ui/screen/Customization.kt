@@ -71,6 +71,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -1199,61 +1200,82 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                                 modifier = Modifier.weight(1f)
                             )
                             
-                            // Move up button
-                            IconButton(
-                                onClick = {
-                                    if (index > 0) {
-                                        val newOrder = itemOrder.toMutableList()
-                                        val temp = newOrder[index]
-                                        newOrder[index] = newOrder[index - 1]
-                                        newOrder[index - 1] = temp
-                                        itemOrder = newOrder
+                            // Move up button (tap = move up one, hold = move to top)
+                            Box(
+                                modifier = Modifier
+                                    .size(48.dp)
+                                    .pointerInput(Unit) {
+                                        detectTapGestures(
+                                            onTap = {
+                                                if (index > 0) {
+                                                    val newOrder = itemOrder.toMutableList()
+                                                    val temp = newOrder[index]
+                                                    newOrder[index] = newOrder[index - 1]
+                                                    newOrder[index - 1] = temp
+                                                    itemOrder = newOrder
+                                                }
+                                            },
+                                            onLongPress = {
+                                                if (index > 0) {
+                                                    val newOrder = itemOrder.toMutableList()
+                                                    val item = newOrder.removeAt(index)
+                                                    newOrder.add(0, item)
+                                                    itemOrder = newOrder
+                                                }
+                                            }
+                                        )
                                     }
-                                },
-                                enabled = index > 0
+                                    .clickable(enabled = index > 0) { }
                             ) {
-                                Icon(
-                                    imageVector = Icons.Filled.KeyboardArrowUp,
-                                    contentDescription = "Move up",
-                                    tint = if (index > 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
-                                )
+                                IconButton(
+                                    onClick = { },
+                                    enabled = index > 0
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Filled.KeyboardArrowUp,
+                                        contentDescription = "Tap: Move up, Hold: Move to top",
+                                        tint = if (index > 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
                             }
                             
-                            // Move down button
-                            IconButton(
-                                onClick = {
-                                    if (index < itemOrder.size - 1) {
-                                        val newOrder = itemOrder.toMutableList()
-                                        val temp = newOrder[index]
-                                        newOrder[index] = newOrder[index + 1]
-                                        newOrder[index + 1] = temp
-                                        itemOrder = newOrder
+                            // Move down button (tap = move down one, hold = move to bottom)
+                            Box(
+                                modifier = Modifier
+                                    .size(48.dp)
+                                    .pointerInput(Unit) {
+                                        detectTapGestures(
+                                            onTap = {
+                                                if (index < itemOrder.size - 1) {
+                                                    val newOrder = itemOrder.toMutableList()
+                                                    val temp = newOrder[index]
+                                                    newOrder[index] = newOrder[index + 1]
+                                                    newOrder[index + 1] = temp
+                                                    itemOrder = newOrder
+                                                }
+                                            },
+                                            onLongPress = {
+                                                if (index < itemOrder.size - 1) {
+                                                    val newOrder = itemOrder.toMutableList()
+                                                    val item = newOrder.removeAt(index)
+                                                    newOrder.add(item)
+                                                    itemOrder = newOrder
+                                                }
+                                            }
+                                        )
                                     }
-                                },
-                                enabled = index < itemOrder.size - 1
+                                    .clickable(enabled = index < itemOrder.size - 1) { }
                             ) {
-                                Icon(
-                                    imageVector = Icons.Filled.KeyboardArrowDown,
-                                    contentDescription = "Move down",
-                                    tint = if (index < itemOrder.size - 1) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            }
-                            
-                            // Move to bottom button (hold functionality)
-                            IconButton(
-                                onClick = {
-                                    val newOrder = itemOrder.toMutableList()
-                                    val item = newOrder.removeAt(index)
-                                    newOrder.add(item)
-                                    itemOrder = newOrder
-                                },
-                                enabled = index < itemOrder.size - 1
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Filled.VerticalAlignBottom,
-                                    contentDescription = "Move to bottom",
-                                    tint = if (index < itemOrder.size - 1) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
-                                )
+                                IconButton(
+                                    onClick = { },
+                                    enabled = index < itemOrder.size - 1
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Filled.KeyboardArrowDown,
+                                        contentDescription = "Tap: Move down, Hold: Move to bottom",
+                                        tint = if (index < itemOrder.size - 1) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
                             }
                         }
                     }
@@ -1304,17 +1326,7 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                         modifier = Modifier.padding(bottom = 16.dp)
                     )
 
-                    // Always Expanded Toggle
-                    SwitchItem(
-                        title = stringResource(R.string.info_card_always_expanded),
-                        summary = stringResource(R.string.info_card_always_expanded_summary),
-                        checked = infoCardAlwaysExpanded
-                    ) {
-                        prefs.edit().putBoolean("info_card_always_expanded", it).apply()
-                        infoCardAlwaysExpanded = it
-                    }
 
-                    Spacer(modifier = Modifier.height(8.dp))
 
                     // Settings button
                     ListItem(
