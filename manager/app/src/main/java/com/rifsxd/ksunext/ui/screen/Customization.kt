@@ -606,7 +606,59 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                 }
             )
 
-
+            // DPI Scale Slider
+            var dpiScale by rememberSaveable {
+                mutableFloatStateOf(
+                    prefs.getFloat("dpi_scale", 1.0f)
+                )
+            }
+            
+            ListItem(
+                leadingContent = { Icon(Icons.Filled.ZoomIn, "DPI Scale") },
+                headlineContent = { Text(
+                    text = "DPI Scale",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
+                ) },
+                supportingContent = { 
+                    Column {
+                        Text("Adjust the display density (DPI) scale")
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(
+                                text = "0.5x",
+                                style = MaterialTheme.typography.bodySmall,
+                                modifier = Modifier.width(32.dp)
+                            )
+                            Slider(
+                                value = dpiScale,
+                                onValueChange = { value ->
+                                    dpiScale = value
+                                    prefs.edit().putFloat("dpi_scale", value).commit()
+                                },
+                                valueRange = 0.5f..2.0f,
+                                modifier = Modifier.weight(1f),
+                                colors = SliderDefaults.colors()
+                            )
+                            Text(
+                                text = "2.0x",
+                                style = MaterialTheme.typography.bodySmall,
+                                modifier = Modifier.width(32.dp),
+                                textAlign = TextAlign.End
+                            )
+                        }
+                        Text(
+                            text = "${String.format("%.1f", dpiScale)}x",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.align(Alignment.CenterHorizontally)
+                        )
+                    }
+                }
+            )
 
             // Home Icon Customization
             var selectedIconType by rememberSaveable {

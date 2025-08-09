@@ -171,7 +171,23 @@ private fun getSeasonalIcon(): ImageVector {
 class MainActivity : ComponentActivity() {
 
     override fun attachBaseContext(newBase: Context?) {
-        super.attachBaseContext(newBase?.let { LocaleHelper.applyLanguage(it) })
+        val context = newBase?.let { LocaleHelper.applyLanguage(it) }
+        val scaledContext = context?.let { applyDpiScale(it) }
+        super.attachBaseContext(scaledContext)
+    }
+    
+    private fun applyDpiScale(context: Context): Context {
+        val prefs = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
+        val dpiScale = prefs.getFloat("dpi_scale", 1.0f)
+        
+        if (dpiScale == 1.0f) {
+            return context
+        }
+        
+        val configuration = context.resources.configuration
+        configuration.densityDpi = (configuration.densityDpi * dpiScale).toInt()
+        
+        return context.createConfigurationContext(configuration)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -225,6 +241,9 @@ class MainActivity : ComponentActivity() {
 
             var backgroundBlur by remember { mutableStateOf(prefs.getFloat("background_blur", 0.0f)) } // Default 0px blur
             
+            // DPI scale setting
+            var dpiScale by remember { mutableStateOf(prefs.getFloat("dpi_scale", 1.0f)) }
+            
             // Icon settings
             var selectedIconType by remember { 
                 mutableStateOf(
@@ -260,6 +279,11 @@ class MainActivity : ComponentActivity() {
 
                         "background_blur" -> {
                             backgroundBlur = prefs.getFloat("background_blur", 0.0f)
+                        }
+                        "dpi_scale" -> {
+                            dpiScale = prefs.getFloat("dpi_scale", 1.0f)
+                            // Restart activity to apply DPI changes
+                            recreate()
                         }
                         "selected_icon_type" -> {
                             selectedIconType = IconType.values().find { it.name == prefs.getString("selected_icon_type", "SEASONAL") } ?: IconType.SEASONAL
