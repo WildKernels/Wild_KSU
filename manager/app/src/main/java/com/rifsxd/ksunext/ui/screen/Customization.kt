@@ -497,6 +497,47 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                             color = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.align(Alignment.CenterHorizontally)
                         )
+                        
+                        Spacer(modifier = Modifier.height(8.dp))
+                        
+                        // Min/Low/Med/High/Max preset buttons
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            val presets = listOf(
+                                0.0f to "Min",
+                                0.25f to "Low", 
+                                0.5f to "Med",
+                                0.75f to "High",
+                                1.0f to "Max"
+                            )
+                            
+                            presets.forEach { (value, label) ->
+                                Button(
+                                    onClick = { 
+                                        backgroundTransparency = value
+                                        prefs.edit().putFloat("background_transparency", value).commit()
+                                    },
+                                    modifier = Modifier.weight(1f),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = if (backgroundTransparency == value) 
+                                            MaterialTheme.colorScheme.primary 
+                                        else 
+                                            MaterialTheme.colorScheme.surfaceVariant,
+                                        contentColor = if (backgroundTransparency == value) 
+                                            MaterialTheme.colorScheme.onPrimary 
+                                        else 
+                                            MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                ) {
+                                    Text(
+                                        text = label,
+                                        style = MaterialTheme.typography.labelSmall
+                                    )
+                                }
+                            }
+                        }
                     }
                 }
                 )
@@ -551,6 +592,47 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                             color = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.align(Alignment.CenterHorizontally)
                         )
+                        
+                        Spacer(modifier = Modifier.height(8.dp))
+                        
+                        // Min/Low/Med/High/Max preset buttons
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            val presets = listOf(
+                                0.0f to "Min",
+                                0.25f to "Low", 
+                                0.5f to "Med",
+                                0.75f to "High",
+                                1.0f to "Max"
+                            )
+                            
+                            presets.forEach { (value, label) ->
+                                Button(
+                                    onClick = { 
+                                        backgroundBlur = value
+                                        prefs.edit().putFloat("background_blur", value).commit()
+                                    },
+                                    modifier = Modifier.weight(1f),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = if (backgroundBlur == value) 
+                                            MaterialTheme.colorScheme.primary 
+                                        else 
+                                            MaterialTheme.colorScheme.surfaceVariant,
+                                        contentColor = if (backgroundBlur == value) 
+                                            MaterialTheme.colorScheme.onPrimary 
+                                        else 
+                                            MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                ) {
+                                    Text(
+                                        text = label,
+                                        style = MaterialTheme.typography.labelSmall
+                                    )
+                                }
+                            }
+                        }
                     }
                 }
                 )
@@ -606,6 +688,47 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                             color = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.align(Alignment.CenterHorizontally)
                         )
+                        
+                        Spacer(modifier = Modifier.height(8.dp))
+                        
+                        // Min/Low/Med/High/Max preset buttons
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            val presets = listOf(
+                                0.0f to "Min",
+                                0.25f to "Low", 
+                                0.5f to "Med",
+                                0.75f to "High",
+                                1.0f to "Max"
+                            )
+                            
+                            presets.forEach { (value, label) ->
+                                Button(
+                                    onClick = { 
+                                        uiTransparency = value
+                                        prefs.edit().putFloat("ui_transparency", value).commit()
+                                    },
+                                    modifier = Modifier.weight(1f),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = if (uiTransparency == value) 
+                                            MaterialTheme.colorScheme.primary 
+                                        else 
+                                            MaterialTheme.colorScheme.surfaceVariant,
+                                        contentColor = if (uiTransparency == value) 
+                                            MaterialTheme.colorScheme.onPrimary 
+                                        else 
+                                            MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                ) {
+                                    Text(
+                                        text = label,
+                                        style = MaterialTheme.typography.labelSmall
+                                    )
+                                }
+                            }
+                        }
                     }
                 }
             )
@@ -617,68 +740,46 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                     prefs.getInt("app_dpi", systemDpi)
                 )
             }
-            var tempDpi by remember { mutableIntStateOf(currentDpi) }
-            var showDpiConfirmDialog by remember { mutableStateOf(false) }
             
-            // DPI confirmation dialog
-            if (showDpiConfirmDialog) {
-                AlertDialog(
-                    onDismissRequest = { 
-                        showDpiConfirmDialog = false
-                        tempDpi = currentDpi // Reset temp value
-                    },
-                    title = { Text(stringResource(R.string.dpi_confirm_title)) },
-                    text = { 
-                        Column {
-                            Text(stringResource(R.string.dpi_confirm_message))
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Text(
-                                text = stringResource(R.string.dpi_confirm_summary, tempDpi, currentDpi),
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.primary
-                            )
-                        }
-                    },
-                    confirmButton = {
-                        TextButton(
-                            onClick = {
-                                // Apply DPI setting
-                                prefs.edit().putInt("app_dpi", tempDpi).apply()
-                                
-                                // Calculate scale factor for MainActivity
-                                val scale = tempDpi.toFloat() / systemDpi.toFloat()
-                                prefs.edit().putFloat("dpi_scale", scale).apply()
-                                
-                                currentDpi = tempDpi
-                                showDpiConfirmDialog = false
-                                
-                                // Restart activity to apply changes
-                                (context as? Activity)?.recreate()
-                            }
-                        ) {
-                            Text(stringResource(R.string.confirm))
-                        }
-                    },
-                    dismissButton = {
-                        TextButton(
-                            onClick = { 
-                                showDpiConfirmDialog = false
-                                tempDpi = currentDpi // Reset temp value
-                            }
-                        ) {
-                            Text(stringResource(R.string.cancel))
-                        }
-                    }
-                )
+            // Auto-apply DPI changes
+            LaunchedEffect(currentDpi) {
+                val savedDpi = prefs.getInt("app_dpi", systemDpi)
+                if (currentDpi != savedDpi) {
+                    prefs.edit().putInt("app_dpi", currentDpi).apply()
+                    
+                    // Calculate scale factor for MainActivity
+                    val scale = currentDpi.toFloat() / systemDpi.toFloat()
+                    prefs.edit().putFloat("dpi_scale", scale).apply()
+                    
+                    // Restart activity to apply changes
+                    (context as? Activity)?.recreate()
+                }
             }
             
             ListItem(
                 leadingContent = { Icon(Icons.Filled.ZoomIn, stringResource(R.string.app_dpi_title)) },
-                headlineContent = { Text(
-                    text = stringResource(R.string.app_dpi_title),
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold,
-                ) },
+                headlineContent = { 
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = stringResource(R.string.app_dpi_title),
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.SemiBold,
+                        )
+                        // Reset button
+                        TextButton(
+                            onClick = { currentDpi = systemDpi },
+                            colors = ButtonDefaults.textButtonColors(
+                                contentColor = MaterialTheme.colorScheme.primary
+                            )
+                        ) {
+                            Text("Reset", style = MaterialTheme.typography.labelMedium)
+                        }
+                    }
+                },
                 supportingContent = { 
                     Column {
                         Text(stringResource(R.string.app_dpi_summary))
@@ -698,35 +799,24 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                         
                         Spacer(modifier = Modifier.height(12.dp))
                         
-                        // DPI Slider
+                        // DPI Slider (removed numbers)
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.fillMaxWidth()
                         ) {
-                            Text(
-                                text = "160",
-                                style = MaterialTheme.typography.bodySmall,
-                                modifier = Modifier.width(32.dp)
-                            )
                             Slider(
-                                value = tempDpi.toFloat(),
+                                value = currentDpi.toFloat(),
                                 onValueChange = { value ->
-                                    tempDpi = value.toInt()
+                                    currentDpi = value.toInt()
                                 },
                                 valueRange = 160f..600f,
-                                modifier = Modifier.weight(1f),
+                                modifier = Modifier.fillMaxWidth(),
                                 colors = SliderDefaults.colors()
-                            )
-                            Text(
-                                text = "600",
-                                style = MaterialTheme.typography.bodySmall,
-                                modifier = Modifier.width(32.dp),
-                                textAlign = TextAlign.End
                             )
                         }
                         
                         Text(
-                            text = "$tempDpi DPI",
+                            text = "$currentDpi DPI",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.align(Alignment.CenterHorizontally)
@@ -734,28 +824,29 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                         
                         Spacer(modifier = Modifier.height(12.dp))
                         
-                        // Preset DPI buttons
+                        // Min/Low/Med/High/Max preset buttons
                         Row(
                             modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            horizontalArrangement = Arrangement.spacedBy(4.dp)
                         ) {
                             val presets = listOf(
-                                240 to stringResource(R.string.dpi_preset_small),
-                                320 to stringResource(R.string.dpi_preset_normal),
-                                400 to stringResource(R.string.dpi_preset_large),
-                                480 to stringResource(R.string.dpi_preset_xlarge)
+                                160 to "Min",
+                                240 to "Low", 
+                                320 to "Med",
+                                400 to "High",
+                                600 to "Max"
                             )
                             
                             presets.forEach { (dpi, label) ->
                                 Button(
-                                    onClick = { tempDpi = dpi },
+                                    onClick = { currentDpi = dpi },
                                     modifier = Modifier.weight(1f),
                                     colors = ButtonDefaults.buttonColors(
-                                        containerColor = if (tempDpi == dpi) 
+                                        containerColor = if (currentDpi == dpi) 
                                             MaterialTheme.colorScheme.primary 
                                         else 
                                             MaterialTheme.colorScheme.surfaceVariant,
-                                        contentColor = if (tempDpi == dpi) 
+                                        contentColor = if (currentDpi == dpi) 
                                             MaterialTheme.colorScheme.onPrimary 
                                         else 
                                             MaterialTheme.colorScheme.onSurfaceVariant
@@ -766,21 +857,6 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                                         style = MaterialTheme.typography.labelSmall
                                     )
                                 }
-                            }
-                        }
-                        
-                        Spacer(modifier = Modifier.height(12.dp))
-                        
-                        // Apply Settings button
-                        if (tempDpi != currentDpi) {
-                            Button(
-                                onClick = { showDpiConfirmDialog = true },
-                                modifier = Modifier.fillMaxWidth(),
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = MaterialTheme.colorScheme.primary
-                                )
-                            ) {
-                                Text(stringResource(R.string.dpi_apply_settings))
                             }
                         }
                     }
