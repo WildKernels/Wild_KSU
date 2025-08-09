@@ -99,6 +99,7 @@ import com.ramcosta.composedestinations.generated.destinations.AppProfileScreenD
 import com.ramcosta.composedestinations.generated.destinations.TemplateEditorScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.AppProfileTemplateScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.InstallScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.InfoCardSettingsScreenDestination
 import com.ramcosta.composedestinations.generated.NavGraphs
 import androidx.navigation.NavDestination
 import com.ramcosta.composedestinations.utils.isRouteOnBackStackAsState
@@ -819,6 +820,37 @@ private fun RegularTopBar(
             }
         },
         actions = {
+            // Show reset button for InfoCardSettings screen
+            if (currentDestination?.route == InfoCardSettingsScreenDestination.route) {
+                IconButton(
+                    onClick = {
+                        // Reset all InfoCard settings to default
+                        val editor = prefs.edit()
+                        editor.putBoolean("info_card_always_expanded", false)
+                        editor.putBoolean("info_card_show_manager_version", true)
+                        editor.putBoolean("info_card_show_hook_mode", true)
+                        editor.putBoolean("info_card_show_mount_system", true)
+                        editor.putBoolean("info_card_show_susfs_status", true)
+                        editor.putBoolean("info_card_show_zygisk_status", true)
+                        editor.putBoolean("info_card_show_kernel_version", true)
+                        editor.putBoolean("info_card_show_android_version", true)
+                        editor.putBoolean("info_card_show_abi", true)
+                        editor.putBoolean("info_card_show_selinux_status", true)
+                        editor.remove("info_card_items_order") // Reset to default order
+                        editor.apply()
+                        
+                        // Navigate back and forward to refresh the screen
+                        navigator.navigateUp()
+                        navigator.navigate(InfoCardSettingsScreenDestination)
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.RestartAlt,
+                        contentDescription = "Reset to default"
+                    )
+                }
+            }
+            
             // Show LKM and restart icons only on home screen
             if (isHomeScreen) {
                 // Bake LKM icon
