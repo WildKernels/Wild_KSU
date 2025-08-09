@@ -15,6 +15,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.platform.LocalContext
@@ -162,6 +163,15 @@ fun IconThemeManagerDialog(
                                     iconThemeItems = iconThemeItems.map {
                                         if (it.id == item.id) it.copy(isEnabled = enabled) else it
                                     }
+                                    // Auto-save when toggling
+                                    val enabledThemes = iconThemeItems.filter { it.isEnabled }.map { it.id }.toSet()
+                                    val priorityOrder = iconThemeItems.map { it.id }.joinToString(",")
+                                    
+                                    prefs.edit()
+                                        .putStringSet("enabled_icon_themes", enabledThemes)
+                                        .putString("icon_theme_priorities", priorityOrder)
+                                        .putString("icon_theme", enabledThemes.firstOrNull() ?: "default")
+                                        .apply()
                                 },
                                 onMoveUp = if (index > 0) {
                                     {
@@ -170,6 +180,16 @@ fun IconThemeManagerDialog(
                                         newList[index] = newList[index - 1]
                                         newList[index - 1] = temp
                                         iconThemeItems = newList
+                                        
+                                        // Auto-save when reordering
+                                        val enabledThemes = iconThemeItems.filter { it.isEnabled }.map { it.id }.toSet()
+                                        val priorityOrder = iconThemeItems.map { it.id }.joinToString(",")
+                                        
+                                        prefs.edit()
+                                            .putStringSet("enabled_icon_themes", enabledThemes)
+                                            .putString("icon_theme_priorities", priorityOrder)
+                                            .putString("icon_theme", enabledThemes.firstOrNull() ?: "default")
+                                            .apply()
                                     }
                                 } else null,
                                 onMoveDown = if (index < iconThemeItems.size - 1) {
@@ -179,6 +199,16 @@ fun IconThemeManagerDialog(
                                         newList[index] = newList[index + 1]
                                         newList[index + 1] = temp
                                         iconThemeItems = newList
+                                        
+                                        // Auto-save when reordering
+                                        val enabledThemes = iconThemeItems.filter { it.isEnabled }.map { it.id }.toSet()
+                                        val priorityOrder = iconThemeItems.map { it.id }.joinToString(",")
+                                        
+                                        prefs.edit()
+                                            .putStringSet("enabled_icon_themes", enabledThemes)
+                                            .putString("icon_theme_priorities", priorityOrder)
+                                            .putString("icon_theme", enabledThemes.firstOrNull() ?: "default")
+                                            .apply()
                                     }
                                 } else null
                             )
@@ -188,28 +218,8 @@ fun IconThemeManagerDialog(
             }
         },
         confirmButton = {
-            TextButton(
-                onClick = {
-                    // Save configuration
-                    val enabledThemes = iconThemeItems.filter { it.isEnabled }.map { it.id }.toSet()
-                    val priorityOrder = iconThemeItems.map { it.id }.joinToString(",")
-                    
-                    prefs.edit()
-                        .putStringSet("enabled_icon_themes", enabledThemes)
-                        .putString("icon_theme_priorities", priorityOrder)
-                        .putString("icon_theme", enabledThemes.firstOrNull() ?: "default")
-                        .apply()
-                    
-                    onDismiss()
-                },
-                enabled = iconThemeItems.isNotEmpty()
-            ) {
-                Text(if (iconThemeItems.isEmpty()) "Close" else "Save")
-            }
-        },
-        dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancel")
+                Text("Close")
             }
         }
     )
