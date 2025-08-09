@@ -234,12 +234,7 @@ private fun IconThemeItemCard(
 ) {
     Card(
         modifier = Modifier
-            .fillMaxWidth()
-            .border(
-                width = if (item.isEnabled) 2.dp else 1.dp,
-                color = if (item.isEnabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline,
-                shape = RoundedCornerShape(12.dp)
-            ),
+            .fillMaxWidth(),
         colors = CardDefaults.cardColors(
             containerColor = if (item.isEnabled) 
                 MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f) 
