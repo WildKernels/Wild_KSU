@@ -52,6 +52,7 @@ import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.generated.destinations.InstallScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.SuperUserScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.ModuleScreenDestination
+import com.ramcosta.composedestinations.generated.NavGraphs
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -108,10 +109,26 @@ fun HomeScreen(navigator: DestinationsNavigator) {
                         horizontalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
                         Box(modifier = Modifier.weight(1f)) { 
-                            SuperuserCard(onClick = { navigator.navigate(SuperUserScreenDestination) }) 
+                            SuperuserCard(onClick = { 
+                                navigator.navigate(SuperUserScreenDestination) {
+                                    popUpTo(NavGraphs.root) {
+                                        saveState = true
+                                    }
+                                    launchSingleTop = true
+                                    restoreState = true
+                                }
+                            }) 
                         }
                         Box(modifier = Modifier.weight(1f)) { 
-                            ModuleCard(onClick = { navigator.navigate(ModuleScreenDestination) }) 
+                            ModuleCard(onClick = { 
+                                navigator.navigate(ModuleScreenDestination) {
+                                    popUpTo(NavGraphs.root) {
+                                        saveState = true
+                                    }
+                                    launchSingleTop = true
+                                    restoreState = true
+                                }
+                            }) 
                         }
                     }
                 }
