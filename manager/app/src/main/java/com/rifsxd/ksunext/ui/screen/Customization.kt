@@ -803,7 +803,18 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                         )
                         // Reset button
                         TextButton(
-                            onClick = { currentDpi = systemDpi },
+                            onClick = { 
+                                // Reset to system DPI and apply immediately
+                                currentDpi = systemDpi
+                                prefs.edit().putInt("app_dpi", systemDpi).apply()
+                                
+                                // Calculate scale factor for MainActivity (should be 1.0 for system DPI)
+                                val scale = systemDpi.toFloat() / systemDpi.toFloat()
+                                prefs.edit().putFloat("dpi_scale", scale).apply()
+                                
+                                // Restart activity to apply changes
+                                (context as? Activity)?.recreate()
+                            },
                             colors = ButtonDefaults.textButtonColors(
                                 contentColor = MaterialTheme.colorScheme.primary
                             )
