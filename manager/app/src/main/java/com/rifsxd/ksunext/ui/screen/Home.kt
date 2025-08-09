@@ -753,6 +753,30 @@ fun EXperimentalCard() {
     }
 }
 
+// Get seasonal icon based on current month
+private fun getSeasonalIcon(): ImageVector {
+    val calendar = Calendar.getInstance()
+    return when (calendar.get(Calendar.MONTH)) {
+        Calendar.DECEMBER, Calendar.JANUARY, Calendar.FEBRUARY -> Icons.Filled.AcUnit // Winter
+        Calendar.MARCH, Calendar.APRIL, Calendar.MAY -> Icons.Filled.Spa // Spring
+        Calendar.JUNE, Calendar.JULY, Calendar.AUGUST -> Icons.Filled.WbSunny // Summer
+        else -> Icons.Filled.Forest // Fall
+    }
+}
+
+// Get icon based on type and season
+private fun getIcon(iconType: String): ImageVector {
+    return when (iconType) {
+        "OFF" -> Icons.Filled.VisibilityOff
+        "SEASONAL" -> getSeasonalIcon()
+        "WINTER" -> Icons.Filled.AcUnit
+        "SPRING" -> Icons.Filled.Spa
+        "SUMMER" -> Icons.Filled.WbSunny
+        "FALL" -> Icons.Filled.Forest
+        else -> getSeasonalIcon()
+    }
+}
+
 @Composable
 fun IssueReportCard() {
     val context = LocalContext.current
@@ -762,30 +786,6 @@ fun IssueReportCard() {
     val uriHandler = LocalUriHandler.current
     val githubIssueUrl = stringResource(R.string.issue_report_github_link)
     val telegramUrl = stringResource(R.string.issue_report_telegram_link)
-
-    // Get icon based on type and season
-    fun getIcon(iconType: String): ImageVector {
-        return when (iconType) {
-            "OFF" -> Icons.Filled.VisibilityOff
-            "SEASONAL" -> getSeasonalIcon()
-            "WINTER" -> Icons.Filled.AcUnit
-            "SPRING" -> Icons.Filled.Spa
-            "SUMMER" -> Icons.Filled.WbSunny
-            "FALL" -> Icons.Filled.Forest
-            else -> getSeasonalIcon()
-        }
-    }
-
-    // Get seasonal icon based on current month
-    fun getSeasonalIcon(): ImageVector {
-        val calendar = Calendar.getInstance()
-        return when (calendar.get(Calendar.MONTH)) {
-            Calendar.DECEMBER, Calendar.JANUARY, Calendar.FEBRUARY -> Icons.Filled.AcUnit // Winter
-            Calendar.MARCH, Calendar.APRIL, Calendar.MAY -> Icons.Filled.Spa // Spring
-            Calendar.JUNE, Calendar.JULY, Calendar.AUGUST -> Icons.Filled.WbSunny // Summer
-            else -> Icons.Filled.Forest // Fall
-        }
-    }
 
     ElevatedCard(
         colors = CardDefaults.elevatedCardColors(
