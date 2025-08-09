@@ -98,6 +98,7 @@ import com.maxkeppeler.sheets.list.models.ListSelection
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.ramcosta.composedestinations.generated.destinations.InfoCardSettingsScreenDestination
 import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
 import com.rifsxd.ksunext.Natives
 import com.rifsxd.ksunext.ksuApp
@@ -555,8 +556,8 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                                 ) {
                                     Text(
                                         text = label,
-                                        style = MaterialTheme.typography.labelMedium,
-                                        fontSize = 12.sp,
+                                        style = MaterialTheme.typography.labelSmall,
+                                        fontSize = 10.sp,
                                         maxLines = 1,
                                         overflow = TextOverflow.Ellipsis
                                     )
@@ -653,8 +654,8 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                                 ) {
                                     Text(
                                         text = label,
-                                        style = MaterialTheme.typography.labelMedium,
-                                        fontSize = 12.sp,
+                                        style = MaterialTheme.typography.labelSmall,
+                                        fontSize = 10.sp,
                                         maxLines = 1,
                                         overflow = TextOverflow.Ellipsis
                                     )
@@ -752,8 +753,8 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                                 ) {
                                     Text(
                                         text = label,
-                                        style = MaterialTheme.typography.labelMedium,
-                                        fontSize = 12.sp,
+                                        style = MaterialTheme.typography.labelSmall,
+                                        fontSize = 10.sp,
                                         maxLines = 1,
                                         overflow = TextOverflow.Ellipsis
                                     )
@@ -967,321 +968,9 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                 }
             )
 
-            // InfoCard Customization Section
-            var infoCardAlwaysExpanded by rememberSaveable {
-                mutableStateOf(prefs.getBoolean("info_card_always_expanded", false))
-            }
-            var showManagerVersion by rememberSaveable {
-                mutableStateOf(prefs.getBoolean("info_card_show_manager_version", true))
-            }
-            var showHookMode by rememberSaveable {
-                mutableStateOf(prefs.getBoolean("info_card_show_hook_mode", true))
-            }
-            var showMountSystem by rememberSaveable {
-                mutableStateOf(prefs.getBoolean("info_card_show_mount_system", true))
-            }
-            var showSusfsStatus by rememberSaveable {
-                mutableStateOf(prefs.getBoolean("info_card_show_susfs_status", true))
-            }
-            var showZygiskStatus by rememberSaveable {
-                mutableStateOf(prefs.getBoolean("info_card_show_zygisk_status", true))
-            }
-            var showKernelVersion by rememberSaveable {
-                mutableStateOf(prefs.getBoolean("info_card_show_kernel_version", true))
-            }
-            var showAndroidVersion by rememberSaveable {
-                mutableStateOf(prefs.getBoolean("info_card_show_android_version", true))
-            }
-            var showAbi by rememberSaveable {
-                mutableStateOf(prefs.getBoolean("info_card_show_abi", true))
-            }
-            var showSelinuxStatus by rememberSaveable {
-                mutableStateOf(prefs.getBoolean("info_card_show_selinux_status", true))
-            }
+            // Help Card Customization
             var showHelpCard by rememberSaveable {
                 mutableStateOf(prefs.getBoolean("show_help_card", true))
-            }
-
-            // InfoCard items order management
-            data class InfoCardItem(
-                val key: String,
-                val titleRes: Int,
-                val enabled: Boolean,
-                val onToggle: (Boolean) -> Unit
-            )
-
-            val infoCardItems = remember(
-                showManagerVersion, showHookMode, showMountSystem, showSusfsStatus,
-                showZygiskStatus, showKernelVersion, showAndroidVersion, showAbi, showSelinuxStatus
-            ) {
-                listOf(
-                    InfoCardItem("manager_version", R.string.info_card_show_manager_version, showManagerVersion) {
-                        prefs.edit().putBoolean("info_card_show_manager_version", it).apply()
-                        showManagerVersion = it
-                    },
-                    InfoCardItem("hook_mode", R.string.info_card_show_hook_mode, showHookMode) {
-                        prefs.edit().putBoolean("info_card_show_hook_mode", it).apply()
-                        showHookMode = it
-                    },
-                    InfoCardItem("mount_system", R.string.info_card_show_mount_system, showMountSystem) {
-                        prefs.edit().putBoolean("info_card_show_mount_system", it).apply()
-                        showMountSystem = it
-                    },
-                    InfoCardItem("susfs_status", R.string.info_card_show_susfs_status, showSusfsStatus) {
-                        prefs.edit().putBoolean("info_card_show_susfs_status", it).apply()
-                        showSusfsStatus = it
-                    },
-                    InfoCardItem("zygisk_status", R.string.info_card_show_zygisk_status, showZygiskStatus) {
-                        prefs.edit().putBoolean("info_card_show_zygisk_status", it).apply()
-                        showZygiskStatus = it
-                    },
-                    InfoCardItem("kernel_version", R.string.info_card_show_kernel_version, showKernelVersion) {
-                        prefs.edit().putBoolean("info_card_show_kernel_version", it).apply()
-                        showKernelVersion = it
-                    },
-                    InfoCardItem("android_version", R.string.info_card_show_android_version, showAndroidVersion) {
-                        prefs.edit().putBoolean("info_card_show_android_version", it).apply()
-                        showAndroidVersion = it
-                    },
-                    InfoCardItem("abi", R.string.info_card_show_abi, showAbi) {
-                        prefs.edit().putBoolean("info_card_show_abi", it).apply()
-                        showAbi = it
-                    },
-                    InfoCardItem("selinux_status", R.string.info_card_show_selinux_status, showSelinuxStatus) {
-                        prefs.edit().putBoolean("info_card_show_selinux_status", it).apply()
-                        showSelinuxStatus = it
-                    }
-                )
-            }
-
-            // Get current order from preferences
-            var itemOrder by remember {
-                val savedOrder = prefs.getString("info_card_items_order", "")
-                val defaultOrder = infoCardItems.map { it.key }
-                val currentOrder = if (savedOrder.isNullOrEmpty()) {
-                    defaultOrder
-                } else {
-                    val saved = savedOrder.split(",")
-                    // Ensure all items are present and add any new ones
-                    val result = saved.filter { key -> defaultOrder.contains(key) }.toMutableList()
-                    defaultOrder.forEach { key ->
-                        if (!result.contains(key)) result.add(key)
-                    }
-                    result
-                }
-                mutableStateOf(currentOrder)
-            }
-
-            // Reorder dialog
-            val reorderDialog = rememberCustomDialog { dismiss ->
-                AlertDialog(
-                    onDismissRequest = { dismiss() },
-                    title = {
-                        Text(
-                            text = "System Info Card Settings",
-                            style = MaterialTheme.typography.headlineSmall,
-                            fontWeight = FontWeight.Bold
-                        )
-                    },
-                    text = {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(600.dp) // Make dialog taller
-                        ) {
-                            Text(
-                                text = "Configure and arrange system info card items",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.padding(bottom = 16.dp)
-                            )
-                            
-                            // Always Expanded Toggle
-                            Card(
-                                modifier = Modifier.fillMaxWidth(),
-                                colors = CardDefaults.cardColors(
-                                    containerColor = MaterialTheme.colorScheme.surfaceContainer
-                                )
-                            ) {
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(16.dp),
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.SpaceBetween
-                                ) {
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-                                        Icon(
-                                            imageVector = Icons.Filled.ExpandMore,
-                                            contentDescription = null,
-                                            modifier = Modifier.padding(end = 12.dp),
-                                            tint = MaterialTheme.colorScheme.primary
-                                        )
-                                        Column(modifier = Modifier.weight(1f)) {
-                                            Text(
-                                                text = "Always Expanded",
-                                                style = MaterialTheme.typography.bodyLarge,
-                                                fontWeight = FontWeight.Medium
-                                            )
-                                            Text(
-                                                text = "Keep the info card always expanded",
-                                                style = MaterialTheme.typography.bodySmall,
-                                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                                            )
-                                        }
-                                    }
-                                    Switch(
-                                        checked = infoCardAlwaysExpanded,
-                                        onCheckedChange = {
-                                            prefs.edit().putBoolean("info_card_always_expanded", it).apply()
-                                            infoCardAlwaysExpanded = it
-                                        }
-                                    )
-                                }
-                            }
-                            
-                            Spacer(modifier = Modifier.height(16.dp))
-                            
-                            Text(
-                                text = "System Information Items",
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.SemiBold,
-                                modifier = Modifier.padding(bottom = 12.dp)
-                            )
-                            
-                            LazyColumn(
-                                modifier = Modifier.fillMaxSize(),
-                                verticalArrangement = Arrangement.spacedBy(6.dp)
-                            ) {
-                                itemsIndexed(itemOrder) { index, itemKey ->
-                                    val item = infoCardItems.find { it.key == itemKey }
-                                    if (item != null) {
-                                        val itemIcon = when (item.key) {
-                                            "manager_version" -> Icons.Filled.Apps
-                                            "hook_mode" -> Icons.Filled.Phishing
-                                            "mount_system" -> Icons.Filled.Storage
-                                            "susfs_status" -> Icons.Filled.Security
-                                            "zygisk_status" -> Icons.Filled.Android
-                                            "kernel_version" -> Icons.Filled.Computer
-                                            "android_version" -> Icons.Filled.PhoneAndroid
-                                            "abi" -> Icons.Filled.Architecture
-                                            "selinux_status" -> Icons.Filled.Shield
-                                            else -> Icons.Filled.Info
-                                        }
-                                        
-                                        Card(
-                                            modifier = Modifier.fillMaxWidth(),
-                                            colors = CardDefaults.cardColors(
-                                                containerColor = MaterialTheme.colorScheme.surfaceContainer
-                                            )
-                                        ) {
-                                            Row(
-                                                modifier = Modifier
-                                                    .fillMaxWidth()
-                                                    .padding(16.dp),
-                                                verticalAlignment = Alignment.CenterVertically
-                                            ) {
-                                                // Icon
-                                                Icon(
-                                                    imageVector = itemIcon,
-                                                    contentDescription = null,
-                                                    modifier = Modifier.padding(end = 16.dp),
-                                                    tint = MaterialTheme.colorScheme.primary
-                                                )
-                                                
-                                                // Title
-                                                Text(
-                                                    text = stringResource(item.titleRes),
-                                                    modifier = Modifier.weight(1f),
-                                                    style = MaterialTheme.typography.bodyLarge,
-                                                    fontWeight = FontWeight.Medium
-                                                )
-                                                
-                                                Row(
-                                                    horizontalArrangement = Arrangement.spacedBy(4.dp),
-                                                    verticalAlignment = Alignment.CenterVertically
-                                                ) {
-                                                    // Move up button
-                                                    IconButton(
-                                                        onClick = { 
-                                                            if (index > 0) {
-                                                                val newOrder = itemOrder.toMutableList()
-                                                                val temp = newOrder[index]
-                                                                newOrder[index] = newOrder[index - 1]
-                                                                newOrder[index - 1] = temp
-                                                                itemOrder = newOrder
-                                                            }
-                                                        },
-                                                        enabled = index > 0
-                                                    ) {
-                                                        Icon(
-                                                            Icons.Filled.KeyboardArrowUp, 
-                                                            "Move up",
-                                                            tint = if (index > 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
-                                                        )
-                                                    }
-                                                    
-                                                    // Move down button  
-                                                    IconButton(
-                                                        onClick = { 
-                                                            if (index < itemOrder.size - 1) {
-                                                                val newOrder = itemOrder.toMutableList()
-                                                                val temp = newOrder[index]
-                                                                newOrder[index] = newOrder[index + 1]
-                                                                newOrder[index + 1] = temp
-                                                                itemOrder = newOrder
-                                                            }
-                                                        },
-                                                        enabled = index < itemOrder.size - 1
-                                                    ) {
-                                                        Icon(
-                                                            Icons.Filled.KeyboardArrowDown, 
-                                                            "Move down",
-                                                            tint = if (index < itemOrder.size - 1) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
-                                                        )
-                                                    }
-                                                    
-                                                    // Toggle switch
-                                                    Switch(
-                                                        checked = item.enabled,
-                                                        onCheckedChange = item.onToggle
-                                                    )
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    confirmButton = {
-                        TextButton(
-                            onClick = {
-                                // Save the new order
-                                prefs.edit().putString("info_card_items_order", itemOrder.joinToString(",")).apply()
-                                dismiss()
-                            }
-                        ) {
-                            Text(
-                                "Save",
-                                style = MaterialTheme.typography.labelLarge,
-                                fontSize = 14.sp
-                            )
-                        }
-                    },
-                    dismissButton = {
-                        TextButton(onClick = { dismiss() }) {
-                            Text(
-                                "Cancel",
-                                style = MaterialTheme.typography.labelLarge,
-                                fontSize = 14.sp
-                            )
-                        }
-                    },
-                    modifier = Modifier.fillMaxWidth(0.95f) // Make dialog wider
-                )
             }
 
             // System Info Card Settings
@@ -1307,17 +996,15 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                     )
                 },
                 trailingContent = {
-                    IconButton(
-                        onClick = { reorderDialog.show() }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.Settings,
-                            contentDescription = "Configure settings",
-                            tint = MaterialTheme.colorScheme.primary
-                        )
-                    }
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                        contentDescription = "Navigate to settings",
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 },
-                modifier = Modifier.clickable { reorderDialog.show() }
+                modifier = Modifier.clickable { 
+                    navigator.navigate(InfoCardSettingsScreenDestination)
+                }
             )
 
             // Help Card Customization

@@ -10,12 +10,8 @@ import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.verticalScroll
@@ -25,10 +21,8 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 
@@ -159,41 +153,36 @@ fun InstallScreen(navigator: DestinationsNavigator) {
         })
     }
 
-    Scaffold(
-        contentWindowInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal)
-    ) { innerPadding ->
+    Column(
+        modifier = Modifier
+            .verticalScroll(rememberScrollState())
+    ) {
+        SelectInstallMethod { method ->
+            installMethod = method
+        }
+
         Column(
             modifier = Modifier
-                .padding(innerPadding)
-                .verticalScroll(rememberScrollState())
+                .fillMaxWidth()
+                .padding(16.dp)
         ) {
-            SelectInstallMethod { method ->
-                installMethod = method
+            (lkmSelection as? LkmSelection.LkmUri)?.let {
+                Text(
+                    stringResource(
+                        id = R.string.selected_lkm,
+                        it.uri.lastPathSegment ?: "(file)"
+                    )
+                )
             }
-
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-            ) {
-                (lkmSelection as? LkmSelection.LkmUri)?.let {
-                    Text(
-                        stringResource(
-                            id = R.string.selected_lkm,
-                            it.uri.lastPathSegment ?: "(file)"
-                        )
-                    )
-                }
-                Button(modifier = Modifier.fillMaxWidth(),
-                    enabled = installMethod != null,
-                    onClick = {
-                        onClickNext()
-                    }) {
-                    Text(
-                        stringResource(id = R.string.install_next),
-                        fontSize = MaterialTheme.typography.bodyMedium.fontSize
-                    )
-                }
+            Button(modifier = Modifier.fillMaxWidth(),
+                enabled = installMethod != null,
+                onClick = {
+                    onClickNext()
+                }) {
+                Text(
+                    stringResource(id = R.string.install_next),
+                    fontSize = MaterialTheme.typography.bodyMedium.fontSize
+                )
             }
         }
     }
