@@ -247,127 +247,95 @@ private fun IconThemeItemCard(
                 MaterialTheme.colorScheme.surface
         )
     ) {
-        Column(
-            modifier = Modifier.fillMaxWidth()
+        // Single row with icon, name, controls, and switch
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    if (item.isEnabled) 
+                        MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f)
+                    else 
+                        MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+                )
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            // Title bar with name and controls
-            Row(
+            // Icon
+            Box(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .background(
-                        if (item.isEnabled) 
-                            MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f)
-                        else 
-                            MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
-                    )
-                    .padding(horizontal = 16.dp, vertical = 12.dp),
-                verticalAlignment = Alignment.CenterVertically
+                    .size(32.dp)
+                    .clip(RoundedCornerShape(6.dp))
+                    .background(MaterialTheme.colorScheme.surface),
+                contentAlignment = Alignment.Center
             ) {
-                // Icon
-                Box(
-                    modifier = Modifier
-                        .size(32.dp)
-                        .clip(RoundedCornerShape(6.dp))
-                        .background(MaterialTheme.colorScheme.surface),
-                    contentAlignment = Alignment.Center
-                ) {
-                    if (item.icon != null) {
-                        Image(
-                            painter = item.icon,
-                            contentDescription = null,
-                            modifier = Modifier.size(24.dp)
-                        )
-                    } else {
-                        Icon(
-                            imageVector = Icons.Default.Palette,
-                            contentDescription = null,
-                            modifier = Modifier.size(20.dp),
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
+                if (item.icon != null) {
+                    Image(
+                        painter = item.icon,
+                        contentDescription = null,
+                        modifier = Modifier.size(24.dp)
+                    )
+                } else {
+                    Icon(
+                        imageVector = Icons.Default.Palette,
+                        contentDescription = null,
+                        modifier = Modifier.size(20.dp),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 }
-                
-                Spacer(modifier = Modifier.width(12.dp))
-                
-                // Name
-                Text(
-                    text = item.name,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.weight(1f),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-                
-                // Enable/disable switch
-                Switch(
-                    checked = item.isEnabled,
-                    onCheckedChange = onToggle,
-                    modifier = Modifier.scale(0.8f)
-                )
             }
             
-            // Content area with package name and controls
+            Spacer(modifier = Modifier.width(12.dp))
+            
+            // Name
+            Text(
+                text = item.name,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.weight(1f),
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
+            )
+            
+            // Move controls
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Package name
-                Column(
-                    modifier = Modifier.weight(1f)
+                // Move up button
+                IconButton(
+                    onClick = { onMoveUp?.invoke() },
+                    enabled = onMoveUp != null,
+                    modifier = Modifier.size(40.dp)
                 ) {
-                    if (item.packageName != null && item.packageName.isNotEmpty()) {
-                        Text(
-                            text = "Package: ${item.packageName}",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            maxLines = 2,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    } else {
-                        Text(
-                             text = "System default theme",
-                             style = MaterialTheme.typography.bodyMedium,
-                             color = MaterialTheme.colorScheme.onSurfaceVariant,
-                             fontStyle = FontStyle.Italic
-                         )
-                    }
+                    Icon(
+                        imageVector = Icons.Default.KeyboardArrowUp,
+                        contentDescription = "Move up",
+                        tint = if (onMoveUp != null) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
+                    )
                 }
                 
-                // Move controls
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
+                // Move down button
+                IconButton(
+                    onClick = { onMoveDown?.invoke() },
+                    enabled = onMoveDown != null,
+                    modifier = Modifier.size(40.dp)
                 ) {
-                    // Move up button
-                    IconButton(
-                        onClick = { onMoveUp?.invoke() },
-                        enabled = onMoveUp != null,
-                        modifier = Modifier.size(40.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.KeyboardArrowUp,
-                            contentDescription = "Move up",
-                            tint = if (onMoveUp != null) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
-                        )
-                    }
-                    
-                    // Move down button
-                    IconButton(
-                        onClick = { onMoveDown?.invoke() },
-                        enabled = onMoveDown != null,
-                        modifier = Modifier.size(40.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.KeyboardArrowDown,
-                            contentDescription = "Move down",
-                            tint = if (onMoveDown != null) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
-                        )
-                    }
+                    Icon(
+                        imageVector = Icons.Default.KeyboardArrowDown,
+                        contentDescription = "Move down",
+                        tint = if (onMoveDown != null) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
+                    )
                 }
             }
+            
+            Spacer(modifier = Modifier.width(8.dp))
+            
+            // Enable/disable switch
+            Switch(
+                checked = item.isEnabled,
+                onCheckedChange = onToggle,
+                modifier = Modifier.scale(0.8f)
+            )
         }
     }
 }
