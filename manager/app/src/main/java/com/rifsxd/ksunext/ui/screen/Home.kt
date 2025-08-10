@@ -17,6 +17,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
+import androidx.compose.ui.draw.clip
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 
@@ -535,15 +536,17 @@ private fun InfoCard(autoExpand: Boolean = false) {
             containerColor = MaterialTheme.colorScheme.surfaceContainer
         ),
         elevation = getCardElevation(),
-        modifier = Modifier.combinedClickable(
-            onClick = { },
-            onLongClick = {
-                if (expanded && !alwaysExpanded) {
-                    expanded = false
-                    hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
+        modifier = Modifier
+            .clip(CardDefaults.elevatedShape)
+            .combinedClickable(
+                onClick = { },
+                onLongClick = {
+                    if (expanded && !alwaysExpanded) {
+                        expanded = false
+                        hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
+                    }
                 }
-            }
-        )
+            )
     ) {
         Column(
             modifier = Modifier

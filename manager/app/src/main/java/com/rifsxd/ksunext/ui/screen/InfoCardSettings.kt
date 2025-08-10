@@ -614,6 +614,7 @@ fun InfoCardSettingsScreen(
                                     Box(
                                         modifier = Modifier
                                             .size(52.dp)
+                                            .clip(CircleShape)
                                             .background(
                                                 if (index > 0) MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f) 
                                                 else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.2f),
@@ -655,6 +656,7 @@ fun InfoCardSettingsScreen(
                                     Box(
                                         modifier = Modifier
                                             .size(52.dp)
+                                            .clip(CircleShape)
                                             .background(
                                                 if (index < itemOrder.size - 1) MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f) 
                                                 else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.2f),
