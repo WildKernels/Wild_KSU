@@ -720,24 +720,35 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                         Text(stringResource(R.string.app_dpi_summary))
                         Spacer(modifier = Modifier.height(8.dp))
                         
-                        // DPI Slider (removed numbers)
+                        // DPI Slider
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.fillMaxWidth()
                         ) {
+                            Text(
+                                text = "0%",
+                                style = MaterialTheme.typography.bodySmall,
+                                modifier = Modifier.width(32.dp)
+                            )
                             Slider(
                                 value = currentDpi.toFloat(),
                                 onValueChange = { value ->
                                     currentDpi = value.toInt()
                                 },
                                 valueRange = 160f..600f,
-                                modifier = Modifier.fillMaxWidth(),
+                                modifier = Modifier.weight(1f),
                                 colors = SliderDefaults.colors()
+                            )
+                            Text(
+                                text = "100%",
+                                style = MaterialTheme.typography.bodySmall,
+                                modifier = Modifier.width(32.dp),
+                                textAlign = TextAlign.End
                             )
                         }
                         
                         Text(
-                            text = "$currentDpi% DPI",
+                            text = "$currentDpi DPI",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.align(Alignment.CenterHorizontally)
