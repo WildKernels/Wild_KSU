@@ -59,7 +59,10 @@ import androidx.compose.material.icons.filled.Forest
 import androidx.compose.material.icons.filled.Whatshot
 import androidx.compose.material.icons.filled.Archive
 import androidx.compose.material.icons.filled.Memory
+import androidx.compose.material.icons.filled.Power
 import androidx.compose.material.icons.filled.PowerSettingsNew
+import androidx.compose.material.icons.filled.RestartAlt
+import androidx.compose.material.icons.filled.SettingsBackupRestore
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.runtime.Composable
@@ -880,8 +883,8 @@ private fun RegularTopBar(
                     }
                 ) {
                     Icon(
-                        imageVector = Icons.Filled.PowerSettingsNew,
-                        contentDescription = "Reset to default"
+                        imageVector = Icons.Filled.RestartAlt,
+                        contentDescription = "Reset info card settings"
                     )
                 }
             }
@@ -911,8 +914,8 @@ private fun RegularTopBar(
                     }
                 ) {
                     Icon(
-                        imageVector = Icons.Filled.PowerSettingsNew,
-                        contentDescription = "Reset to default"
+                        imageVector = Icons.Filled.SettingsBackupRestore,
+                        contentDescription = "Reset customization settings"
                     )
                 }
             }
@@ -941,7 +944,7 @@ private fun RegularTopBar(
                         }
                     ) {
                         Icon(
-                            imageVector = Icons.Filled.PowerSettingsNew,
+                            imageVector = Icons.Filled.Power,
                             contentDescription = "Restart"
                         )
                     }
