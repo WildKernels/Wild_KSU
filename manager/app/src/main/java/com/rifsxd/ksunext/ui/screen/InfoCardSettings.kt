@@ -3,6 +3,7 @@ package com.rifsxd.ksunext.ui.screen
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -31,11 +32,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import android.content.Context
 import kotlinx.coroutines.delay
+import com.maxkeppeker.sheets.core.models.base.Header
+import com.maxkeppeker.sheets.core.models.base.rememberUseCaseState
+import com.maxkeppeler.sheets.list.ListDialog
+import com.maxkeppeler.sheets.list.models.ListOption
+import com.maxkeppeler.sheets.list.models.ListSelection
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
 import com.rifsxd.ksunext.R
+import com.rifsxd.ksunext.ui.component.rememberCustomDialog
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Destination<RootGraph>
@@ -50,6 +57,18 @@ fun InfoCardSettingsScreen(
     // State variables for all info card settings
     var infoCardAlwaysExpanded by rememberSaveable {
         mutableStateOf<Boolean>(prefs.getBoolean("info_card_always_expanded", false))
+    }
+    
+    // Help card toggle state
+    var showHelpCard by rememberSaveable {
+        mutableStateOf<Boolean>(prefs.getBoolean("show_help_card", true))
+    }
+    
+    // Home screen icon style state
+    var selectedIconType by rememberSaveable {
+        mutableStateOf(
+            prefs.getString("selected_icon_type", "SEASONAL") ?: "SEASONAL"
+        )
     }
     var showManagerVersion by rememberSaveable {
         mutableStateOf<Boolean>(prefs.getBoolean("info_card_show_manager_version", true))
@@ -175,6 +194,43 @@ fun InfoCardSettingsScreen(
         prefs.edit().putString("info_card_items_order", itemOrder.joinToString(",")).apply()
     }
 
+    // Icon Selection with OFF option
+    val iconOptions = listOf(
+        "OFF" to "Off",
+        "SEASONAL" to "Seasonal (Auto)",
+        "WINTER" to "Winter",
+        "SPRING" to "Spring", 
+        "SUMMER" to "Summer",
+        "FALL" to "Fall",
+        "KSU_NEXT" to "KSU Next",
+        "CANNABIS" to "Cannabis"
+    )
+    
+    val currentIconDisplay = iconOptions.find { it.first == selectedIconType }?.second ?: "Seasonal (Auto)"
+    
+    val iconDialog = rememberCustomDialog { dismiss ->
+        val options = iconOptions.map { (value, display) ->
+            ListOption(
+                titleText = display,
+                selected = value == selectedIconType
+            )
+        }
+        
+        ListDialog(
+            state = rememberUseCaseState(visible = true, onCloseRequest = { dismiss() }),
+            header = Header.Default(title = stringResource(R.string.home_screen_icon_select_dialog_title)),
+            selection = ListSelection.Single(
+                showRadioButtons = true,
+                options = options
+            ) { index, _ ->
+                val selectedIcon = iconOptions[index].first
+                prefs.edit().putString("selected_icon_type", selectedIcon).apply()
+                selectedIconType = selectedIcon
+                dismiss()
+            }
+        )
+    }
+
     LazyColumn(
         modifier = Modifier
             .fillMaxSize(),
@@ -221,6 +277,102 @@ fun InfoCardSettingsScreen(
                                 prefs.edit().putBoolean("info_card_always_expanded", it).apply()
                                 infoCardAlwaysExpanded = it
                             }
+                        )
+                    }
+                }
+            }
+
+            // Help Card Toggle
+            item {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceContainer
+                    )
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(20.dp)
+                            .clickable { 
+                                val newValue = !showHelpCard
+                                prefs.edit().putBoolean("show_help_card", newValue).apply()
+                                showHelpCard = newValue
+                            },
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Help,
+                            contentDescription = null,
+                            modifier = Modifier.padding(end = 16.dp),
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                        Column(
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Text(
+                                text = stringResource(R.string.help_card_customization),
+                                style = MaterialTheme.typography.bodyLarge,
+                                fontWeight = FontWeight.Medium
+                            )
+                            Text(
+                                text = stringResource(R.string.help_card_customization_summary),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                        Switch(
+                            checked = showHelpCard,
+                            onCheckedChange = {
+                                prefs.edit().putBoolean("show_help_card", it).apply()
+                                showHelpCard = it
+                            }
+                        )
+                    }
+                }
+            }
+
+            // Home Screen Icon Style
+            item {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceContainer
+                    )
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(20.dp)
+                            .clickable {
+                                iconDialog.show()
+                            },
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Palette,
+                            contentDescription = null,
+                            modifier = Modifier.padding(end = 16.dp),
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                        Column(
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Text(
+                                text = stringResource(R.string.home_screen_icon_style),
+                                style = MaterialTheme.typography.bodyLarge,
+                                fontWeight = FontWeight.Medium
+                            )
+                            Text(
+                                text = stringResource(R.string.home_screen_icon_style_summary) + ". " + stringResource(R.string.home_screen_icon_current, currentIconDisplay),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                            contentDescription = "Navigate to settings",
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }

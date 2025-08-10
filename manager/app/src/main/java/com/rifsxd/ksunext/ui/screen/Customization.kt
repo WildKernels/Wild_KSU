@@ -743,10 +743,7 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                 }
             )
 
-            // Help Card Customization
-            var showHelpCard by rememberSaveable {
-                mutableStateOf(prefs.getBoolean("show_help_card", true))
-            }
+
 
             // System Info Card Settings
             ListItem(
@@ -782,101 +779,7 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                 }
             )
 
-            // Help Card Customization
-            ListItem(
-                leadingContent = { 
-                    Icon(
-                        imageVector = Icons.Filled.Help,
-                        contentDescription = "Help Card Settings"
-                    ) 
-                },
-                headlineContent = {
-                    Text(
-                        text = stringResource(R.string.help_card_customization),
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.SemiBold,
-                    )
-                },
-                supportingContent = {
-                    Text(
-                        text = stringResource(R.string.help_card_customization_summary),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                },
-                trailingContent = {
-                    Switch(
-                        checked = showHelpCard,
-                        onCheckedChange = {
-                            prefs.edit().putBoolean("show_help_card", it).apply()
-                            showHelpCard = it
-                        }
-                    )
-                },
-                modifier = Modifier.clickable { 
-                    val newValue = !showHelpCard
-                    prefs.edit().putBoolean("show_help_card", newValue).apply()
-                    showHelpCard = newValue
-                }
-            )
 
-            // Home Icon Customization
-            var selectedIconType by rememberSaveable {
-                mutableStateOf(
-                    prefs.getString("selected_icon_type", "SEASONAL") ?: "SEASONAL"
-                )
-            }
-            
-            // Icon Selection with OFF option
-            val iconOptions = listOf(
-                "OFF" to "Off",
-                "SEASONAL" to "Seasonal (Auto)",
-                "WINTER" to "Winter",
-                "SPRING" to "Spring", 
-                "SUMMER" to "Summer",
-                "FALL" to "Fall",
-                "KSU_NEXT" to "KSU Next",
-                "CANNABIS" to "Cannabis"
-            )
-            
-            val currentIconDisplay = iconOptions.find { it.first == selectedIconType }?.second ?: "Seasonal (Auto)"
-            
-            val iconDialog = rememberCustomDialog { dismiss ->
-                val options = iconOptions.map { (value, display) ->
-                    ListOption(
-                        titleText = display,
-                        selected = value == selectedIconType
-                    )
-                }
-                
-                ListDialog(
-                    state = rememberUseCaseState(visible = true, onCloseRequest = { dismiss() }),
-                    header = Header.Default(title = "Select Home Screen Icon Style"),
-                    selection = ListSelection.Single(
-                        showRadioButtons = true,
-                        options = options
-                    ) { index, _ ->
-                        val selectedIcon = iconOptions[index].first
-                        prefs.edit().putString("selected_icon_type", selectedIcon).apply()
-                        selectedIconType = selectedIcon
-                        dismiss()
-                    }
-                )
-            }
-            
-            ListItem(
-                leadingContent = { Icon(Icons.Filled.Palette, "Home Screen Icon Style") },
-                headlineContent = { Text(
-                    text = "Home Screen Icon Style",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold,
-                ) },
-                supportingContent = { Text("Change the home screen icon style or turn it off. Current: $currentIconDisplay") },
-                modifier = Modifier
-                    .clickable {
-                        iconDialog.show()
-                    }
-            )
 
             // Icon Theme Selection
             var showIconThemeManager by remember { mutableStateOf(false) }

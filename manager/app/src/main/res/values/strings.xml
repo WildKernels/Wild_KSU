@@ -262,8 +262,8 @@
     <string name="dpi_preset_xlarge">Extra Large (480)</string>
     <string name="dpi_apply_settings">Apply Settings</string>
     <!-- InfoCard Customization -->
-    <string name="info_card_customization">System Info Card</string>
-    <string name="info_card_customization_summary">Customize which system information is displayed on the home screen</string>
+    <string name="info_card_customization">System Info Card Settings</string>
+    <string name="info_card_customization_summary">Customize system information display, help card, and home screen icon style</string>
     <string name="info_card_always_expanded">Always expanded</string>
     <string name="info_card_always_expanded_summary">Keep the info card expanded at all times</string>
     
@@ -271,4 +271,14 @@
     <string name="help_card_customization">Help Card</string>
     <string name="help_card_customization_summary">Show or hide the help card at the bottom of the home screen</string>
     <string name="help_card_show">Show help card</string>
+    
+    <!-- Home Screen Icon Style -->
+    <string name="home_screen_icon_style">Home Screen Icon Style</string>
+    <string name="home_screen_icon_style_summary">Change the home screen icon style or turn it off</string>
+    <string name="home_screen_icon_current">Current: %s</string>
+    <string name="home_screen_icon_select_dialog_title">Select Home Screen Icon Style</string>
+    
+    <!-- System Info Card Settings -->
+    <string name="system_info_card_settings">System Info Card Settings</string>
+    <string name="system_info_card_settings_summary">Customize system information display and home screen elements</string>
 </resources>
