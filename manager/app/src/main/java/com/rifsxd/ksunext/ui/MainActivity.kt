@@ -897,7 +897,8 @@ private fun RegularTopBar(
                         val editor = prefs.edit()
                         editor.putString("app_locale", "system")
                         editor.putBoolean("use_banner", true)
-                        // Clear background
+                        // Clear background completely
+                        ImageStorageUtils.deleteInternalBackgroundImage(context)
                         editor.remove("background_image_uri")
                         editor.remove("background_image_path")
                         // Set darkness and blur to zero

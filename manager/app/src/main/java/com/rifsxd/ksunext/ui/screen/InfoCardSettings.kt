@@ -260,7 +260,7 @@ fun InfoCardSettingsScreen(
         "FALL" to "Fall",
         "KSU_NEXT" to "KSU Next",
         "CANNABIS" to "Cannabis",
-        "AMOGUS_SUSFS" to "Amogus"
+        "AMOGUS_SUSFS" to "Amungus"
     )
     
     val currentIconDisplay = iconOptions.find { it.first == selectedIconType }?.second ?: "Seasonal (Auto)"
