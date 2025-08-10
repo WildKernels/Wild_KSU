@@ -556,121 +556,132 @@ fun InfoCardSettingsScreen(
             ) { index, itemKey ->
                 val item = infoCardItems.find { it.key == itemKey }
                 if (item != null) {
-                    Row(
+                    Card(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(vertical = 8.dp, horizontal = 16.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        // Icon
-                        getIconForItem(item.iconType, item.iconData)()
-                        
-                        Spacer(modifier = Modifier.width(12.dp))
-                        
-                        // Title
-                        Text(
-                            text = stringResource(item.titleRes),
-                            modifier = Modifier.weight(1f),
-                            style = MaterialTheme.typography.bodyLarge,
-                            fontWeight = FontWeight.Medium
+                            .padding(vertical = 4.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceContainer
                         )
-                        
-                        // Move controls
+                    ) {
                         Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            // Move up button (tap to move up one, hold to move to top)
-                            IconButton(
-                                onClick = {
-                                    if (index > 0) {
-                                        val newOrder = itemOrder.toMutableList()
-                                        val temp = newOrder[index]
-                                        newOrder[index] = newOrder[index - 1]
-                                        newOrder[index - 1] = temp
-                                        itemOrder = newOrder
-                                    }
-                                },
-                                enabled = index > 0,
-                                modifier = Modifier
-                                    .size(40.dp)
-                                    .pointerInput(Unit) {
-                                        detectDragGestures(
-                                            onDragStart = { },
-                                            onDragEnd = { },
-                                            onDrag = { _, _ -> }
-                                        )
-                                    }
-                                    .pointerInput(Unit) {
-                                        detectTapGestures(
-                                            onLongPress = {
+                            // Icon
+                            getIconForItem(item.iconType, item.iconData)()
+                            
+                            Spacer(modifier = Modifier.width(12.dp))
+                            
+                            // Title
+                            Text(
+                                text = stringResource(item.titleRes),
+                                modifier = Modifier.weight(1f),
+                                style = MaterialTheme.typography.bodyLarge,
+                                fontWeight = FontWeight.Medium
+                            )
+                            
+                            // Move controls
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                // Move up button (tap to move up one, hold to move to top)
+                                IconButton(
+                                    onClick = {
+                                        if (index > 0) {
+                                            val newOrder = itemOrder.toMutableList()
+                                            val temp = newOrder[index]
+                                            newOrder[index] = newOrder[index - 1]
+                                            newOrder[index - 1] = temp
+                                            itemOrder = newOrder
+                                        }
+                                    },
+                                    enabled = index > 0,
+                                    modifier = Modifier
+                                        .size(40.dp)
+                                        .combinedClickable(
+                                            onClick = {
+                                                if (index > 0) {
+                                                    val newOrder = itemOrder.toMutableList()
+                                                    val temp = newOrder[index]
+                                                    newOrder[index] = newOrder[index - 1]
+                                                    newOrder[index - 1] = temp
+                                                    itemOrder = newOrder
+                                                }
+                                            },
+                                            onLongClick = {
                                                 if (index > 0) {
                                                     // Move to top
                                                     val newOrder = itemOrder.toMutableList()
-                                                    val item = newOrder.removeAt(index)
-                                                    newOrder.add(0, item)
+                                                    val itemToMove = newOrder.removeAt(index)
+                                                    newOrder.add(0, itemToMove)
                                                     itemOrder = newOrder
+                                                    hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
                                                 }
                                             }
                                         )
-                                    }
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.KeyboardArrowUp,
-                                    contentDescription = "Move up (tap) or to top (hold)",
-                                    tint = if (index > 0) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
-                                )
-                            }
-                            
-                            // Move down button (tap to move down one, hold to move to bottom)
-                            IconButton(
-                                onClick = {
-                                    if (index < itemOrder.size - 1) {
-                                        val newOrder = itemOrder.toMutableList()
-                                        val temp = newOrder[index]
-                                        newOrder[index] = newOrder[index + 1]
-                                        newOrder[index + 1] = temp
-                                        itemOrder = newOrder
-                                    }
-                                },
-                                enabled = index < itemOrder.size - 1,
-                                modifier = Modifier
-                                    .size(40.dp)
-                                    .pointerInput(Unit) {
-                                        detectDragGestures(
-                                            onDragStart = { },
-                                            onDragEnd = { },
-                                            onDrag = { _, _ -> }
-                                        )
-                                    }
-                                    .pointerInput(Unit) {
-                                        detectTapGestures(
-                                            onLongPress = {
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.KeyboardArrowUp,
+                                        contentDescription = "Move up (tap) or to top (hold)",
+                                        tint = if (index > 0) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
+                                    )
+                                }
+                                
+                                // Move down button (tap to move down one, hold to move to bottom)
+                                IconButton(
+                                    onClick = {
+                                        if (index < itemOrder.size - 1) {
+                                            val newOrder = itemOrder.toMutableList()
+                                            val temp = newOrder[index]
+                                            newOrder[index] = newOrder[index + 1]
+                                            newOrder[index + 1] = temp
+                                            itemOrder = newOrder
+                                        }
+                                    },
+                                    enabled = index < itemOrder.size - 1,
+                                    modifier = Modifier
+                                        .size(40.dp)
+                                        .combinedClickable(
+                                            onClick = {
+                                                if (index < itemOrder.size - 1) {
+                                                    val newOrder = itemOrder.toMutableList()
+                                                    val temp = newOrder[index]
+                                                    newOrder[index] = newOrder[index + 1]
+                                                    newOrder[index + 1] = temp
+                                                    itemOrder = newOrder
+                                                }
+                                            },
+                                            onLongClick = {
                                                 if (index < itemOrder.size - 1) {
                                                     // Move to bottom
                                                     val newOrder = itemOrder.toMutableList()
-                                                    val item = newOrder.removeAt(index)
-                                                    newOrder.add(item)
+                                                    val itemToMove = newOrder.removeAt(index)
+                                                    newOrder.add(itemToMove)
                                                     itemOrder = newOrder
+                                                    hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
                                                 }
                                             }
                                         )
-                                    }
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.KeyboardArrowDown,
-                                    contentDescription = "Move down (tap) or to bottom (hold)",
-                                    tint = if (index < itemOrder.size - 1) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
-                                )
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.KeyboardArrowDown,
+                                        contentDescription = "Move down (tap) or to bottom (hold)",
+                                        tint = if (index < itemOrder.size - 1) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
+                                    )
+                                }
                             }
+                            
+                            Spacer(modifier = Modifier.width(8.dp))
+                            
+                            // Toggle switch
+                            Switch(
+                                checked = item.enabled,
+                                onCheckedChange = item.onToggle
+                            )
                         }
-                        
-                        Spacer(modifier = Modifier.width(8.dp))
-                        
-                        // Toggle switch
-                        Switch(
-                            checked = item.enabled,
-                            onCheckedChange = item.onToggle
-                        )
                     }
                 }
             }
