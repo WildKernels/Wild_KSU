@@ -852,7 +852,13 @@ private fun RegularTopBar(
                     onClick = {
                         // Reset all InfoCard settings to default
                         val editor = prefs.edit()
+                        // Reset home icon to seasonal
+                        editor.putString("selected_icon_type", "SEASONAL")
+                        // Enable help card
+                        editor.putBoolean("show_help_card", true)
+                        // Set always expanded to off (false)
                         editor.putBoolean("info_card_always_expanded", false)
+                        // Reset all info card items to enabled
                         editor.putBoolean("info_card_show_manager_version", true)
                         editor.putBoolean("info_card_show_hook_mode", true)
                         editor.putBoolean("info_card_show_mount_system", true)
@@ -862,7 +868,8 @@ private fun RegularTopBar(
                         editor.putBoolean("info_card_show_android_version", true)
                         editor.putBoolean("info_card_show_abi", true)
                         editor.putBoolean("info_card_show_selinux_status", true)
-                        editor.remove("info_card_items_order") // Reset to default order
+                        // Reset to default order
+                        editor.remove("info_card_items_order")
                         editor.apply()
                         
                         // Navigate back and forward to refresh the screen
