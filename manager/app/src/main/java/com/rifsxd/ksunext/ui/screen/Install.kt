@@ -19,6 +19,7 @@ import androidx.compose.material.icons.Icons
 
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -174,11 +175,15 @@ fun InstallScreen(navigator: DestinationsNavigator) {
                     )
                 )
             }
-            Button(modifier = Modifier.fillMaxWidth(),
+            Button(
+                modifier = Modifier.fillMaxWidth(),
                 enabled = installMethod != null,
                 onClick = {
                     onClickNext()
-                }) {
+                },
+                colors = ButtonDefaults.buttonColors(),
+                border = null
+            ) {
                 Text(
                     stringResource(id = R.string.install_next),
                     fontSize = MaterialTheme.typography.bodyMedium.fontSize

@@ -892,9 +892,15 @@ private fun RegularTopBar(
                         val editor = prefs.edit()
                         editor.putString("app_locale", "system")
                         editor.putBoolean("use_banner", true)
+                        // Clear background
+                        editor.remove("background_image_uri")
+                        editor.remove("background_image_path")
+                        // Set darkness and blur to zero
                         editor.putFloat("background_blur", 0.0f)
                         editor.putFloat("ui_transparency", 0.0f)
-                        editor.putInt("dpi", 320) // Default DPI
+                        // Detect and set system DPI
+                        val systemDpi = context.resources.displayMetrics.densityDpi
+                        editor.putInt("app_dpi", systemDpi)
                         editor.apply()
                         
                         // Navigate back and forward to refresh the screen

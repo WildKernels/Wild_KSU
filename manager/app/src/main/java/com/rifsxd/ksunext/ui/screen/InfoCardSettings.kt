@@ -549,155 +549,37 @@ fun InfoCardSettingsScreen(
                 )
             }
 
-            // Info card items with drag and drop
+            // Info card items (simplified without drag and drop)
             itemsIndexed(
                 items = itemOrder,
                 key = { _, itemKey -> itemKey }
             ) { index, itemKey ->
                 val item = infoCardItems.find { it.key == itemKey }
                 if (item != null) {
-                    var isDragging by remember { mutableStateOf(false) }
-                    var dragOffset by remember { mutableStateOf(0f) }
-                    
-                    Card(
+                    Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .animateItem(
-                                fadeInSpec = null,
-                                fadeOutSpec = null
-                            )
-                            .offset(y = dragOffset.dp)
-                            .alpha(if (isDragging) 0.8f else 1f)
-                            .shadow(
-                                elevation = if (isDragging) 8.dp else 1.dp,
-                                shape = RoundedCornerShape(12.dp)
-                            ),
-                        colors = CardDefaults.cardColors(
-                            containerColor = if (isDragging) 
-                                MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
-                            else 
-                                MaterialTheme.colorScheme.surfaceContainer
-                        )
+                            .padding(vertical = 8.dp, horizontal = 16.dp),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            // Drag handle
-                            Icon(
-                                imageVector = Icons.Filled.DragHandle,
-                                contentDescription = "Drag to reorder",
-                                modifier = Modifier
-                                    .padding(end = 12.dp)
-                                    .pointerInput(Unit) {
-                                        detectDragGestures(
-                                            onDragStart = {
-                                                isDragging = true
-                                                hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
-                                            },
-                                            onDragEnd = {
-                                                isDragging = false
-                                                dragOffset = 0f
-                                                
-                                                // Determine new position based on drag offset
-                                                val itemHeight = 80.dp.value // Approximate item height
-                                                val draggedPositions = (dragOffset / itemHeight).toInt()
-                                                val newIndex = (index + draggedPositions).coerceIn(0, itemOrder.size - 1)
-                                                
-                                                if (newIndex != index) {
-                                                    val newOrder = itemOrder.toMutableList()
-                                                    val draggedItem = newOrder.removeAt(index)
-                                                    newOrder.add(newIndex, draggedItem)
-                                                    itemOrder = newOrder
-                                                    hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
-                                                }
-                                            }
-                                        ) { _, dragAmount ->
-                                            dragOffset += dragAmount.y
-                                        }
-                                    },
-                                tint = if (isDragging) 
-                                    MaterialTheme.colorScheme.primary 
-                                else 
-                                    MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                            
-                            // Icon
-                            getIconForItem(item.iconType, item.iconData)()
-                            
-                            // Title
-                            Text(
-                                text = stringResource(item.titleRes),
-                                modifier = Modifier.weight(1f),
-                                style = MaterialTheme.typography.bodyLarge,
-                                fontWeight = FontWeight.Medium
-                            )
-                            
-                            Row(
-                                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                // Move up button (improved functionality)
-                                ReorderButton(
-                                    icon = Icons.Filled.KeyboardArrowUp,
-                                    contentDescription = "Move up",
-                                    enabled = index > 0,
-                                    onTap = {
-                                        if (index > 0) {
-                                            hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                                            val newOrder = itemOrder.toMutableList()
-                                            val temp = newOrder[index]
-                                            newOrder[index] = newOrder[index - 1]
-                                            newOrder[index - 1] = temp
-                                            itemOrder = newOrder
-                                        }
-                                    },
-                                    onLongPress = {
-                                        if (index > 0) {
-                                            hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
-                                            val newOrder = itemOrder.toMutableList()
-                                            val item = newOrder.removeAt(index)
-                                            newOrder.add(0, item)
-                                            itemOrder = newOrder
-                                        }
-                                    }
-                                )
-                                
-                                // Move down button (improved functionality)
-                                ReorderButton(
-                                    icon = Icons.Filled.KeyboardArrowDown,
-                                    contentDescription = "Move down",
-                                    enabled = index < itemOrder.size - 1,
-                                    onTap = {
-                                        if (index < itemOrder.size - 1) {
-                                            hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                                            val newOrder = itemOrder.toMutableList()
-                                            val temp = newOrder[index]
-                                            newOrder[index] = newOrder[index + 1]
-                                            newOrder[index + 1] = temp
-                                            itemOrder = newOrder
-                                        }
-                                    },
-                                    onLongPress = {
-                                        if (index < itemOrder.size - 1) {
-                                            hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
-                                            val newOrder = itemOrder.toMutableList()
-                                            val item = newOrder.removeAt(index)
-                                            newOrder.add(item)
-                                            itemOrder = newOrder
-                                        }
-                                    }
-                                )
-                                
-                                // Toggle switch
-                                Switch(
-                                    checked = item.enabled,
-                                    onCheckedChange = item.onToggle
-                                )
-                            }
-                        }
+                        // Icon
+                        getIconForItem(item.iconType, item.iconData)()
+                        
+                        Spacer(modifier = Modifier.width(12.dp))
+                        
+                        // Title
+                        Text(
+                            text = stringResource(item.titleRes),
+                            modifier = Modifier.weight(1f),
+                            style = MaterialTheme.typography.bodyLarge,
+                            fontWeight = FontWeight.Medium
+                        )
+                        
+                        // Toggle switch
+                        Switch(
+                            checked = item.enabled,
+                            onCheckedChange = item.onToggle
+                        )
                     }
                 }
             }
@@ -705,56 +587,7 @@ fun InfoCardSettingsScreen(
     }
 }
 
-@Composable
-private fun ReorderButton(
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
-    contentDescription: String,
-    enabled: Boolean,
-    onTap: () -> Unit,
-    onLongPress: () -> Unit
-) {
-    var isPressed by remember { mutableStateOf(false) }
-    val scale by animateFloatAsState(
-        targetValue = if (isPressed) 0.9f else 1f,
-        animationSpec = spring(
-            dampingRatio = Spring.DampingRatioMediumBouncy,
-            stiffness = Spring.StiffnessLow
-        ),
-        label = "button_scale"
-    )
-    
-    Box(
-        modifier = Modifier
-            .size(48.dp)
-            .scale(scale)
-            .pointerInput(enabled) {
-                if (enabled) {
-                    detectTapGestures(
-                        onPress = {
-                            isPressed = true
-                            val released = try {
-                                tryAwaitRelease()
-                            } catch (e: Exception) {
-                                false
-                            }
-                            isPressed = false
-                            released
-                        },
-                        onTap = { onTap() },
-                        onLongPress = { onLongPress() }
-                    )
-                }
-            },
-        contentAlignment = Alignment.Center
-    ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = contentDescription,
-            tint = if (enabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.size(24.dp)
-        )
-    }
-}
+
 
 @Preview
 @Composable
