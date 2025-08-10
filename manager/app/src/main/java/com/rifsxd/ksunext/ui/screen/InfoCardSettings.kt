@@ -605,15 +605,15 @@ fun InfoCardSettingsScreen(
                                     fontWeight = FontWeight.Medium
                                 )
                                 
-                                // Move controls - separated vertically and bigger
-                                Column(
-                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                                // Move controls - side by side with bigger circular buttons
+                                Row(
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                    verticalAlignment = Alignment.CenterVertically
                                 ) {
                                     // Move up button (tap to move up one, hold to move to top)
                                     Box(
                                         modifier = Modifier
-                                            .size(48.dp)
+                                            .size(52.dp)
                                             .background(
                                                 if (index > 0) MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f) 
                                                 else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.2f),
@@ -646,7 +646,7 @@ fun InfoCardSettingsScreen(
                                         Icon(
                                             imageVector = Icons.Default.KeyboardArrowUp,
                                             contentDescription = "Move up (tap) or to top (hold)",
-                                            modifier = Modifier.size(28.dp),
+                                            modifier = Modifier.size(30.dp),
                                             tint = if (index > 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
                                         )
                                     }
@@ -654,7 +654,7 @@ fun InfoCardSettingsScreen(
                                     // Move down button (tap to move down one, hold to move to bottom)
                                     Box(
                                         modifier = Modifier
-                                            .size(48.dp)
+                                            .size(52.dp)
                                             .background(
                                                 if (index < itemOrder.size - 1) MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f) 
                                                 else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.2f),
@@ -687,7 +687,7 @@ fun InfoCardSettingsScreen(
                                         Icon(
                                             imageVector = Icons.Default.KeyboardArrowDown,
                                             contentDescription = "Move down (tap) or to bottom (hold)",
-                                            modifier = Modifier.size(28.dp),
+                                            modifier = Modifier.size(30.dp),
                                             tint = if (index < itemOrder.size - 1) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
                                         )
                                     }

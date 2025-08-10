@@ -857,8 +857,7 @@ fun IssueReportCard() {
             Icon(
                 imageVector = Icons.Filled.HelpOutline,
                 contentDescription = "Help Card Icon",
-                modifier = Modifier.padding(end = 16.dp),
-                tint = MaterialTheme.colorScheme.primary
+                modifier = Modifier.padding(end = 16.dp)
             )
             
             Column(modifier = Modifier.weight(1f)) {

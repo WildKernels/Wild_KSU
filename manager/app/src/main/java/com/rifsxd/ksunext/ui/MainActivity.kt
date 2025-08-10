@@ -883,7 +883,7 @@ private fun RegularTopBar(
                     }
                 ) {
                     Icon(
-                        imageVector = Icons.Filled.SettingsBackupRestore,
+                        imageVector = Icons.Filled.Refresh,
                         contentDescription = "Reset info card settings"
                     )
                 }
@@ -913,7 +913,7 @@ private fun RegularTopBar(
                     }
                 ) {
                     Icon(
-                        imageVector = Icons.Filled.SettingsBackupRestore,
+                        imageVector = Icons.Filled.Refresh,
                         contentDescription = "Reset customization settings"
                     )
                 }
