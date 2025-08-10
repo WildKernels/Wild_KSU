@@ -701,7 +701,6 @@ fun InfoCardSettingsScreen(
                     }
                 }
             }
-        }
         
         // Reset to Defaults Button
         item {
