@@ -31,7 +31,7 @@ fun SuperuserSettingsScreen(navigator: DestinationsNavigator) {
     val prefs = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
 
     Scaffold(
-        contentWindowInsets = WindowInsets(0)
+        contentWindowInsets = WindowInsets(0, 0, 0, 0)
     ) { paddingValues ->
         LazyColumn(
             modifier = Modifier

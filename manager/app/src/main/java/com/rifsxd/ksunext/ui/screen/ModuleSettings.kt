@@ -32,7 +32,7 @@ fun ModuleSettingsScreen(
     navigator: DestinationsNavigator
 ) {
     Scaffold(
-        contentWindowInsets = WindowInsets(0)
+        contentWindowInsets = WindowInsets(0, 0, 0, 0)
     ) { innerPadding ->
         ModuleSettingsContent(
             modifier = Modifier.padding(innerPadding)
