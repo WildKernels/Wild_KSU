@@ -927,11 +927,10 @@ fun ModuleItem(
                             Spacer(modifier = Modifier.weight(1f, true))
 
                             if (updateUrl.isNotEmpty() && !module.remove && !module.update) {
-                                Button(
+                                FilledTonalButton(
                                     modifier = Modifier.defaultMinSize(52.dp, 32.dp),
                                     enabled = !module.remove,
                                     onClick = { onUpdate(module) },
-                                    shape = ButtonDefaults.textShape,
                                     contentPadding = ButtonDefaults.TextButtonContentPadding
                                 ) {
                                     Icon(
