@@ -246,18 +246,16 @@ private fun UITemplateOverlay(backgroundTransparency: Float = 0.0f) {
         val padding = 16.dp.toPx()
         val cardSpacing = 16.dp.toPx()
         
-        // Account for top bar, status bar, and bottom navigation bar
-        // This ensures the preview matches the actual saved photo positioning
-        val topSystemUIHeight = 80.dp.toPx() // Status bar + top app bar
-        val bottomNavigationHeight = 80.dp.toPx() // Bottom navigation bar
-        val availableHeight = height - topSystemUIHeight - bottomNavigationHeight
+        // The background image spans the full screen, so we position UI elements
+        // as they would appear in the actual app (with system bars visible over the background)
+        val topOffset = 80.dp.toPx() // Space for status bar + top app bar
+        val bottomOffset = 80.dp.toPx() // Space for bottom navigation
         
-        var currentY = padding + topSystemUIHeight
+        var currentY = padding + topOffset
         
         // 1. Primary Status Card (Working card)
-        // Scale card heights to fit within available space
-        val scaleFactor = availableHeight / (100.dp.toPx() + 80.dp.toPx() + 200.dp.toPx() + 3 * cardSpacing + 2 * padding)
-        val primaryCardHeight = (100.dp.toPx() * scaleFactor).coerceAtLeast(60.dp.toPx())
+        // Use original card heights since the background spans full screen
+        val primaryCardHeight = 100.dp.toPx()
         
         drawRoundRect(
             color = primaryCardColor,
@@ -276,7 +274,7 @@ private fun UITemplateOverlay(backgroundTransparency: Float = 0.0f) {
         currentY += primaryCardHeight + cardSpacing
         
         // 2. Two Secondary Cards (Superusers and Modules)
-        val secondaryCardHeight = (80.dp.toPx() * scaleFactor).coerceAtLeast(50.dp.toPx())
+        val secondaryCardHeight = 80.dp.toPx()
         val secondaryCardWidth = (width - 2 * padding - cardSpacing) / 2
         
         // Superusers card
@@ -312,7 +310,7 @@ private fun UITemplateOverlay(backgroundTransparency: Float = 0.0f) {
         currentY += secondaryCardHeight + cardSpacing
         
         // 3. Info Card (System information)
-        val infoCardHeight = (200.dp.toPx() * scaleFactor).coerceAtLeast(100.dp.toPx())
+        val infoCardHeight = 200.dp.toPx()
         drawRoundRect(
             color = infoCardColor,
             topLeft = androidx.compose.ui.geometry.Offset(padding, currentY),
@@ -341,7 +339,7 @@ private fun UITemplateOverlay(backgroundTransparency: Float = 0.0f) {
         drawContext.canvas.nativeCanvas.drawText(
             "Working Status",
             padding + 12.dp.toPx(),
-            topSystemUIHeight + padding + 25.dp.toPx(),
+            topOffset + padding + 25.dp.toPx(),
             textPaint
         )
         
@@ -349,14 +347,14 @@ private fun UITemplateOverlay(backgroundTransparency: Float = 0.0f) {
         drawContext.canvas.nativeCanvas.drawText(
             "Superusers",
             padding + 12.dp.toPx(),
-            topSystemUIHeight + padding + primaryCardHeight + cardSpacing + 25.dp.toPx(),
+            topOffset + padding + primaryCardHeight + cardSpacing + 25.dp.toPx(),
             textPaint
         )
         
         drawContext.canvas.nativeCanvas.drawText(
             "Modules",
             padding + secondaryCardWidth + cardSpacing + 12.dp.toPx(),
-            topSystemUIHeight + padding + primaryCardHeight + cardSpacing + 25.dp.toPx(),
+            topOffset + padding + primaryCardHeight + cardSpacing + 25.dp.toPx(),
             textPaint
         )
         
@@ -364,7 +362,7 @@ private fun UITemplateOverlay(backgroundTransparency: Float = 0.0f) {
         drawContext.canvas.nativeCanvas.drawText(
             "System Info",
             padding + 12.dp.toPx(),
-            topSystemUIHeight + padding + primaryCardHeight + cardSpacing + secondaryCardHeight + cardSpacing + 25.dp.toPx(),
+            topOffset + padding + primaryCardHeight + cardSpacing + secondaryCardHeight + cardSpacing + 25.dp.toPx(),
             textPaint
         )
     }
