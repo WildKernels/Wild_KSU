@@ -51,7 +51,6 @@ private fun ModuleSettingsContent(
         modifier = modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
-            .padding(horizontal = 16.dp, vertical = 0.dp)
     ) {
         // Module Cards Always Expanded Setting
         var keepModulesExpanded by rememberSaveable {
