@@ -1,5 +1,6 @@
 package com.rifsxd.ksunext.ui.screen
 
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -46,6 +47,8 @@ fun SuperUserScreen(navigator: DestinationsNavigator) {
     val viewModel = LocalSuperUserViewModel.current
     val scope = rememberCoroutineScope()
     val listState = rememberLazyListState()
+    val context = LocalContext.current
+    val prefs = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
 
     LaunchedEffect(navigator) {
         viewModel.search = ""
@@ -65,7 +68,7 @@ fun SuperUserScreen(navigator: DestinationsNavigator) {
             modifier = Modifier.fillMaxSize()
         ) {
             items(viewModel.appList, key = { it.packageName + it.uid }) { app ->
-                AppItem(app) {
+                AppItem(app, prefs) {
                     navigator.navigate(AppProfileScreenDestination(app))
                 }
             }
@@ -77,86 +80,107 @@ fun SuperUserScreen(navigator: DestinationsNavigator) {
 @Composable
 private fun AppItem(
     app: SuperUserViewModel.AppInfo,
+    prefs: android.content.SharedPreferences,
     onClickListener: () -> Unit,
 ) {
     val viewModel = LocalSuperUserViewModel.current
-    ListItem(
-        modifier = Modifier.clickable(onClick = onClickListener),
-        headlineContent = { Text(
-            text = app.label,
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.SemiBold,
-        ) },
-        supportingContent = {
-            Column {
-                Text(
-                    text = app.packageName,
-                    style = MaterialTheme.typography.bodySmall
-                )
+    val useIndividualCards = prefs.getBoolean("use_individual_app_cards", false)
+    val disableFavoriteButton = prefs.getBoolean("disable_favorite_button", false)
+    
+    val content = @Composable {
+        ListItem(
+            modifier = Modifier.clickable(onClick = onClickListener),
+            headlineContent = { Text(
+                text = app.label,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold,
+            ) },
+            supportingContent = {
+                Column {
+                    Text(
+                        text = app.packageName,
+                        style = MaterialTheme.typography.bodySmall
+                    )
 
-                Spacer(modifier = Modifier.height(4.dp))
-                
-                FlowRow(
-                    horizontalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
-                    if (app.allowSu) {
-                        LabelItem(
-                            text = "ROOT",
-                        )
-                    } else {
-                        if (Natives.uidShouldUmount(app.uid)) {
+                    Spacer(modifier = Modifier.height(4.dp))
+                    
+                    FlowRow(
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        if (app.allowSu) {
                             LabelItem(
-                                text = "UMOUNT",
+                                text = "ROOT",
+                            )
+                        } else {
+                            if (Natives.uidShouldUmount(app.uid)) {
+                                LabelItem(
+                                    text = "UMOUNT",
+                                    style = LabelItemDefaults.style.copy(
+                                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                                        contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                                    )
+                                )
+                            }
+                        }
+                        if (app.hasCustomProfile) {
+                            LabelItem(
+                                text = "CUSTOM",
                                 style = LabelItemDefaults.style.copy(
-                                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                                    containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                                    contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
+                                )
+                            )
+                        } else if (!app.allowSu && !Natives.uidShouldUmount(app.uid)) {
+                            LabelItem(
+                                text = "DEFAULT",
+                                style = LabelItemDefaults.style.copy(
+                                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
                                 )
                             )
                         }
                     }
-                    if (app.hasCustomProfile) {
-                        LabelItem(
-                            text = "CUSTOM",
-                            style = LabelItemDefaults.style.copy(
-                                containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                                contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
-                            )
-                        )
-                    } else if (!app.allowSu && !Natives.uidShouldUmount(app.uid)) {
-                        LabelItem(
-                            text = "DEFAULT",
-                            style = LabelItemDefaults.style.copy(
-                                containerColor = MaterialTheme.colorScheme.primaryContainer,
-                                contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                            )
+                }
+            },
+            leadingContent = {
+                ThemedIcon(
+                    packageName = app.packageName,
+                    packageInfo = app.packageInfo,
+                    contentDescription = app.label,
+                    modifier = Modifier
+                        .padding(4.dp)
+                        .width(48.dp)
+                        .height(48.dp)
+                )
+            },
+            trailingContent = if (!disableFavoriteButton) {
+                {
+                    IconButton(
+                        onClick = { viewModel.toggleFavorite(app.packageName) }
+                    ) {
+                        Icon(
+                            imageVector = if (app.isFavorite) Icons.Filled.Bookmark else Icons.Filled.BookmarkBorder,
+                            contentDescription = if (app.isFavorite) "Remove from favorites" else "Add to favorites",
+                            tint = if (app.isFavorite) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
-            }
-        },
-        leadingContent = {
-            ThemedIcon(
-                packageName = app.packageName,
-                packageInfo = app.packageInfo,
-                contentDescription = app.label,
-                modifier = Modifier
-                    .padding(4.dp)
-                    .width(48.dp)
-                    .height(48.dp)
-            )
-        },
-        trailingContent = {
-            IconButton(
-                onClick = { viewModel.toggleFavorite(app.packageName) }
-            ) {
-                Icon(
-                    imageVector = if (app.isFavorite) Icons.Filled.Bookmark else Icons.Filled.BookmarkBorder,
-                    contentDescription = if (app.isFavorite) "Remove from favorites" else "Add to favorites",
-                    tint = if (app.isFavorite) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-        },
-    )
+            } else null,
+        )
+    }
+    
+    if (useIndividualCards) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 4.dp),
+            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        ) {
+            content()
+        }
+    } else {
+        content()
+    }
 }
 
 @Composable

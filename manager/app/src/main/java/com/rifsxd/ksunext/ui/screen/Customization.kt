@@ -100,6 +100,7 @@ import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.generated.destinations.HomeSettingsScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.ModuleSettingsScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.SuperuserSettingsScreenDestination
 import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
 import com.rifsxd.ksunext.Natives
 import com.rifsxd.ksunext.ksuApp
@@ -746,6 +747,74 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
 
 
 
+            // Home Settings (System Info Card Settings)
+            ListItem(
+                leadingContent = { 
+                    Icon(
+                        imageVector = Icons.Filled.Info,
+                        contentDescription = "Home Settings"
+                    ) 
+                },
+                headlineContent = {
+                    Text(
+                        text = stringResource(R.string.info_card_customization),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold,
+                    )
+                },
+                supportingContent = {
+                    Text(
+                        text = stringResource(R.string.info_card_customization_summary),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                },
+                trailingContent = {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                        contentDescription = "Navigate to home settings",
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                },
+                modifier = Modifier.clickable { 
+                    navigator.navigate(HomeSettingsScreenDestination)
+                }
+            )
+
+            // Superuser Settings
+            ListItem(
+                leadingContent = { 
+                    Icon(
+                        imageVector = Icons.Filled.SupervisorAccount,
+                        contentDescription = "Superuser Settings"
+                    ) 
+                },
+                headlineContent = {
+                    Text(
+                        text = "Superuser Settings",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold,
+                    )
+                },
+                supportingContent = {
+                    Text(
+                        text = "Customize superuser app display and behavior",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                },
+                trailingContent = {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                        contentDescription = "Navigate to superuser settings",
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                },
+                modifier = Modifier.clickable { 
+                    navigator.navigate(SuperuserSettingsScreenDestination)
+                }
+            )
+
             // Module Settings
             ListItem(
                 leadingContent = { 
@@ -779,79 +848,6 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                     navigator.navigate(ModuleSettingsScreenDestination)
                 }
             )
-
-            // System Info Card Settings
-            ListItem(
-                leadingContent = { 
-                    Icon(
-                        imageVector = Icons.Filled.Info,
-                        contentDescription = "System Info Card Settings"
-                    ) 
-                },
-                headlineContent = {
-                    Text(
-                        text = stringResource(R.string.info_card_customization),
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.SemiBold,
-                    )
-                },
-                supportingContent = {
-                    Text(
-                        text = stringResource(R.string.info_card_customization_summary),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                },
-                trailingContent = {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                        contentDescription = "Navigate to settings",
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                },
-                modifier = Modifier.clickable { 
-                    navigator.navigate(HomeSettingsScreenDestination)
-                }
-            )
-
-
-
-            // Icon Theme Selection
-            var showIconThemeManager by remember { mutableStateOf(false) }
-            var availableIconPacks by remember { mutableStateOf<List<IconPack>>(emptyList()) }
-            
-            // Load available icon packs to check if any are installed
-            LaunchedEffect(Unit) {
-                availableIconPacks = IconPackHelper.getInstalledIconPacks(context)
-            }
-            
-            ListItem(
-                leadingContent = { Icon(Icons.Filled.Style, stringResource(R.string.icon_theme)) },
-                headlineContent = { Text(
-                    text = stringResource(R.string.icon_theme),
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold,
-                ) },
-                supportingContent = { 
-                    Text(
-                        if (availableIconPacks.isEmpty()) {
-                            "No themes installed. Install a theme"
-                        } else {
-                            stringResource(R.string.icon_theme_summary)
-                        }
-                    )
-                },
-                modifier = Modifier
-                    .clickable {
-                        showIconThemeManager = true
-                    }
-            )
-            
-            if (showIconThemeManager) {
-                IconThemeManagerDialog(
-                    onDismiss = { showIconThemeManager = false }
-                )
-            }
         }
     }
 }

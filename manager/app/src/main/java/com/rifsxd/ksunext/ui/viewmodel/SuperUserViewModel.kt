@@ -99,16 +99,33 @@ class SuperUserViewModel : ViewModel() {
     }
 
     private val sortedList by derivedStateOf {
-        val comparator = compareBy<AppInfo> {
-            when {
-                favoriteApps.contains(it.packageName) -> -1 // Favorites first
-                it.profile != null && it.profile.allowSu -> 0
-                it.profile != null && (
-                    if (it.profile.allowSu) !it.profile.rootUseDefault else !it.profile.nonRootUseDefault
-                ) -> 1
-                else -> 2
-            }
-        }.then(compareBy(Collator.getInstance(Locale.getDefault()), AppInfo::label))
+        val disableFavoriteSorting = prefs.getBoolean("disable_favorite_sorting", false)
+        
+        val comparator = if (disableFavoriteSorting) {
+            // When favorite sorting is disabled, sort by profile status then alphabetically
+            compareBy<AppInfo> {
+                when {
+                    it.profile != null && it.profile.allowSu -> 0
+                    it.profile != null && (
+                        if (it.profile.allowSu) !it.profile.rootUseDefault else !it.profile.nonRootUseDefault
+                    ) -> 1
+                    else -> 2
+                }
+            }.then(compareBy(Collator.getInstance(Locale.getDefault()), AppInfo::label))
+        } else {
+            // Original sorting with favorites first
+            compareBy<AppInfo> {
+                when {
+                    favoriteApps.contains(it.packageName) -> -1 // Favorites first
+                    it.profile != null && it.profile.allowSu -> 0
+                    it.profile != null && (
+                        if (it.profile.allowSu) !it.profile.rootUseDefault else !it.profile.nonRootUseDefault
+                    ) -> 1
+                    else -> 2
+                }
+            }.then(compareBy(Collator.getInstance(Locale.getDefault()), AppInfo::label))
+        }
+        
         apps.sortedWith(comparator).also {
             isRefreshing = false
         }

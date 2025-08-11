@@ -107,6 +107,8 @@ import com.ramcosta.composedestinations.generated.destinations.TemplateEditorScr
 import com.ramcosta.composedestinations.generated.destinations.AppProfileTemplateScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.InstallScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.HomeSettingsScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.ModuleSettingsScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.SuperuserSettingsScreenDestination
 import com.ramcosta.composedestinations.generated.NavGraphs
 import androidx.navigation.NavDestination
 import com.ramcosta.composedestinations.utils.isRouteOnBackStackAsState
@@ -524,6 +526,27 @@ private fun UnifiedTopBar(
         SuperUserScreenDestination.route -> {
             SuperUserTopBar(superUserViewModel = superUserViewModel, navigator = navigator, modifier = modifier)
         }
+        HomeSettingsScreenDestination.route -> {
+            SettingsTopBar(
+                title = stringResource(R.string.info_card_customization),
+                navigator = navigator,
+                modifier = modifier
+            )
+        }
+        SuperuserSettingsScreenDestination.route -> {
+            SettingsTopBar(
+                title = "Superuser Settings",
+                navigator = navigator,
+                modifier = modifier
+            )
+        }
+        ModuleSettingsScreenDestination.route -> {
+            SettingsTopBar(
+                title = "Module Settings",
+                navigator = navigator,
+                modifier = modifier
+            )
+        }
         TemplateEditorScreenDestination.route -> {
             // TemplateEditor handles its own top bar, so we don't show one here
         }
@@ -748,6 +771,32 @@ private fun SuperUserTopBar(superUserViewModel: SuperUserViewModel, navigator: D
                         }
                     )
                 }
+            }
+        }
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun SettingsTopBar(
+    title: String,
+    navigator: DestinationsNavigator,
+    modifier: Modifier = Modifier
+) {
+    TopAppBar(
+        modifier = modifier,
+        title = { 
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Black,
+            ) 
+        },
+        navigationIcon = {
+            IconButton(
+                onClick = { navigator.navigateUp() }
+            ) { 
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null) 
             }
         }
     )
