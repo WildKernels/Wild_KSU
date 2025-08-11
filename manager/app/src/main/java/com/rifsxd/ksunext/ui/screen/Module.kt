@@ -289,7 +289,8 @@ fun ModuleScreen(navigator: DestinationsNavigator) {
                         selectZipLauncher.launch(intent)
                     },
                     icon = { Icon(Icons.Filled.Add, moduleInstall) },
-                    text = { Text(text = moduleInstall) }
+                    text = { Text(text = moduleInstall) },
+                    containerColor = MaterialTheme.colorScheme.surfaceContainer
                 )
             }
         }
