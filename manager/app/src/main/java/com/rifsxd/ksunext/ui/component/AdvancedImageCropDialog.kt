@@ -57,6 +57,8 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.animation.core.*
 import androidx.compose.material3.Surface
+import androidx.compose.ui.draw.scale
+import kotlinx.coroutines.delay
 import coil.compose.rememberAsyncImagePainter
 import com.rifsxd.ksunext.ui.util.ImageCropUtils
 
