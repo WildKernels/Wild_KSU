@@ -10,9 +10,19 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.FitScreen
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.material.icons.filled.ZoomOutMap
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.RotateRight
+import androidx.compose.material.icons.filled.FlipHorizontal
+import androidx.compose.material.icons.filled.FlipVertical
+import androidx.compose.material.icons.filled.Brightness6
+import androidx.compose.material.icons.filled.Contrast
+import androidx.compose.material.icons.filled.Palette
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -57,6 +67,16 @@ fun AdvancedImageCropDialog(
     var offsetY by remember { mutableFloatStateOf(prefs.getFloat("background_pos_y", 0.0f)) }
     var rotation by remember { mutableFloatStateOf(prefs.getFloat("background_rotation", 0.0f)) }
     
+    // Additional editing states
+    var flipHorizontal by remember { mutableStateOf(prefs.getBoolean("background_flip_h", false)) }
+    var flipVertical by remember { mutableStateOf(prefs.getBoolean("background_flip_v", false)) }
+    var brightness by remember { mutableFloatStateOf(prefs.getFloat("background_brightness", 1.0f)) }
+    var contrast by remember { mutableFloatStateOf(prefs.getFloat("background_contrast", 1.0f)) }
+    var saturation by remember { mutableFloatStateOf(prefs.getFloat("background_saturation", 1.0f)) }
+    
+    // UI state
+    var showMoreOptions by remember { mutableStateOf(false) }
+    
     // Get current transparency for preview only - default to 0.0f (solid)
     val backgroundTransparency = prefs.getFloat("background_transparency", 0.0f)
     
@@ -91,6 +111,65 @@ fun AdvancedImageCropDialog(
                 .fillMaxSize()
                 .background(Color.Black)
         ) {
+            // Unified Top Bar
+            TopAppBar(
+                title = {
+                    Text(
+                        text = "Photo Editor",
+                        style = MaterialTheme.typography.titleLarge,
+                        color = Color.White
+                    )
+                },
+                navigationIcon = {
+                    IconButton(onClick = onDismiss) {
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Close",
+                            tint = Color.White
+                        )
+                    }
+                },
+                actions = {
+                    // Quick rotation button
+                    IconButton(onClick = {
+                        rotation = (rotation + 90f) % 360f
+                    }) {
+                        Icon(
+                            Icons.Default.RotateRight,
+                            contentDescription = "Rotate 90°",
+                            tint = Color.White
+                        )
+                    }
+                    
+                    // Flip horizontal button
+                    IconButton(onClick = {
+                        flipHorizontal = !flipHorizontal
+                    }) {
+                        Icon(
+                            Icons.Default.FlipHorizontal,
+                            contentDescription = "Flip Horizontal",
+                            tint = if (flipHorizontal) MaterialTheme.colorScheme.primary else Color.White
+                        )
+                    }
+                    
+                    // More options button
+                    IconButton(onClick = {
+                        showMoreOptions = !showMoreOptions
+                    }) {
+                        Icon(
+                            Icons.Default.MoreVert,
+                            contentDescription = "More Options",
+                            tint = Color.White
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.Black.copy(alpha = 0.8f)
+                ),
+                modifier = Modifier
+                    .statusBarsPadding()
+                    .zIndex(1f)
+            )
             // Image preview with full transformations (zoom, drag, and rotation)
             Box(
                 modifier = Modifier
@@ -114,17 +193,179 @@ fun AdvancedImageCropDialog(
                     modifier = Modifier
                         .fillMaxSize()
                         .graphicsLayer(
-                            scaleX = scale,
-                            scaleY = scale,
+                            scaleX = scale * if (flipHorizontal) -1f else 1f,
+                            scaleY = scale * if (flipVertical) -1f else 1f,
                             translationX = offsetX,
                             translationY = offsetY,
-                            rotationZ = rotation
+                            rotationZ = rotation,
+                            alpha = brightness.coerceIn(0.1f, 2.0f)
                         ),
-                    contentScale = ContentScale.Fit // Match the actual background behavior
+                    contentScale = ContentScale.Fit, // Match the actual background behavior
+                    colorFilter = androidx.compose.ui.graphics.ColorFilter.colorMatrix(
+                        androidx.compose.ui.graphics.ColorMatrix().apply {
+                            // Apply contrast
+                            val contrastValue = contrast.coerceIn(0.1f, 3.0f)
+                            val translate = (1.0f - contrastValue) / 2.0f * 255.0f
+                            val scale = contrastValue
+                            this[0, 0] = scale // Red
+                            this[1, 1] = scale // Green  
+                            this[2, 2] = scale // Blue
+                            this[0, 4] = translate // Red offset
+                            this[1, 4] = translate // Green offset
+                            this[2, 4] = translate // Blue offset
+                            
+                            // Apply saturation
+                            val satValue = saturation.coerceIn(0.0f, 2.0f)
+                            val lumR = 0.3086f
+                            val lumG = 0.6094f
+                            val lumB = 0.0820f
+                            val sr = (1 - satValue) * lumR
+                            val sg = (1 - satValue) * lumG
+                            val sb = (1 - satValue) * lumB
+                            
+                            this[0, 0] = sr + satValue
+                            this[0, 1] = sr
+                            this[0, 2] = sr
+                            this[1, 0] = sg
+                            this[1, 1] = sg + satValue
+                            this[1, 2] = sg
+                            this[2, 0] = sb
+                            this[2, 1] = sb
+                            this[2, 2] = sb + satValue
+                        }
+                    )
                 )
                 
                 // Template overlay showing where UI elements will be
                 UITemplateOverlay(backgroundTransparency = backgroundTransparency)
+            }
+            
+            // Expanded options panel
+            if (showMoreOptions) {
+                Card(
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(top = 80.dp, end = 16.dp)
+                        .width(280.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = Color.Black.copy(alpha = 0.9f)
+                    )
+                ) {
+                    Column(
+                        modifier = Modifier.padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        Text(
+                            text = "Adjustments",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = Color.White
+                        )
+                        
+                        // Brightness slider
+                        Column {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text("Brightness", color = Color.White, style = MaterialTheme.typography.bodySmall)
+                                Text("${(brightness * 100).toInt()}%", color = Color.White, style = MaterialTheme.typography.bodySmall)
+                            }
+                            Slider(
+                                value = brightness,
+                                onValueChange = { brightness = it },
+                                valueRange = 0.1f..2.0f,
+                                colors = SliderDefaults.colors(
+                                    thumbColor = MaterialTheme.colorScheme.primary,
+                                    activeTrackColor = MaterialTheme.colorScheme.primary
+                                )
+                            )
+                        }
+                        
+                        // Contrast slider
+                        Column {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text("Contrast", color = Color.White, style = MaterialTheme.typography.bodySmall)
+                                Text("${(contrast * 100).toInt()}%", color = Color.White, style = MaterialTheme.typography.bodySmall)
+                            }
+                            Slider(
+                                value = contrast,
+                                onValueChange = { contrast = it },
+                                valueRange = 0.1f..3.0f,
+                                colors = SliderDefaults.colors(
+                                    thumbColor = MaterialTheme.colorScheme.primary,
+                                    activeTrackColor = MaterialTheme.colorScheme.primary
+                                )
+                            )
+                        }
+                        
+                        // Saturation slider
+                        Column {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text("Saturation", color = Color.White, style = MaterialTheme.typography.bodySmall)
+                                Text("${(saturation * 100).toInt()}%", color = Color.White, style = MaterialTheme.typography.bodySmall)
+                            }
+                            Slider(
+                                value = saturation,
+                                onValueChange = { saturation = it },
+                                valueRange = 0.0f..2.0f,
+                                colors = SliderDefaults.colors(
+                                    thumbColor = MaterialTheme.colorScheme.primary,
+                                    activeTrackColor = MaterialTheme.colorScheme.primary
+                                )
+                            )
+                        }
+                        
+                        Divider(color = Color.White.copy(alpha = 0.3f))
+                        
+                        // Additional flip options
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceEvenly
+                        ) {
+                            OutlinedButton(
+                                onClick = { flipVertical = !flipVertical },
+                                colors = ButtonDefaults.outlinedButtonColors(
+                                    contentColor = if (flipVertical) MaterialTheme.colorScheme.primary else Color.White
+                                ),
+                                border = BorderStroke(
+                                    1.dp, 
+                                    if (flipVertical) MaterialTheme.colorScheme.primary else Color.White.copy(alpha = 0.5f)
+                                ),
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Icon(Icons.Default.FlipVertical, contentDescription = null)
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text("Flip V", style = MaterialTheme.typography.bodySmall)
+                            }
+                            
+                            Spacer(modifier = Modifier.width(8.dp))
+                            
+                            OutlinedButton(
+                                onClick = {
+                                    // Reset all adjustments
+                                    brightness = 1.0f
+                                    contrast = 1.0f
+                                    saturation = 1.0f
+                                    flipHorizontal = false
+                                    flipVertical = false
+                                },
+                                colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.White),
+                                border = BorderStroke(1.dp, Color.White.copy(alpha = 0.5f)),
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Icon(Icons.Default.Refresh, contentDescription = null)
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text("Reset", style = MaterialTheme.typography.bodySmall)
+                            }
+                        }
+                    }
+                }
             }
             
             // Enhanced bottom controls with rotation and auto-fit
