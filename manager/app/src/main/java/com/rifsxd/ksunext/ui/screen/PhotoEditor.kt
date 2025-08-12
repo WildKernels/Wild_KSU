@@ -181,27 +181,23 @@ fun PhotoEditor(
                         scaleX = scale * (if (flipHorizontal) -1f else 1f),
                         scaleY = scale * (if (flipVertical) -1f else 1f)
                     )
-                    .let { modifier ->
-                        if (freeFormMode) {
-                            modifier.pointerInput(scale) {
-                                detectTransformGestures { _, pan, zoom, rotationChange ->
-                                    // Normalize pan by current scale to maintain consistent drag speed
-                                    // This ensures that dragging feels the same regardless of zoom level
-                                    val normalizedPanX = pan.x / scale
-                                    val normalizedPanY = pan.y / scale
-                                    offsetX += normalizedPanX
-                                    offsetY += normalizedPanY
-                                    
-                                    // Apply zoom with constraints
-                                    val newScale = (scale * zoom).coerceIn(0.1f, 5f)
-                                    scale = newScale
-                                    
-                                    // Apply rotation
-                                    rotation += rotationChange
-                                }
+                    .pointerInput(scale) {
+                        detectTransformGestures { _, pan, zoom, rotationChange ->
+                            if (freeFormMode) {
+                                // Normalize pan by current scale to maintain consistent drag speed
+                                // This ensures that dragging feels the same regardless of zoom level
+                                val normalizedPanX = pan.x / scale
+                                val normalizedPanY = pan.y / scale
+                                offsetX += normalizedPanX
+                                offsetY += normalizedPanY
+                                
+                                // Apply rotation
+                                rotation += rotationChange
                             }
-                        } else {
-                            modifier
+                            
+                            // Always allow zoom regardless of free-form mode
+                            val newScale = (scale * zoom).coerceIn(0.1f, 5f)
+                            scale = newScale
                         }
                     },
                 contentScale = ContentScale.Fit,
