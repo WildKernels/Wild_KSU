@@ -92,7 +92,7 @@ fun BackgroundImageWrapper(
                     .fillMaxSize()
                     .let { modifier ->
                         val transformation = ImageCropUtils.getImageTransformation(prefs, effectiveFitMode)
-                        modifier.transformation()
+                        transformation(modifier)
                     }
                     .let { modifier ->
                         // Apply blur if specified
