@@ -44,8 +44,7 @@ fun PhotoEditorScreen(
             navigator.popBackStack()
         },
         onSave = {
-            // Save the image URI to preferences
-            prefs.edit().putString("background_image_uri", imageUri).apply()
+            // Photo editing completed - no background setting
             navigator.popBackStack()
         }
     )
@@ -66,8 +65,8 @@ fun PhotoEditor(
     
     // Image adjustment states
     var brightness by remember { mutableFloatStateOf(0f) }
-    var contrast by remember { mutableFloatStateOf(1f) }
-    var saturation by remember { mutableFloatStateOf(1f) }
+    var contrast by remember { mutableFloatStateOf(0f) }
+    var saturation by remember { mutableFloatStateOf(0f) }
     var hue by remember { mutableFloatStateOf(0f) }
     var flipHorizontal by remember { mutableStateOf(false) }
     var flipVertical by remember { mutableStateOf(false) }
@@ -209,7 +208,7 @@ fun PhotoEditor(
                     .fillMaxWidth()
                     .align(Alignment.BottomCenter)
                     .padding(16.dp)
-                    .padding(bottom = 40.dp), // Moved closer to bottom
+                    .padding(bottom = 120.dp), // Positioned higher to be fully visible
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.surfaceContainer
                 ),
