@@ -91,39 +91,30 @@ fun PhotoEditor(
     }
     
     // Create color matrix for image adjustments
-    val colorMatrix = ColorMatrix().apply {
-        // Brightness
-        val brightnessMatrix = ColorMatrix().apply {
-            val brightnessArray = floatArrayOf(
-                1f, 0f, 0f, 0f, brightness * 255,
-                0f, 1f, 0f, 0f, brightness * 255,
-                0f, 0f, 1f, 0f, brightness * 255,
-                0f, 0f, 0f, 1f, 0f
-            )
-            set(brightnessArray)
-        }
-        
-        // Contrast
-        val contrastMatrix = ColorMatrix().apply {
-            val scale = contrast
-            val translate = (1f - contrast) / 2f * 255f
-            val contrastArray = floatArrayOf(
-                scale, 0f, 0f, 0f, translate,
-                0f, scale, 0f, 0f, translate,
-                0f, 0f, scale, 0f, translate,
-                0f, 0f, 0f, 1f, 0f
-            )
-            set(contrastArray)
-        }
-        
-        // Saturation
-        val saturationMatrix = ColorMatrix().apply {
+    val colorMatrix = remember(brightness, contrast, saturation) {
+        ColorMatrix().apply {
+            // Apply saturation first
             setToSaturation(saturation)
+            
+            // Apply brightness and contrast
+            val brightnessOffset = brightness * 255f
+            val contrastScale = contrast
+            val contrastOffset = (1f - contrast) / 2f * 255f
+            
+            // Manually adjust the matrix values for brightness and contrast
+            // The ColorMatrix is a 4x5 matrix stored as a 20-element array
+            val values = this.values
+            
+            // Apply contrast scaling to RGB channels
+            values[0] *= contrastScale  // Red scale
+            values[6] *= contrastScale  // Green scale  
+            values[12] *= contrastScale // Blue scale
+            
+            // Apply brightness and contrast offset to RGB channels
+            values[4] += brightnessOffset + contrastOffset   // Red offset
+            values[9] += brightnessOffset + contrastOffset   // Green offset
+            values[14] += brightnessOffset + contrastOffset  // Blue offset
         }
-        
-        // Combine all matrices
-        this.setConcat(brightnessMatrix, contrastMatrix)
-        this.setConcat(this, saturationMatrix)
     }
     
     // Reset function
