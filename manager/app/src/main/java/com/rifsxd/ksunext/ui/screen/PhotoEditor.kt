@@ -1,7 +1,6 @@
 package com.rifsxd.ksunext.ui.screen
 
 import android.net.Uri
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTransformGestures
@@ -14,9 +13,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.graphics.graphicsLayer
@@ -167,27 +163,7 @@ fun PhotoEditor(
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
-        // Checkerboard background
-        Canvas(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            val checkerSize = 20.dp.toPx()
-            val cols = (size.width / checkerSize).toInt() + 1
-            val rows = (size.height / checkerSize).toInt() + 1
-            
-            for (i in 0..cols) {
-                for (j in 0..rows) {
-                    val isEven = (i + j) % 2 == 0
-                    drawRect(
-                        color = if (isEven) Color(0xFFE0E0E0) else Color(0xFFF5F5F5),
-                        topLeft = Offset(i * checkerSize, j * checkerSize),
-                        size = Size(checkerSize, checkerSize)
-                    )
-                }
-            }
-        }
-        
-        // Main photo area
+        // Main photo area (no background, uses default)
         Image(
             painter = painter,
             contentDescription = "Photo to edit",
@@ -218,33 +194,76 @@ fun PhotoEditor(
             colorFilter = ColorFilter.colorMatrix(colorMatrix)
         )
         
-        // Free-form mode toggle at top
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-                .align(Alignment.TopCenter),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f)
-            ),
-            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
-        ) {
-            Row(
+        // Advanced controls (appear above bottom bar when visible)
+        if (showControls) {
+            Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                    .align(Alignment.BottomCenter)
+                    .padding(16.dp)
+                    .padding(bottom = 180.dp), // Position above the bottom bar
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.95f)
+                ),
+                elevation = CardDefaults.cardElevation(defaultElevation = 12.dp)
             ) {
-                Text(
-                    text = "Free-form Editing",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
-                )
-                Switch(
-                    checked = freeFormMode,
-                    onCheckedChange = { freeFormMode = it }
-                )
+                Column(
+                    modifier = Modifier.padding(16.dp)
+                ) {
+                    // Brightness
+                    Text(
+                        text = "Brightness: ${(brightness * 100).toInt()}%",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    Slider(
+                        value = brightness,
+                        onValueChange = { brightness = it },
+                        valueRange = -0.5f..0.5f,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    
+                    Spacer(modifier = Modifier.height(8.dp))
+                    
+                    // Contrast
+                    Text(
+                        text = "Contrast: ${(contrast * 100).toInt()}%",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    Slider(
+                        value = contrast,
+                        onValueChange = { contrast = it },
+                        valueRange = 0.5f..2f,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    
+                    Spacer(modifier = Modifier.height(8.dp))
+                    
+                    // Saturation
+                    Text(
+                        text = "Saturation: ${(saturation * 100).toInt()}%",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    Slider(
+                        value = saturation,
+                        onValueChange = { saturation = it },
+                        valueRange = 0f..2f,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    
+                    Spacer(modifier = Modifier.height(8.dp))
+                    
+                    // Hue (color slider)
+                    Text(
+                        text = "Hue: ${(hue).toInt()}°",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    Slider(
+                        value = hue,
+                        onValueChange = { hue = it },
+                        valueRange = -180f..180f,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
             }
         }
         
@@ -263,6 +282,25 @@ fun PhotoEditor(
             Column(
                 modifier = Modifier.padding(16.dp)
             ) {
+                // Free-form mode toggle (moved from top)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Free-form Editing",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Switch(
+                        checked = freeFormMode,
+                        onCheckedChange = { freeFormMode = it }
+                    )
+                }
+                
+                Spacer(modifier = Modifier.height(16.dp))
+                
                 // Quick action buttons
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -366,66 +404,7 @@ fun PhotoEditor(
                     }
                 }
                 
-                // Advanced controls (collapsible)
-                if (showControls) {
-                    Spacer(modifier = Modifier.height(16.dp))
-                    
-                    // Brightness
-                    Text(
-                        text = "Brightness: ${(brightness * 100).toInt()}%",
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                    Slider(
-                        value = brightness,
-                        onValueChange = { brightness = it },
-                        valueRange = -0.5f..0.5f,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    
-                    Spacer(modifier = Modifier.height(8.dp))
-                    
-                    // Contrast
-                    Text(
-                        text = "Contrast: ${(contrast * 100).toInt()}%",
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                    Slider(
-                        value = contrast,
-                        onValueChange = { contrast = it },
-                        valueRange = 0.5f..2f,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    
-                    Spacer(modifier = Modifier.height(8.dp))
-                    
-                    // Saturation
-                    Text(
-                        text = "Saturation: ${(saturation * 100).toInt()}%",
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                    Slider(
-                        value = saturation,
-                        onValueChange = { saturation = it },
-                        valueRange = 0f..2f,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    
-                    Spacer(modifier = Modifier.height(8.dp))
-                    
-                    // Hue (new color slider)
-                    Text(
-                        text = "Hue: ${(hue).toInt()}°",
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                    Slider(
-                        value = hue,
-                        onValueChange = { hue = it },
-                        valueRange = -180f..180f,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    
-                    Spacer(modifier = Modifier.height(16.dp))
-                }
+                Spacer(modifier = Modifier.height(16.dp))
                 
                 // Action buttons
                 Row(
