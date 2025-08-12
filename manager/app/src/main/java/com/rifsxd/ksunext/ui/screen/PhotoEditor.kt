@@ -313,56 +313,33 @@ fun PhotoEditor(
     // Create color matrix for image adjustments
     val colorMatrix = remember(brightness, contrast, saturation, hue) {
         androidx.compose.ui.graphics.ColorMatrix().apply {
-            // Apply saturation first (convert from -100/100 range to 0-2 range)
+            // Apply saturation (convert from -100/100 range to 0-2 range)
             val saturationValue = (saturation + 100f) / 100f
             setToSaturation(saturationValue)
             
-            // Apply hue rotation using manual matrix calculation
+            // Apply hue rotation if needed
             if (hue != 0f) {
-                val hueRadians = hue * kotlin.math.PI / 180f
-                val cosHue = kotlin.math.cos(hueRadians).toFloat()
-                val sinHue = kotlin.math.sin(hueRadians).toFloat()
-                
-                // Create hue rotation matrix manually
-                val hueMatrix = floatArrayOf(
-                    0.213f + cosHue * 0.787f - sinHue * 0.213f, 0.715f - cosHue * 0.715f - sinHue * 0.715f, 0.072f - cosHue * 0.072f + sinHue * 0.928f, 0f, 0f,
-                    0.213f - cosHue * 0.213f + sinHue * 0.143f, 0.715f + cosHue * 0.285f + sinHue * 0.140f, 0.072f - cosHue * 0.072f - sinHue * 0.283f, 0f, 0f,
-                    0.213f - cosHue * 0.213f - sinHue * 0.787f, 0.715f - cosHue * 0.715f + sinHue * 0.715f, 0.072f + cosHue * 0.928f + sinHue * 0.072f, 0f, 0f,
-                    0f, 0f, 0f, 1f, 0f
-                )
-                
-                // Apply hue matrix to current values
-                val currentValues = this.values.copyOf()
-                for (i in 0 until 4) {
-                    for (j in 0 until 5) {
-                        var sum = 0f
-                        for (k in 0 until 4) {
-                            sum += hueMatrix[i * 5 + k] * currentValues[k * 5 + j]
-                        }
-                        if (j == 4) sum += hueMatrix[i * 5 + 4]
-                        this.values[i * 5 + j] = sum
-                    }
-                }
+                val hueMatrix = androidx.compose.ui.graphics.ColorMatrix()
+                hueMatrix.setToRotateRed(hue)
+                postConcat(hueMatrix)
             }
             
-            // Apply brightness and contrast (convert from -100/100 range)
-            val brightnessOffset = (brightness / 100f) * 255f
-            val contrastScale = (contrast + 100f) / 100f
-            val contrastOffset = (1f - contrastScale) / 2f * 255f
-            
-            // Manually adjust the matrix values for brightness and contrast
-            // The ColorMatrix is a 4x5 matrix stored as a 20-element array
-            val values = this.values
-            
-            // Apply contrast scaling to RGB channels
-            values[0] *= contrastScale  // Red scale
-            values[6] *= contrastScale  // Green scale  
-            values[12] *= contrastScale // Blue scale
-            
-            // Apply brightness and contrast offset to RGB channels
-            values[4] += brightnessOffset + contrastOffset   // Red offset
-            values[9] += brightnessOffset + contrastOffset   // Green offset
-            values[14] += brightnessOffset + contrastOffset  // Blue offset
+            // Apply brightness and contrast
+            if (brightness != 0f || contrast != 0f) {
+                val brightnessMatrix = androidx.compose.ui.graphics.ColorMatrix()
+                val contrastScale = (contrast + 100f) / 100f
+                val brightnessOffset = brightness / 100f
+                
+                brightnessMatrix.set(
+                    floatArrayOf(
+                        contrastScale, 0f, 0f, 0f, brightnessOffset,
+                        0f, contrastScale, 0f, 0f, brightnessOffset,
+                        0f, 0f, contrastScale, 0f, brightnessOffset,
+                        0f, 0f, 0f, 1f, 0f
+                    )
+                )
+                postConcat(brightnessMatrix)
+            }
         }
     }
     
