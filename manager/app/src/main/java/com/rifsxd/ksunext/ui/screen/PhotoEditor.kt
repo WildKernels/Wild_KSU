@@ -74,7 +74,8 @@ fun PhotoEditor(
     
     // UI states
     var freeFormMode by remember { mutableStateOf(true) }
-    var showControls by remember { mutableStateOf(false) }
+    var showAdjustments by remember { mutableStateOf(false) }
+    var showTransforms by remember { mutableStateOf(false) }
     
     val painter = rememberAsyncImagePainter(
         model = imageUri,
@@ -182,14 +183,20 @@ fun PhotoEditor(
                     )
                     .let { modifier ->
                         if (freeFormMode) {
-                            modifier.pointerInput(Unit) {
+                            modifier.pointerInput(scale) {
                                 detectTransformGestures { _, pan, zoom, rotationChange ->
-                                    // Normalize pan by scale to maintain consistent drag speed
+                                    // Normalize pan by current scale to maintain consistent drag speed
+                                    // This ensures that dragging feels the same regardless of zoom level
                                     val normalizedPanX = pan.x / scale
                                     val normalizedPanY = pan.y / scale
                                     offsetX += normalizedPanX
                                     offsetY += normalizedPanY
-                                    scale = (scale * zoom).coerceIn(0.1f, 5f)
+                                    
+                                    // Apply zoom with constraints
+                                    val newScale = (scale * zoom).coerceIn(0.1f, 5f)
+                                    scale = newScale
+                                    
+                                    // Apply rotation
                                     rotation += rotationChange
                                 }
                             }
@@ -202,14 +209,14 @@ fun PhotoEditor(
             )
         }
         
-        // Advanced controls (appear above bottom bar when visible)
-        if (showControls) {
+        // Transform controls (scale, rotate, flip)
+        if (showTransforms) {
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
                     .align(Alignment.BottomCenter)
                     .padding(16.dp)
-                    .padding(bottom = 120.dp), // Positioned higher to be fully visible
+                    .padding(bottom = 140.dp), // Positioned higher to be fully visible
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.surfaceContainer
                 ),
@@ -218,23 +225,12 @@ fun PhotoEditor(
                 Column(
                     modifier = Modifier.padding(16.dp)
                 ) {
-                    // Free-form mode toggle (moved from bottom bar)
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = "Free-form Editing",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                        Switch(
-                            checked = freeFormMode,
-                            onCheckedChange = { freeFormMode = it }
-                        )
-                    }
+                    Text(
+                        text = "Transform",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                     
                     Spacer(modifier = Modifier.height(16.dp))
                     
@@ -251,7 +247,132 @@ fun PhotoEditor(
                         modifier = Modifier.fillMaxWidth()
                     )
                     
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
+                    
+                    // Rotation buttons
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        OutlinedButton(
+                            onClick = { rotation -= 90f },
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.RotateLeft,
+                                contentDescription = "Rotate Left",
+                                modifier = Modifier.size(18.dp)
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text("Rotate Left")
+                        }
+                        
+                        Spacer(modifier = Modifier.width(8.dp))
+                        
+                        OutlinedButton(
+                            onClick = { rotation += 90f },
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.RotateRight,
+                                contentDescription = "Rotate Right",
+                                modifier = Modifier.size(18.dp)
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text("Rotate Right")
+                        }
+                    }
+                    
+                    Spacer(modifier = Modifier.height(12.dp))
+                    
+                    // Flip buttons
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        OutlinedButton(
+                            onClick = { flipHorizontal = !flipHorizontal },
+                            modifier = Modifier.weight(1f),
+                            colors = ButtonDefaults.outlinedButtonColors(
+                                containerColor = if (flipHorizontal) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface
+                            )
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Flip,
+                                contentDescription = "Flip Horizontal",
+                                modifier = Modifier.size(18.dp)
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text("Flip H")
+                        }
+                        
+                        Spacer(modifier = Modifier.width(8.dp))
+                        
+                        OutlinedButton(
+                            onClick = { flipVertical = !flipVertical },
+                            modifier = Modifier.weight(1f),
+                            colors = ButtonDefaults.outlinedButtonColors(
+                                containerColor = if (flipVertical) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface
+                            )
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Flip,
+                                contentDescription = "Flip Vertical",
+                                modifier = Modifier
+                                    .size(18.dp)
+                                    .graphicsLayer(rotationZ = 90f)
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text("Flip V")
+                        }
+                    }
+                    
+                    Spacer(modifier = Modifier.height(16.dp))
+                    
+                    // Free-form mode toggle
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Free-form Editing",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Switch(
+                            checked = freeFormMode,
+                            onCheckedChange = { freeFormMode = it }
+                        )
+                    }
+                }
+            }
+        }
+        
+        // Adjustment controls (brightness, contrast, saturation, hue)
+        if (showAdjustments) {
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.BottomCenter)
+                    .padding(16.dp)
+                    .padding(bottom = 140.dp), // Positioned higher to be fully visible
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceContainer
+                ),
+                elevation = CardDefaults.cardElevation(defaultElevation = 12.dp)
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp)
+                ) {
+                    Text(
+                        text = "Adjustments",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    
+                    Spacer(modifier = Modifier.height(16.dp))
                     
                     // Brightness
                     Text(
@@ -330,95 +451,54 @@ fun PhotoEditor(
                 modifier = Modifier.padding(16.dp)
             ) {
                 
-                // Quick action buttons
+                // Menu buttons
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    // Rotate left
+                    // Transform menu (scale, rotate, flip)
                     IconButton(
-                        onClick = { rotation -= 90f },
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(8.dp))
-                            .background(MaterialTheme.colorScheme.surfaceVariant)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.RotateLeft,
-                            contentDescription = "Rotate Left",
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                    
-                    // Rotate right
-                    IconButton(
-                        onClick = { rotation += 90f },
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(8.dp))
-                            .background(MaterialTheme.colorScheme.surfaceVariant)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.RotateRight,
-                            contentDescription = "Rotate Right",
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                    
-                    // Flip horizontal
-                    IconButton(
-                        onClick = { flipHorizontal = !flipHorizontal },
+                        onClick = { 
+                            showTransforms = !showTransforms
+                            if (showTransforms) showAdjustments = false
+                        },
                         modifier = Modifier
                             .clip(RoundedCornerShape(8.dp))
                             .background(
-                                if (flipHorizontal) MaterialTheme.colorScheme.primary
+                                if (showTransforms) MaterialTheme.colorScheme.primary
                                 else MaterialTheme.colorScheme.surfaceVariant
                             )
                     ) {
                         Icon(
-                            imageVector = Icons.Default.Flip,
-                            contentDescription = "Flip Horizontal",
-                            tint = if (flipHorizontal) MaterialTheme.colorScheme.onPrimary
+                            imageVector = Icons.Default.CropRotate,
+                            contentDescription = "Transform",
+                            tint = if (showTransforms) MaterialTheme.colorScheme.onPrimary
                                    else MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                     
-                    // Flip vertical
+                    // Adjustments menu (brightness, contrast, etc.)
                     IconButton(
-                        onClick = { flipVertical = !flipVertical },
+                        onClick = { 
+                            showAdjustments = !showAdjustments
+                            if (showAdjustments) showTransforms = false
+                        },
                         modifier = Modifier
                             .clip(RoundedCornerShape(8.dp))
                             .background(
-                                if (flipVertical) MaterialTheme.colorScheme.primary
-                                else MaterialTheme.colorScheme.surfaceVariant
-                            )
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Flip,
-                            contentDescription = "Flip Vertical",
-                            modifier = Modifier.graphicsLayer(rotationZ = 90f),
-                            tint = if (flipVertical) MaterialTheme.colorScheme.onPrimary
-                                   else MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                    
-                    // Toggle advanced controls (switched position with reset)
-                    IconButton(
-                        onClick = { showControls = !showControls },
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(8.dp))
-                            .background(
-                                if (showControls) MaterialTheme.colorScheme.primary
+                                if (showAdjustments) MaterialTheme.colorScheme.primary
                                 else MaterialTheme.colorScheme.surfaceVariant
                             )
                     ) {
                         Icon(
                             imageVector = Icons.Default.Tune,
-                            contentDescription = "Advanced Controls",
-                            tint = if (showControls) MaterialTheme.colorScheme.onPrimary
+                            contentDescription = "Adjustments",
+                            tint = if (showAdjustments) MaterialTheme.colorScheme.onPrimary
                                    else MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                     
-                    // Reset (switched position with menu)
+                    // Reset all
                     IconButton(
                         onClick = { resetAll() },
                         modifier = Modifier
@@ -427,7 +507,7 @@ fun PhotoEditor(
                     ) {
                         Icon(
                             imageVector = Icons.Default.Refresh,
-                            contentDescription = "Reset",
+                            contentDescription = "Reset All",
                             tint = MaterialTheme.colorScheme.onErrorContainer
                         )
                     }
