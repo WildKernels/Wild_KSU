@@ -296,7 +296,6 @@ fun PhotoEditor(
         model = ImageRequest.Builder(LocalContext.current)
             .data(imageUri)
             .allowHardware(false)
-            .respectCacheHeaders(false)
             .build(),
         onError = { error ->
             android.util.Log.e("PhotoEditor", "Failed to load image URI: $imageUri, Error: ${error.result.throwable?.message}")
