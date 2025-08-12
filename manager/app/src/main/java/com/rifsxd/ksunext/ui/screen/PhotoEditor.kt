@@ -67,7 +67,8 @@ suspend fun saveEditedImage(
             } ?: return@withContext null
             
             // Use rotation directly without EXIF correction (like AdvancedImageCropDialog)
-            val correctedRotation = rotation
+            // Invert rotation direction to match UI coordinate system
+            val correctedRotation = -rotation
             
             // Calculate output dimensions considering rotation
             val radians = Math.toRadians(correctedRotation.toDouble())
