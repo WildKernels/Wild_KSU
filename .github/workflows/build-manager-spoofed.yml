@@ -366,7 +366,6 @@ jobs:
                  -F "document=@${APK}" \
                  -F "caption=${CAPTION}" \
                  -F "parse_mode=Markdown" \
-                 -F "reply_to_message_id=${{ secrets.TELEGRAM_TOPIC_ID }}" \
                  "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument"
           else
             echo "❌ APK file not found!"
