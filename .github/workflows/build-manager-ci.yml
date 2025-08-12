@@ -38,6 +38,7 @@ jobs:
             -not -path "./manager/*" \
             -not -path "./.git/*" \
             -not -path "./.github/workflows/build-manager-ci.yml" \
+            -not -path "./.github/workflows/build-manager-spoofed.yml" \
             -exec sha256sum {} \; | sort | sha256sum | cut -d' ' -f1)
           echo "cache-key=artifacts-$HASH" >> $GITHUB_OUTPUT
           echo "Generated cache key: artifacts-$HASH"
@@ -335,8 +336,16 @@ jobs:
 
       - name: Send APK to Telegram
         run: |
+          # Check if required secrets are available
+          if [ -z "${{ secrets.BOT_TOKEN }}" ] || [ -z "${{ secrets.CHAT_ID }}" ]; then
+            echo "⚠️ Telegram secrets not configured - skipping upload"
+            echo "Required: BOT_TOKEN, CHAT_ID"
+            exit 0
+          fi
+          
           APK=$(find ./app/build/outputs/apk/release -name "*.apk")
           if [ -f "$APK" ]; then
+            echo "📱 Found APK: $APK"
             VERSION=$(git rev-list --count HEAD)
             CAPTION="🔧 CI Manager (TEST BUILD) #ci_${VERSION}
             
@@ -345,6 +354,7 @@ jobs:
             🔗 [Commit](${{ github.event.head_commit.url }})
             🏃 [Workflow](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})"
             
+            echo "📤 Uploading to Telegram..."
             curl -F "chat_id=${{ secrets.CHAT_ID }}" \
                  -F "document=@${APK}" \
                  -F "caption=${CAPTION}" \
@@ -352,6 +362,6 @@ jobs:
                  -F "reply_to_message_id=${{ secrets.MESSAGE_THREAD_ID }}" \
                  "https://api.telegram.org/bot${{ secrets.BOT_TOKEN }}/sendDocument"
           else
-            echo "APK file not found!"
+            echo "❌ APK file not found!"
             exit 1
           fi
