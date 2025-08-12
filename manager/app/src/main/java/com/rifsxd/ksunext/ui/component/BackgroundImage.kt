@@ -75,8 +75,8 @@ fun BackgroundImageWrapper(
                         .build()
                 )
                 
-                // Use custom_crop as default fit mode for advanced editor
-                val effectiveFitMode = if (backgroundFitMode.isEmpty()) "custom_crop" else backgroundFitMode
+                // Only apply transformations when explicitly set, default to no transformation
+                val effectiveFitMode = if (backgroundFitMode.isEmpty()) "fit" else backgroundFitMode
                 
                 // Apply transformations using enhanced ImageCropUtils
                 val imageModifier = Modifier
@@ -101,8 +101,8 @@ fun BackgroundImageWrapper(
                 val cropSettings = ImageCropUtils.loadImageCropSettings(prefs)
                 Log.d("BackgroundImage", "Loaded crop settings: scale=${cropSettings.scale}, offsetX=${cropSettings.offsetX}, offsetY=${cropSettings.offsetY}, rotation=${cropSettings.rotation}")
                 
-                // Use ContentScale.Crop for better alignment and positioning
-                val contentScale = ContentScale.Crop
+                // Use ContentScale.Fit to match editor behavior and preserve aspect ratio
+                val contentScale = ContentScale.Fit
                 
                 Image(
                     painter = painter,
