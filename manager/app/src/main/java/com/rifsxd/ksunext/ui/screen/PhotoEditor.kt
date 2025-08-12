@@ -161,7 +161,7 @@ fun PhotoEditorScreen(
     navigator: DestinationsNavigator
 ) {
     val context = LocalContext.current
-    val prefs = context.getSharedPreferences("app_prefs", android.content.Context.MODE_PRIVATE)
+    val prefs = context.getSharedPreferences("settings", android.content.Context.MODE_PRIVATE)
     val uri = Uri.parse(imageUri)
     val coroutineScope = rememberCoroutineScope()
     
