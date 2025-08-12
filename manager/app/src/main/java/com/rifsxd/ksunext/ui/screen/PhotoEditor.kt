@@ -13,6 +13,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -137,7 +138,8 @@ fun PhotoEditor(
     var hideControls by remember { mutableStateOf(false) }
     
     // Provide save function and hide controls function to parent
-    LaunchedEffect(Unit) {
+    // Use SideEffect to ensure functions always capture current state
+    SideEffect {
         onProvideSaveFunction?.invoke {
             onSave(scale, offsetX, offsetY, rotation, brightness, contrast, saturation, hue)
         }
