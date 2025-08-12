@@ -335,9 +335,19 @@ jobs:
 
       - name: Send APK to Telegram
         run: |
-          FILE=$(ls manager/app/build/outputs/apk/release/*.apk | head -n 1)
+          FILE=$(find manager/app/build/outputs/apk/release -type f -name "*.apk" | head -n 1)
+          if [ -z "$FILE" ]; then
+            echo "No APK found in manager/app/build/outputs/apk/release"
+            exit 1
+          fi
           COMMIT_MSG=$(git log -1 --pretty=%B)
           ESCAPED_MSG=$(echo "$COMMIT_MSG" | sed -E 's/([_*\[\]()~`>#+\-=|{}.!])/\\\1/g')
+          curl -F chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
+               -F message_thread_id="${{ secrets.TELEGRAM_TOPIC_ID }}" \
+               -F document=@"$FILE" \
+               -F caption="\`\`\`${ESCAPED_MSG}\`\`\`" \
+               -F parse_mode=MarkdownV2 \
+               https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument
           curl -F chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
                -F message_thread_id="${{ secrets.TELEGRAM_TOPIC_ID }}" \
                -F document=@"$FILE" \
