@@ -77,6 +77,7 @@ fun PhotoEditorScreen(
                 prefs.edit()
                     .putString("background_image_uri", imageUri)
                     .putFloat("background_transparency", 0.0f) // Reset darkness so image is visible
+                    .putString("background_fit_mode", "custom_crop") // Ensure custom crop mode is set
                     .apply()
                 
                 // Save transform settings for graphicsLayer transformations
@@ -141,7 +142,7 @@ fun PhotoEditor(
             onSave(scale, offsetX, offsetY, rotation, brightness, contrast, saturation, hue)
         }
         onProvideHideControlsFunction?.invoke {
-            hideControls = true
+            hideControls = !hideControls
         }
     }
     
@@ -189,7 +190,7 @@ fun PhotoEditor(
         // Show Controls FAB (only show when controls are hidden)
         if (hideControls) {
             FloatingActionButton(
-                onClick = { hideControls = false },
+                onClick = { hideControls = !hideControls },
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
                     .padding(16.dp),
@@ -309,20 +310,6 @@ fun PhotoEditor(
                             Icon(
                                 imageVector = Icons.Default.Refresh,
                                 contentDescription = "Reset",
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                        
-                        // Hide controls button
-                        IconButton(
-                            onClick = { hideControls = true },
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(8.dp))
-                                .background(MaterialTheme.colorScheme.surfaceVariant)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.VisibilityOff,
-                                contentDescription = "Hide Controls",
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
