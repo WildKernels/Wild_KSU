@@ -94,8 +94,9 @@ fun PhotoEditor(
     // Create color matrix for image adjustments
     val colorMatrix = remember(brightness, contrast, saturation, hue) {
         ColorMatrix().apply {
-            // Apply saturation first
-            setToSaturation(saturation)
+            // Apply saturation first (convert from -100/100 range to 0-2 range)
+            val saturationValue = (saturation + 100f) / 100f
+            setToSaturation(saturationValue)
             
             // Apply hue rotation using manual matrix calculation
             if (hue != 0f) {
@@ -125,10 +126,10 @@ fun PhotoEditor(
                 }
             }
             
-            // Apply brightness and contrast
-            val brightnessOffset = brightness * 255f
-            val contrastScale = contrast
-            val contrastOffset = (1f - contrast) / 2f * 255f
+            // Apply brightness and contrast (convert from -100/100 range)
+            val brightnessOffset = (brightness / 100f) * 255f
+            val contrastScale = (contrast + 100f) / 100f
+            val contrastOffset = (1f - contrastScale) / 2f * 255f
             
             // Manually adjust the matrix values for brightness and contrast
             // The ColorMatrix is a 4x5 matrix stored as a 20-element array
@@ -153,8 +154,8 @@ fun PhotoEditor(
         rotation = 0f
         scale = 1f
         brightness = 0f
-        contrast = 1f
-        saturation = 1f
+        contrast = 0f
+        saturation = 0f
         hue = 0f
         flipHorizontal = false
         flipVertical = false
@@ -163,36 +164,43 @@ fun PhotoEditor(
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
-        // Main photo area (no background, uses default)
-        Image(
-            painter = painter,
-            contentDescription = "Photo to edit",
-            modifier = Modifier
-                .fillMaxSize()
-                .graphicsLayer(
-                    translationX = offsetX,
-                    translationY = offsetY,
-                    rotationZ = rotation,
-                    scaleX = scale * (if (flipHorizontal) -1f else 1f),
-                    scaleY = scale * (if (flipVertical) -1f else 1f)
-                )
-                .let { modifier ->
-                    if (freeFormMode) {
-                        modifier.pointerInput(Unit) {
-                            detectTransformGestures { _, pan, zoom, rotationChange ->
-                                offsetX += pan.x
-                                offsetY += pan.y
-                                scale = (scale * zoom).coerceIn(0.1f, 5f)
-                                rotation += rotationChange
+        // Main photo area (no background applied to screen)
+        Box(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Image(
+                painter = painter,
+                contentDescription = "Photo to edit",
+                modifier = Modifier
+                    .fillMaxSize()
+                    .graphicsLayer(
+                        translationX = offsetX,
+                        translationY = offsetY,
+                        rotationZ = rotation,
+                        scaleX = scale * (if (flipHorizontal) -1f else 1f),
+                        scaleY = scale * (if (flipVertical) -1f else 1f)
+                    )
+                    .let { modifier ->
+                        if (freeFormMode) {
+                            modifier.pointerInput(Unit) {
+                                detectTransformGestures { _, pan, zoom, rotationChange ->
+                                    // Normalize pan by scale to maintain consistent drag speed
+                                    val normalizedPanX = pan.x / scale
+                                    val normalizedPanY = pan.y / scale
+                                    offsetX += normalizedPanX
+                                    offsetY += normalizedPanY
+                                    scale = (scale * zoom).coerceIn(0.1f, 5f)
+                                    rotation += rotationChange
+                                }
                             }
+                        } else {
+                            modifier
                         }
-                    } else {
-                        modifier
-                    }
-                },
-            contentScale = ContentScale.Fit,
-            colorFilter = ColorFilter.colorMatrix(colorMatrix)
-        )
+                    },
+                contentScale = ContentScale.Fit,
+                colorFilter = ColorFilter.colorMatrix(colorMatrix)
+            )
+        }
         
         // Advanced controls (appear above bottom bar when visible)
         if (showControls) {
@@ -201,24 +209,60 @@ fun PhotoEditor(
                     .fillMaxWidth()
                     .align(Alignment.BottomCenter)
                     .padding(16.dp)
-                    .padding(bottom = 180.dp), // Position above the bottom bar
+                    .padding(bottom = 40.dp), // Moved closer to bottom
                 colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.95f)
+                    containerColor = MaterialTheme.colorScheme.surfaceContainer
                 ),
                 elevation = CardDefaults.cardElevation(defaultElevation = 12.dp)
             ) {
                 Column(
                     modifier = Modifier.padding(16.dp)
                 ) {
+                    // Free-form mode toggle (moved from bottom bar)
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Free-form Editing",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Switch(
+                            checked = freeFormMode,
+                            onCheckedChange = { freeFormMode = it }
+                        )
+                    }
+                    
+                    Spacer(modifier = Modifier.height(16.dp))
+                    
+                    // Scale
+                    Text(
+                        text = "Scale: ${(scale * 100).toInt()}%",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Slider(
+                        value = scale,
+                        onValueChange = { scale = it },
+                        valueRange = 0.1f..5f,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    
+                    Spacer(modifier = Modifier.height(8.dp))
+                    
                     // Brightness
                     Text(
-                        text = "Brightness: ${(brightness * 100).toInt()}%",
-                        style = MaterialTheme.typography.bodyMedium
+                        text = "Brightness: ${brightness.toInt()}",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Slider(
                         value = brightness,
                         onValueChange = { brightness = it },
-                        valueRange = -0.5f..0.5f,
+                        valueRange = -100f..100f,
                         modifier = Modifier.fillMaxWidth()
                     )
                     
@@ -226,13 +270,14 @@ fun PhotoEditor(
                     
                     // Contrast
                     Text(
-                        text = "Contrast: ${(contrast * 100).toInt()}%",
-                        style = MaterialTheme.typography.bodyMedium
+                        text = "Contrast: ${contrast.toInt()}",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Slider(
                         value = contrast,
                         onValueChange = { contrast = it },
-                        valueRange = 0.5f..2f,
+                        valueRange = -100f..100f,
                         modifier = Modifier.fillMaxWidth()
                     )
                     
@@ -240,13 +285,14 @@ fun PhotoEditor(
                     
                     // Saturation
                     Text(
-                        text = "Saturation: ${(saturation * 100).toInt()}%",
-                        style = MaterialTheme.typography.bodyMedium
+                        text = "Saturation: ${saturation.toInt()}",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Slider(
                         value = saturation,
                         onValueChange = { saturation = it },
-                        valueRange = 0f..2f,
+                        valueRange = -100f..100f,
                         modifier = Modifier.fillMaxWidth()
                     )
                     
@@ -254,13 +300,14 @@ fun PhotoEditor(
                     
                     // Hue (color slider)
                     Text(
-                        text = "Hue: ${(hue).toInt()}°",
-                        style = MaterialTheme.typography.bodyMedium
+                        text = "Hue: ${hue.toInt()}°",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Slider(
                         value = hue,
                         onValueChange = { hue = it },
-                        valueRange = -180f..180f,
+                        valueRange = -100f..100f,
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
@@ -273,33 +320,15 @@ fun PhotoEditor(
                 .fillMaxWidth()
                 .align(Alignment.BottomCenter)
                 .padding(16.dp)
-                .padding(bottom = 80.dp), // Extra padding to avoid navigation bar
+                .padding(bottom = 16.dp), // Moved closer to bottom
             colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.95f)
+                containerColor = MaterialTheme.colorScheme.surfaceContainer
             ),
             elevation = CardDefaults.cardElevation(defaultElevation = 12.dp)
         ) {
             Column(
                 modifier = Modifier.padding(16.dp)
             ) {
-                // Free-form mode toggle (moved from top)
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "Free-form Editing",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Switch(
-                        checked = freeFormMode,
-                        onCheckedChange = { freeFormMode = it }
-                    )
-                }
-                
-                Spacer(modifier = Modifier.height(16.dp))
                 
                 // Quick action buttons
                 Row(
@@ -311,12 +340,12 @@ fun PhotoEditor(
                         onClick = { rotation -= 90f },
                         modifier = Modifier
                             .clip(RoundedCornerShape(8.dp))
-                            .background(MaterialTheme.colorScheme.surface)
+                            .background(MaterialTheme.colorScheme.surfaceVariant)
                     ) {
                         Icon(
                             imageVector = Icons.Default.RotateLeft,
                             contentDescription = "Rotate Left",
-                            tint = MaterialTheme.colorScheme.onSurface
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                     
@@ -325,12 +354,12 @@ fun PhotoEditor(
                         onClick = { rotation += 90f },
                         modifier = Modifier
                             .clip(RoundedCornerShape(8.dp))
-                            .background(MaterialTheme.colorScheme.surface)
+                            .background(MaterialTheme.colorScheme.surfaceVariant)
                     ) {
                         Icon(
                             imageVector = Icons.Default.RotateRight,
                             contentDescription = "Rotate Right",
-                            tint = MaterialTheme.colorScheme.onSurface
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                     
@@ -341,14 +370,14 @@ fun PhotoEditor(
                             .clip(RoundedCornerShape(8.dp))
                             .background(
                                 if (flipHorizontal) MaterialTheme.colorScheme.primary
-                                else MaterialTheme.colorScheme.surface
+                                else MaterialTheme.colorScheme.surfaceVariant
                             )
                     ) {
                         Icon(
                             imageVector = Icons.Default.Flip,
                             contentDescription = "Flip Horizontal",
                             tint = if (flipHorizontal) MaterialTheme.colorScheme.onPrimary
-                                   else MaterialTheme.colorScheme.onSurface
+                                   else MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                     
@@ -359,7 +388,7 @@ fun PhotoEditor(
                             .clip(RoundedCornerShape(8.dp))
                             .background(
                                 if (flipVertical) MaterialTheme.colorScheme.primary
-                                else MaterialTheme.colorScheme.surface
+                                else MaterialTheme.colorScheme.surfaceVariant
                             )
                     ) {
                         Icon(
@@ -367,7 +396,7 @@ fun PhotoEditor(
                             contentDescription = "Flip Vertical",
                             modifier = Modifier.graphicsLayer(rotationZ = 90f),
                             tint = if (flipVertical) MaterialTheme.colorScheme.onPrimary
-                                   else MaterialTheme.colorScheme.onSurface
+                                   else MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                     
@@ -378,14 +407,14 @@ fun PhotoEditor(
                             .clip(RoundedCornerShape(8.dp))
                             .background(
                                 if (showControls) MaterialTheme.colorScheme.primary
-                                else MaterialTheme.colorScheme.surface
+                                else MaterialTheme.colorScheme.surfaceVariant
                             )
                     ) {
                         Icon(
                             imageVector = Icons.Default.Tune,
                             contentDescription = "Advanced Controls",
                             tint = if (showControls) MaterialTheme.colorScheme.onPrimary
-                                   else MaterialTheme.colorScheme.onSurface
+                                   else MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                     
