@@ -356,12 +356,6 @@ class MainActivity : ComponentActivity() {
                 isCustomBackgroundEnabled = !backgroundImageUri.isNullOrEmpty(),
                 uiTransparency = uiTransparency
             ) {
-                BackgroundImageWrapper(
-                    backgroundImageUri = effectiveBackgroundUri,
-                    backgroundFitMode = "custom_crop", // Default to advanced crop editor
-                    backgroundTransparency = backgroundTransparency,
-                    backgroundBlur = backgroundBlur
-                ) {
                 val navController = rememberNavController()
                 val snackBarHostState = remember { SnackbarHostState() }
                 val currentDestination = navController.currentBackStackEntryAsState()?.value?.destination
@@ -371,6 +365,13 @@ class MainActivity : ComponentActivity() {
                 // Disable background when in PhotoEditor
                 val isInPhotoEditor = currentDestination?.route == PhotoEditorScreenDestination.route
                 val effectiveBackgroundUri = if (isInPhotoEditor) null else backgroundImageUri
+                
+                BackgroundImageWrapper(
+                    backgroundImageUri = effectiveBackgroundUri,
+                    backgroundFitMode = "custom_crop", // Default to advanced crop editor
+                    backgroundTransparency = backgroundTransparency,
+                    backgroundBlur = backgroundBlur
+                ) {
 
                 LaunchedEffect(zipUri) {
                     if (zipUri != null) {
