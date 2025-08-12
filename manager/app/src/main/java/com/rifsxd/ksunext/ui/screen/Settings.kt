@@ -640,25 +640,7 @@ fun rememberUninstallDialog(onSelected: (UninstallType) -> Unit): DialogHandle {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun TopBar(
-    scrollBehavior: TopAppBarScrollBehavior? = null,
-) {
-    val surfaceContainer = MaterialTheme.colorScheme.surfaceContainer
-    val containerColor = remember(surfaceContainer) { surfaceContainer }
-    
-    TopAppBar(
-        title = { Text(
-            text = stringResource(R.string.settings),
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Black,
-        ) },
-        windowInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal),
-        scrollBehavior = scrollBehavior,
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = containerColor
-        )
-    )
-}
+
 
 @Preview
 @Composable

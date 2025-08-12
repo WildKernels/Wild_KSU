@@ -155,29 +155,3 @@ fun ExecuteModuleActionScreen(navigator: DestinationsNavigator, moduleId: String
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun TopBar(isActionRunning: Boolean, onBack: () -> Unit = {}, onSave: () -> Unit = {}) {
-    TopAppBar(
-        title = { Text(
-                text = stringResource(R.string.action),
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Black,
-            ) },
-        navigationIcon = {
-            IconButton(
-                onClick = onBack,
-                enabled = !isActionRunning
-            ) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null) }
-        },
-        actions = {
-            IconButton(
-                onClick = onSave,
-                enabled = !isActionRunning
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.Save,
-                    contentDescription = stringResource(id = R.string.save_log),
-                )
-            }
-        }
-    )
-}

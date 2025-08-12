@@ -839,46 +839,7 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun TopBar(
-    onBack: () -> Unit = {},
-    onResetAll: () -> Unit = {},
-    scrollBehavior: TopAppBarScrollBehavior? = null
-) {
-    val surfaceContainer = MaterialTheme.colorScheme.surfaceContainer
-    val containerColor = remember(surfaceContainer) { surfaceContainer }
-    
-    TopAppBar(
-        title = { Text(
-                text = stringResource(R.string.customization),
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Black,
-            ) }, 
-        navigationIcon = {
-            IconButton(
-                onClick = onBack
-            ) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null) }
-        },
-        actions = {
-            TextButton(
-                onClick = onResetAll,
-                colors = ButtonDefaults.textButtonColors(
-                    contentColor = MaterialTheme.colorScheme.primary
-                )
-            ) {
-                Text(
-                    "Reset All",
-                    style = MaterialTheme.typography.labelLarge,
-                    fontSize = 14.sp
-                )
-            }
-        },
-        windowInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal),
-        scrollBehavior = scrollBehavior,
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = containerColor
-        )
-    )
-}
+
 
 @Preview
 @Composable

@@ -122,30 +122,7 @@ fun DeveloperScreen(navigator: DestinationsNavigator) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun TopBar(
-    onBack: () -> Unit = {},
-    scrollBehavior: TopAppBarScrollBehavior? = null
-) {
-    val surfaceContainer = MaterialTheme.colorScheme.surfaceContainer
-    val containerColor = remember(surfaceContainer) { surfaceContainer }
-    
-    TopAppBar(
-        title = { Text(
-                text = stringResource(R.string.developer),
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Black,
-            ) }, navigationIcon = {
-            IconButton(
-                onClick = onBack
-            ) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null) }
-        },
-        windowInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal),
-        scrollBehavior = scrollBehavior,
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = containerColor
-        )
-    )
-}
+
 
 @Preview
 @Composable
