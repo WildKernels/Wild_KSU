@@ -619,35 +619,41 @@ fun PhotoEditor(
                         )
                     }
                     
-                    // Clear background button
+                    // Save theme button
                     val context = LocalContext.current
                     IconButton(
                         onClick = {
-                            // Clear background image completely
-                            val prefs = context.getSharedPreferences("settings", android.content.Context.MODE_PRIVATE)
-                            ImageStorageUtils.deleteInternalBackgroundImage(context)
+                            // Save current photo settings as a theme
+                            val prefs = context.getSharedPreferences("photo_themes", android.content.Context.MODE_PRIVATE)
+                            val themeId = "theme_${System.currentTimeMillis()}"
                             prefs.edit()
-                                .remove("background_image_uri")
-                                .remove("background_image_path")
-                                .putFloat("background_transparency", 0.0f)
-                                // Clear stored transformation metadata
-                                .remove("edit_brightness")
-                                .remove("edit_contrast")
-                                .remove("edit_saturation")
-                                .remove("edit_hue")
-                                .remove("edit_flip_horizontal")
-                                .remove("edit_flip_vertical")
+                                .putFloat("${themeId}_scale", scale)
+                                .putFloat("${themeId}_offsetX", offsetX)
+                                .putFloat("${themeId}_offsetY", offsetY)
+                                .putFloat("${themeId}_rotation", rotation)
+                                .putFloat("${themeId}_brightness", brightness)
+                                .putFloat("${themeId}_contrast", contrast)
+                                .putFloat("${themeId}_saturation", saturation)
+                                .putFloat("${themeId}_hue", hue)
+                                .putBoolean("${themeId}_flipHorizontal", flipHorizontal)
+                                .putBoolean("${themeId}_flipVertical", flipVertical)
+                                .putString("${themeId}_imageUri", imageUri.toString())
+                                .putLong("${themeId}_timestamp", System.currentTimeMillis())
                                 .apply()
-                            onDismiss() // Close editor after clearing
+                            
+                            // Add theme ID to saved themes list
+                            val savedThemes = prefs.getStringSet("saved_themes", mutableSetOf()) ?: mutableSetOf()
+                            savedThemes.add(themeId)
+                            prefs.edit().putStringSet("saved_themes", savedThemes).apply()
                         },
                         modifier = Modifier
                             .clip(RoundedCornerShape(8.dp))
-                            .background(MaterialTheme.colorScheme.secondaryContainer)
+                            .background(MaterialTheme.colorScheme.primaryContainer)
                     ) {
                         Icon(
-                            imageVector = Icons.Default.Clear,
-                            contentDescription = "Clear Background",
-                            tint = MaterialTheme.colorScheme.onSecondaryContainer
+                            imageVector = Icons.Default.Save,
+                            contentDescription = "Save Theme",
+                            tint = MaterialTheme.colorScheme.onPrimaryContainer
                         )
                     }
                     
