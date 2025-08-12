@@ -116,95 +116,112 @@ fun PhotoEditor(
         }
     )
     
+    // Create color matrix for adjustments
+    val colorMatrix = remember(brightness, contrast, saturation, hue) {
+        ColorMatrix().apply {
+            // Apply brightness (-200 to 200 range)
+            val brightnessValue = brightness / 255f
+            set(0, 4, brightnessValue) // Red offset
+            set(1, 4, brightnessValue) // Green offset
+            set(2, 4, brightnessValue) // Blue offset
+            
+            // Apply contrast (0 to 4 range)
+            val contrastValue = contrast
+            set(0, 0, contrastValue) // Red scale
+            set(1, 1, contrastValue) // Green scale
+            set(2, 2, contrastValue) // Blue scale
+            
+            // Apply saturation (0 to 3 range)
+            val saturationMatrix = ColorMatrix()
+            saturationMatrix.setToSaturation(saturation)
+            this.timesAssign(saturationMatrix)
+            
+            // Apply hue rotation (-360 to 360 range)
+            if (hue != 0f) {
+                val hueMatrix = ColorMatrix()
+                hueMatrix.setToRotateRed(hue)
+                this.timesAssign(hueMatrix)
+            }
+        }
+    }
+    
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
         // Top bar with confirm and cancel buttons
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .align(Alignment.TopCenter)
-                .padding(16.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surfaceContainer
-            ),
-            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
-        ) {
-            Row(
+        if (!hideControls) {
+            Card(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .align(Alignment.TopCenter)
                     .padding(16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceContainer
+                ),
+                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
             ) {
-                // Cancel button
-                Button(
-                    onClick = onDismiss,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.errorContainer
-                    )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Close,
-                        contentDescription = "Cancel",
-                        tint = MaterialTheme.colorScheme.onErrorContainer
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = "Cancel",
-                        color = MaterialTheme.colorScheme.onErrorContainer
-                    )
+                    // Cancel button
+                    Button(
+                        onClick = onDismiss,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.errorContainer
+                        )
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = "Cancel",
+                            tint = MaterialTheme.colorScheme.onErrorContainer
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "Cancel",
+                            color = MaterialTheme.colorScheme.onErrorContainer
+                        )
+                    }
+                    
+                    // Confirm button
+                    Button(
+                        onClick = { onSave(scale, offsetX, offsetY, rotation, brightness, contrast, saturation, hue) },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary
+                        )
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Check,
+                            contentDescription = "Confirm",
+                            tint = MaterialTheme.colorScheme.onPrimary
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "Confirm",
+                            color = MaterialTheme.colorScheme.onPrimary
+                        )
+                    }
                 }
             }
         }
         
-                
-                // Confirm button
-                Button(
-                    onClick = { onSave(scale, offsetX, offsetY, rotation, brightness, contrast, saturation, hue) },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary
-                    )
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Check,
-                        contentDescription = "Confirm",
-                        tint = MaterialTheme.colorScheme.onPrimary
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = "Confirm",
-                        color = MaterialTheme.colorScheme.onPrimary
-                    )
-                }
-            }
-        }
-        // Create color matrix for adjustments
-        val colorMatrix = remember(brightness, contrast, saturation, hue) {
-            ColorMatrix().apply {
-                // Apply brightness (-200 to 200 range)
-                val brightnessValue = brightness / 255f
-                set(0, 4, brightnessValue) // Red offset
-                set(1, 4, brightnessValue) // Green offset
-                set(2, 4, brightnessValue) // Blue offset
-                
-                // Apply contrast (0 to 4 range)
-                val contrastValue = contrast
-                set(0, 0, contrastValue) // Red scale
-                set(1, 1, contrastValue) // Green scale
-                set(2, 2, contrastValue) // Blue scale
-                
-                // Apply saturation (0 to 3 range)
-                val saturationMatrix = ColorMatrix()
-                saturationMatrix.setToSaturation(saturation)
-                this.timesAssign(saturationMatrix)
-                
-                // Apply hue rotation (-360 to 360 range)
-                if (hue != 0f) {
-                    val hueMatrix = ColorMatrix()
-                    hueMatrix.setToRotateRed(hue)
-                    this.timesAssign(hueMatrix)
-                }
+        // Show Controls FAB (only show when controls are hidden)
+        if (hideControls) {
+            FloatingActionButton(
+                onClick = { hideControls = false },
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(16.dp),
+                containerColor = MaterialTheme.colorScheme.primary
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Visibility,
+                    contentDescription = "Show Controls",
+                    tint = MaterialTheme.colorScheme.onPrimary
+                )
             }
         }
         
