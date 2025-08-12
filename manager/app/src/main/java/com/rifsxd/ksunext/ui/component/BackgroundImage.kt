@@ -57,34 +57,23 @@ fun BackgroundImageWrapper(
                     return@let
                 }
                 
-                var imageLoaded by remember { mutableStateOf(false) }
-                var imageError by remember { mutableStateOf<String?>(null) }
-                
                 val painter = rememberAsyncImagePainter(
                     model = ImageRequest.Builder(context)
                         .data(Uri.parse(uriString))
-                        .crossfade(true)
+                        .crossfade(false) // Disable crossfade to prevent flashing
                         .listener(
                             onStart = { 
                                 Log.d("BackgroundImage", "Started loading image")
-                                imageLoaded = false
-                                imageError = null
                             },
                             onSuccess = { _, _ -> 
                                 Log.d("BackgroundImage", "Successfully loaded image")
-                                imageLoaded = true
-                                imageError = null
                             },
                             onError = { _, result -> 
                                 Log.e("BackgroundImage", "Failed to load image: ${result.throwable}")
-                                imageLoaded = false
-                                imageError = result.throwable.message
                             }
                         )
                         .build()
                 )
-                
-                Log.d("BackgroundImage", "Image loaded: $imageLoaded, Error: $imageError")
                 
                 // Use custom_crop as default fit mode for advanced editor
                 val effectiveFitMode = if (backgroundFitMode.isEmpty()) "custom_crop" else backgroundFitMode
