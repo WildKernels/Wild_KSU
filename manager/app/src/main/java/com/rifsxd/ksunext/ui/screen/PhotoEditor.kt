@@ -195,12 +195,30 @@ fun PhotoEditorScreen(
                         .putString("background_image_uri", editedImageUri)
                         .putFloat("background_transparency", 0.0f) // Reset darkness to 0% so image is visible
                         .apply()
+                    
+                    // Save crop settings for the background image
+                    val cropSettings = com.rifsxd.ksunext.ui.component.ImageCropSettings(
+                        scale = scale,
+                        offsetX = offsetX,
+                        offsetY = offsetY,
+                        rotation = rotation
+                    )
+                    com.rifsxd.ksunext.ui.util.ImageCropUtils.saveImageCropSettings(prefs, editedImageUri, cropSettings)
                 } else {
                     // Fallback: save original URI if editing failed and reset transparency
                     prefs.edit()
                         .putString("background_image_uri", imageUri)
                         .putFloat("background_transparency", 0.0f) // Reset darkness to 0% so image is visible
                         .apply()
+                    
+                    // Save crop settings for the original image
+                    val cropSettings = com.rifsxd.ksunext.ui.component.ImageCropSettings(
+                        scale = scale,
+                        offsetX = offsetX,
+                        offsetY = offsetY,
+                        rotation = rotation
+                    )
+                    com.rifsxd.ksunext.ui.util.ImageCropUtils.saveImageCropSettings(prefs, imageUri, cropSettings)
                 }
                 
                 navigator.popBackStack()
