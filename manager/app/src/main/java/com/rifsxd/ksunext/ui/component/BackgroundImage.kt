@@ -16,10 +16,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.graphics.colorFilter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -97,54 +94,6 @@ fun BackgroundImageWrapper(
                     .let { modifier ->
                         val transformation = ImageCropUtils.getImageTransformation(prefs, effectiveFitMode)
                         transformation(modifier)
-                    }
-                    .let { modifier ->
-                        // Apply stored color adjustments from PhotoEditor
-                        val brightness = prefs.getFloat("edit_brightness", 0f)
-                        val contrast = prefs.getFloat("edit_contrast", 0f)
-                        val saturation = prefs.getFloat("edit_saturation", 0f)
-                        val hue = prefs.getFloat("edit_hue", 0f)
-                        val flipHorizontal = prefs.getBoolean("edit_flip_horizontal", false)
-                        val flipVertical = prefs.getBoolean("edit_flip_vertical", false)
-                        
-                        if (brightness != 0f || contrast != 0f || saturation != 0f || hue != 0f || flipHorizontal || flipVertical) {
-                             // Create color matrix for image adjustments
-                             val colorMatrix = remember(brightness, contrast, saturation, hue) {
-                                 androidx.compose.ui.graphics.ColorMatrix().apply {
-                                     // Apply saturation first (convert from -100/100 range to 0-2 range)
-                                     val saturationValue = (saturation + 100f) / 100f
-                                     setToSaturation(saturationValue)
-                                     
-                                     // Apply brightness and contrast adjustments
-                                     val brightnessValue = brightness / 100f
-                                     val contrastValue = (contrast + 100f) / 100f
-                                     
-                                     // Manual matrix manipulation for brightness and contrast
-                                     val values = this.values
-                                     // Apply contrast scaling
-                                     values[0] *= contrastValue  // R
-                                     values[6] *= contrastValue  // G
-                                     values[12] *= contrastValue // B
-                                     
-                                     // Apply brightness offset
-                                     val contrastTranslate = (1f - contrastValue) * 0.5f
-                                     values[4] = brightnessValue + contrastTranslate  // R offset
-                                     values[9] = brightnessValue + contrastTranslate  // G offset
-                                     values[14] = brightnessValue + contrastTranslate // B offset
-                                 }
-                             }
-                             
-                             modifier
-                                 .graphicsLayer {
-                                     scaleX = if (flipHorizontal) -1f else 1f
-                                     scaleY = if (flipVertical) -1f else 1f
-                                 }
-                                 .then(
-                                     Modifier.colorFilter(androidx.compose.ui.graphics.ColorFilter.colorMatrix(colorMatrix))
-                                 )
-                        } else {
-                            modifier
-                        }
                     }
                     .let { modifier ->
                         // Apply blur if specified
