@@ -2,11 +2,7 @@ package com.rifsxd.ksunext.ui.screen
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.ColorMatrix
-import android.graphics.ColorMatrixColorFilter
-import android.graphics.Matrix
-import android.graphics.Paint
+import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -59,93 +55,43 @@ suspend fun saveEditedImage(
 ): String? {
     return withContext(Dispatchers.IO) {
         try {
-            // Load the original bitmap
-            val imageLoader = ImageLoader(context)
-            val request = ImageRequest.Builder(context)
-                .data(originalUri)
-                .build()
+            // For performance, we'll save the original image and store transformations as metadata
+            // This avoids the expensive bitmap transformation process
             
-            val result = imageLoader.execute(request)
-            if (result !is SuccessResult) return@withContext null
-            
-            val originalBitmap = (result.drawable as? android.graphics.drawable.BitmapDrawable)?.bitmap
-                ?: return@withContext null
-            
-            // Create a new bitmap with transformations applied
-            val width = originalBitmap.width
-            val height = originalBitmap.height
-            
-            // Create transformation matrix
-            val matrix = Matrix().apply {
-                // Apply scale
-                postScale(
-                    scale * (if (flipHorizontal) -1f else 1f),
-                    scale * (if (flipVertical) -1f else 1f),
-                    width / 2f,
-                    height / 2f
-                )
-                // Apply rotation
-                postRotate(rotation, width / 2f, height / 2f)
-                // Apply translation
-                postTranslate(offsetX, offsetY)
-            }
-            
-            // Create color matrix for adjustments
-            val colorMatrix = android.graphics.ColorMatrix().apply {
-                // Brightness
-                val brightnessMatrix = android.graphics.ColorMatrix(floatArrayOf(
-                    1f, 0f, 0f, 0f, brightness * 255f,
-                    0f, 1f, 0f, 0f, brightness * 255f,
-                    0f, 0f, 1f, 0f, brightness * 255f,
-                    0f, 0f, 0f, 1f, 0f
-                ))
-                postConcat(brightnessMatrix)
-                
-                // Contrast
-                val contrastValue = contrast + 1f
-                val contrastMatrix = android.graphics.ColorMatrix(floatArrayOf(
-                    contrastValue, 0f, 0f, 0f, 0f,
-                    0f, contrastValue, 0f, 0f, 0f,
-                    0f, 0f, contrastValue, 0f, 0f,
-                    0f, 0f, 0f, 1f, 0f
-                ))
-                postConcat(contrastMatrix)
-                
-                // Saturation
-                setSaturation(saturation + 1f)
-            }
-            
-            // Create new bitmap with transformations
-            val transformedBitmap = Bitmap.createBitmap(
-                width, height, Bitmap.Config.ARGB_8888
-            )
-            
-            val canvas = Canvas(transformedBitmap)
-            val paint = Paint().apply {
-                isAntiAlias = true
-                colorFilter = ColorMatrixColorFilter(colorMatrix)
-            }
-            
-            canvas.drawBitmap(originalBitmap, matrix, paint)
-            
-            // Save to internal storage
+            // Copy original image to internal storage if it's not already there
             val imagesDir = File(context.filesDir, "images")
             if (!imagesDir.exists()) {
                 imagesDir.mkdirs()
             }
             
-            val fileName = "background_edited_${System.currentTimeMillis()}.png"
+            val fileName = "background_edited_${System.currentTimeMillis()}.jpg"
             val file = File(imagesDir, fileName)
             
-            FileOutputStream(file).use { out ->
-                transformedBitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
+            // Copy original image with JPEG compression for faster loading
+            context.contentResolver.openInputStream(originalUri)?.use { input ->
+                val originalBitmap = BitmapFactory.decodeStream(input)
+                FileOutputStream(file).use { out ->
+                    // Use JPEG with 85% quality for faster loading while maintaining good quality
+                    originalBitmap.compress(Bitmap.CompressFormat.JPEG, 85, out)
+                }
+                originalBitmap.recycle()
             }
             
-            // Clean up
-            transformedBitmap.recycle()
+            // Store transformation metadata in SharedPreferences for faster access
+            val prefs = context.getSharedPreferences("settings", android.content.Context.MODE_PRIVATE)
+            val fileUri = ImageStorageUtils.filePathToUri(file.absolutePath)
+            
+            prefs.edit()
+                .putFloat("edit_brightness", brightness)
+                .putFloat("edit_contrast", contrast)
+                .putFloat("edit_saturation", saturation)
+                .putFloat("edit_hue", hue)
+                .putBoolean("edit_flip_horizontal", flipHorizontal)
+                .putBoolean("edit_flip_vertical", flipVertical)
+                .apply()
             
             // Return file URI
-            ImageStorageUtils.filePathToUri(file.absolutePath)
+            fileUri
         } catch (e: Exception) {
             android.util.Log.e("PhotoEditor", "Failed to save edited image", e)
             null
@@ -667,6 +613,38 @@ fun PhotoEditor(
                             contentDescription = "Adjustments",
                             tint = if (showAdjustments) MaterialTheme.colorScheme.onPrimary
                                    else MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    
+                    // Clear background button
+                    IconButton(
+                        onClick = {
+                            // Clear background image completely
+                            val context = LocalContext.current
+                            val prefs = context.getSharedPreferences("settings", android.content.Context.MODE_PRIVATE)
+                            ImageStorageUtils.deleteInternalBackgroundImage(context)
+                            prefs.edit()
+                                .remove("background_image_uri")
+                                .remove("background_image_path")
+                                .putFloat("background_transparency", 0.0f)
+                                // Clear stored transformation metadata
+                                .remove("edit_brightness")
+                                .remove("edit_contrast")
+                                .remove("edit_saturation")
+                                .remove("edit_hue")
+                                .remove("edit_flip_horizontal")
+                                .remove("edit_flip_vertical")
+                                .apply()
+                            onDismiss() // Close editor after clearing
+                        },
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(MaterialTheme.colorScheme.secondaryContainer)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Clear,
+                            contentDescription = "Clear Background",
+                            tint = MaterialTheme.colorScheme.onSecondaryContainer
                         )
                     }
                     

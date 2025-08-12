@@ -16,12 +16,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.rifsxd.ksunext.ui.util.ImageCropUtils
@@ -93,6 +96,68 @@ fun BackgroundImageWrapper(
                     .let { modifier ->
                         val transformation = ImageCropUtils.getImageTransformation(prefs, effectiveFitMode)
                         transformation(modifier)
+                    }
+                    .let { modifier ->
+                        // Apply stored color adjustments from PhotoEditor
+                        val brightness = prefs.getFloat("edit_brightness", 0f)
+                        val contrast = prefs.getFloat("edit_contrast", 0f)
+                        val saturation = prefs.getFloat("edit_saturation", 0f)
+                        val hue = prefs.getFloat("edit_hue", 0f)
+                        val flipHorizontal = prefs.getBoolean("edit_flip_horizontal", false)
+                        val flipVertical = prefs.getBoolean("edit_flip_vertical", false)
+                        
+                        if (brightness != 0f || contrast != 0f || saturation != 0f || hue != 0f || flipHorizontal || flipVertical) {
+                            // Create color matrix for image adjustments
+                            val colorMatrix = remember(brightness, contrast, saturation, hue) {
+                                androidx.compose.ui.graphics.ColorMatrix().apply {
+                                    // Apply saturation first (convert from -100/100 range to 0-2 range)
+                                    val saturationValue = (saturation + 100f) / 100f
+                                    setToSaturation(saturationValue)
+                                    
+                                    // Apply hue rotation using manual matrix calculation
+                                    if (hue != 0f) {
+                                        val hueRadians = hue * kotlin.math.PI / 180f
+                                        val cosHue = kotlin.math.cos(hueRadians).toFloat()
+                                        val sinHue = kotlin.math.sin(hueRadians).toFloat()
+                                        
+                                        // Create hue rotation matrix manually
+                                        val hueMatrix = floatArrayOf(
+                                            0.213f + cosHue * 0.787f - sinHue * 0.213f, 0.715f - cosHue * 0.715f - sinHue * 0.715f, 0.072f - cosHue * 0.072f + sinHue * 0.928f, 0f, 0f,
+                                            0.213f - cosHue * 0.213f + sinHue * 0.143f, 0.715f + cosHue * 0.285f + sinHue * 0.140f, 0.072f - cosHue * 0.072f - sinHue * 0.283f, 0f, 0f,
+                                            0.213f - cosHue * 0.213f - sinHue * 0.787f, 0.715f - cosHue * 0.715f + sinHue * 0.715f, 0.072f + cosHue * 0.928f + sinHue * 0.072f, 0f, 0f,
+                                            0f, 0f, 0f, 1f, 0f
+                                        )
+                                        postConcat(androidx.compose.ui.graphics.ColorMatrix(hueMatrix))
+                                    }
+                                    
+                                    // Apply brightness and contrast
+                                    val brightnessMatrix = androidx.compose.ui.graphics.ColorMatrix().apply {
+                                        val brightnessValue = brightness / 100f
+                                        val contrastValue = (contrast + 100f) / 100f
+                                        val contrastTranslate = (1f - contrastValue) * 0.5f
+                                        
+                                        setToScale(
+                                            contrastValue, contrastValue, contrastValue, 1f
+                                        )
+                                        
+                                        val values = colorMatrix
+                                        values[4] = brightnessValue + contrastTranslate // R offset
+                                        values[9] = brightnessValue + contrastTranslate // G offset
+                                        values[14] = brightnessValue + contrastTranslate // B offset
+                                    }
+                                    postConcat(brightnessMatrix)
+                                }
+                            }
+                            
+                            modifier
+                                .graphicsLayer {
+                                    colorFilter = androidx.compose.ui.graphics.ColorFilter.colorMatrix(colorMatrix)
+                                    scaleX = if (flipHorizontal) -1f else 1f
+                                    scaleY = if (flipVertical) -1f else 1f
+                                }
+                        } else {
+                            modifier
+                        }
                     }
                     .let { modifier ->
                         // Apply blur if specified
