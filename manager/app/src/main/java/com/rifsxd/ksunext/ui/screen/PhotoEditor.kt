@@ -140,22 +140,25 @@ fun PhotoEditor(
             .systemBarsPadding(),
         color = MaterialTheme.colorScheme.background
     ) {
-        Column(
+        Box(
             modifier = Modifier.fillMaxSize()
         ) {
-            // Photo Editor TopAppBar
-            PhotoEditorTopBar(
+            // Unified Top Bar
+            UnifiedPhotoEditorTopBar(
                 onNavigateBack = onDismiss,
                 onRotate = { rotation = (rotation + 90f) % 360f },
                 onFlipHorizontal = { flipHorizontal = !flipHorizontal },
-                onToggleMoreOptions = { showMoreOptions = !showMoreOptions }
+                onToggleMoreOptions = { showMoreOptions = !showMoreOptions },
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .zIndex(2f)
             )
             
             // Main content area
             Box(
                 modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth()
+                    .fillMaxSize()
+                    .padding(top = 64.dp) // Account for unified top bar
                     .pointerInput(Unit) {
                         detectTransformGestures(
                             panZoomLock = false
@@ -348,22 +351,25 @@ fun PhotoEditor(
                             Text("Reset", style = MaterialTheme.typography.bodySmall)
                         }
                     }
+                    }
                 }
             }
                 }
                 
-                // Enhanced bottom controls with rotation and auto-fit
-                Column(
+                // Aligned Bottom Controls
+                Surface(
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
                         .fillMaxWidth()
-                        .background(
-                            Color.Black.copy(alpha = 0.8f),
-                            RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
-                        )
-                        .padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                        .padding(horizontal = 16.dp, vertical = 16.dp),
+                    color = MaterialTheme.colorScheme.surface.copy(alpha = 0.95f),
+                    shadowElevation = 8.dp,
+                    shape = RoundedCornerShape(16.dp)
                 ) {
+                    Column(
+                        modifier = Modifier.padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
                     // First row - Fit options
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -376,8 +382,10 @@ fun PhotoEditor(
                                 offsetX = 0.0f
                                 offsetY = 0.0f
                             },
-                            colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.White),
-                            border = BorderStroke(1.dp, Color.White.copy(alpha = 0.5f)),
+                            colors = ButtonDefaults.outlinedButtonColors(
+                                contentColor = MaterialTheme.colorScheme.onSurface
+                            ),
+                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
                             modifier = Modifier.weight(1f)
                         ) {
                             Icon(Icons.Default.FitScreen, contentDescription = null)
@@ -394,8 +402,10 @@ fun PhotoEditor(
                                 offsetX = 0.0f
                                 offsetY = 0.0f
                             },
-                            colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.White),
-                            border = BorderStroke(1.dp, Color.White.copy(alpha = 0.5f)),
+                            colors = ButtonDefaults.outlinedButtonColors(
+                                contentColor = MaterialTheme.colorScheme.onSurface
+                            ),
+                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
                             modifier = Modifier.weight(1f)
                         ) {
                             Icon(Icons.Default.ZoomOutMap, contentDescription = null)
@@ -417,8 +427,10 @@ fun PhotoEditor(
                                 offsetY = prefs.getFloat("background_pos_y", 0.0f)
                                 rotation = prefs.getFloat("background_rotation", 0.0f)
                             },
-                            colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.White),
-                            border = BorderStroke(1.dp, Color.White.copy(alpha = 0.5f)),
+                            colors = ButtonDefaults.outlinedButtonColors(
+                                contentColor = MaterialTheme.colorScheme.onSurface
+                            ),
+                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
                             modifier = Modifier.weight(1f)
                         ) {
                             Icon(Icons.Default.Refresh, contentDescription = null)
@@ -464,16 +476,19 @@ fun PhotoEditor(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun PhotoEditorTopBar(
+private fun UnifiedPhotoEditorTopBar(
     onNavigateBack: () -> Unit,
     onRotate: () -> Unit,
     onFlipHorizontal: () -> Unit,
-    onToggleMoreOptions: () -> Unit
+    onToggleMoreOptions: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Surface(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .height(64.dp),
         color = MaterialTheme.colorScheme.surface.copy(alpha = 0.95f),
-        shadowElevation = 4.dp
+        shadowElevation = 8.dp
     ) {
         TopAppBar(
             title = {
