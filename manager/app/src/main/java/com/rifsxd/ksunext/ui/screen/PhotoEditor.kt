@@ -11,6 +11,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -35,6 +37,9 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.rifsxd.ksunext.ui.util.ImageTransformSettings
 import com.rifsxd.ksunext.ui.util.BackgroundEditorUtils
 
+// CompositionLocal for sharing save function with top bar
+val LocalPhotoEditorSave = compositionLocalOf<(() -> Unit)?> { null }
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Destination<RootGraph>
 @Composable
@@ -46,41 +51,49 @@ fun PhotoEditorScreen(
     val prefs = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
     val uri = Uri.parse(imageUri)
     
-    PhotoEditor(
-        imageUri = uri,
-        onDismiss = {
-            navigator.popBackStack()
-        },
-        onSave = { scale, offsetX, offsetY, rotation, brightness, contrast, saturation, hue ->
-            // Clear any previous photo settings first
-            BackgroundEditorUtils.clearImageTransformSettings(prefs)
-            
-            // Save image URI and reset transparency (like original AdvancedImageTransformDialog)
-            prefs.edit()
-                .putString("background_image_uri", imageUri)
-                .putFloat("background_transparency", 0.0f) // Reset darkness so image is visible
-                .apply()
-            
-            // Save transform settings for graphicsLayer transformations
-            val transformSettings = ImageTransformSettings(
-                scale = scale,
-                offsetX = offsetX,
-                offsetY = offsetY,
-                rotation = rotation
-            )
-            BackgroundEditorUtils.saveImageTransformSettings(prefs, imageUri, transformSettings)
-            
-            // Save adjustment settings
-            prefs.edit()
-                .putFloat("image_brightness", brightness)
-                .putFloat("image_contrast", contrast)
-                .putFloat("image_saturation", saturation)
-                .putFloat("image_hue", hue)
-                .apply()
-            
-            navigator.popBackStack()
-        }
-    )
+    // Create a mutable state to hold the save function
+    var saveFunction by remember { mutableStateOf<(() -> Unit)?>(null) }
+    
+    CompositionLocalProvider(LocalPhotoEditorSave provides saveFunction) {
+        PhotoEditor(
+            imageUri = uri,
+            onDismiss = {
+                navigator.popBackStack()
+            },
+            onSave = { scale, offsetX, offsetY, rotation, brightness, contrast, saturation, hue ->
+                // Clear any previous photo settings first
+                BackgroundEditorUtils.clearImageTransformSettings(prefs)
+                
+                // Save image URI and reset transparency (like original AdvancedImageTransformDialog)
+                prefs.edit()
+                    .putString("background_image_uri", imageUri)
+                    .putFloat("background_transparency", 0.0f) // Reset darkness so image is visible
+                    .apply()
+                
+                // Save transform settings for graphicsLayer transformations
+                val transformSettings = ImageTransformSettings(
+                    scale = scale,
+                    offsetX = offsetX,
+                    offsetY = offsetY,
+                    rotation = rotation
+                )
+                BackgroundEditorUtils.saveImageTransformSettings(prefs, imageUri, transformSettings)
+                
+                // Save adjustment settings
+                prefs.edit()
+                    .putFloat("image_brightness", brightness)
+                    .putFloat("image_contrast", contrast)
+                    .putFloat("image_saturation", saturation)
+                    .putFloat("image_hue", hue)
+                    .apply()
+                
+                navigator.popBackStack()
+            },
+            onProvideSaveFunction = { saveFunc ->
+                saveFunction = saveFunc
+            }
+        )
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -88,7 +101,8 @@ fun PhotoEditorScreen(
 fun PhotoEditor(
     imageUri: Uri?,
     onDismiss: () -> Unit,
-    onSave: (Float, Float, Float, Float, Float, Float, Float, Float) -> Unit // scale, offsetX, offsetY, rotation, brightness, contrast, saturation, hue
+    onSave: (Float, Float, Float, Float, Float, Float, Float, Float) -> Unit, // scale, offsetX, offsetY, rotation, brightness, contrast, saturation, hue
+    onProvideSaveFunction: (((() -> Unit)) -> Unit)? = null // Callback to provide save function to parent
 ) {
     // Transform states - simple like original AdvancedImageTransformDialog
     var scale by remember { mutableFloatStateOf(1f) }
@@ -107,6 +121,13 @@ fun PhotoEditor(
     var showCropMenu by remember { mutableStateOf(false) }
     var showColorMenu by remember { mutableStateOf(false) }
     var hideControls by remember { mutableStateOf(false) }
+    
+    // Provide save function to parent
+    LaunchedEffect(Unit) {
+        onProvideSaveFunction?.invoke {
+            onSave(scale, offsetX, offsetY, rotation, brightness, contrast, saturation, hue)
+        }
+    }
     
     // Simple image painter without custom decoders
     val painter = rememberAsyncImagePainter(
@@ -148,65 +169,6 @@ fun PhotoEditor(
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
-        // Top bar with confirm and cancel buttons
-        if (!hideControls) {
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .align(Alignment.TopCenter)
-                    .padding(16.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceContainer
-                ),
-                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    // Cancel button
-                    Button(
-                        onClick = onDismiss,
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.errorContainer
-                        )
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Close,
-                            contentDescription = "Cancel",
-                            tint = MaterialTheme.colorScheme.onErrorContainer
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = "Cancel",
-                            color = MaterialTheme.colorScheme.onErrorContainer
-                        )
-                    }
-                    
-                    // Confirm button
-                    Button(
-                        onClick = { onSave(scale, offsetX, offsetY, rotation, brightness, contrast, saturation, hue) },
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.primary
-                        )
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Check,
-                            contentDescription = "Confirm",
-                            tint = MaterialTheme.colorScheme.onPrimary
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = "Confirm",
-                            color = MaterialTheme.colorScheme.onPrimary
-                        )
-                    }
-                }
-            }
-        }
         
         // Show Controls FAB (only show when controls are hidden)
         if (hideControls) {

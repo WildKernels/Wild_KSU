@@ -554,6 +554,12 @@ private fun UnifiedTopBar(
                 modifier = modifier
             )
         }
+        PhotoEditorScreenDestination.route -> {
+            PhotoEditorTopBar(
+                navigator = navigator,
+                modifier = modifier
+            )
+        }
         TemplateEditorScreenDestination.route -> {
             // TemplateEditor handles its own top bar, so we don't show one here
         }
@@ -818,10 +824,42 @@ private fun SettingsTopBar(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun RegularTopBar(
-    currentDestination: NavDestination?, 
-    navigator: DestinationsNavigator, 
-    flashViewModel: FlashViewModel, 
+fun PhotoEditorTopBar(
+    navigator: DestinationsNavigator,
+    modifier: Modifier = Modifier
+) {
+    val saveFunction = com.rifsxd.ksunext.ui.screen.LocalPhotoEditorSave.current
+    
+    TopAppBar(
+        title = { Text("Photo Editor") },
+        navigationIcon = {
+            IconButton(onClick = { navigator.popBackStack() }) {
+                Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+            }
+        },
+        actions = {
+            TextButton(
+                onClick = { navigator.popBackStack() }
+            ) {
+                Text("Cancel")
+            }
+            TextButton(
+                onClick = {
+                    saveFunction?.invoke()
+                }
+            ) {
+                Text("Confirm")
+            }
+        },
+        modifier = modifier
+    )
+}
+
+@Composable
+fun RegularTopBar(
+    currentDestination: NavDestination?,
+    navigator: DestinationsNavigator,
+    flashViewModel: FlashViewModel,
     selectedIconType: IconType,
     modifier: Modifier = Modifier
 ) {
