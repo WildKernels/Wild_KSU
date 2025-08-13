@@ -112,6 +112,7 @@ fun PhotoEditor(
                             .putFloat("background_pos_y", offsetY)
                             .putFloat("background_rotation", rotation)
                             .apply()
+                        Unit
                     }
                 }
                 .graphicsLayer(
