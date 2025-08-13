@@ -215,23 +215,12 @@ fun PhotoEditor(
                         // Use single transform gestures for all interactions
                         detectTransformGestures { _, pan, zoom, rotationChange ->
                             if (freeFormMode) {
-                                // Normalize pan by scale for consistent drag speed at all zoom levels
-                                val normalizedPanX = pan.x / scale
-                                val normalizedPanY = pan.y / scale
+                                // Use fixed sensitivity factor for consistent drag speed
+                                val dragSensitivity = 1.0f
                                 
-                                // Apply inverse rotation transformation to maintain intuitive dragging
-                                // When photo is rotated, we need to transform the drag direction
-                                val rotationRad = Math.toRadians(-rotation.toDouble()) // Negative for inverse
-                                val cosRotation = kotlin.math.cos(rotationRad).toFloat()
-                                val sinRotation = kotlin.math.sin(rotationRad).toFloat()
-                                
-                                // Transform the normalized pan values
-                                val transformedX = normalizedPanX * cosRotation - normalizedPanY * sinRotation
-                                val transformedY = normalizedPanX * sinRotation + normalizedPanY * cosRotation
-                                
-                                // Apply transformed values to offset
-                                offsetX += transformedX
-                                offsetY += transformedY
+                                // Apply pan values directly with fixed sensitivity
+                                offsetX += pan.x * dragSensitivity
+                                offsetY += pan.y * dragSensitivity
                                 
                                 // Handle rotation
                                 rotation += rotationChange
