@@ -13,7 +13,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
-import androidx.compose.runtime.SideEffect
+
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -137,26 +137,20 @@ fun PhotoEditor(
     var showColorMenu by remember { mutableStateOf(false) }
     var hideControls by remember { mutableStateOf(false) }
     
-    // Create functions that capture current state
-    val currentSaveFunction = remember(scale, offsetX, offsetY, rotation, brightness, contrast, saturation, hue) {
-        {
+    // Provide save function that captures current state values
+    LaunchedEffect(scale, offsetX, offsetY, rotation, brightness, contrast, saturation, hue) {
+        val saveFunc = {
             onSave(scale, offsetX, offsetY, rotation, brightness, contrast, saturation, hue)
         }
+        onProvideSaveFunction?.invoke(saveFunc)
     }
     
-    val currentHideControlsFunction = remember {
-        {
+    // Provide hide controls function
+    LaunchedEffect(Unit) {
+        val hideControlsFunc = {
             hideControls = !hideControls
         }
-    }
-    
-    // Provide functions to parent
-    LaunchedEffect(currentSaveFunction) {
-        onProvideSaveFunction?.invoke(currentSaveFunction)
-    }
-    
-    LaunchedEffect(Unit) {
-        onProvideHideControlsFunction?.invoke(currentHideControlsFunction)
+        onProvideHideControlsFunction?.invoke(hideControlsFunc)
     }
     
     // Simple image painter without custom decoders
