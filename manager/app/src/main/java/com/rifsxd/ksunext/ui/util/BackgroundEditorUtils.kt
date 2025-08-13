@@ -194,7 +194,7 @@ object BackgroundEditorUtils {
         fitMode: String
     ): androidx.compose.ui.Modifier.() -> androidx.compose.ui.Modifier {
         return when (fitMode) {
-            "custom_crop", "position_adjust" -> getSimpleImageTransformation(prefs)
+            "custom_crop", "position_adjust", "fit" -> getSimpleImageTransformation(prefs)
             else -> { { this } } // No transformation for other modes
         }
     }
