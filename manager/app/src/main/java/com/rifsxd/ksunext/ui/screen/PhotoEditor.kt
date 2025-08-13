@@ -321,6 +321,59 @@ fun PhotoEditor(
                             )
                         }
                     }
+                    
+                    // Confirm and Cancel buttons row
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        // Cancel button
+                        Button(
+                            onClick = { onDismiss() },
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(end = 8.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceVariant
+                            )
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Close,
+                                contentDescription = "Cancel",
+                                modifier = Modifier.size(18.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = "Cancel",
+                                style = MaterialTheme.typography.labelLarge
+                            )
+                        }
+                        
+                        // Confirm button
+                        Button(
+                            onClick = {
+                                onSave(scale, offsetX, offsetY, rotation, brightness, contrast, saturation, hue)
+                            },
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(start = 8.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.primary
+                            )
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Check,
+                                contentDescription = "Confirm",
+                                modifier = Modifier.size(18.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = "Confirm",
+                                style = MaterialTheme.typography.labelLarge
+                            )
+                        }
+                    }
                 
                     // Crop menu (expandable) - renamed from rotation menu
                 if (showCropMenu) {

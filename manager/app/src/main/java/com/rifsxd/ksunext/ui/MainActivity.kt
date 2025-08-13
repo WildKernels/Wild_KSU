@@ -832,7 +832,6 @@ fun PhotoEditorTopBar(
     navigator: DestinationsNavigator,
     modifier: Modifier = Modifier
 ) {
-    val saveFunction = com.rifsxd.ksunext.ui.screen.LocalPhotoEditorSave.current
     val hideControlsFunction = com.rifsxd.ksunext.ui.screen.LocalPhotoEditorHideControls.current
     val surfaceContainer = MaterialTheme.colorScheme.surfaceContainer
     val containerColor = remember(surfaceContainer) { surfaceContainer }
@@ -859,17 +858,6 @@ fun PhotoEditorTopBar(
                 Icon(
                     imageVector = Icons.Default.VisibilityOff,
                     contentDescription = "Hide Controls"
-                )
-            }
-            IconButton(
-                onClick = {
-                    saveFunction?.invoke()
-                }
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Save,
-                    contentDescription = "Save",
-                    tint = MaterialTheme.colorScheme.primary
                 )
             }
         },
