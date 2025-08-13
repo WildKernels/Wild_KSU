@@ -217,17 +217,24 @@ fun PhotoEditor(
                     )
                     .pointerInput(Unit) {
                         // Use single transform gestures for all interactions
-                        detectTransformGestures(
-                            onGestureStart = {
-                                // Reset pan tracking when gesture starts
-                                lastPanX = 0f
-                                lastPanY = 0f
-                            }
-                        ) { _, pan, zoom, rotationChange ->
+                        detectTransformGestures { _, pan, zoom, rotationChange ->
                             if (freeFormMode) {
+                                // Check if this is a new gesture (pan values reset to near zero)
+                                val isNewGesture = kotlin.math.abs(pan.x) < 5f && kotlin.math.abs(pan.y) < 5f
+                                
                                 // Calculate delta pan (change since last gesture)
-                                val deltaPanX = pan.x - lastPanX
-                                val deltaPanY = pan.y - lastPanY
+                                val deltaPanX = if (isNewGesture) {
+                                    lastPanX = 0f
+                                    pan.x
+                                } else {
+                                    pan.x - lastPanX
+                                }
+                                val deltaPanY = if (isNewGesture) {
+                                    lastPanY = 0f
+                                    pan.y
+                                } else {
+                                    pan.y - lastPanY
+                                }
                                 
                                 // Update last pan values
                                 lastPanX = pan.x
