@@ -215,22 +215,9 @@ fun PhotoEditor(
                         // Use single transform gestures for all interactions
                         detectTransformGestures { _, pan, zoom, rotationChange ->
                             if (freeFormMode) {
-                                // Use pan values directly - they represent the movement delta
-                                val dragX = pan.x
-                                val dragY = pan.y
-                                
-                                // Convert current rotation to radians for coordinate transformation
-                                val rotationRad = Math.toRadians(rotation.toDouble())
-                                val cosRotation = kotlin.math.cos(rotationRad).toFloat()
-                                val sinRotation = kotlin.math.sin(rotationRad).toFloat()
-                                
-                                // Transform drag coordinates to account for current rotation
-                                val transformedDragX = dragX * cosRotation + dragY * sinRotation
-                                val transformedDragY = -dragX * sinRotation + dragY * cosRotation
-                                
-                                // Apply movement with sensitivity factor for better control
-                                offsetX += transformedDragX * 0.5f
-                                offsetY += transformedDragY * 0.5f
+                                // Simple direct pan application for testing
+                                offsetX += pan.x
+                                offsetY += pan.y
                                 
                                 // Handle rotation
                                 rotation += rotationChange
