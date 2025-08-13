@@ -6,6 +6,9 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -33,6 +36,8 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ColorMatrix
+import androidx.compose.ui.graphics.TransformOrigin
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -153,6 +158,13 @@ fun PhotoEditor(
         derivedStateOf { BackgroundEditorUtils.loadImageTransformSettings(prefs) }
     }
     
+    // Local state for gesture handling - initialize with current SharedPreferences values
+    val currentTransform = BackgroundEditorUtils.loadImageTransformSettings(prefs)
+    var scale by remember { mutableFloatStateOf(currentTransform.scale) }
+    var offsetX by remember { mutableFloatStateOf(currentTransform.offsetX) }
+    var offsetY by remember { mutableFloatStateOf(currentTransform.offsetY) }
+    var rotation by remember { mutableFloatStateOf(currentTransform.rotation) }
+    
     // Image adjustment states with expanded ranges for better effects - load from saved settings
     var brightness by remember { mutableFloatStateOf(savedSettings.brightness) } // -200 to 200 (expanded from -100 to 100)
     var contrast by remember { mutableFloatStateOf(savedSettings.contrast) } // 0 to 4 (expanded from 0 to 2)
@@ -227,41 +239,32 @@ fun PhotoEditor(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+            .background(Color.Black)
+            .windowInsetsPadding(WindowInsets.systemBars)
     ) {
-        // Main image display - use exact same transformation as BackgroundImage
+        // Main image display - full screen, ignoring all bars
         Image(
             painter = painter,
             contentDescription = "Photo to edit",
             modifier = Modifier
                 .fillMaxSize()
-                .let { modifier ->
-                    // Use the same transformation logic as BackgroundImage
-                    val transformation = BackgroundEditorUtils.getImageTransformation(prefs, "custom_crop")
-                    transformation(modifier)
-                }
                 .pointerInput(Unit) {
                     detectTransformGestures { _, pan, zoom, rotationChange ->
-                        // Load current settings from SharedPreferences
-                        val currentSettings = BackgroundEditorUtils.loadImageTransformSettings(prefs)
-                        
-                        // Apply gesture changes and save to SharedPreferences
-                        val newScale = BackgroundEditorUtils.constrainScale(currentSettings.scale * zoom)
-                        val newOffsetX = BackgroundEditorUtils.constrainTranslation(currentSettings.offsetX + pan.x)
-                        val newOffsetY = BackgroundEditorUtils.constrainTranslation(currentSettings.offsetY + pan.y)
-                        val newRotation = BackgroundEditorUtils.constrainRotation(currentSettings.rotation + rotationChange)
-                        
-                        // Save to SharedPreferences immediately
-                        BackgroundEditorUtils.saveConstrainedScale(prefs, "background_scale_x", newScale)
-                        BackgroundEditorUtils.saveConstrainedTranslation(prefs, "background_pos_x", newOffsetX)
-                        BackgroundEditorUtils.saveConstrainedTranslation(prefs, "background_pos_y", newOffsetY)
-                        BackgroundEditorUtils.saveConstrainedRotation(prefs, "background_rotation", newRotation)
-                        
-                        // Trigger UI refresh
-                        transformTrigger++
+                        scale = (scale * zoom).coerceIn(0.1f, 5f)
+                        offsetX = (offsetX + pan.x).coerceIn(-1000f, 1000f)
+                        offsetY = (offsetY + pan.y).coerceIn(-1000f, 1000f)
+                        rotation = (rotation + rotationChange) % 360f
                     }
-                },
-            contentScale = ContentScale.Fit,
+                }
+                .graphicsLayer(
+                    scaleX = scale,
+                    scaleY = scale,
+                    translationX = offsetX,
+                    translationY = offsetY,
+                    rotationZ = rotation,
+                    transformOrigin = TransformOrigin.Center
+                ),
+            contentScale = ContentScale.Crop,
             alignment = androidx.compose.ui.Alignment.Center,
             colorFilter = ColorFilter.colorMatrix(colorMatrix)
         )
