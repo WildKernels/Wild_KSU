@@ -199,12 +199,17 @@ fun PhotoEditor(
             .fillMaxSize()
             .background(Color.Black)
     ) {
-        // Main image display - full screen, ignoring all bars
+        // Main image display - use exact same transformation as BackgroundImage
         Image(
             painter = painter,
             contentDescription = "Photo to edit",
             modifier = Modifier
                 .fillMaxSize()
+                .let { modifier ->
+                    // Use the same transformation logic as BackgroundImage
+                    val transformation = BackgroundEditorUtils.getImageTransformation(prefs, "custom_crop")
+                    transformation(modifier)
+                }
                 .pointerInput(Unit) {
                     detectTransformGestures { _, pan, zoom, rotationChange ->
                         scale = (scale * zoom).coerceIn(0.1f, 5f)
@@ -212,15 +217,7 @@ fun PhotoEditor(
                         offsetY = (offsetY + pan.y).coerceIn(-1000f, 1000f)
                         rotation = (rotation + rotationChange) % 360f
                     }
-                }
-                .graphicsLayer(
-                    scaleX = BackgroundEditorUtils.constrainScale(scale),
-                    scaleY = BackgroundEditorUtils.constrainScale(scale),
-                    translationX = BackgroundEditorUtils.constrainTranslation(offsetX),
-                    translationY = BackgroundEditorUtils.constrainTranslation(offsetY),
-                    rotationZ = BackgroundEditorUtils.constrainRotation(rotation),
-                    transformOrigin = TransformOrigin.Center
-                ),
+                },
             contentScale = ContentScale.Crop,
             alignment = androidx.compose.ui.Alignment.Center,
             colorFilter = ColorFilter.colorMatrix(colorMatrix)
