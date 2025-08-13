@@ -118,11 +118,11 @@ fun PhotoEditor(
     // Load saved transform settings or use defaults
     val savedSettings = remember { ImageTransformSettings.loadFromPrefs(prefs) }
     
-    // Transform states - load from saved settings
-    var offsetX by remember { mutableFloatStateOf(savedSettings.offsetX) }
-    var offsetY by remember { mutableFloatStateOf(savedSettings.offsetY) }
-    var scale by remember { mutableFloatStateOf(savedSettings.scale) }
-    var rotation by remember { mutableFloatStateOf(savedSettings.rotation) }
+    // Transform states that read from SharedPreferences for UI display
+    var transformTrigger by remember { mutableIntStateOf(0) }
+    val currentTransformSettings by remember(transformTrigger) {
+        derivedStateOf { BackgroundEditorUtils.loadImageTransformSettings(prefs) }
+    }
     
     // Image adjustment states with expanded ranges for better effects - load from saved settings
     var brightness by remember { mutableFloatStateOf(savedSettings.brightness) } // -200 to 200 (expanded from -100 to 100)
@@ -148,9 +148,10 @@ fun PhotoEditor(
     )
     
     // Provide save function that captures current state values
-    LaunchedEffect(scale, offsetX, offsetY, rotation, brightness, contrast, saturation, hue) {
+    LaunchedEffect(brightness, contrast, saturation, hue) {
         val saveFunc = {
-            onSave(scale, offsetX, offsetY, rotation, brightness, contrast, saturation, hue)
+            val currentSettings = BackgroundEditorUtils.loadImageTransformSettings(prefs)
+            onSave(currentSettings.scale, currentSettings.offsetX, currentSettings.offsetY, currentSettings.rotation, brightness, contrast, saturation, hue)
         }
         onProvideSaveFunction?.invoke(saveFunc)
     }
@@ -212,10 +213,23 @@ fun PhotoEditor(
                 }
                 .pointerInput(Unit) {
                     detectTransformGestures { _, pan, zoom, rotationChange ->
-                        scale = (scale * zoom).coerceIn(0.1f, 5f)
-                        offsetX = (offsetX + pan.x).coerceIn(-1000f, 1000f)
-                        offsetY = (offsetY + pan.y).coerceIn(-1000f, 1000f)
-                        rotation = (rotation + rotationChange) % 360f
+                        // Load current settings from SharedPreferences
+                        val currentSettings = BackgroundEditorUtils.loadImageTransformSettings(prefs)
+                        
+                        // Apply gesture changes and save to SharedPreferences
+                        val newScale = BackgroundEditorUtils.constrainScale(currentSettings.scale * zoom)
+                        val newOffsetX = BackgroundEditorUtils.constrainTranslation(currentSettings.offsetX + pan.x)
+                        val newOffsetY = BackgroundEditorUtils.constrainTranslation(currentSettings.offsetY + pan.y)
+                        val newRotation = BackgroundEditorUtils.constrainRotation(currentSettings.rotation + rotationChange)
+                        
+                        // Save to SharedPreferences immediately
+                        BackgroundEditorUtils.saveConstrainedScale(prefs, "background_scale_x", newScale)
+                        BackgroundEditorUtils.saveConstrainedTranslation(prefs, "background_pos_x", newOffsetX)
+                        BackgroundEditorUtils.saveConstrainedTranslation(prefs, "background_pos_y", newOffsetY)
+                        BackgroundEditorUtils.saveConstrainedRotation(prefs, "background_rotation", newRotation)
+                        
+                        // Trigger UI refresh
+                        transformTrigger++
                     }
                 },
             contentScale = ContentScale.Crop,
@@ -282,14 +296,18 @@ fun PhotoEditor(
                     // Reset button
                     IconButton(
                         onClick = {
-                            scale = 1f
-                            offsetX = 0f
-                            offsetY = 0f
-                            rotation = 0f
+                            // Reset transform settings in SharedPreferences
+                            BackgroundEditorUtils.saveConstrainedScale(prefs, "background_scale_x", 1f)
+                            BackgroundEditorUtils.saveConstrainedTranslation(prefs, "background_pos_x", 0f)
+                            BackgroundEditorUtils.saveConstrainedTranslation(prefs, "background_pos_y", 0f)
+                            BackgroundEditorUtils.saveConstrainedRotation(prefs, "background_rotation", 0f)
+                            // Reset image adjustment states
                             brightness = 0f
                             contrast = 1f
                             saturation = 1f
                             hue = 0f
+                            // Trigger UI refresh
+                            transformTrigger++
                         },
                         modifier = Modifier
                             .clip(RoundedCornerShape(8.dp))
@@ -305,7 +323,8 @@ fun PhotoEditor(
                     // Confirm button
                     IconButton(
                         onClick = {
-                            onSave(scale, offsetX, offsetY, rotation, brightness, contrast, saturation, hue)
+                            val currentSettings = BackgroundEditorUtils.loadImageTransformSettings(prefs)
+                            onSave(currentSettings.scale, currentSettings.offsetX, currentSettings.offsetY, currentSettings.rotation, brightness, contrast, saturation, hue)
                         },
                         modifier = Modifier
                             .clip(RoundedCornerShape(8.dp))
@@ -327,15 +346,18 @@ fun PhotoEditor(
                         "Position X" -> {
                             Column {
                                 Text(
-                                    text = "Position X: ${offsetX.toInt()}px",
+                                    text = "Position X: ${currentTransformSettings.value.offsetX.toInt()}px",
                                     style = MaterialTheme.typography.bodyMedium,
                                     fontWeight = FontWeight.Medium,
                                     color = MaterialTheme.colorScheme.onSurface
                                 )
                                 Spacer(modifier = Modifier.height(8.dp))
                                 Slider(
-                                    value = offsetX,
-                                    onValueChange = { offsetX = it },
+                                    value = currentTransformSettings.value.offsetX,
+                                    onValueChange = { 
+                                        BackgroundEditorUtils.saveConstrainedTranslation(prefs, "background_pos_x", it)
+                                        transformTrigger++
+                                    },
                                     valueRange = -1000f..1000f,
                                     modifier = Modifier.fillMaxWidth()
                                 )
@@ -344,15 +366,18 @@ fun PhotoEditor(
                         "Position Y" -> {
                             Column {
                                 Text(
-                                    text = "Position Y: ${offsetY.toInt()}px",
+                                    text = "Position Y: ${currentTransformSettings.value.offsetY.toInt()}px",
                                     style = MaterialTheme.typography.bodyMedium,
                                     fontWeight = FontWeight.Medium,
                                     color = MaterialTheme.colorScheme.onSurface
                                 )
                                 Spacer(modifier = Modifier.height(8.dp))
                                 Slider(
-                                    value = offsetY,
-                                    onValueChange = { offsetY = it },
+                                    value = currentTransformSettings.value.offsetY,
+                                    onValueChange = { 
+                                        BackgroundEditorUtils.saveConstrainedTranslation(prefs, "background_pos_y", it)
+                                        transformTrigger++
+                                    },
                                     valueRange = -1000f..1000f,
                                     modifier = Modifier.fillMaxWidth()
                                 )
@@ -361,15 +386,18 @@ fun PhotoEditor(
                         "Rotation" -> {
                             Column {
                                 Text(
-                                    text = "Rotation: ${rotation.toInt()}°",
+                                    text = "Rotation: ${currentTransformSettings.value.rotation.toInt()}°",
                                     style = MaterialTheme.typography.bodyMedium,
                                     fontWeight = FontWeight.Medium,
                                     color = MaterialTheme.colorScheme.onSurface
                                 )
                                 Spacer(modifier = Modifier.height(8.dp))
                                 Slider(
-                                    value = rotation,
-                                    onValueChange = { rotation = it },
+                                    value = currentTransformSettings.value.rotation,
+                                    onValueChange = { 
+                                        BackgroundEditorUtils.saveConstrainedRotation(prefs, "background_rotation", it)
+                                        transformTrigger++
+                                    },
                                     valueRange = -360f..360f,
                                     modifier = Modifier.fillMaxWidth()
                                 )
@@ -380,7 +408,11 @@ fun PhotoEditor(
                                     horizontalArrangement = Arrangement.SpaceEvenly
                                 ) {
                                     IconButton(
-                                        onClick = { rotation -= 90f },
+                                        onClick = { 
+                                            val newRotation = currentTransformSettings.value.rotation - 90f
+                                            BackgroundEditorUtils.saveConstrainedRotation(prefs, "background_rotation", newRotation)
+                                            transformTrigger++
+                                        },
                                         modifier = Modifier
                                             .clip(RoundedCornerShape(8.dp))
                                             .background(MaterialTheme.colorScheme.surfaceVariant)
@@ -392,7 +424,11 @@ fun PhotoEditor(
                                         )
                                     }
                                     IconButton(
-                                        onClick = { rotation += 90f },
+                                        onClick = { 
+                                            val newRotation = currentTransformSettings.value.rotation + 90f
+                                            BackgroundEditorUtils.saveConstrainedRotation(prefs, "background_rotation", newRotation)
+                                            transformTrigger++
+                                        },
                                         modifier = Modifier
                                             .clip(RoundedCornerShape(8.dp))
                                             .background(MaterialTheme.colorScheme.surfaceVariant)
@@ -409,15 +445,18 @@ fun PhotoEditor(
                         "Scale" -> {
                             Column {
                                 Text(
-                                    text = "Scale: ${String.format("%.1f", scale)}x",
+                                    text = "Scale: ${String.format("%.1f", currentTransformSettings.value.scale)}x",
                                     style = MaterialTheme.typography.bodyMedium,
                                     fontWeight = FontWeight.Medium,
                                     color = MaterialTheme.colorScheme.onSurface
                                 )
                                 Spacer(modifier = Modifier.height(8.dp))
                                 Slider(
-                                    value = scale,
-                                    onValueChange = { scale = it },
+                                    value = currentTransformSettings.value.scale,
+                                    onValueChange = { 
+                                        BackgroundEditorUtils.saveConstrainedScale(prefs, "background_scale_x", it)
+                                        transformTrigger++
+                                    },
                                     valueRange = 0.1f..5f,
                                     modifier = Modifier.fillMaxWidth()
                                 )
