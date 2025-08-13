@@ -228,6 +228,12 @@ fun PhotoEditor(
                         offsetX = (offsetX + pan.x).coerceIn(-1000f, 1000f)
                         offsetY = (offsetY + pan.y).coerceIn(-1000f, 1000f)
                         rotation = (rotation + rotationChange) % 360f
+                        
+                        // Save transform values to preferences in real-time
+                        BackgroundEditorUtils.saveConstrainedScale(prefs, "background_scale_x", scale)
+                        BackgroundEditorUtils.saveConstrainedTranslation(prefs, "background_pos_x", offsetX)
+                        BackgroundEditorUtils.saveConstrainedTranslation(prefs, "background_pos_y", offsetY)
+                        BackgroundEditorUtils.saveConstrainedRotation(prefs, "background_rotation", rotation)
                     }
                 }
                 .graphicsLayer(
@@ -238,7 +244,7 @@ fun PhotoEditor(
                     rotationZ = rotation,
                     transformOrigin = TransformOrigin.Center
                 ),
-            contentScale = ContentScale.Crop,
+            contentScale = ContentScale.None,
             alignment = androidx.compose.ui.Alignment.Center,
             colorFilter = ColorFilter.colorMatrix(colorMatrix)
         )
