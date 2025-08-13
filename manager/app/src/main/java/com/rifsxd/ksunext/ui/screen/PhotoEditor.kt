@@ -26,6 +26,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -191,7 +192,9 @@ fun PhotoEditor(
     }
     
     Box(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Black)
     ) {
         // Main image display - full screen, ignoring all bars
         Image(
@@ -206,15 +209,8 @@ fun PhotoEditor(
                     translationY = offsetY,
                     rotationZ = rotation,
                     transformOrigin = TransformOrigin.Center
-                )
-                .pointerInput(Unit) {
-                    // Only allow zoom gestures, no dragging or rotation
-                    detectTransformGestures { _, _, zoom, _ ->
-                        // Only allow zoom
-                        scale = (scale * zoom).coerceIn(0.1f, 5f)
-                    }
-                },
-            contentScale = ContentScale.Fit,
+                ),
+            contentScale = ContentScale.Crop,
             colorFilter = ColorFilter.colorMatrix(colorMatrix)
         )
         
