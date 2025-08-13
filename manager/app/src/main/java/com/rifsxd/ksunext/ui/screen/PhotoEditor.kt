@@ -85,7 +85,7 @@ fun PhotoEditorScreen(
                 prefs.edit()
                     .putString("background_image_uri", imageUri)
                     .putFloat("background_transparency", 0.0f) // Reset darkness so image is visible
-                    .putString("background_fit_mode", "custom_crop") // Ensure custom crop mode is set
+                    .putString("background_fit_mode", "center") // Use simple center positioning
                     .apply()
                 
                 // Save all transform and adjustment settings using ImageTransformSettings
@@ -213,7 +213,7 @@ fun PhotoEditor(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Black)
+            .background(MaterialTheme.colorScheme.background)
             .windowInsetsPadding(WindowInsets.systemBars)
     ) {
         // Main image display - full screen, ignoring all bars
