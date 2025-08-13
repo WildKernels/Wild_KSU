@@ -322,7 +322,7 @@ fun PhotoEditor(
                         }
                     }
                     
-                    // Confirm and Cancel buttons row
+                    // Action buttons row - Cancel, Hide Controls, Confirm
                     Spacer(modifier = Modifier.height(16.dp))
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -333,7 +333,7 @@ fun PhotoEditor(
                             onClick = { onDismiss() },
                             modifier = Modifier
                                 .weight(1f)
-                                .padding(end = 8.dp),
+                                .padding(end = 4.dp),
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = MaterialTheme.colorScheme.surfaceVariant
                             )
@@ -343,10 +343,32 @@ fun PhotoEditor(
                                 contentDescription = "Cancel",
                                 modifier = Modifier.size(18.dp)
                             )
-                            Spacer(modifier = Modifier.width(8.dp))
+                            Spacer(modifier = Modifier.width(4.dp))
                             Text(
                                 text = "Cancel",
-                                style = MaterialTheme.typography.labelLarge
+                                style = MaterialTheme.typography.labelMedium
+                            )
+                        }
+                        
+                        // Hide Controls button
+                        Button(
+                            onClick = { hideControls = !hideControls },
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(horizontal = 4.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.secondaryContainer
+                            )
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.VisibilityOff,
+                                contentDescription = "Hide Controls",
+                                modifier = Modifier.size(18.dp)
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = "Hide",
+                                style = MaterialTheme.typography.labelMedium
                             )
                         }
                         
@@ -357,7 +379,7 @@ fun PhotoEditor(
                             },
                             modifier = Modifier
                                 .weight(1f)
-                                .padding(start = 8.dp),
+                                .padding(start = 4.dp),
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = MaterialTheme.colorScheme.primary
                             )
@@ -367,10 +389,10 @@ fun PhotoEditor(
                                 contentDescription = "Confirm",
                                 modifier = Modifier.size(18.dp)
                             )
-                            Spacer(modifier = Modifier.width(8.dp))
+                            Spacer(modifier = Modifier.width(4.dp))
                             Text(
                                 text = "Confirm",
-                                style = MaterialTheme.typography.labelLarge
+                                style = MaterialTheme.typography.labelMedium
                             )
                         }
                     }

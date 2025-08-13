@@ -832,7 +832,6 @@ fun PhotoEditorTopBar(
     navigator: DestinationsNavigator,
     modifier: Modifier = Modifier
 ) {
-    val hideControlsFunction = com.rifsxd.ksunext.ui.screen.LocalPhotoEditorHideControls.current
     val surfaceContainer = MaterialTheme.colorScheme.surfaceContainer
     val containerColor = remember(surfaceContainer) { surfaceContainer }
     
@@ -847,18 +846,6 @@ fun PhotoEditorTopBar(
         navigationIcon = {
             IconButton(onClick = { navigator.popBackStack() }) {
                 Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
-            }
-        },
-        actions = {
-            IconButton(
-                onClick = {
-                    hideControlsFunction?.invoke()
-                }
-            ) {
-                Icon(
-                    imageVector = Icons.Default.VisibilityOff,
-                    contentDescription = "Hide Controls"
-                )
             }
         },
         windowInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal),
