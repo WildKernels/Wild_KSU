@@ -214,11 +214,11 @@ fun PhotoEditor(
                     }
                 }
                 .graphicsLayer(
-                    scaleX = scale,
-                    scaleY = scale,
-                    translationX = offsetX,
-                    translationY = offsetY,
-                    rotationZ = rotation,
+                    scaleX = BackgroundEditorUtils.constrainScale(scale),
+                    scaleY = BackgroundEditorUtils.constrainScale(scale),
+                    translationX = BackgroundEditorUtils.constrainTranslation(offsetX),
+                    translationY = BackgroundEditorUtils.constrainTranslation(offsetY),
+                    rotationZ = BackgroundEditorUtils.constrainRotation(rotation),
                     transformOrigin = TransformOrigin.Center
                 ),
             contentScale = ContentScale.Crop,

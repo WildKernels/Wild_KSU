@@ -159,15 +159,15 @@ object BackgroundEditorUtils {
     }
     
     // Security functions to ensure transformation limits (inspired by SukiSU Ultra)
-    private fun constrainScale(scale: Float): Float {
+    fun constrainScale(scale: Float): Float {
         return max(MIN_SCALE, min(MAX_SCALE, scale))
     }
     
-    private fun constrainTranslation(translation: Float): Float {
+    fun constrainTranslation(translation: Float): Float {
         return max(-MAX_TRANSLATION, min(MAX_TRANSLATION, translation))
     }
     
-    private fun constrainRotation(rotation: Float): Float {
+    fun constrainRotation(rotation: Float): Float {
         return rotation % 360f
     }
     
