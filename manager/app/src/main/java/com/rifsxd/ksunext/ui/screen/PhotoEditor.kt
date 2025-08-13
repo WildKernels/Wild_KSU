@@ -80,22 +80,19 @@ fun PhotoEditorScreen(
                     .putString("background_fit_mode", "custom_crop") // Ensure custom crop mode is set
                     .apply()
                 
-                // Save transform settings for graphicsLayer transformations
-                val transformSettings = ImageTransformSettings(
+                // Save all transform and adjustment settings using ImageTransformSettings
+                val allSettings = ImageTransformSettings(
                     scale = scale,
                     offsetX = offsetX,
                     offsetY = offsetY,
-                    rotation = rotation
+                    rotation = rotation,
+                    brightness = brightness,
+                    contrast = contrast,
+                    saturation = saturation,
+                    hue = hue
                 )
-                BackgroundEditorUtils.saveImageTransformSettings(prefs, imageUri, transformSettings)
-                
-                // Save adjustment settings
-                prefs.edit()
-                    .putFloat("image_brightness", brightness)
-                    .putFloat("image_contrast", contrast)
-                    .putFloat("image_saturation", saturation)
-                    .putFloat("image_hue", hue)
-                    .apply()
+                ImageTransformSettings.saveToPrefs(prefs, allSettings)
+                BackgroundEditorUtils.saveImageTransformSettings(prefs, imageUri, allSettings)
                 
                 navigator.popBackStack()
             },
@@ -114,17 +111,23 @@ fun PhotoEditor(
     onSave: (Float, Float, Float, Float, Float, Float, Float, Float) -> Unit, // scale, offsetX, offsetY, rotation, brightness, contrast, saturation, hue
     onProvideSaveFunction: (((() -> Unit)) -> Unit)? = null // Callback to provide save function to parent
 ) {
-    // Transform states - simple like original AdvancedImageTransformDialog
-    var offsetX by remember { mutableFloatStateOf(0f) }
-    var offsetY by remember { mutableFloatStateOf(0f) }
-    var scale by remember { mutableFloatStateOf(1f) }
-    var rotation by remember { mutableFloatStateOf(0f) }
+    val context = LocalContext.current
+    val prefs = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
     
-    // Image adjustment states with expanded ranges for better effects
-    var brightness by remember { mutableFloatStateOf(0f) } // -200 to 200 (expanded from -100 to 100)
-    var contrast by remember { mutableFloatStateOf(1f) } // 0 to 4 (expanded from 0 to 2)
-    var saturation by remember { mutableFloatStateOf(1f) } // 0 to 3 (expanded from 0 to 2)
-    var hue by remember { mutableFloatStateOf(0f) } // -360 to 360 (expanded from -180 to 180)
+    // Load saved transform settings or use defaults
+    val savedSettings = remember { ImageTransformSettings.loadFromPrefs(prefs) }
+    
+    // Transform states - load from saved settings
+    var offsetX by remember { mutableFloatStateOf(savedSettings.offsetX) }
+    var offsetY by remember { mutableFloatStateOf(savedSettings.offsetY) }
+    var scale by remember { mutableFloatStateOf(savedSettings.scale) }
+    var rotation by remember { mutableFloatStateOf(savedSettings.rotation) }
+    
+    // Image adjustment states with expanded ranges for better effects - load from saved settings
+    var brightness by remember { mutableFloatStateOf(savedSettings.brightness) } // -200 to 200 (expanded from -100 to 100)
+    var contrast by remember { mutableFloatStateOf(savedSettings.contrast) } // 0 to 4 (expanded from 0 to 2)
+    var saturation by remember { mutableFloatStateOf(savedSettings.saturation) } // 0 to 3 (expanded from 0 to 2)
+    var hue by remember { mutableFloatStateOf(savedSettings.hue) } // -360 to 360 (expanded from -180 to 180)
     
     // UI state
     var freeFormMode by remember { mutableStateOf(true) }
@@ -201,6 +204,13 @@ fun PhotoEditor(
             contentDescription = "Photo to edit",
             modifier = Modifier
                 .fillMaxSize()
+                .pointerInput(Unit) {
+                    detectTransformGestures { _, pan, zoom, _ ->
+                        scale = (scale * zoom).coerceIn(0.1f, 5f)
+                        offsetX += pan.x
+                        offsetY += pan.y
+                    }
+                }
                 .graphicsLayer(
                     scaleX = scale,
                     scaleY = scale,

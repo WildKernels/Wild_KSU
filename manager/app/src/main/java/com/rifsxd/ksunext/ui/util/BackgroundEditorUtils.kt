@@ -19,12 +19,7 @@ import kotlinx.coroutines.withContext
 import kotlin.math.max
 import kotlin.math.min
 
-data class ImageTransformSettings(
-    val scale: Float = 1f,
-    val offsetX: Float = 0f,
-    val offsetY: Float = 0f,
-    val rotation: Float = 0f
-)
+// ImageTransformSettings is now defined in its own file
 
 object BackgroundEditorUtils {
     // Constants for transformation limits (matching PhotoEditor ranges)
@@ -40,9 +35,14 @@ object BackgroundEditorUtils {
             putFloat("background_pos_x", settings.offsetX)
             putFloat("background_pos_y", settings.offsetY)
             putFloat("background_rotation", settings.rotation)
+            // Save image adjustment settings as well
+            putFloat("image_brightness", settings.brightness)
+            putFloat("image_contrast", settings.contrast)
+            putFloat("image_saturation", settings.saturation)
+            putFloat("image_hue", settings.hue)
             apply()
         }
-        Log.d(TAG, "Saved transform settings for URI $uri: scale=${settings.scale}, offsetX=${settings.offsetX}, offsetY=${settings.offsetY}, rotation=${settings.rotation}")
+        Log.d(TAG, "Saved transform settings for URI $uri: scale=${settings.scale}, offsetX=${settings.offsetX}, offsetY=${settings.offsetY}, rotation=${settings.rotation}, brightness=${settings.brightness}, contrast=${settings.contrast}, saturation=${settings.saturation}, hue=${settings.hue}")
     }
     
     fun loadImageTransformSettings(prefs: SharedPreferences): ImageTransformSettings {
@@ -50,7 +50,11 @@ object BackgroundEditorUtils {
             scale = prefs.getFloat("background_scale_x", 1f),
             offsetX = prefs.getFloat("background_pos_x", 0f),
             offsetY = prefs.getFloat("background_pos_y", 0f),
-            rotation = prefs.getFloat("background_rotation", 0f)
+            rotation = prefs.getFloat("background_rotation", 0f),
+            brightness = prefs.getFloat("image_brightness", 0f),
+            contrast = prefs.getFloat("image_contrast", 1f),
+            saturation = prefs.getFloat("image_saturation", 1f),
+            hue = prefs.getFloat("image_hue", 0f)
         )
     }
     
@@ -60,6 +64,10 @@ object BackgroundEditorUtils {
             remove("background_pos_x")
             remove("background_pos_y")
             remove("background_rotation")
+            remove("image_brightness")
+            remove("image_contrast")
+            remove("image_saturation")
+            remove("image_hue")
             apply()
         }
         Log.d(TAG, "Cleared image transform settings")
