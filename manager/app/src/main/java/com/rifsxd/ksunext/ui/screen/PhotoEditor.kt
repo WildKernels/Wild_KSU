@@ -8,12 +8,8 @@ import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Save
 import androidx.compose.material3.*
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
 
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -75,7 +71,6 @@ fun PhotoEditorScreen(
         offsetX = offsetX,
         offsetY = offsetY,
         rotation = rotation,
-        navigator = navigator,
         onTransformChange = { newScale, newOffsetX, newOffsetY, newRotation ->
             scale = newScale
             offsetX = newOffsetX
@@ -96,7 +91,6 @@ fun PhotoEditor(
     offsetX: Float,
     offsetY: Float,
     rotation: Float,
-    navigator: DestinationsNavigator,
     onTransformChange: (Float, Float, Float, Float) -> Unit = { _, _, _, _ -> },
     onSave: () -> Unit = {}
 ) {
@@ -129,44 +123,6 @@ fun PhotoEditor(
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background)
         ) {
-        // Top app bar overlay
-         TopAppBar(
-             title = { Text("Photo Editor") },
-             navigationIcon = {
-                 IconButton(onClick = { navigator.popBackStack() }) {
-                     Icon(
-                         imageVector = Icons.Default.ArrowBack,
-                         contentDescription = "Back"
-                     )
-                 }
-             },
-             modifier = Modifier.align(Alignment.TopCenter)
-         )
-        
-        // Bottom bar overlay
-        BottomAppBar(
-            modifier = Modifier.align(Alignment.BottomCenter),
-            containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f)
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                IconButton(onClick = { /* reset transforms */ }) {
-                    Icon(
-                        imageVector = Icons.Default.Check,
-                        contentDescription = "Reset"
-                    )
-                }
-                IconButton(onClick = onSave) {
-                    Icon(
-                        imageVector = Icons.Default.Save,
-                        contentDescription = "Save"
-                    )
-                }
-            }
-        }
         // Main image display with touch gestures
         Image(
             painter = painter,
@@ -211,5 +167,18 @@ fun PhotoEditor(
             contentScale = ContentScale.Fit,
             alignment = Alignment.Center
         )
+        
+        // Save button
+        FloatingActionButton(
+            onClick = onSave,
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(16.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.Save,
+                contentDescription = "Save"
+            )
+        }
     }
 }
