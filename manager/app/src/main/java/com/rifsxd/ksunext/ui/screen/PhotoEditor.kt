@@ -67,13 +67,16 @@ fun PhotoEditorScreen(
     
     // Get the callback setter from MainActivity
     val saveCallbackSetter = LocalPhotoEditorSaveCallbackSetter.current
+    println("PhotoEditor: saveCallbackSetter = $saveCallbackSetter")
     
     // Register the save callback with MainActivity
     LaunchedEffect(scale, offsetX, offsetY, rotation) {
+        println("PhotoEditor: LaunchedEffect triggered, registering callback")
         saveCallbackSetter?.invoke {
             println("PhotoEditor: Save callback triggered with scale=$scale, offsetX=$offsetX, offsetY=$offsetY, rotation=$rotation")
             saveFunction(scale, offsetX, offsetY, rotation)
         }
+        println("PhotoEditor: Callback registered successfully")
     }
     
     // Clean up callback when leaving the screen
