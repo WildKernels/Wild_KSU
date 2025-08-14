@@ -173,7 +173,7 @@ fun PhotoEditor(
             onClick = onSave,
             modifier = Modifier
                 .align(Alignment.BottomEnd)
-                .padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 96.dp) // Extra bottom padding to clear bottom bar
+                .padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 80.dp) // Aligned with bottom bar
         ) {
             Icon(
                 imageVector = Icons.Default.Save,
