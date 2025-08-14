@@ -9,6 +9,15 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Save
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.RotateLeft
+import androidx.compose.material.icons.filled.RotateRight
+import androidx.compose.material.icons.filled.ZoomIn
+import androidx.compose.material.icons.filled.ZoomOut
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.FlipToBack
+import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material3.*
 
 import androidx.compose.runtime.*
@@ -79,6 +88,9 @@ fun PhotoEditorScreen(
         },
         onSave = {
             saveFunction(scale, offsetX, offsetY, rotation)
+        },
+        onCancel = {
+            navigator.popBackStack()
         }
     )
 }
@@ -92,7 +104,8 @@ fun PhotoEditor(
     offsetY: Float,
     rotation: Float,
     onTransformChange: (Float, Float, Float, Float) -> Unit = { _, _, _, _ -> },
-    onSave: () -> Unit = {}
+    onSave: () -> Unit = {},
+    onCancel: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val prefs = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
@@ -102,6 +115,16 @@ fun PhotoEditor(
     var currentOffsetX by remember { mutableFloatStateOf(offsetX) }
     var currentOffsetY by remember { mutableFloatStateOf(offsetY) }
     var currentRotation by remember { mutableFloatStateOf(rotation) }
+    
+    // Additional states for advanced controls
+    var showAdvancedControls by remember { mutableStateOf(false) }
+    var flipHorizontal by remember { mutableStateOf(false) }
+    var flipVertical by remember { mutableStateOf(false) }
+    var brightness by remember { mutableFloatStateOf(0f) }
+    var contrast by remember { mutableFloatStateOf(0f) }
+    var saturation by remember { mutableFloatStateOf(0f) }
+    var hue by remember { mutableFloatStateOf(0f) }
+    var freeFormEditing by remember { mutableStateOf(false) }
     
     // Update local state when props change
     LaunchedEffect(scale, offsetX, offsetY, rotation) {
@@ -168,17 +191,245 @@ fun PhotoEditor(
             alignment = Alignment.Center
         )
         
-        // Save button
-        FloatingActionButton(
-            onClick = onSave,
+        // Advanced controls panel (when enabled)
+        if (showAdvancedControls) {
+            Card(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth()
+                    .padding(16.dp)
+                    .padding(bottom = 120.dp), // Above the bottom bar
+                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    // Free-form editing toggle
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text("Free-form Editing")
+                        Switch(
+                            checked = freeFormEditing,
+                            onCheckedChange = { freeFormEditing = it }
+                        )
+                    }
+                    
+                    // Scale slider
+                    Text("Scale: ${(currentScale * 100).toInt()}%")
+                    Slider(
+                        value = currentScale,
+                        onValueChange = { newScale ->
+                            currentScale = newScale
+                            onTransformChange(newScale, currentOffsetX, currentOffsetY, currentRotation)
+                        },
+                        valueRange = 0.1f..5f
+                    )
+                    
+                    // Brightness slider
+                    Text("Brightness: ${brightness.toInt()}")
+                    Slider(
+                        value = brightness,
+                        onValueChange = { brightness = it },
+                        valueRange = -100f..100f
+                    )
+                    
+                    // Contrast slider
+                    Text("Contrast: ${contrast.toInt()}")
+                    Slider(
+                        value = contrast,
+                        onValueChange = { contrast = it },
+                        valueRange = -100f..100f
+                    )
+                    
+                    // Saturation slider
+                    Text("Saturation: ${saturation.toInt()}")
+                    Slider(
+                        value = saturation,
+                        onValueChange = { saturation = it },
+                        valueRange = -100f..100f
+                    )
+                    
+                    // Hue slider
+                    Text("Hue: ${hue.toInt()}°")
+                    Slider(
+                        value = hue,
+                        onValueChange = { hue = it },
+                        valueRange = -100f..100f
+                    )
+                }
+            }
+        }
+        
+        // Bottom controls and action bar
+        Card(
             modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 80.dp) // Aligned with bottom bar
+                .align(Alignment.BottomCenter)
+                .fillMaxWidth()
+                .padding(16.dp)
+                .padding(bottom = 80.dp), // Above the main bottom navigation
+            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
         ) {
-            Icon(
-                imageVector = Icons.Default.Save,
-                contentDescription = "Save"
-            )
+            Column(
+                modifier = Modifier.padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                // Quick action buttons row
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    // Rotate left
+                    IconButton(
+                        onClick = {
+                            currentRotation = (currentRotation - 90f) % 360f
+                            onTransformChange(currentScale, currentOffsetX, currentOffsetY, currentRotation)
+                        },
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(MaterialTheme.colorScheme.surfaceVariant)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.RotateLeft,
+                            contentDescription = "Rotate Left"
+                        )
+                    }
+                    
+                    // Rotate right
+                    IconButton(
+                        onClick = {
+                            currentRotation = (currentRotation + 90f) % 360f
+                            onTransformChange(currentScale, currentOffsetX, currentOffsetY, currentRotation)
+                        },
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(MaterialTheme.colorScheme.surfaceVariant)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.RotateRight,
+                            contentDescription = "Rotate Right"
+                        )
+                    }
+                    
+                    // Flip horizontal
+                    IconButton(
+                        onClick = { flipHorizontal = !flipHorizontal },
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(
+                                if (flipHorizontal) MaterialTheme.colorScheme.primary
+                                else MaterialTheme.colorScheme.surfaceVariant
+                            )
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.FlipToBack,
+                            contentDescription = "Flip Horizontal",
+                            tint = if (flipHorizontal) MaterialTheme.colorScheme.onPrimary
+                                   else MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    
+                    // Flip vertical
+                    IconButton(
+                        onClick = { flipVertical = !flipVertical },
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(
+                                if (flipVertical) MaterialTheme.colorScheme.primary
+                                else MaterialTheme.colorScheme.surfaceVariant
+                            )
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.FlipToBack,
+                            contentDescription = "Flip Vertical",
+                            tint = if (flipVertical) MaterialTheme.colorScheme.onPrimary
+                                   else MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    
+                    // Advanced controls toggle
+                    IconButton(
+                        onClick = { showAdvancedControls = !showAdvancedControls },
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(
+                                if (showAdvancedControls) MaterialTheme.colorScheme.primary
+                                else MaterialTheme.colorScheme.surfaceVariant
+                            )
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Tune,
+                            contentDescription = "Advanced Controls",
+                            tint = if (showAdvancedControls) MaterialTheme.colorScheme.onPrimary
+                                   else MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    
+                    // Reset button
+                    IconButton(
+                        onClick = {
+                            currentScale = 1f
+                            currentOffsetX = 0f
+                            currentOffsetY = 0f
+                            currentRotation = 0f
+                            flipHorizontal = false
+                            flipVertical = false
+                            brightness = 0f
+                            contrast = 0f
+                            saturation = 0f
+                            hue = 0f
+                            onTransformChange(1f, 0f, 0f, 0f)
+                        },
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(MaterialTheme.colorScheme.surfaceVariant)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Refresh,
+                            contentDescription = "Reset"
+                        )
+                    }
+                }
+                
+                // Action buttons row
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    // Cancel button
+                     OutlinedButton(
+                         onClick = onCancel,
+                         modifier = Modifier.weight(1f)
+                     ) {
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = "Cancel",
+                            modifier = Modifier.size(18.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("Cancel")
+                    }
+                    
+                    Spacer(modifier = Modifier.width(16.dp))
+                    
+                    // Confirm button
+                    Button(
+                        onClick = onSave,
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Check,
+                            contentDescription = "Confirm",
+                            modifier = Modifier.size(18.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("Confirm")
+                    }
+                }
+            }
         }
     }
 }
