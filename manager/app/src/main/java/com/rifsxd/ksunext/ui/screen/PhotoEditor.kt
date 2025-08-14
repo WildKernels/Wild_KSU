@@ -10,6 +10,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Save
 import androidx.compose.material3.*
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.TextButton
@@ -28,9 +29,9 @@ import coil.request.ImageRequest
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import com.rifsxd.ksunext.ui.LocalPhotoEditorSaveCallbackSetter
 
-val LocalPhotoEditorSave = compositionLocalOf<((Float, Float, Float, Float) -> Unit)?> { null }
+
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Destination<RootGraph>
@@ -68,29 +69,6 @@ fun PhotoEditorScreen(
     var offsetY by remember { mutableFloatStateOf(prefs.getFloat("background_pos_y", 0f)) }
     var rotation by remember { mutableFloatStateOf(prefs.getFloat("background_rotation", 0f)) }
     
-    // Get the callback setter from MainActivity
-    val saveCallbackSetter = LocalPhotoEditorSaveCallbackSetter.current
-    println("PhotoEditor: saveCallbackSetter = $saveCallbackSetter")
-    
-    // Register the save callback with MainActivity
-    LaunchedEffect(scale, offsetX, offsetY, rotation) {
-        println("PhotoEditor: LaunchedEffect triggered, registering callback")
-        saveCallbackSetter?.invoke {
-            println("PhotoEditor: Save callback triggered with scale=$scale, offsetX=$offsetX, offsetY=$offsetY, rotation=$rotation")
-            showSaveDialog = true
-        }
-        println("PhotoEditor: Callback registered successfully")
-    }
-    
-    // Clean up callback when leaving the screen
-    DisposableEffect(Unit) {
-        println("PhotoEditor: DisposableEffect created")
-        onDispose {
-            println("PhotoEditor: DisposableEffect onDispose - clearing callback")
-            saveCallbackSetter?.invoke(null)
-        }
-    }
-    
     // Save confirmation dialog
     if (showSaveDialog) {
         AlertDialog(
@@ -117,23 +95,20 @@ fun PhotoEditorScreen(
         )
     }
     
-    CompositionLocalProvider(
-        LocalPhotoEditorSave provides saveFunction
-    ) {
-        PhotoEditor(
-            imageUri = Uri.parse(imageUri),
-            scale = scale,
-            offsetX = offsetX,
-            offsetY = offsetY,
-            rotation = rotation,
-            onTransformChange = { newScale, newOffsetX, newOffsetY, newRotation ->
-                scale = newScale
-                offsetX = newOffsetX
-                offsetY = newOffsetY
-                rotation = newRotation
-            }
-        )
-    }
+    PhotoEditor(
+        imageUri = Uri.parse(imageUri),
+        scale = scale,
+        offsetX = offsetX,
+        offsetY = offsetY,
+        rotation = rotation,
+        onTransformChange = { newScale, newOffsetX, newOffsetY, newRotation ->
+            scale = newScale
+            offsetX = newOffsetX
+            offsetY = newOffsetY
+            rotation = newRotation
+        },
+        onSave = { showSaveDialog = true }
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -144,7 +119,8 @@ fun PhotoEditor(
     offsetX: Float,
     offsetY: Float,
     rotation: Float,
-    onTransformChange: (Float, Float, Float, Float) -> Unit = { _, _, _, _ -> }
+    onTransformChange: (Float, Float, Float, Float) -> Unit = { _, _, _, _ -> },
+    onSave: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val prefs = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
@@ -217,5 +193,18 @@ fun PhotoEditor(
             contentScale = ContentScale.Fit,
             alignment = Alignment.Center
         )
+        
+        // Save button
+        FloatingActionButton(
+            onClick = onSave,
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(16.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.Save,
+                contentDescription = "Save"
+            )
+        }
     }
 }
