@@ -50,6 +50,7 @@ fun PhotoEditorScreen(
             .putString("background_fit_mode", "fit")
             .apply()
         navigator.popBackStack()
+        Unit
     }
     
     CompositionLocalProvider(

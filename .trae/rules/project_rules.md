@@ -1,0 +1,1 @@
+1. When done editing always git add, git commit, and git push
