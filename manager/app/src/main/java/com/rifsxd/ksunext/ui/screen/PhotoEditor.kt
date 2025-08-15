@@ -736,7 +736,5 @@ fun PhotoEditor(
                  }
             }
         }
-        
-
     }
 }
