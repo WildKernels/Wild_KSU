@@ -249,7 +249,7 @@ fun PhotoEditor(
     var contrast by remember { mutableFloatStateOf(1.0f) }
     var saturation by remember { mutableFloatStateOf(1.0f) }
     var hue by remember { mutableFloatStateOf(0f) }
-    var freeFormEditing by remember { mutableStateOf(false) }
+    var freeFormEditing by remember { mutableStateOf(true) }
     
     // Load existing color settings for this specific image
     LaunchedEffect(imageUri) {
@@ -659,8 +659,12 @@ fun PhotoEditor(
                      // Crop button with Material 3 Expressive styling
                      IconButton(
                          onClick = { 
-                             showColorMenu = false
-                             showCropMenu = !showCropMenu
+                             if (showCropMenu) {
+                                 showCropMenu = false
+                             } else {
+                                 showColorMenu = false
+                                 showCropMenu = true
+                             }
                          },
                          modifier = Modifier
                              .size(56.dp)
@@ -682,8 +686,12 @@ fun PhotoEditor(
                      // Color button with Material 3 Expressive styling
                      IconButton(
                          onClick = { 
-                             showCropMenu = false
-                             showColorMenu = !showColorMenu
+                             if (showColorMenu) {
+                                 showColorMenu = false
+                             } else {
+                                 showCropMenu = false
+                                 showColorMenu = true
+                             }
                          },
                          modifier = Modifier
                              .size(56.dp)
