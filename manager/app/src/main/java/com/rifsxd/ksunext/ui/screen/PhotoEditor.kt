@@ -281,7 +281,7 @@ fun PhotoEditor(
                         WindowInsetsSides.Horizontal
                     )
                 )
-                .padding(bottom = 120.dp), // Add padding to avoid overlapping with main bottom navigation bar
+                .padding(bottom = 88.dp), // Standard navigation bar height + padding
             color = MaterialTheme.colorScheme.surface,
             shadowElevation = 16.dp,
             tonalElevation = 3.dp
