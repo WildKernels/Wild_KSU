@@ -278,10 +278,9 @@ fun PhotoEditor(
                 .fillMaxWidth()
                 .windowInsetsPadding(
                     WindowInsets.systemBars.union(WindowInsets.displayCutout).only(
-                        WindowInsetsSides.Horizontal
+                        WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom
                     )
-                )
-                .padding(bottom = 88.dp), // Standard navigation bar height + padding
+                ),
             color = MaterialTheme.colorScheme.surface,
             shadowElevation = 16.dp,
             tonalElevation = 3.dp
