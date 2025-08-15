@@ -590,23 +590,22 @@ fun PhotoEditor(
                  }
              }
          }
-        }
         
-        // Bottom controls overlay - positioned as a separate layer
-        Surface(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .fillMaxWidth()
-                .windowInsetsPadding(
-                    WindowInsets.systemBars.union(WindowInsets.displayCutout).only(
-                        WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom
+            // Bottom controls overlay - positioned as a separate layer
+            Surface(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth()
+                    .windowInsetsPadding(
+                        WindowInsets.systemBars.union(WindowInsets.displayCutout).only(
+                            WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom
+                        )
                     )
-                )
-                .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 120.dp),
-            color = MaterialTheme.colorScheme.surfaceContainer,
-            tonalElevation = 3.dp,
-            shape = RoundedCornerShape(16.dp)
-        ) {
+                    .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 16.dp),
+                color = MaterialTheme.colorScheme.surfaceContainer,
+                tonalElevation = 3.dp,
+                shape = RoundedCornerShape(16.dp)
+            ) {
             Column(
                 modifier = Modifier
                     .padding(horizontal = 16.dp)
