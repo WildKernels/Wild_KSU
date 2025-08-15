@@ -151,6 +151,7 @@ fun PhotoEditor(
     Box(
         modifier = Modifier
             .fillMaxSize()
+            .windowInsetsPadding(WindowInsets.systemBars.union(WindowInsets.displayCutout))
             .background(MaterialTheme.colorScheme.background)
     ) {
         // Main image display with touch gestures
@@ -281,7 +282,7 @@ fun PhotoEditor(
                         WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom
                     )
                 )
-                .padding(16.dp),
+                .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 96.dp),
             color = MaterialTheme.colorScheme.surface,
             shadowElevation = 16.dp,
             tonalElevation = 3.dp
