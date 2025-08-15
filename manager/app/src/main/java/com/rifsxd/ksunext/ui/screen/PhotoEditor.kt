@@ -228,36 +228,9 @@ fun PhotoEditor(
                     translationY = currentOffsetY,
                     rotationZ = currentRotation,
                     transformOrigin = TransformOrigin.Center,
-                    alpha = 1f + (brightness / 200f),
-                    colorFilter = androidx.compose.ui.graphics.ColorFilter.colorMatrix(
-                        androidx.compose.ui.graphics.ColorMatrix().apply {
-                            // Apply contrast
-                            val contrastFactor = 1f + (contrast / 100f)
-                            this[0, 0] = contrastFactor
-                            this[1, 1] = contrastFactor
-                            this[2, 2] = contrastFactor
-                            
-                            // Apply saturation
-                            val saturationFactor = 1f + (saturation / 100f)
-                            val lumR = 0.3086f
-                            val lumG = 0.6094f
-                            val lumB = 0.0820f
-                            val sr = (1f - saturationFactor) * lumR
-                            val sg = (1f - saturationFactor) * lumG
-                            val sb = (1f - saturationFactor) * lumB
-                            
-                            this[0, 0] = sr + saturationFactor
-                            this[0, 1] = sg
-                            this[0, 2] = sb
-                            this[1, 0] = sr
-                            this[1, 1] = sg + saturationFactor
-                            this[1, 2] = sb
-                            this[2, 0] = sr
-                            this[2, 1] = sg
-                            this[2, 2] = sb + saturationFactor
-                        }
-                    )
+                    alpha = (1f + (brightness / 200f)).coerceIn(0f, 1f)
                 ),
+
             contentScale = ContentScale.Fit,
             alignment = Alignment.Center
         )
