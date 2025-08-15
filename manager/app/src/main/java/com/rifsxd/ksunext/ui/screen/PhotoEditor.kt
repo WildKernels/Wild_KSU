@@ -24,7 +24,10 @@ import androidx.compose.material.icons.filled.ZoomOut
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.FlipToBack
+import androidx.compose.material.icons.filled.SwapHoriz
+import androidx.compose.material.icons.filled.SwapVert
 import androidx.compose.material.icons.filled.Tune
+import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material3.*
 
 import androidx.compose.runtime.*
@@ -75,11 +78,31 @@ fun PhotoEditorScreen(
         Unit
     }
     
-    // Reset transform states for new image to avoid applying previous image's transforms
+    // Load existing settings for this specific image or use defaults
     var scale by remember { mutableFloatStateOf(1f) }
     var offsetX by remember { mutableFloatStateOf(0f) }
     var offsetY by remember { mutableFloatStateOf(0f) }
     var rotation by remember { mutableFloatStateOf(0f) }
+    
+    // Load existing settings for this specific image
+    LaunchedEffect(imageUri) {
+        val existingUri = prefs.getString("background_image_uri", "")
+        if (existingUri == imageUri) {
+            // Load existing transform settings for this image
+            scale = prefs.getFloat("background_scale_x", 1f)
+            offsetX = prefs.getFloat("background_pos_x", 0f)
+            offsetY = prefs.getFloat("background_pos_y", 0f)
+            rotation = prefs.getFloat("background_rotation", 0f)
+            println("PhotoEditor: Loaded existing settings for image: scale=$scale, offsetX=$offsetX, offsetY=$offsetY, rotation=$rotation")
+        } else {
+            // Reset to defaults for new image
+            scale = 1f
+            offsetX = 0f
+            offsetY = 0f
+            rotation = 0f
+            println("PhotoEditor: New image, using default transform settings")
+        }
+    }
     
     PhotoEditor(
         imageUri = Uri.parse(imageUri),
@@ -125,6 +148,7 @@ fun PhotoEditor(
     
     // Additional states for advanced controls
     var showAdvancedControls by remember { mutableStateOf(false) }
+    var showColorControls by remember { mutableStateOf(false) }
     var flipHorizontal by remember { mutableStateOf(false) }
     var flipVertical by remember { mutableStateOf(false) }
     var brightness by remember { mutableFloatStateOf(0f) }
@@ -132,6 +156,17 @@ fun PhotoEditor(
     var saturation by remember { mutableFloatStateOf(0f) }
     var hue by remember { mutableFloatStateOf(0f) }
     var freeFormEditing by remember { mutableStateOf(false) }
+    
+    // Load existing color settings for this specific image
+    LaunchedEffect(imageUri) {
+        val imageUriString = imageUri.toString()
+        brightness = prefs.getFloat("${imageUriString}_brightness", 0f)
+        contrast = prefs.getFloat("${imageUriString}_contrast", 0f)
+        saturation = prefs.getFloat("${imageUriString}_saturation", 0f)
+        hue = prefs.getFloat("${imageUriString}_hue", 0f)
+        flipHorizontal = prefs.getBoolean("${imageUriString}_flip_horizontal", false)
+        flipVertical = prefs.getBoolean("${imageUriString}_flip_vertical", false)
+    }
     
     // Update local state when props change
     LaunchedEffect(scale, offsetX, offsetY, rotation) {
@@ -187,12 +222,41 @@ fun PhotoEditor(
                     }
                 }
                 .graphicsLayer(
-                    scaleX = currentScale,
-                    scaleY = currentScale,
+                    scaleX = currentScale * (if (flipHorizontal) -1f else 1f),
+                    scaleY = currentScale * (if (flipVertical) -1f else 1f),
                     translationX = currentOffsetX,
                     translationY = currentOffsetY,
                     rotationZ = currentRotation,
-                    transformOrigin = TransformOrigin.Center
+                    transformOrigin = TransformOrigin.Center,
+                    alpha = 1f + (brightness / 200f),
+                    colorFilter = androidx.compose.ui.graphics.ColorFilter.colorMatrix(
+                        androidx.compose.ui.graphics.ColorMatrix().apply {
+                            // Apply contrast
+                            val contrastFactor = 1f + (contrast / 100f)
+                            this[0, 0] = contrastFactor
+                            this[1, 1] = contrastFactor
+                            this[2, 2] = contrastFactor
+                            
+                            // Apply saturation
+                            val saturationFactor = 1f + (saturation / 100f)
+                            val lumR = 0.3086f
+                            val lumG = 0.6094f
+                            val lumB = 0.0820f
+                            val sr = (1f - saturationFactor) * lumR
+                            val sg = (1f - saturationFactor) * lumG
+                            val sb = (1f - saturationFactor) * lumB
+                            
+                            this[0, 0] = sr + saturationFactor
+                            this[0, 1] = sg
+                            this[0, 2] = sb
+                            this[1, 0] = sr
+                            this[1, 1] = sg + saturationFactor
+                            this[1, 2] = sb
+                            this[2, 0] = sr
+                            this[2, 1] = sg
+                            this[2, 2] = sb + saturationFactor
+                        }
+                    )
                 ),
             contentScale = ContentScale.Fit,
             alignment = Alignment.Center
@@ -204,9 +268,11 @@ fun PhotoEditor(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .fillMaxWidth()
-                    .padding(16.dp)
-                    .padding(bottom = 120.dp), // Above the bottom bar
-                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+                    .padding(bottom = 200.dp)
+                    .padding(horizontal = 16.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceContainer
+                )
             ) {
                 Column(
                     modifier = Modifier.padding(16.dp),
@@ -235,12 +301,35 @@ fun PhotoEditor(
                         },
                         valueRange = 0.1f..5f
                     )
-                    
+                }
+            }
+        }
+        
+        // Color controls panel (when enabled)
+         if (showColorControls) {
+             Card(
+                 modifier = Modifier
+                     .align(Alignment.BottomCenter)
+                     .fillMaxWidth()
+                     .padding(bottom = 200.dp)
+                     .padding(horizontal = 16.dp),
+                 colors = CardDefaults.cardColors(
+                     containerColor = MaterialTheme.colorScheme.surfaceContainer
+                 )
+             ) {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
                     // Brightness slider
                     Text("Brightness: ${brightness.toInt()}")
                     Slider(
                         value = brightness,
-                        onValueChange = { brightness = it },
+                        onValueChange = { 
+                            brightness = it
+                            val imageUriString = imageUri.toString()
+                            prefs.edit().putFloat("${imageUriString}_brightness", it).apply()
+                        },
                         valueRange = -100f..100f
                     )
                     
@@ -248,7 +337,11 @@ fun PhotoEditor(
                     Text("Contrast: ${contrast.toInt()}")
                     Slider(
                         value = contrast,
-                        onValueChange = { contrast = it },
+                        onValueChange = { 
+                            contrast = it
+                            val imageUriString = imageUri.toString()
+                            prefs.edit().putFloat("${imageUriString}_contrast", it).apply()
+                        },
                         valueRange = -100f..100f
                     )
                     
@@ -256,7 +349,11 @@ fun PhotoEditor(
                     Text("Saturation: ${saturation.toInt()}")
                     Slider(
                         value = saturation,
-                        onValueChange = { saturation = it },
+                        onValueChange = { 
+                            saturation = it
+                            val imageUriString = imageUri.toString()
+                            prefs.edit().putFloat("${imageUriString}_saturation", it).apply()
+                        },
                         valueRange = -100f..100f
                     )
                     
@@ -264,7 +361,11 @@ fun PhotoEditor(
                     Text("Hue: ${hue.toInt()}°")
                     Slider(
                         value = hue,
-                        onValueChange = { hue = it },
+                        onValueChange = { 
+                            hue = it
+                            val imageUriString = imageUri.toString()
+                            prefs.edit().putFloat("${imageUriString}_hue", it).apply()
+                        },
                         valueRange = -100f..100f
                     )
                 }
@@ -281,7 +382,7 @@ fun PhotoEditor(
                         WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom
                     )
                 )
-                .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 80.dp),
+                .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 120.dp),
             color = MaterialTheme.colorScheme.surface,
             shadowElevation = 16.dp,
             tonalElevation = 3.dp,
@@ -332,36 +433,52 @@ fun PhotoEditor(
                     
                     // Flip horizontal
                     IconButton(
-                        onClick = { flipHorizontal = !flipHorizontal },
+                        onClick = { 
+                            flipHorizontal = !flipHorizontal
+                            val imageUriString = imageUri.toString()
+                            prefs.edit().putBoolean("${imageUriString}_flip_horizontal", flipHorizontal).apply()
+                        },
                         modifier = Modifier
                             .clip(RoundedCornerShape(8.dp))
-                            .background(
-                                if (flipHorizontal) MaterialTheme.colorScheme.primary
-                                else MaterialTheme.colorScheme.surfaceVariant
-                            )
+                            .background(MaterialTheme.colorScheme.surfaceVariant)
                     ) {
                         Icon(
-                            imageVector = Icons.Default.FlipToBack,
-                            contentDescription = "Flip Horizontal",
-                            tint = if (flipHorizontal) MaterialTheme.colorScheme.onPrimary
-                                   else MaterialTheme.colorScheme.onSurfaceVariant
+                            imageVector = Icons.Default.SwapHoriz,
+                            contentDescription = "Flip Horizontal"
                         )
                     }
                     
                     // Flip vertical
                     IconButton(
-                        onClick = { flipVertical = !flipVertical },
+                        onClick = { 
+                            flipVertical = !flipVertical
+                            val imageUriString = imageUri.toString()
+                            prefs.edit().putBoolean("${imageUriString}_flip_vertical", flipVertical).apply()
+                        },
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(MaterialTheme.colorScheme.surfaceVariant)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.SwapVert,
+                            contentDescription = "Flip Vertical"
+                        )
+                    }
+                    
+                    // Color controls toggle
+                    IconButton(
+                        onClick = { showColorControls = !showColorControls },
                         modifier = Modifier
                             .clip(RoundedCornerShape(8.dp))
                             .background(
-                                if (flipVertical) MaterialTheme.colorScheme.primary
+                                if (showColorControls) MaterialTheme.colorScheme.primary
                                 else MaterialTheme.colorScheme.surfaceVariant
                             )
                     ) {
                         Icon(
-                            imageVector = Icons.Default.FlipToBack,
-                            contentDescription = "Flip Vertical",
-                            tint = if (flipVertical) MaterialTheme.colorScheme.onPrimary
+                            imageVector = Icons.Default.Palette,
+                            contentDescription = "Color Controls",
+                            tint = if (showColorControls) MaterialTheme.colorScheme.onPrimary
                                    else MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
@@ -398,6 +515,17 @@ fun PhotoEditor(
                             saturation = 0f
                             hue = 0f
                             onTransformChange(1f, 0f, 0f, 0f)
+                            
+                            // Reset color settings in preferences
+                            val imageUriString = imageUri.toString()
+                            prefs.edit()
+                                .putFloat("${imageUriString}_brightness", 0f)
+                                .putFloat("${imageUriString}_contrast", 0f)
+                                .putFloat("${imageUriString}_saturation", 0f)
+                                .putFloat("${imageUriString}_hue", 0f)
+                                .putBoolean("${imageUriString}_flip_horizontal", false)
+                                .putBoolean("${imageUriString}_flip_vertical", false)
+                                .apply()
                         },
                         modifier = Modifier
                             .clip(RoundedCornerShape(8.dp))
