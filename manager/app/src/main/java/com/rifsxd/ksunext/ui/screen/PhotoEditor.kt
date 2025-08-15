@@ -278,9 +278,10 @@ fun PhotoEditor(
                 .fillMaxWidth()
                 .windowInsetsPadding(
                     WindowInsets.systemBars.union(WindowInsets.displayCutout).only(
-                        WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom
+                        WindowInsetsSides.Horizontal
                     )
-                ),
+                )
+                .padding(bottom = 80.dp), // Add padding to avoid overlapping with main bottom navigation bar
             color = MaterialTheme.colorScheme.surface,
             shadowElevation = 16.dp,
             tonalElevation = 3.dp
