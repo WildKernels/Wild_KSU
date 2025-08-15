@@ -272,13 +272,11 @@ fun PhotoEditor(
         }
         
         // Bottom controls overlay - positioned as a separate layer
-        Surface(
+        NavigationBar(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth(),
-            color = MaterialTheme.colorScheme.surface,
-            shadowElevation = 16.dp,
-            tonalElevation = 3.dp,
+            tonalElevation = 16.dp,
             windowInsets = WindowInsets.systemBars.union(WindowInsets.displayCutout).only(
                 WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom
             )
