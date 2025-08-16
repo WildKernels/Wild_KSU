@@ -188,39 +188,39 @@ fun HomeSettingsScreen(
         showZygiskStatus, showKernelVersion, showAndroidVersion, showAbi, showSelinuxStatus
     ) {
         listOf(
-            InfoCardItem("manager_version", R.string.home_manager_version, showManagerVersion, {
+            InfoCardItem("info_card_show_manager_version", R.string.home_manager_version, showManagerVersion, {
                 prefs.edit().putBoolean("info_card_show_manager_version", it).apply()
                 showManagerVersion = it
             }, "drawable", R.drawable.ic_ksu_next),
-            InfoCardItem("hook_mode", R.string.hook_mode, showHookMode, {
+            InfoCardItem("info_card_show_hook_mode", R.string.hook_mode, showHookMode, {
                 prefs.edit().putBoolean("info_card_show_hook_mode", it).apply()
                 showHookMode = it
             }, "vector", Icons.Filled.Phishing),
-            InfoCardItem("mount_system", R.string.home_mount_system, showMountSystem, {
+            InfoCardItem("info_card_show_mount_system", R.string.home_mount_system, showMountSystem, {
                 prefs.edit().putBoolean("info_card_show_mount_system", it).apply()
                 showMountSystem = it
             }, "vector", Icons.Filled.SettingsSuggest),
-            InfoCardItem("susfs_status", R.string.home_susfs_version, showSusfsStatus, {
+            InfoCardItem("info_card_show_susfs_status", R.string.home_susfs_version, showSusfsStatus, {
                 prefs.edit().putBoolean("info_card_show_susfs_status", it).apply()
                 showSusfsStatus = it
             }, "drawable", R.drawable.ic_sus),
-            InfoCardItem("zygisk_status", R.string.zygisk_status, showZygiskStatus, {
+            InfoCardItem("info_card_show_zygisk_status", R.string.zygisk_status, showZygiskStatus, {
                 prefs.edit().putBoolean("info_card_show_zygisk_status", it).apply()
                 showZygiskStatus = it
             }, "vector", Icons.Filled.Vaccines),
-            InfoCardItem("kernel_version", R.string.home_kernel, showKernelVersion, {
+            InfoCardItem("info_card_show_kernel_version", R.string.home_kernel, showKernelVersion, {
                 prefs.edit().putBoolean("info_card_show_kernel_version", it).apply()
                 showKernelVersion = it
             }, "drawable", R.drawable.ic_linux),
-            InfoCardItem("android_version", R.string.home_android, showAndroidVersion, {
+            InfoCardItem("info_card_show_android_version", R.string.home_android, showAndroidVersion, {
                 prefs.edit().putBoolean("info_card_show_android_version", it).apply()
                 showAndroidVersion = it
             }, "vector", Icons.Filled.Android),
-            InfoCardItem("abi", R.string.home_abi, showAbi, {
+            InfoCardItem("info_card_show_abi", R.string.home_abi, showAbi, {
                 prefs.edit().putBoolean("info_card_show_abi", it).apply()
                 showAbi = it
             }, "vector", Icons.Filled.Memory),
-            InfoCardItem("selinux_status", R.string.home_selinux_status, showSelinuxStatus, {
+            InfoCardItem("info_card_show_selinux_status", R.string.home_selinux_status, showSelinuxStatus, {
                 prefs.edit().putBoolean("info_card_show_selinux_status", it).apply()
                 showSelinuxStatus = it
             }, "vector", Icons.Filled.Security)
