@@ -20,7 +20,7 @@ import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.Crossfade
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Save
 import androidx.compose.material.icons.filled.Refresh
@@ -398,23 +398,25 @@ fun PhotoEditor(
                     .padding(top = 16.dp, bottom = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                // Inline Crop Menu
-                AnimatedVisibility(
-                    visible = activeMenu == "crop",
-                    enter = fadeIn(animationSpec = tween(200)),
-                    exit = fadeOut(animationSpec = tween(150))
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 8.dp)
-                    ) {
-                        // Header
-                        Text(
-                            text = "Crop Tools",
-                            style = MaterialTheme.typography.titleMedium,
-                            modifier = Modifier.padding(bottom = 8.dp)
-                        )
+                // Single Menu Container with Crossfade
+                if (activeMenu != "none") {
+                    Crossfade(
+                        targetState = activeMenu,
+                        animationSpec = tween(200)
+                    ) { menu ->
+                        when (menu) {
+                            "crop" -> {
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(bottom = 8.dp)
+                                ) {
+                                    // Header
+                                    Text(
+                                        text = "Crop Tools",
+                                        style = MaterialTheme.typography.titleMedium,
+                                        modifier = Modifier.padding(bottom = 8.dp)
+                                    )
                         
                         // Rotation controls
                         Row(
@@ -557,25 +559,20 @@ fun PhotoEditor(
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.padding(top = 4.dp)
                         )
-                    }
-                }
-                
-                // Inline Color Menu
-                AnimatedVisibility(
-                    visible = activeMenu == "color",
-                    enter = fadeIn(animationSpec = tween(200)),
-                    exit = fadeOut(animationSpec = tween(150))
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 8.dp)
-                    ) {
-                        // Header
-                        Text(
-                            text = "Color Adjustments",
-                            style = MaterialTheme.typography.titleMedium,
-                            modifier = Modifier.padding(bottom = 8.dp)
+                                }
+                            }
+                            "color" -> {
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(bottom = 8.dp)
+                                ) {
+                                    // Header
+                                    Text(
+                                        text = "Color Adjustments",
+                                        style = MaterialTheme.typography.titleMedium,
+                                        modifier = Modifier.padding(bottom = 8.dp)
+                                    )
                         )
                         
                         // Brightness control
@@ -645,6 +642,9 @@ fun PhotoEditor(
                             valueRange = 0f..360f,
                             modifier = Modifier.fillMaxWidth()
                         )
+                                }
+                            }
+                        }
                     }
                 }
                 
