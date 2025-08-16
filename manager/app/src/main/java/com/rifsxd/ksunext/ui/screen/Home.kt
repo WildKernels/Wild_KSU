@@ -803,15 +803,15 @@ private fun InfoCard(autoExpand: Boolean = false) {
             }
 
             Column {
-                // Render all items in the saved order - all items are always shown
+                // Render items in the saved order, limiting to 5 unless expanded
                 var isFirstItem = true
+                var renderedCount = 0
+                val maxItemsWhenCollapsed = 5
+                var hasMoreItems = false
                 
                 itemOrder.forEach { itemKey ->
-                    val wasFirstItem = isFirstItem
-                    RenderInfoCardItem(itemKey, wasFirstItem)
-                    
-                    // Check if the item was actually rendered
-                    val itemWasRendered = when (itemKey) {
+                    // Check if the item would be rendered
+                    val itemWouldBeRendered = when (itemKey) {
                         "info_card_show_manager_version" -> showManagerVersion
                         "info_card_show_hook_mode" -> showHookMode && ksuVersion != null && Natives.version >= Natives.MINIMAL_SUPPORTED_HOOK_MODE
                         "info_card_show_mount_system" -> showMountSystem && ksuVersion != null
@@ -824,8 +824,62 @@ private fun InfoCard(autoExpand: Boolean = false) {
                         else -> false
                     }
                     
-                    if (itemWasRendered && isFirstItem) {
-                        isFirstItem = false
+                    if (itemWouldBeRendered) {
+                        // Show item if we're expanded/alwaysExpanded or haven't reached the limit
+                        val shouldShowItem = expanded || alwaysExpanded || renderedCount < maxItemsWhenCollapsed
+                        
+                        if (shouldShowItem) {
+                            val wasFirstItem = isFirstItem
+                            RenderInfoCardItem(itemKey, wasFirstItem)
+                            
+                            if (isFirstItem) {
+                                isFirstItem = false
+                            }
+                            renderedCount++
+                        } else {
+                            // There are more items that could be shown
+                            hasMoreItems = true
+                        }
+                    }
+                }
+                
+                // Show expand button if there are more items and we're not expanded
+                if (!expanded && !alwaysExpanded && hasMoreItems) {
+                    Spacer(Modifier.height(16.dp))
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        IconButton(
+                            onClick = { expanded = true },
+                            modifier = Modifier.size(36.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.KeyboardArrowDown,
+                                contentDescription = "Show more"
+                            )
+                        }
+                    }
+                }
+                
+                // Show collapse button if expanded and not alwaysExpanded
+                if (expanded && !alwaysExpanded) {
+                    Spacer(Modifier.height(16.dp))
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        IconButton(
+                            onClick = { expanded = false },
+                            modifier = Modifier.size(36.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.KeyboardArrowUp,
+                                contentDescription = "Show less"
+                            )
+                        }
                     }
                 }
             }
