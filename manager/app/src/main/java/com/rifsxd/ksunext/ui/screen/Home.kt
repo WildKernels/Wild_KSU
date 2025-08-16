@@ -684,6 +684,7 @@ private fun InfoCard(autoExpand: Boolean = false) {
 
             @Composable
             fun RenderInfoCardItem(itemKey: String, isFirst: Boolean) {
+                val uname = Os.uname()
                 when (itemKey) {
                     "info_card_show_manager_version" -> {
                         if (showManagerVersion) {
@@ -758,30 +759,116 @@ private fun InfoCard(autoExpand: Boolean = false) {
                             )
                         }
                     }
+                    "info_card_show_kernel_version" -> {
+                        if (showKernelVersion) {
+                            if (!isFirst) Spacer(Modifier.height(16.dp))
+                            InfoCardItem(
+                                label = stringResource(R.string.home_kernel),
+                                content = "${uname.release} (${uname.machine})",
+                                icon = painterResource(R.drawable.ic_linux),
+                            )
+                        }
+                    }
+                    "info_card_show_android_version" -> {
+                        if (showAndroidVersion) {
+                            if (!isFirst) Spacer(Modifier.height(16.dp))
+                            InfoCardItem(
+                                label = stringResource(R.string.home_android),
+                                content = "${Build.VERSION.RELEASE} (${Build.VERSION.SDK_INT})",
+                                icon = Icons.Filled.Android,
+                            )
+                        }
+                    }
+                    "info_card_show_abi" -> {
+                        if (showAbi) {
+                            if (!isFirst) Spacer(Modifier.height(16.dp))
+                            InfoCardItem(
+                                label = stringResource(R.string.home_abi),
+                                content = Build.SUPPORTED_ABIS.joinToString(", "),
+                                icon = Icons.Filled.Memory,
+                            )
+                        }
+                    }
+                    "info_card_show_selinux_status" -> {
+                        if (showSelinuxStatus) {
+                            if (!isFirst) Spacer(Modifier.height(16.dp))
+                            InfoCardItem(
+                                label = stringResource(R.string.home_selinux_status),
+                                content = getSELinuxStatus(),
+                                icon = Icons.Filled.Security,
+                            )
+                        }
+                    }
                 }
             }
 
             Column {
-                // Render items in the saved order
+                // Define which items are considered "expanded" (shown only when expanded)
+                val expandedItems = setOf(
+                    "info_card_show_kernel_version",
+                    "info_card_show_android_version",
+                    "info_card_show_abi",
+                    "info_card_show_selinux_status"
+                )
+                
+                // Render all items in the saved order, respecting expanded state
                 var isFirstItem = true
+                var hasExpandableItems = false
+                var renderedExpandableCount = 0
+                
                 itemOrder.forEach { itemKey ->
-                    val wasFirstItem = isFirstItem
-                    RenderInfoCardItem(itemKey, wasFirstItem)
-                    // Check if the item was actually rendered by checking if any of the conditions were met
-                    val itemWasRendered = when (itemKey) {
-                        "info_card_show_manager_version" -> showManagerVersion
-                        "info_card_show_hook_mode" -> showHookMode && ksuVersion != null && Natives.version >= Natives.MINIMAL_SUPPORTED_HOOK_MODE
-                        "info_card_show_mount_system" -> showMountSystem && ksuVersion != null
-                        "info_card_show_susfs_status" -> showSusfsStatus && ksuVersion != null && getSuSFS() == "Supported"
-                        "info_card_show_zygisk_status" -> showZygiskStatus && ksuVersion != null && Natives.isZygiskEnabled()
-                        else -> false
+                    val isExpandedItem = itemKey in expandedItems
+                    val shouldShow = if (isExpandedItem) {
+                        expanded || alwaysExpanded
+                    } else {
+                        true
                     }
-                    if (itemWasRendered && isFirstItem) {
-                        isFirstItem = false
+                    
+                    if (shouldShow) {
+                        val wasFirstItem = isFirstItem
+                        RenderInfoCardItem(itemKey, wasFirstItem)
+                        
+                        // Check if the item was actually rendered
+                        val itemWasRendered = when (itemKey) {
+                            "info_card_show_manager_version" -> showManagerVersion
+                            "info_card_show_hook_mode" -> showHookMode && ksuVersion != null && Natives.version >= Natives.MINIMAL_SUPPORTED_HOOK_MODE
+                            "info_card_show_mount_system" -> showMountSystem && ksuVersion != null
+                            "info_card_show_susfs_status" -> showSusfsStatus && ksuVersion != null && getSuSFS() == "Supported"
+                            "info_card_show_zygisk_status" -> showZygiskStatus && ksuVersion != null && Natives.isZygiskEnabled()
+                            "info_card_show_kernel_version" -> showKernelVersion
+                            "info_card_show_android_version" -> showAndroidVersion
+                            "info_card_show_abi" -> showAbi
+                            "info_card_show_selinux_status" -> showSelinuxStatus
+                            else -> false
+                        }
+                        
+                        if (itemWasRendered) {
+                            if (isFirstItem) {
+                                isFirstItem = false
+                            }
+                            if (isExpandedItem) {
+                                renderedExpandableCount++
+                            }
+                        }
+                    }
+                    
+                    // Check if this item could be expandable (even if not currently shown)
+                    if (isExpandedItem) {
+                        val couldBeRendered = when (itemKey) {
+                            "info_card_show_kernel_version" -> showKernelVersion
+                            "info_card_show_android_version" -> showAndroidVersion
+                            "info_card_show_abi" -> showAbi
+                            "info_card_show_selinux_status" -> showSelinuxStatus
+                            else -> false
+                        }
+                        if (couldBeRendered) {
+                            hasExpandableItems = true
+                        }
                     }
                 }
 
-                if (!expanded && !alwaysExpanded && enabledOptionsCount >= 5) {
+                // Show expand button if there are expandable items and we're not expanded
+                if (!expanded && !alwaysExpanded && hasExpandableItems) {
                     Spacer(Modifier.height(16.dp))
                     Row(
                         modifier = Modifier
@@ -796,83 +883,6 @@ private fun InfoCard(autoExpand: Boolean = false) {
                                 imageVector = Icons.Filled.KeyboardArrowDown,
                                 contentDescription = "Show more"
                             )
-                        }
-                    }
-                }
-
-                AnimatedVisibility(visible = expanded || alwaysExpanded) {
-                    val uname = Os.uname()
-                    Column {
-                        // Render expanded items in the saved order
-                        val expandedItems = listOf(
-                            "info_card_show_kernel_version",
-                            "info_card_show_android_version",
-                            "info_card_show_abi",
-                            "info_card_show_selinux_status"
-                        )
-                        
-                        val orderedExpandedItems = itemOrder.filter { it in expandedItems }
-                        
-                        if (orderedExpandedItems.any { itemKey ->
-                            when (itemKey) {
-                                "info_card_show_kernel_version" -> showKernelVersion
-                                "info_card_show_android_version" -> showAndroidVersion
-                                "info_card_show_abi" -> showAbi
-                                "info_card_show_selinux_status" -> showSelinuxStatus
-                                else -> false
-                            }
-                        }) {
-                            Spacer(Modifier.height(16.dp))
-                        }
-                        
-                        var isFirstExpandedItem = true
-                        orderedExpandedItems.forEach { itemKey ->
-                            when (itemKey) {
-                                "info_card_show_kernel_version" -> {
-                                    if (showKernelVersion) {
-                                        if (!isFirstExpandedItem) Spacer(Modifier.height(16.dp))
-                                        InfoCardItem(
-                                            label = stringResource(R.string.home_kernel),
-                                            content = "${uname.release} (${uname.machine})",
-                                            icon = painterResource(R.drawable.ic_linux),
-                                        )
-                                        isFirstExpandedItem = false
-                                    }
-                                }
-                                "info_card_show_android_version" -> {
-                                    if (showAndroidVersion) {
-                                        if (!isFirstExpandedItem) Spacer(Modifier.height(16.dp))
-                                        InfoCardItem(
-                                            label = stringResource(R.string.home_android),
-                                            content = "${Build.VERSION.RELEASE} (${Build.VERSION.SDK_INT})",
-                                            icon = Icons.Filled.Android,
-                                        )
-                                        isFirstExpandedItem = false
-                                    }
-                                }
-                                "info_card_show_abi" -> {
-                                    if (showAbi) {
-                                        if (!isFirstExpandedItem) Spacer(Modifier.height(16.dp))
-                                        InfoCardItem(
-                                            label = stringResource(R.string.home_abi),
-                                            content = Build.SUPPORTED_ABIS.joinToString(", "),
-                                            icon = Icons.Filled.Memory,
-                                        )
-                                        isFirstExpandedItem = false
-                                    }
-                                }
-                                "info_card_show_selinux_status" -> {
-                                    if (showSelinuxStatus) {
-                                        if (!isFirstExpandedItem) Spacer(Modifier.height(16.dp))
-                                        InfoCardItem(
-                                            label = stringResource(R.string.home_selinux_status),
-                                            content = getSELinuxStatus(),
-                                            icon = Icons.Filled.Security,
-                                        )
-                                        isFirstExpandedItem = false
-                                    }
-                                }
-                            }
                         }
                     }
                 }
