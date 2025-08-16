@@ -495,17 +495,17 @@ private fun InfoCard(autoExpand: Boolean = false) {
 
     val prefs = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
     
-    // Get customization preferences with state to trigger recomposition
-    val alwaysExpanded by remember { mutableStateOf(prefs.getBoolean("info_card_always_expanded", false)) }
-    val showManagerVersion by remember { mutableStateOf(prefs.getBoolean("info_card_show_manager_version", true)) }
-    val showHookMode by remember { mutableStateOf(prefs.getBoolean("info_card_show_hook_mode", true)) }
-    val showMountSystem by remember { mutableStateOf(prefs.getBoolean("info_card_show_mount_system", true)) }
-    val showSusfsStatus by remember { mutableStateOf(prefs.getBoolean("info_card_show_susfs_status", true)) }
-    val showZygiskStatus by remember { mutableStateOf(prefs.getBoolean("info_card_show_zygisk_status", true)) }
-    val showKernelVersion by remember { mutableStateOf(prefs.getBoolean("info_card_show_kernel_version", true)) }
-    val showAndroidVersion by remember { mutableStateOf(prefs.getBoolean("info_card_show_android_version", true)) }
-    val showAbi by remember { mutableStateOf(prefs.getBoolean("info_card_show_abi", true)) }
-    val showSelinuxStatus by remember { mutableStateOf(prefs.getBoolean("info_card_show_selinux_status", true)) }
+    // Get customization preferences with reactive state to trigger recomposition
+    var alwaysExpanded by remember { mutableStateOf(prefs.getBoolean("info_card_always_expanded", false)) }
+    var showManagerVersion by remember { mutableStateOf(prefs.getBoolean("info_card_show_manager_version", true)) }
+    var showHookMode by remember { mutableStateOf(prefs.getBoolean("info_card_show_hook_mode", true)) }
+    var showMountSystem by remember { mutableStateOf(prefs.getBoolean("info_card_show_mount_system", true)) }
+    var showSusfsStatus by remember { mutableStateOf(prefs.getBoolean("info_card_show_susfs_status", true)) }
+    var showZygiskStatus by remember { mutableStateOf(prefs.getBoolean("info_card_show_zygisk_status", true)) }
+    var showKernelVersion by remember { mutableStateOf(prefs.getBoolean("info_card_show_kernel_version", true)) }
+    var showAndroidVersion by remember { mutableStateOf(prefs.getBoolean("info_card_show_android_version", true)) }
+    var showAbi by remember { mutableStateOf(prefs.getBoolean("info_card_show_abi", true)) }
+    var showSelinuxStatus by remember { mutableStateOf(prefs.getBoolean("info_card_show_selinux_status", true)) }
     
     // Get saved item order with state to trigger recomposition
     var itemOrder by remember {
@@ -534,33 +534,65 @@ private fun InfoCard(autoExpand: Boolean = false) {
         mutableStateOf(currentOrder)
     }
     
-    // Listen for preference changes to update the order
+    // Listen for preference changes to update the order and visibility states
     DisposableEffect(Unit) {
         val listener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
-            if (key == "info_card_items_order") {
-                val newSavedOrder = prefs.getString("info_card_items_order", null)
-                val defaultOrder = listOf(
-                    "info_card_show_manager_version",
-                    "info_card_show_hook_mode", 
-                    "info_card_show_mount_system",
-                    "info_card_show_susfs_status",
-                    "info_card_show_zygisk_status",
-                    "info_card_show_kernel_version",
-                    "info_card_show_android_version",
-                    "info_card_show_abi",
-                    "info_card_show_selinux_status"
-                )
-                val newOrder = if (newSavedOrder.isNullOrEmpty()) {
-                    defaultOrder
-                } else {
-                    val saved = newSavedOrder.split(",")
-                    val result = saved.filter { key -> defaultOrder.contains(key) }.toMutableList()
-                    defaultOrder.forEach { key ->
-                        if (!result.contains(key)) result.add(key)
+            when (key) {
+                "info_card_items_order" -> {
+                    val newSavedOrder = prefs.getString("info_card_items_order", null)
+                    val defaultOrder = listOf(
+                        "info_card_show_manager_version",
+                        "info_card_show_hook_mode", 
+                        "info_card_show_mount_system",
+                        "info_card_show_susfs_status",
+                        "info_card_show_zygisk_status",
+                        "info_card_show_kernel_version",
+                        "info_card_show_android_version",
+                        "info_card_show_abi",
+                        "info_card_show_selinux_status"
+                    )
+                    val newOrder = if (newSavedOrder.isNullOrEmpty()) {
+                        defaultOrder
+                    } else {
+                        val saved = newSavedOrder.split(",")
+                        val result = saved.filter { key -> defaultOrder.contains(key) }.toMutableList()
+                        defaultOrder.forEach { key ->
+                            if (!result.contains(key)) result.add(key)
+                        }
+                        result
                     }
-                    result
+                    itemOrder = newOrder
                 }
-                itemOrder = newOrder
+                "info_card_always_expanded" -> {
+                    alwaysExpanded = prefs.getBoolean("info_card_always_expanded", false)
+                }
+                "info_card_show_manager_version" -> {
+                    showManagerVersion = prefs.getBoolean("info_card_show_manager_version", true)
+                }
+                "info_card_show_hook_mode" -> {
+                    showHookMode = prefs.getBoolean("info_card_show_hook_mode", true)
+                }
+                "info_card_show_mount_system" -> {
+                    showMountSystem = prefs.getBoolean("info_card_show_mount_system", true)
+                }
+                "info_card_show_susfs_status" -> {
+                    showSusfsStatus = prefs.getBoolean("info_card_show_susfs_status", true)
+                }
+                "info_card_show_zygisk_status" -> {
+                    showZygiskStatus = prefs.getBoolean("info_card_show_zygisk_status", true)
+                }
+                "info_card_show_kernel_version" -> {
+                    showKernelVersion = prefs.getBoolean("info_card_show_kernel_version", true)
+                }
+                "info_card_show_android_version" -> {
+                    showAndroidVersion = prefs.getBoolean("info_card_show_android_version", true)
+                }
+                "info_card_show_abi" -> {
+                    showAbi = prefs.getBoolean("info_card_show_abi", true)
+                }
+                "info_card_show_selinux_status" -> {
+                    showSelinuxStatus = prefs.getBoolean("info_card_show_selinux_status", true)
+                }
             }
         }
         prefs.registerOnSharedPreferenceChangeListener(listener)
