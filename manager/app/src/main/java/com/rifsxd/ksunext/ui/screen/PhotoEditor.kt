@@ -389,7 +389,7 @@ fun PhotoEditor(
                             WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom
                         )
                     )
-                    .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 100.dp),
+                    .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 16.dp),
                 color = MaterialTheme.colorScheme.surfaceContainer,
                 tonalElevation = 3.dp,
                 shape = RoundedCornerShape(16.dp)
