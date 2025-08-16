@@ -14,6 +14,13 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.animation.*
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -635,6 +642,9 @@ private fun InfoCard(autoExpand: Boolean = false) {
         elevation = getCardElevation(),
         modifier = Modifier
             .clip(CardDefaults.elevatedShape)
+            .animateContentSize(
+                animationSpec = tween(durationMillis = 300)
+            )
             .combinedClickable(
                 onClick = { },
                 onLongClick = {
@@ -830,7 +840,21 @@ private fun InfoCard(autoExpand: Boolean = false) {
                         
                         if (shouldShowItem) {
                             val wasFirstItem = isFirstItem
-                            RenderInfoCardItem(itemKey, wasFirstItem)
+                            val isExtraItem = renderedCount >= maxItemsWhenCollapsed
+                            
+                            if (isExtraItem) {
+                                // Animate extra items that appear when expanding
+                                AnimatedVisibility(
+                                    visible = expanded || alwaysExpanded,
+                                    enter = fadeIn(animationSpec = tween(300)) + expandVertically(animationSpec = tween(300)),
+                                    exit = fadeOut(animationSpec = tween(300)) + shrinkVertically(animationSpec = tween(300))
+                                ) {
+                                    RenderInfoCardItem(itemKey, wasFirstItem)
+                                }
+                            } else {
+                                // Always show first 5 items without animation
+                                RenderInfoCardItem(itemKey, wasFirstItem)
+                            }
                             
                             if (isFirstItem) {
                                 isFirstItem = false
@@ -844,21 +868,27 @@ private fun InfoCard(autoExpand: Boolean = false) {
                 }
                 
                 // Show expand button only when collapsed, not alwaysExpanded, and there are 5+ enabled options
-                if (!expanded && !alwaysExpanded && enabledOptionsCount >= 5) {
-                    Spacer(Modifier.height(16.dp))
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        IconButton(
-                            onClick = { expanded = true },
-                            modifier = Modifier.size(36.dp)
+                AnimatedVisibility(
+                    visible = !expanded && !alwaysExpanded && enabledOptionsCount >= 5,
+                    enter = fadeIn(animationSpec = tween(300)) + expandVertically(animationSpec = tween(300)),
+                    exit = fadeOut(animationSpec = tween(300)) + shrinkVertically(animationSpec = tween(300))
+                ) {
+                    Column {
+                        Spacer(Modifier.height(16.dp))
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            horizontalArrangement = Arrangement.Center
                         ) {
-                            Icon(
-                                imageVector = Icons.Filled.KeyboardArrowDown,
-                                contentDescription = "Show more"
-                            )
+                            IconButton(
+                                onClick = { expanded = true },
+                                modifier = Modifier.size(36.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Filled.KeyboardArrowDown,
+                                    contentDescription = "Show more"
+                                )
+                            }
                         }
                     }
                 }

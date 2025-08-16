@@ -97,6 +97,25 @@ fun SuperuserSettingsScreen(navigator: DestinationsNavigator) {
             }
 
             item {
+                // Hide Favorites Automatically Setting
+                var hideFavoritesAutomatically by rememberSaveable {
+                    mutableStateOf(
+                        prefs.getBoolean("hide_favorites_automatically", false)
+                    )
+                }
+
+                SwitchItem(
+                    icon = Icons.Filled.VisibilityOff,
+                    title = "Hide Favorites Automatically",
+                    summary = "Automatically hide favorite apps from the superuser list",
+                    checked = hideFavoritesAutomatically
+                ) {
+                    prefs.edit().putBoolean("hide_favorites_automatically", it).apply()
+                    hideFavoritesAutomatically = it
+                }
+            }
+
+            item {
                 // Disable Favorite Button Setting (includes sorting)
                 var disableFavoriteButton by rememberSaveable {
                     mutableStateOf(

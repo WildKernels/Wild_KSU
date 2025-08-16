@@ -49,6 +49,22 @@ fun SuperUserScreen(navigator: DestinationsNavigator) {
     val listState = rememberLazyListState()
     val context = LocalContext.current
     val prefs = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
+    
+    // Make useIndividualCards reactive to preference changes
+    var useIndividualCards by remember { mutableStateOf(prefs.getBoolean("use_individual_app_cards", false)) }
+    
+    // Listen for preference changes
+    DisposableEffect(Unit) {
+        val listener = android.content.SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
+            if (key == "use_individual_app_cards") {
+                useIndividualCards = prefs.getBoolean("use_individual_app_cards", false)
+            }
+        }
+        prefs.registerOnSharedPreferenceChangeListener(listener)
+        onDispose {
+            prefs.unregisterOnSharedPreferenceChangeListener(listener)
+        }
+    }
 
     LaunchedEffect(navigator) {
         viewModel.search = ""
@@ -68,7 +84,7 @@ fun SuperUserScreen(navigator: DestinationsNavigator) {
             modifier = Modifier.fillMaxSize()
         ) {
             items(viewModel.appList, key = { it.packageName + it.uid }) { app ->
-                AppItem(app, prefs) {
+                AppItem(app, prefs, useIndividualCards) {
                     navigator.navigate(AppProfileScreenDestination(app))
                 }
             }
@@ -81,10 +97,10 @@ fun SuperUserScreen(navigator: DestinationsNavigator) {
 private fun AppItem(
     app: SuperUserViewModel.AppInfo,
     prefs: android.content.SharedPreferences,
+    useIndividualCards: Boolean,
     onClickListener: () -> Unit,
 ) {
     val viewModel = LocalSuperUserViewModel.current
-    val useIndividualCards = prefs.getBoolean("use_individual_app_cards", false)
     val disableFavoriteButton = prefs.getBoolean("disable_favorite_button", false)
     
     val content = @Composable {
