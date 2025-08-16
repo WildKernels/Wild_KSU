@@ -573,7 +573,6 @@ fun PhotoEditor(
                                         style = MaterialTheme.typography.titleMedium,
                                         modifier = Modifier.padding(bottom = 8.dp)
                                     )
-                        )
                         
                         // Brightness control
                         Text(
