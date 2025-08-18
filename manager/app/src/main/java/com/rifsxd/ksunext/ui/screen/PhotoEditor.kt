@@ -428,8 +428,8 @@ fun PhotoEditor(
                  Row(
                      modifier = Modifier
                          .fillMaxWidth(0.5f)
-                         .padding(start = 16.dp),
-                     horizontalArrangement = Arrangement.spacedBy(8.dp),
+                         .padding(horizontal = 8.dp),
+                     horizontalArrangement = Arrangement.Center,
                      verticalAlignment = Alignment.CenterVertically
                  ) {
 
