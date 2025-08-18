@@ -427,8 +427,8 @@ fun PhotoEditor(
                 // Control bar with 4 buttons
                  Row(
                      modifier = Modifier
-                             .fillMaxWidth(0.3f),
-                     horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+                             .fillMaxWidth(0.8f),
+                     horizontalArrangement = Arrangement.SpaceAround,
                      verticalAlignment = Alignment.CenterVertically
                  ) {
 
@@ -437,7 +437,7 @@ fun PhotoEditor(
                      IconButton(
                          onClick = { screenRotationLocked = !screenRotationLocked },
                          modifier = Modifier
-                             .size(56.dp)
+                             .weight(1f)
                              .clip(RoundedCornerShape(16.dp))
                              .background(MaterialTheme.colorScheme.surfaceVariant)
                      ) {
@@ -487,7 +487,7 @@ fun PhotoEditor(
                                  .apply()
                          },
                          modifier = Modifier
-                             .size(56.dp)
+                             .weight(1f)
                              .clip(RoundedCornerShape(16.dp))
                              .background(MaterialTheme.colorScheme.surfaceVariant)
                      ) {
