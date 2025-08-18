@@ -39,6 +39,7 @@ import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.NavigationBar
@@ -192,6 +193,131 @@ private fun getSeasonalIcon(): ImageVector {
         Calendar.JUNE, Calendar.JULY, Calendar.AUGUST -> Icons.Filled.WbSunny // Summer
         Calendar.SEPTEMBER, Calendar.OCTOBER, Calendar.NOVEMBER -> Icons.Filled.Forest // Fall
         else -> Icons.Filled.Whatshot // Fallback icon
+    }
+}
+
+@Composable
+fun HomeSettingsResetDialog(
+    showDialog: Boolean,
+    onDismissRequest: () -> Unit,
+    onConfirm: () -> Unit,
+    prefs: SharedPreferences,
+    navigator: DestinationsNavigator,
+    context: Context
+) {
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = onDismissRequest,
+            title = { Text("Reset Home Settings") },
+            text = { Text("Are you sure you want to reset all home settings to default? This will reset the home icon style, help card visibility, InfoCard settings, and item order. This action cannot be undone.") },
+            confirmButton = {
+                TextButton(
+                    onClick = onConfirm
+                ) {
+                    Text("Reset")
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = onDismissRequest
+                ) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
+}
+
+@Composable
+fun CustomizationResetDialog(
+    showDialog: Boolean,
+    onDismissRequest: () -> Unit,
+    onConfirm: () -> Unit,
+    prefs: SharedPreferences,
+    context: Context
+) {
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = onDismissRequest,
+            title = { Text("Reset Customization") },
+            text = { Text("Are you sure you want to reset all customization settings to default? This will clear your background image, reset theme, language, and DPI settings. This action cannot be undone.") },
+            confirmButton = {
+                TextButton(
+                    onClick = onConfirm
+                ) {
+                    Text("Reset")
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = onDismissRequest
+                ) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
+}
+
+@Composable
+fun SuperuserSettingsResetDialog(
+    showDialog: Boolean,
+    onDismissRequest: () -> Unit,
+    onConfirm: () -> Unit,
+    prefs: SharedPreferences,
+    navigator: DestinationsNavigator
+) {
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = onDismissRequest,
+            title = { Text("Reset Superuser Settings") },
+            text = { Text("Are you sure you want to reset all superuser settings to default? This will reset icon theme, app card display, favorite settings, and button visibility. This action cannot be undone.") },
+            confirmButton = {
+                TextButton(
+                    onClick = onConfirm
+                ) {
+                    Text("Reset")
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = onDismissRequest
+                ) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
+}
+
+@Composable
+fun ModuleSettingsResetDialog(
+    showDialog: Boolean,
+    onDismissRequest: () -> Unit,
+    onConfirm: () -> Unit,
+    prefs: SharedPreferences,
+    navigator: DestinationsNavigator
+) {
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = onDismissRequest,
+            title = { Text("Reset Module Settings") },
+            text = { Text("Are you sure you want to reset all module settings to default? This will reset module card expansion, banner display, and detail visibility settings. This action cannot be undone.") },
+            confirmButton = {
+                TextButton(
+                    onClick = onConfirm
+                ) {
+                    Text("Reset")
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = onDismissRequest
+                ) {
+                    Text("Cancel")
+                }
+            }
+        )
     }
 }
 
@@ -1016,54 +1142,41 @@ fun RegularTopBar(
                 }
                 
                 // Confirmation dialog for home settings reset
-                if (showHomeSettingsResetDialog) {
-                    AlertDialog(
-                        onDismissRequest = { showHomeSettingsResetDialog = false },
-                        title = { Text("Reset Home Settings") },
-                        text = { Text("Are you sure you want to reset all home settings to default? This will reset the home icon style, help card visibility, InfoCard settings, and item order. This action cannot be undone.") },
-                        confirmButton = {
-                            TextButton(
-                                onClick = {
-                                    showHomeSettingsResetDialog = false
-                                    // Reset all InfoCard settings to default
-                                    val editor = prefs.edit()
-                                    // Reset home icon to seasonal
-                                    editor.putString("selected_icon_type", "SEASONAL")
-                                    // Enable help card
-                                    editor.putBoolean("show_help_card", true)
-                                    // Set always expanded to off (false)
-                                    editor.putBoolean("info_card_always_expanded", false)
-                                    // Reset all info card items to enabled
-                                    editor.putBoolean("info_card_show_manager_version", true)
-                                    editor.putBoolean("info_card_show_hook_mode", true)
-                                    editor.putBoolean("info_card_show_mount_system", true)
-                                    editor.putBoolean("info_card_show_susfs_status", true)
-                                    editor.putBoolean("info_card_show_zygisk_status", true)
-                                    editor.putBoolean("info_card_show_kernel_version", true)
-                                    editor.putBoolean("info_card_show_android_version", true)
-                                    editor.putBoolean("info_card_show_abi", true)
-                                    editor.putBoolean("info_card_show_selinux_status", true)
-                                    // Reset to default order
-                                    editor.remove("info_card_items_order")
-                                    editor.apply()
-                                    
-                                    // Navigate back and forward to refresh the screen
-                                    navigator.navigateUp()
-                                    navigator.navigate(HomeSettingsScreenDestination)
-                                }
-                            ) {
-                                Text("Reset")
-                            }
-                        },
-                        dismissButton = {
-                            TextButton(
-                                onClick = { showHomeSettingsResetDialog = false }
-                            ) {
-                                Text("Cancel")
-                            }
-                        }
-                    )
-                }
+                HomeSettingsResetDialog(
+                    showDialog = showHomeSettingsResetDialog,
+                    onDismissRequest = { showHomeSettingsResetDialog = false },
+                    onConfirm = {
+                        showHomeSettingsResetDialog = false
+                        // Reset all InfoCard settings to default
+                        val editor = prefs.edit()
+                        // Reset home icon to seasonal
+                        editor.putString("selected_icon_type", "SEASONAL")
+                        // Enable help card
+                        editor.putBoolean("show_help_card", true)
+                        // Set always expanded to off (false)
+                        editor.putBoolean("info_card_always_expanded", false)
+                        // Reset all info card items to enabled
+                        editor.putBoolean("info_card_show_manager_version", true)
+                        editor.putBoolean("info_card_show_hook_mode", true)
+                        editor.putBoolean("info_card_show_mount_system", true)
+                        editor.putBoolean("info_card_show_susfs_status", true)
+                        editor.putBoolean("info_card_show_zygisk_status", true)
+                        editor.putBoolean("info_card_show_kernel_version", true)
+                        editor.putBoolean("info_card_show_android_version", true)
+                        editor.putBoolean("info_card_show_abi", true)
+                        editor.putBoolean("info_card_show_selinux_status", true)
+                        // Reset to default order
+                        editor.remove("info_card_items_order")
+                        editor.apply()
+
+                        // Navigate back and forward to refresh the screen
+                        navigator.navigateUp()
+                        navigator.navigate(HomeSettingsScreenDestination)
+                    },
+                    prefs = prefs,
+                    navigator = navigator,
+                    context = context
+                )
             }
             
             // Show reset button for Customization screen
@@ -1082,47 +1195,33 @@ fun RegularTopBar(
                 }
                 
                 // Confirmation dialog for customization reset
-                if (showCustomizationResetDialog) {
-                    AlertDialog(
-                        onDismissRequest = { showCustomizationResetDialog = false },
-                        title = { Text("Reset Customization") },
-                        text = { Text("Are you sure you want to reset all customization settings to default? This will clear your background image, reset theme, language, and DPI settings. This action cannot be undone.") },
-                        confirmButton = {
-                            TextButton(
-                                onClick = {
-                                    showCustomizationResetDialog = false
-                                    // Reset all customization settings to default
-                                    val editor = prefs.edit()
-                                    editor.putString("app_locale", "system")
-                                    editor.putBoolean("use_banner", true)
-                                    // Clear background completely
-                                    ImageStorageUtils.deleteInternalBackgroundImage(context)
-                                    editor.remove("background_image_uri")
-                                    editor.remove("background_image_path")
-                                    // Set darkness and blur to zero
-                                    editor.putFloat("background_blur", 0.0f)
-                                    editor.putFloat("ui_transparency", 0.0f)
-                                    // Reset DPI to actual system DPI value
-                                    val systemDpi = context.resources.displayMetrics.densityDpi
-                                    editor.putInt("app_dpi", systemDpi)
-                                    editor.apply()
-                                    
-                                    // Force activity recreation to apply DPI changes immediately
-                                    (context as? ComponentActivity)?.recreate()
-                                }
-                            ) {
-                                Text("Reset")
-                            }
-                        },
-                        dismissButton = {
-                            TextButton(
-                                onClick = { showCustomizationResetDialog = false }
-                            ) {
-                                Text("Cancel")
-                            }
-                        }
-                    )
-                }
+                CustomizationResetDialog(
+                    showDialog = showCustomizationResetDialog,
+                    onDismissRequest = { showCustomizationResetDialog = false },
+                    onConfirm = {
+                        showCustomizationResetDialog = false
+                        // Reset all customization settings to default
+                        val editor = prefs.edit()
+                        editor.putString("app_locale", "system")
+                        editor.putBoolean("use_banner", true)
+                        // Clear background completely
+                        ImageStorageUtils.deleteInternalBackgroundImage(context)
+                        editor.remove("background_image_uri")
+                        editor.remove("background_image_path")
+                        // Set darkness and blur to zero
+                        editor.putFloat("background_blur", 0.0f)
+                        editor.putFloat("ui_transparency", 0.0f)
+                        // Reset DPI to actual system DPI value
+                        val systemDpi = context.resources.displayMetrics.densityDpi
+                        editor.putInt("app_dpi", systemDpi)
+                        editor.apply()
+
+                        // Force activity recreation to apply DPI changes immediately
+                        (context as? ComponentActivity)?.recreate()
+                    },
+                    prefs = prefs,
+                    context = context
+                )
             }
             
             // Show reset button for SuperuserSettings screen
@@ -1141,41 +1240,27 @@ fun RegularTopBar(
                 }
                 
                 // Confirmation dialog for superuser settings reset
-                if (showSuperuserResetDialog) {
-                    AlertDialog(
-                        onDismissRequest = { showSuperuserResetDialog = false },
-                        title = { Text("Reset Superuser Settings") },
-                        text = { Text("Are you sure you want to reset all superuser settings to default? This will reset icon theme, app card display, favorite settings, and button visibility. This action cannot be undone.") },
-                        confirmButton = {
-                            TextButton(
-                                onClick = {
-                                    showSuperuserResetDialog = false
-                                    // Reset all superuser settings to default
-                                    val editor = prefs.edit()
-                                    editor.remove("selected_icon_pack") // Reset to default icon theme
-                                    editor.putBoolean("use_individual_app_cards", false)
-                                    editor.putBoolean("hide_favorites_automatically", false)
-                                    editor.putBoolean("disable_favorite_button", false)
-                                    editor.putBoolean("disable_favorite_sorting", false)
-                                    editor.apply()
-                                    
-                                    // Navigate back and forward to refresh the screen
-                                    navigator.navigateUp()
-                                    navigator.navigate(SuperuserSettingsScreenDestination)
-                                }
-                            ) {
-                                Text("Reset")
-                            }
-                        },
-                        dismissButton = {
-                            TextButton(
-                                onClick = { showSuperuserResetDialog = false }
-                            ) {
-                                Text("Cancel")
-                            }
-                        }
-                    )
-                }
+                SuperuserSettingsResetDialog(
+                    showDialog = showSuperuserResetDialog,
+                    onDismissRequest = { showSuperuserResetDialog = false },
+                    onConfirm = {
+                        showSuperuserResetDialog = false
+                        // Reset all superuser settings to default
+                        val editor = prefs.edit()
+                        editor.remove("selected_icon_pack") // Reset to default icon theme
+                        editor.putBoolean("use_individual_app_cards", false)
+                        editor.putBoolean("hide_favorites_automatically", false)
+                        editor.putBoolean("disable_favorite_button", false)
+                        editor.putBoolean("disable_favorite_sorting", false)
+                        editor.apply()
+
+                        // Navigate back and forward to refresh the screen
+                        navigator.navigateUp()
+                        navigator.navigate(SuperuserSettingsScreenDestination)
+                    },
+                    prefs = prefs,
+                    navigator = navigator
+                )
             }
             
             // Show reset button for ModuleSettings screen
@@ -1194,39 +1279,25 @@ fun RegularTopBar(
                 }
                 
                 // Confirmation dialog for module settings reset
-                if (showModuleResetDialog) {
-                    AlertDialog(
-                        onDismissRequest = { showModuleResetDialog = false },
-                        title = { Text("Reset Module Settings") },
-                        text = { Text("Are you sure you want to reset all module settings to default? This will reset module card expansion, banner display, and detail visibility settings. This action cannot be undone.") },
-                        confirmButton = {
-                            TextButton(
-                                onClick = {
-                                    showModuleResetDialog = false
-                                    // Reset all module settings to default
-                                    val editor = prefs.edit()
-                                    editor.putBoolean("keep_modules_expanded", false)
-                                    editor.putBoolean("use_banner", true)
-                                    editor.putBoolean("hide_module_details", false)
-                                    editor.apply()
-                                    
-                                    // Navigate back and forward to refresh the screen
-                                    navigator.navigateUp()
-                                    navigator.navigate(ModuleSettingsScreenDestination)
-                                }
-                            ) {
-                                Text("Reset")
-                            }
-                        },
-                        dismissButton = {
-                            TextButton(
-                                onClick = { showModuleResetDialog = false }
-                            ) {
-                                Text("Cancel")
-                            }
-                        }
-                    )
-                }
+                ModuleSettingsResetDialog(
+                    showDialog = showModuleResetDialog,
+                    onDismissRequest = { showModuleResetDialog = false },
+                    onConfirm = {
+                        showModuleResetDialog = false
+                        // Reset all module settings to default
+                        val editor = prefs.edit()
+                        editor.putBoolean("keep_modules_expanded", false)
+                        editor.putBoolean("use_banner", true)
+                        editor.putBoolean("hide_module_details", false)
+                        editor.apply()
+
+                        // Navigate back and forward to refresh the screen
+                        navigator.navigateUp()
+                        navigator.navigate(ModuleSettingsScreenDestination)
+                    },
+                    prefs = prefs,
+                    navigator = navigator
+                )
             }
             
             // Show LKM and restart icons only on home screen
