@@ -38,10 +38,8 @@ import androidx.compose.material.icons.filled.ZoomIn
 import androidx.compose.material.icons.filled.ZoomOut
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.ScreenRotation
 import androidx.compose.material.icons.filled.ScreenLockRotation
-import androidx.compose.material.icons.filled.LockOpen
 import androidx.compose.material.icons.filled.FlipToBack
 import androidx.compose.material.icons.filled.SwapHoriz
 import androidx.compose.material.icons.filled.SwapVert
@@ -255,7 +253,7 @@ fun PhotoEditor(
     var saturation by remember { mutableFloatStateOf(1.0f) }
     var hue by remember { mutableFloatStateOf(0f) }
     var freeFormEditing by remember { mutableStateOf(true) }
-    var rotationLocked by remember { mutableStateOf(false) }
+    
     var screenRotationLocked by remember { mutableStateOf(false) }
     
     // Load existing color settings for this specific image
@@ -344,7 +342,7 @@ fun PhotoEditor(
                             val newScale = (currentScale * zoom).coerceIn(0.1f, 5f)
                             val newOffsetX = (currentOffsetX + pan.x).coerceIn(-1000f, 1000f)
                             val newOffsetY = (currentOffsetY + pan.y).coerceIn(-1000f, 1000f)
-                            val newRotation = if (rotationLocked || screenRotationLocked) currentRotation else (currentRotation + rotationChange) % 360f
+                            val newRotation = if (screenRotationLocked) currentRotation else (currentRotation + rotationChange) % 360f
                             
                             // Update local state
                             currentScale = newScale
@@ -431,18 +429,7 @@ fun PhotoEditor(
                      horizontalArrangement = Arrangement.Start,
                      verticalAlignment = Alignment.CenterVertically
                  ) {
-                     // Rotation Lock button
-                     IconButton(
-                         onClick = { rotationLocked = !rotationLocked },
-                         modifier = Modifier.size(48.dp)
-                     ) {
-                         Icon(
-                             imageVector = if (rotationLocked) Icons.Default.Lock else Icons.Default.LockOpen,
-                             contentDescription = "Rotation Lock",
-                             tint = MaterialTheme.colorScheme.onPrimary,
-                             modifier = Modifier.size(24.dp)
-                         )
-                     }
+
 
                      // Screen Rotation Toggle
                      IconButton(
