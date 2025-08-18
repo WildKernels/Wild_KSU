@@ -428,8 +428,8 @@ fun PhotoEditor(
                 Row(
                     modifier = Modifier
                         .wrapContentWidth()
-                        .padding(horizontal = 16.dp, vertical = 8.dp),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                        .padding(horizontal = 8.dp, vertical = 6.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     // Screen Rotation Toggle - Consistent sizing
