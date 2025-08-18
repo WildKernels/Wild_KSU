@@ -403,7 +403,7 @@ fun PhotoEditor(
             Column(
                 modifier = Modifier
                     .padding(horizontal = 16.dp)
-                    .padding(vertical = 48.dp),
+                    .padding(vertical = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 // Single Menu Container with AnimatedContent
