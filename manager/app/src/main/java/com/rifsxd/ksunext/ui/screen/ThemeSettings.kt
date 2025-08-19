@@ -93,6 +93,12 @@ fun ThemeSettingsScreen(
         // it means user cancelled - clear temp selection to revert to previous state
         if (tempSelectedImageUri != null && currentSavedUri == previousBackgroundUri) {
             tempSelectedImageUri = null // Clear temp selection, revert to saved background
+            
+            // If there was a previous image, restore its transformation settings
+            if (previousActiveImageUri != null && previousActiveImageUri == currentSavedUri) {
+                // The previous image is now the active one again, its saved settings will be loaded automatically
+                // by PhotoEditor when it's opened next time
+            }
         } else if (tempSelectedImageUri != null && currentSavedUri != previousBackgroundUri) {
             // User saved the temp selection, clear temp state and update previous reference
             tempSelectedImageUri = null

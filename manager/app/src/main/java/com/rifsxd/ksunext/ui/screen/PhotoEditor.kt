@@ -117,13 +117,30 @@ fun PhotoEditorScreen(
     var offsetY by remember { mutableFloatStateOf(0f) }
     var rotation by remember { mutableFloatStateOf(0f) }
     
-    // Always start with default settings - no automatic loading of previous settings
+    // Load transformation settings based on image URI
     LaunchedEffect(imageUri) {
-        // Always reset to defaults when entering photo editor
-        scale = 1f
-        offsetX = 0f
-        offsetY = 0f
-        rotation = 0f
+        val uri = Uri.parse(imageUri)
+        val prefs = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
+        val savedBackgroundUri = prefs.getString("background_image_uri", null)
+        
+        // Check if this is the currently saved background image
+        val isCurrentBackground = savedBackgroundUri != null && 
+            (imageUri == savedBackgroundUri || uri.path == Uri.parse(savedBackgroundUri).path)
+        
+        if (isCurrentBackground) {
+            // Load saved transformation settings for the current background
+            val transformation = BackgroundCustomization.loadBackgroundTransformation(context)
+            scale = transformation.scale
+            offsetX = transformation.offsetX
+            offsetY = transformation.offsetY
+            rotation = transformation.rotation
+        } else {
+            // For new images, start with default settings
+            scale = 1f
+            offsetX = 0f
+            offsetY = 0f
+            rotation = 0f
+        }
     }
     
     PhotoEditor(
