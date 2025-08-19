@@ -57,7 +57,7 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.rifsxd.ksunext.ui.util.BackgroundUtils
-
+import com.rifsxd.ksunext.ui.util.BackgroundTransformation
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Destination<RootGraph>
@@ -302,11 +302,7 @@ fun PhotoEditor(
                             freeFormEditing = true
                             
                             // Reset UI transparency to 0% when reset button is pressed
-                            val context = LocalContext.current
-                            val prefs = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
-                            prefs.edit()
-                                .putFloat("ui_transparency", 0.0f)
-                                .apply()
+                            BackgroundUtils.resetUITransparency(context)
                             
                             // Update transformations (local state only)
                             onTransformChange(currentScale, currentOffsetX, currentOffsetY, currentRotation)
