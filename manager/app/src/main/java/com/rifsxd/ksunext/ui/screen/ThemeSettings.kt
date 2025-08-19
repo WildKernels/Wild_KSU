@@ -220,44 +220,35 @@ fun ThemeSettingsScreen(
                                     // Save button (only show if there's a temp selection)
                                     if (tempSelectedImageUri != null) {
                                         IconButton(onClick = {
-                                            // Apply temp selection as background
-                                            val uri = Uri.parse(tempSelectedImageUri!!)
+                                            // Load current transformation settings
                                             val transformation = BackgroundCustomization.loadBackgroundTransformation(context)
                                             
-                                            // Copy the temp image to permanent location and save
-                                            val finalUri = if (tempSelectedImageUri!!.startsWith("content://")) {
-                                                // This shouldn't happen as we now use temp files, but handle as fallback
-                                                val copiedPath = BackgroundCustomization.copyImageToInternalStorage(context, uri)
-                                                if (copiedPath != null) {
-                                                    val permanentPath = BackgroundCustomization.copyTempImageToPermanent(context, copiedPath)
-                                                    if (permanentPath != null) {
-                                                        BackgroundCustomization.saveBackgroundSettings(context, permanentPath, transformation, saveUri = true)
-                                                        permanentPath
-                                                    } else {
-                                                        BackgroundCustomization.saveBackgroundSettings(context, copiedPath, transformation, saveUri = true)
-                                                        copiedPath
-                                                    }
-                                                } else {
-                                                    BackgroundCustomization.saveBackgroundSettings(context, tempSelectedImageUri!!, transformation, saveUri = true)
-                                                    tempSelectedImageUri!!
-                                                }
+                                            // Convert temp URI to file path for processing
+                                            val tempPath = if (tempSelectedImageUri!!.startsWith("file://")) {
+                                                tempSelectedImageUri!!.removePrefix("file://")
                                             } else {
-                                                // Temp file path - copy to permanent location
-                                                val permanentPath = BackgroundCustomization.copyTempImageToPermanent(context, tempSelectedImageUri!!)
-                                                if (permanentPath != null) {
-                                                    BackgroundCustomization.saveBackgroundSettings(context, permanentPath, transformation, saveUri = true)
-                                                    permanentPath
-                                                } else {
-                                                    // Fallback to temp path if permanent copy fails
-                                                    BackgroundCustomization.saveBackgroundSettings(context, tempSelectedImageUri!!, transformation, saveUri = true)
-                                                    tempSelectedImageUri!!
-                                                }
+                                                tempSelectedImageUri!!
                                             }
                                             
-                                            // Update state - set backgroundImageUri to the final saved URI
-                                            backgroundImageUri = finalUri
-                                            tempSelectedImageUri = null
-                                            previousActiveImageUri = finalUri
+                                            // Copy temp image to permanent location
+                                            val permanentPath = BackgroundCustomization.copyTempImageToPermanent(context, tempPath)
+                                            
+                                            if (permanentPath != null) {
+                                                // Save background settings with permanent path
+                                                val permanentUri = BackgroundCustomization.filePathToUri(permanentPath)
+                                                BackgroundCustomization.saveBackgroundSettings(context, permanentUri, transformation, saveUri = true)
+                                                
+                                                // Update UI state
+                                                backgroundImageUri = permanentUri
+                                                tempSelectedImageUri = null
+                                                previousActiveImageUri = permanentUri
+                                            } else {
+                                                // Fallback: save with temp path if permanent copy fails
+                                                BackgroundCustomization.saveBackgroundSettings(context, tempSelectedImageUri!!, transformation, saveUri = true)
+                                                backgroundImageUri = tempSelectedImageUri
+                                                tempSelectedImageUri = null
+                                                previousActiveImageUri = backgroundImageUri
+                                            }
                                         }) {
                                             Icon(Icons.Filled.Save, "Save Background")
                                         }
