@@ -142,7 +142,7 @@ import com.rifsxd.ksunext.ui.util.rootAvailable
 import com.rifsxd.ksunext.ui.util.install
 import com.rifsxd.ksunext.ui.util.isSuCompatDisabled
 import com.rifsxd.ksunext.ui.util.reboot
-import com.rifsxd.ksunext.ui.util.BackgroundUtils
+import com.rifsxd.ksunext.ui.util.Background
 import com.rifsxd.ksunext.ui.util.readMountSystemFile
 
 import com.rifsxd.ksunext.ui.screen.FlashIt
@@ -410,8 +410,8 @@ class MainActivity : ComponentActivity() {
             var backgroundImageUri by remember { 
                 mutableStateOf(
                     // Check if we have an internal storage path first
-                    BackgroundUtils.getInternalBackgroundImagePath(this@MainActivity)?.let {
-                    BackgroundUtils.filePathToUri(it) 
+                    Background.getInternalBackgroundImagePath(this@MainActivity)?.let {
+                Background.filePathToUri(it) 
                     } ?: prefs.getString("background_image_uri", null)
                 )
             }
@@ -449,8 +449,8 @@ class MainActivity : ComponentActivity() {
                         }
                         "background_image_uri" -> {
                             // Check internal storage first, then fallback to preferences
-                            backgroundImageUri = BackgroundUtils.getInternalBackgroundImagePath(this@MainActivity)?.let {
-                BackgroundUtils.filePathToUri(it) 
+                            backgroundImageUri = Background.getInternalBackgroundImagePath(this@MainActivity)?.let {
+                Background.filePathToUri(it) 
                             } ?: prefs.getString("background_image_uri", null)
                         }
                         "background_transparency" -> {
@@ -1261,7 +1261,7 @@ fun RegularTopBar(
                         editor.putString("app_locale", "system")
                         editor.putBoolean("use_banner", true)
                         // Clear background completely
-                        BackgroundUtils.deleteInternalBackgroundImage(context)
+                        Background.deleteInternalBackgroundImage(context)
                         editor.remove("background_image_uri")
                         editor.remove("background_image_path")
                         // Set darkness, blur, and transparency to zero

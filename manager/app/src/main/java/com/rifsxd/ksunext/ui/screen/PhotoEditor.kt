@@ -56,7 +56,7 @@ import coil.request.ImageRequest
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import com.rifsxd.ksunext.ui.util.BackgroundUtils
+import com.rifsxd.ksunext.ui.util.Background
 import com.rifsxd.ksunext.ui.util.BackgroundTransformation
 import com.rifsxd.ksunext.ui.util.LocalPhotoEditorResetCallback
 import com.rifsxd.ksunext.ui.util.LocalPhotoEditorScreenRotationCallback
@@ -73,11 +73,11 @@ fun PhotoEditorScreen(
     
     // Reset background transparency and blur settings to 0% when entering photo editor
     LaunchedEffect(Unit) {
-        BackgroundUtils.resetBackgroundEffects(context)
+        Background.resetBackgroundEffects(context)
     }
     
     val saveFunction = { scale: Float, offsetX: Float, offsetY: Float, rotation: Float ->
-        // Save transform settings using BackgroundUtils
+        // Save transform settings using Background
         val transformation = BackgroundTransformation(
             scale = scale,
             offsetX = offsetX,
@@ -86,7 +86,7 @@ fun PhotoEditorScreen(
         )
         
         println("PhotoEditor: Saving transformation: $transformation")
-        BackgroundUtils.saveBackgroundSettings(context, imageUri, transformation)
+        Background.saveBackgroundSettings(context, imageUri, transformation)
         println("PhotoEditor: All settings saved, navigating back")
         navigator.popBackStack()
         Unit
