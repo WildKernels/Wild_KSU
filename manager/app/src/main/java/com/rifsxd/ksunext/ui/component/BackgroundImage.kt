@@ -88,7 +88,7 @@ fun BackgroundImageWrapper(
                     }
                     .let { modifier ->
                         if (backgroundBlur > 0f) {
-                            modifier.blur((backgroundBlur * 25f).dp)
+                            modifier.blur(backgroundBlur.dp)
                         } else {
                             modifier
                         }

@@ -1243,36 +1243,35 @@ fun RegularTopBar(
                 )
             }
             
-            // Show reset button for Customization screen
-            if (currentDestination?.route == CustomizationScreenDestination.route) {
-                var showCustomizationResetDialog by remember { mutableStateOf(false) }
+            // Show reset button for ThemeSettings screen
+            if (currentDestination?.route == ThemeSettingsScreenDestination.route) {
+                var showThemeResetDialog by remember { mutableStateOf(false) }
                 
                 IconButton(
                     onClick = {
-                        showCustomizationResetDialog = true
+                        showThemeResetDialog = true
                     }
                 ) {
                     Icon(
                         imageVector = Icons.Filled.Refresh,
-                        contentDescription = "Reset customization settings"
+                        contentDescription = "Reset theme settings"
                     )
                 }
                 
-                // Confirmation dialog for customization reset
+                // Confirmation dialog for theme reset
                 CustomizationResetDialog(
-                    showDialog = showCustomizationResetDialog,
-                    onDismissRequest = { showCustomizationResetDialog = false },
+                    showDialog = showThemeResetDialog,
+                    onDismissRequest = { showThemeResetDialog = false },
                     onConfirm = {
-                        showCustomizationResetDialog = false
-                        // Reset all customization settings to default
+                        showThemeResetDialog = false
+                        // Reset all theme settings to default
                         val editor = prefs.edit()
-                        editor.putString("app_locale", "system")
-                        editor.putBoolean("use_banner", true)
+                        editor.putString("theme_mode", "system_default")
                         // Clear background completely
                         BackgroundCustomization.deleteInternalBackgroundImage(context)
                         editor.remove("background_image_uri")
                         editor.remove("background_image_path")
-                        // Set darkness, blur, and transparency to zero
+                        // Set blur and transparency to zero
                         editor.putFloat("background_blur", 0.0f)
                         editor.putFloat("ui_transparency", 0.0f)
                         editor.putFloat("background_transparency", 0.0f)
