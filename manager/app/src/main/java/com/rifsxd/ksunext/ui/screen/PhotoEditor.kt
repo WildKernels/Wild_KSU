@@ -56,6 +56,8 @@ import coil.request.ImageRequest
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.rifsxd.ksunext.ui.util.BackgroundUtils
+import com.rifsxd.ksunext.ui.util.BackgroundTransformation
 
 
 
@@ -68,32 +70,23 @@ fun PhotoEditorScreen(
     navigator: DestinationsNavigator
 ) {
     val context = LocalContext.current
-    val prefs = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
     
     // Reset background transparency and blur settings to 0% when entering photo editor
     LaunchedEffect(Unit) {
-        prefs.edit()
-            .putFloat("background_transparency", 0.0f)
-            .putFloat("background_blur", 0.0f)
-            .apply()
+        BackgroundUtils.resetBackgroundEffects(context)
     }
     
     val saveFunction = { scale: Float, offsetX: Float, offsetY: Float, rotation: Float ->
-        // Save transform settings and background configuration
-        // Keep transparency and blur settings at 0% as initialized
+        // Save transform settings using BackgroundUtils
+        val transformation = BackgroundTransformation(
+            scale = scale,
+            offsetX = offsetX,
+            offsetY = offsetY,
+            rotation = rotation
+        )
         
-        println("PhotoEditor: Saving with scale=$scale, offsetX=$offsetX, offsetY=$offsetY, rotation=$rotation")
-        
-        prefs.edit()
-            .putString("background_image_uri", imageUri)
-            .putFloat("background_scale_x", scale)
-            .putFloat("background_pos_x", offsetX)
-            .putFloat("background_pos_y", offsetY)
-            .putFloat("background_rotation", rotation)
-            .putFloat("background_transparency", 0.0f)
-            .putFloat("background_blur", 0.0f)
-            .putString("background_fit_mode", "fit")
-            .apply()
+        println("PhotoEditor: Saving transformation: $transformation")
+        BackgroundUtils.saveBackgroundSettings(context, imageUri, transformation)
         println("PhotoEditor: All settings saved, navigating back")
         navigator.popBackStack()
         Unit
