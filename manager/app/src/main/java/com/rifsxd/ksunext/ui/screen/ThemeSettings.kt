@@ -233,54 +233,58 @@ fun ThemeSettingsScreen(
                             
                             Spacer(modifier = Modifier.height(16.dp))
                             
-                            ListItem(
-                                leadingContent = { Icon(Icons.Filled.Opacity, stringResource(R.string.background_transparency)) },
-                                headlineContent = { 
-                                    Text(
-                                        text = stringResource(R.string.background_transparency),
-                                        style = MaterialTheme.typography.titleMedium,
-                                        fontWeight = FontWeight.SemiBold,
-                                    ) 
-                                },
-                                supportingContent = { 
-                                    Column {
-                                        Text(stringResource(R.string.background_transparency_summary))
-                                        Spacer(modifier = Modifier.height(8.dp))
-                                        Row(
-                                            verticalAlignment = Alignment.CenterVertically,
-                                            modifier = Modifier.fillMaxWidth()
+                            Card(
+                                modifier = Modifier.fillMaxWidth(),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = MaterialTheme.colorScheme.surfaceContainer
+                                )
+                            ) {
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(20.dp)
+                                ) {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Filled.Opacity,
+                                            contentDescription = null,
+                                            modifier = Modifier.padding(end = 16.dp),
+                                            tint = MaterialTheme.colorScheme.primary
+                                        )
+                                        Column(
+                                            modifier = Modifier.weight(1f)
                                         ) {
                                             Text(
-                                                text = "0%",
-                                                style = MaterialTheme.typography.bodySmall,
-                                                modifier = Modifier.width(32.dp)
-                                            )
-                                            Slider(
-                                                value = backgroundTransparency,
-                                                onValueChange = { value ->
-                                                    backgroundTransparency = value
-                                                    prefs.edit().putFloat("background_transparency", value).commit()
-                                                },
-                                                valueRange = 0.0f..1.0f,
-                                                modifier = Modifier.weight(1f),
-                                                colors = SliderDefaults.colors()
+                                                text = stringResource(R.string.background_transparency),
+                                                style = MaterialTheme.typography.bodyLarge,
+                                                fontWeight = FontWeight.Medium
                                             )
                                             Text(
-                                                text = "100%",
+                                                text = stringResource(R.string.background_transparency_summary),
                                                 style = MaterialTheme.typography.bodySmall,
-                                                modifier = Modifier.width(32.dp),
-                                                textAlign = TextAlign.End
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant
                                             )
                                         }
                                         Text(
                                             text = "${(backgroundTransparency * 100).toInt()}%",
                                             style = MaterialTheme.typography.bodySmall,
-                                            color = MaterialTheme.colorScheme.primary,
-                                            modifier = Modifier.align(Alignment.CenterHorizontally)
+                                            color = MaterialTheme.colorScheme.primary
                                         )
                                     }
+                                    Spacer(modifier = Modifier.height(16.dp))
+                                    Slider(
+                                        value = backgroundTransparency,
+                                        onValueChange = { value ->
+                                            backgroundTransparency = value
+                                            prefs.edit().putFloat("background_transparency", value).commit()
+                                        },
+                                        valueRange = 0.0f..1.0f,
+                                        modifier = Modifier.fillMaxWidth()
+                                    )
                                 }
-                            )
+                            }
                             
                             // Background Blur Slider
                             var backgroundBlur by rememberSaveable {
@@ -291,54 +295,58 @@ fun ThemeSettingsScreen(
                             
                             Spacer(modifier = Modifier.height(16.dp))
                             
-                            ListItem(
-                                leadingContent = { Icon(Icons.Filled.Tune, "Background Blur") },
-                                headlineContent = { 
-                                    Text(
-                                        text = "Background Blur",
-                                        style = MaterialTheme.typography.titleMedium,
-                                        fontWeight = FontWeight.SemiBold,
-                                    ) 
-                                },
-                                supportingContent = { 
-                                    Column {
-                                        Text("Adjust the blur effect on the background image")
-                                        Spacer(modifier = Modifier.height(8.dp))
-                                        Row(
-                                            verticalAlignment = Alignment.CenterVertically,
-                                            modifier = Modifier.fillMaxWidth()
+                            Card(
+                                modifier = Modifier.fillMaxWidth(),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = MaterialTheme.colorScheme.surfaceContainer
+                                )
+                            ) {
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(20.dp)
+                                ) {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Filled.Tune,
+                                            contentDescription = null,
+                                            modifier = Modifier.padding(end = 16.dp),
+                                            tint = MaterialTheme.colorScheme.primary
+                                        )
+                                        Column(
+                                            modifier = Modifier.weight(1f)
                                         ) {
                                             Text(
-                                                text = "0px",
-                                                style = MaterialTheme.typography.bodySmall,
-                                                modifier = Modifier.width(32.dp)
-                                            )
-                                            Slider(
-                                                value = backgroundBlur,
-                                                onValueChange = { value ->
-                                                    backgroundBlur = value
-                                                    prefs.edit().putFloat("background_blur", value).commit()
-                                                },
-                                                valueRange = 0.0f..25.0f,
-                                                modifier = Modifier.weight(1f),
-                                                colors = SliderDefaults.colors()
+                                                text = "Background Blur",
+                                                style = MaterialTheme.typography.bodyLarge,
+                                                fontWeight = FontWeight.Medium
                                             )
                                             Text(
-                                                text = "25px",
+                                                text = "Adjust the blur effect on the background image",
                                                 style = MaterialTheme.typography.bodySmall,
-                                                modifier = Modifier.width(32.dp),
-                                                textAlign = TextAlign.End
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant
                                             )
                                         }
                                         Text(
                                             text = "${backgroundBlur.toInt()}px",
                                             style = MaterialTheme.typography.bodySmall,
-                                            color = MaterialTheme.colorScheme.primary,
-                                            modifier = Modifier.align(Alignment.CenterHorizontally)
+                                            color = MaterialTheme.colorScheme.primary
                                         )
                                     }
+                                    Spacer(modifier = Modifier.height(16.dp))
+                                    Slider(
+                                        value = backgroundBlur,
+                                        onValueChange = { value ->
+                                            backgroundBlur = value
+                                            prefs.edit().putFloat("background_blur", value).commit()
+                                        },
+                                        valueRange = 0.0f..25.0f,
+                                        modifier = Modifier.fillMaxWidth()
+                                    )
                                 }
-                            )
+                            }
                         }
                     }
                 }
@@ -369,54 +377,58 @@ fun ThemeSettingsScreen(
                             )
                         }
                         
-                        ListItem(
-                            leadingContent = { Icon(Icons.Filled.Tune, "UI Transparency") },
-                            headlineContent = { 
-                                Text(
-                                    text = "UI Transparency",
-                                    style = MaterialTheme.typography.titleMedium,
-                                    fontWeight = FontWeight.SemiBold,
-                                )
-                            },
-                            supportingContent = { 
-                                Column {
-                                    Text("Adjust the transparency of UI elements")
-                                    Spacer(modifier = Modifier.height(8.dp))
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        modifier = Modifier.fillMaxWidth()
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceContainer
+                            )
+                        ) {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(20.dp)
+                            ) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Filled.Tune,
+                                        contentDescription = null,
+                                        modifier = Modifier.padding(end = 16.dp),
+                                        tint = MaterialTheme.colorScheme.primary
+                                    )
+                                    Column(
+                                        modifier = Modifier.weight(1f)
                                     ) {
                                         Text(
-                                            text = "0%",
-                                            style = MaterialTheme.typography.bodySmall,
-                                            modifier = Modifier.width(32.dp)
-                                        )
-                                        Slider(
-                                            value = uiTransparency,
-                                            onValueChange = { value ->
-                                                uiTransparency = value
-                                                prefs.edit().putFloat("ui_transparency", value).commit()
-                                            },
-                                            valueRange = 0.0f..1.0f,
-                                            modifier = Modifier.weight(1f),
-                                            colors = SliderDefaults.colors()
+                                            text = "UI Transparency",
+                                            style = MaterialTheme.typography.bodyLarge,
+                                            fontWeight = FontWeight.Medium
                                         )
                                         Text(
-                                            text = "100%",
+                                            text = "Adjust the transparency of UI elements",
                                             style = MaterialTheme.typography.bodySmall,
-                                            modifier = Modifier.width(32.dp),
-                                            textAlign = TextAlign.End
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
                                         )
                                     }
                                     Text(
                                         text = "${(uiTransparency * 100).toInt()}%",
                                         style = MaterialTheme.typography.bodySmall,
-                                        color = MaterialTheme.colorScheme.primary,
-                                        modifier = Modifier.align(Alignment.CenterHorizontally)
+                                        color = MaterialTheme.colorScheme.primary
                                     )
                                 }
+                                Spacer(modifier = Modifier.height(16.dp))
+                                Slider(
+                                    value = uiTransparency,
+                                    onValueChange = { value ->
+                                        uiTransparency = value
+                                        prefs.edit().putFloat("ui_transparency", value).commit()
+                                    },
+                                    valueRange = 0.0f..1.0f,
+                                    modifier = Modifier.fillMaxWidth()
+                                )
                             }
-                        )
+                        }
                     }
                 }
             }
@@ -450,90 +462,57 @@ fun ThemeSettingsScreen(
                                 }
                             )
                         }
-                        var showDpiDialog by remember { mutableStateOf(false) }
 
-                        ListItem(
-                            leadingContent = { Icon(Icons.Filled.AspectRatio, stringResource(R.string.dpi_scale_settings)) },
-                            headlineContent = { 
-                                Text(
-                                    text = stringResource(R.string.dpi_scale_settings),
-                                    style = MaterialTheme.typography.titleMedium,
-                                    fontWeight = FontWeight.SemiBold,
-                                ) 
-                            },
-                            supportingContent = { 
-                                Text(
-                                    text = stringResource(R.string.dpi_scale_settings_summary, savedDpi),
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            },
-                            trailingContent = {
-                                TextButton(
-                                    onClick = { showDpiDialog = true }
-                                ) {
-                                    Text(
-                                        text = stringResource(R.string.dpi_change_settings),
-                                        style = MaterialTheme.typography.labelLarge,
-                                        fontSize = 14.sp
-                                    )
-                                }
-                            }
-                        )
-
-                        // DPI Selection Dialog
-                        if (showDpiDialog) {
-                            AlertDialog(
-                                onDismissRequest = { showDpiDialog = false },
-                                title = { Text(stringResource(R.string.dpi_scale_settings)) },
-                                text = {
-                                    Column {
-                                        Text(stringResource(R.string.dpi_dialog_description))
-                                        Spacer(modifier = Modifier.height(16.dp))
-                                        
-                                        val dpiOptions = listOf(
-                                            120 to "LDPI (120)",
-                                            160 to "MDPI (160)",
-                                            240 to "HDPI (240)",
-                                            320 to "XHDPI (320)",
-                                            480 to "XXHDPI (480)",
-                                            640 to "XXXHDPI (640)",
-                                            systemDpi to "System Default ($systemDpi)"
-                                        )
-                                        
-                                        dpiOptions.forEach { (dpi, label) ->
-                                            Row(
-                                                modifier = Modifier
-                                                    .fillMaxWidth()
-                                                    .clickable {
-                                                        savedDpi = dpi
-                                                        prefs.edit().putInt("app_dpi", dpi).commit()
-                                                        showDpiDialog = false
-                                                    }
-                                                    .padding(vertical = 8.dp),
-                                                verticalAlignment = Alignment.CenterVertically
-                                            ) {
-                                                RadioButton(
-                                                    selected = savedDpi == dpi,
-                                                    onClick = {
-                                                        savedDpi = dpi
-                                                        prefs.edit().putInt("app_dpi", dpi).commit()
-                                                        showDpiDialog = false
-                                                    }
-                                                )
-                                                Spacer(modifier = Modifier.width(8.dp))
-                                                Text(label)
-                                            }
-                                        }
-                                    }
-                                },
-                                confirmButton = {
-                                    TextButton(onClick = { showDpiDialog = false }) {
-                                        Text("Close")
-                                    }
-                                }
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceContainer
                             )
+                        ) {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(20.dp)
+                            ) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Filled.AspectRatio,
+                                        contentDescription = null,
+                                        modifier = Modifier.padding(end = 16.dp),
+                                        tint = MaterialTheme.colorScheme.primary
+                                    )
+                                    Column(
+                                        modifier = Modifier.weight(1f)
+                                    ) {
+                                        Text(
+                                            text = stringResource(R.string.dpi_scale_settings),
+                                            style = MaterialTheme.typography.bodyLarge,
+                                            fontWeight = FontWeight.Medium
+                                        )
+                                        Text(
+                                            text = stringResource(R.string.dpi_scale_settings_summary, savedDpi),
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                    }
+                                }
+                                Spacer(modifier = Modifier.height(16.dp))
+                                Slider(
+                                    value = savedDpi.toFloat(),
+                                    onValueChange = { newValue ->
+                                        savedDpi = newValue.toInt()
+                                        prefs.edit().putInt("app_dpi", savedDpi).commit()
+                                    },
+                                    valueRange = 120f..640f,
+                                    steps = 5,
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                            }
                         }
+
+
 
                         // Apply DPI Settings Button
                         if (savedDpi != systemDpi || prefs.contains("app_dpi")) {

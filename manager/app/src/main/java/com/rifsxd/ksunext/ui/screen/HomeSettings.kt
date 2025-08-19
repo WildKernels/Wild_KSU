@@ -504,10 +504,7 @@ fun HomeSettingsScreen(
                                 fontWeight = FontWeight.Medium
                             )
                             Text(
-                                text = when (selectedAppName) {
-                                    "wild_ksu" -> stringResource(R.string.app_name_wild_ksu)
-                                    else -> stringResource(R.string.app_name_kernelsu_next)
-                                },
+                                text = "Switch to Wild KSU",
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
