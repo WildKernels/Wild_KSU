@@ -83,13 +83,7 @@ fun PhotoEditorScreen(
     val context = LocalContext.current
     val prefs = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
     
-    // Save the current background image URI as previous before editing
-    LaunchedEffect(imageUri) {
-        val currentUri = prefs.getString("background_image_uri", "")
-        if (currentUri?.isNotEmpty() == true && currentUri != imageUri) {
-            prefs.edit().putString("previous_background_image_uri", currentUri).apply()
-        }
-    }
+    // Note: Removed automatic saving of previous URI to prevent unintended saves when entering crop menu
     
     val saveFunction = { scale: Float, offsetX: Float, offsetY: Float, rotation: Float ->
         // Save transform settings and background configuration
@@ -205,19 +199,7 @@ fun PhotoEditorScreen(
             saveFunction(scale, offsetX, offsetY, rotation)
         },
         onCancel = {
-            // Restore previous image selection by clearing current selection
-            val previousUri = prefs.getString("previous_background_image_uri", "")
-            if (previousUri?.isNotEmpty() == true) {
-                prefs.edit()
-                    .putString("background_image_uri", previousUri)
-                    .remove("previous_background_image_uri")
-                    .apply()
-            } else {
-                // If no previous image, clear current selection
-                prefs.edit()
-                    .remove("background_image_uri")
-                    .apply()
-            }
+            // Simply navigate back without making any changes to preserve original state
             navigator.popBackStack()
         }
     )
