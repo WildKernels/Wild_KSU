@@ -83,13 +83,11 @@ fun ThemeSettingsScreen(
         if (result.resultCode == android.app.Activity.RESULT_OK) {
             result.data?.data?.let { uri ->
                 try {
-                    // Copy image to internal storage and save URI
+                    // Copy image to internal storage for temporary editing (don't save to preferences yet)
                     val savedPath = BackgroundCustomization.copyImageToInternalStorage(context, uri)
                     if (savedPath != null) {
                         val savedUri = BackgroundCustomization.filePathToUri(savedPath)
-                        prefs.edit().putString("background_image_uri", savedUri).commit()
-                        backgroundImageUri = savedUri.toString()
-                        // Automatically navigate to photo editor after selecting image
+                        // Navigate to photo editor with temp URI - settings will be saved only when user confirms
                         navigator.navigate(PhotoEditorScreenDestination(imageUri = savedUri.toString()))
                     }
                 } catch (e: Exception) {

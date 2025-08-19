@@ -88,6 +88,11 @@ fun PhotoEditorScreen(
         
         println("PhotoEditor: Saving transformation: $transformation")
         BackgroundCustomization.saveBackgroundSettings(context, imageUri, transformation)
+        
+        // Also save the background image URI to preferences when user confirms
+        val prefs = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
+        prefs.edit().putString("background_image_uri", imageUri).commit()
+        
         println("PhotoEditor: All settings saved, navigating back")
         navigator.popBackStack()
         Unit

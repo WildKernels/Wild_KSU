@@ -1040,35 +1040,7 @@ fun PhotoEditorTopBar(
             }
         },
         actions = {
-            // Screen Rotation Toggle
-            IconButton(
-                onClick = onScreenRotationToggle
-            ) {
-                Icon(
-                    imageVector = if (screenRotationLocked) Icons.Default.ScreenLockRotation else Icons.Default.ScreenRotation,
-                    contentDescription = "Screen Rotation Toggle"
-                )
-            }
-            
-            // Reset button
-            IconButton(
-                onClick = onReset
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Refresh,
-                    contentDescription = "Reset All"
-                )
-            }
-            
-            // Confirm button
-            IconButton(
-                onClick = onSave
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Check,
-                    contentDescription = "Confirm"
-                )
-            }
+            // Removed duplicate icons - using only on-screen buttons
         },
         windowInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal),
         colors = TopAppBarDefaults.topAppBarColors(
