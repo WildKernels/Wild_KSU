@@ -103,78 +103,69 @@ fun ThemeSettingsScreen(
     ) {
         // Theme Mode Section
         item {
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceContainer
-                )
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
             ) {
-                Column(
-                    modifier = Modifier.padding(16.dp)
-                ) {
-                    Text(
-                        text = "Theme Mode",
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(bottom = 16.dp)
-                    )
+                Text(
+                    text = "Theme Mode",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
 
-                    val themeOptions = listOf(
-                        "system_default" to "System Default",
-                        "light" to "Light Mode",
-                        "dark" to "Dark Mode",
-                        "amoled" to "AMOLED Dark"
-                    )
-                    
-                    val currentThemeDisplay = themeOptions.find { it.first == themeMode }?.second ?: "System Default"
-                    
-                    val themeDialog = rememberCustomDialog { dismiss ->
-                        ThemeSelectionDialog(
-                            themeOptions = themeOptions,
-                            currentTheme = themeMode,
-                            onThemeSelected = { selectedTheme ->
-                                prefs.edit().putString("theme_mode", selectedTheme).commit()
-                                themeMode = selectedTheme
-                                dismiss()
-                            },
-                            onDismiss = { dismiss() }
-                        )
-                    }
-                    
-                    ListItem(
-                        leadingContent = { Icon(Icons.Filled.Palette, "Theme Mode") },
-                        headlineContent = { Text(
-                            text = "Theme Mode",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.SemiBold,
-                        ) },
-                        supportingContent = { Text("Current: $currentThemeDisplay") },
-                        modifier = Modifier
-                            .clickable {
-                                themeDialog.show()
-                            }
+                val themeOptions = listOf(
+                    "system_default" to "System Default",
+                    "light" to "Light Mode",
+                    "dark" to "Dark Mode",
+                    "amoled" to "AMOLED Dark"
+                )
+                
+                val currentThemeDisplay = themeOptions.find { it.first == themeMode }?.second ?: "System Default"
+                
+                val themeDialog = rememberCustomDialog { dismiss ->
+                    ThemeSelectionDialog(
+                        themeOptions = themeOptions,
+                        currentTheme = themeMode,
+                        onThemeSelected = { selectedTheme ->
+                            prefs.edit().putString("theme_mode", selectedTheme).commit()
+                            themeMode = selectedTheme
+                            dismiss()
+                        },
+                        onDismiss = { dismiss() }
                     )
                 }
+                
+                ListItem(
+                    leadingContent = { Icon(Icons.Filled.Palette, "Theme Mode") },
+                    headlineContent = { Text(
+                        text = "Theme Mode",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold,
+                    ) },
+                    supportingContent = { Text("Current: $currentThemeDisplay") },
+                    modifier = Modifier
+                        .clickable {
+                            themeDialog.show()
+                        }
+                )
             }
         }
 
             // Background Image Section
             item {
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceContainer
-                    )
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
                 ) {
-                    Column(
-                        modifier = Modifier.padding(16.dp)
-                    ) {
-                        Text(
-                            text = "Background",
-                            style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.padding(bottom = 16.dp)
-                        )
+                    Text(
+                        text = "Background",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
 
                         // Background Image Selection
                         ListItem(
@@ -408,7 +399,6 @@ fun ThemeSettingsScreen(
                 modifier = Modifier.fillMaxWidth()
             )
         }
-                    }
                 }
             }
 
@@ -481,17 +471,16 @@ fun ThemeSettingsScreen(
                             Slider(
                                 value = tempDpi.toFloat(),
                                 onValueChange = { newValue ->
-                                    val commonDpiValues = listOf(120, 160, 240, 320, 480, 640)
-                                    val snapThreshold = 15
+                                    val snapDpiValues = listOf(120, 220, 320, 420, 520, 620)
+                                    val snapThreshold = 20
                                     
-                                    val snappedValue = commonDpiValues.find { dpi ->
+                                    val snappedValue = snapDpiValues.find { dpi ->
                                         kotlin.math.abs(newValue - dpi) <= snapThreshold
                                     } ?: newValue.toInt()
                                     
                                     tempDpi = snappedValue
                                 },
                                 valueRange = 120f..640f,
-                                steps = 5,
                                 modifier = Modifier.fillMaxWidth()
                             )
                             
@@ -546,15 +535,23 @@ private fun ThemeSelectionDialog(
         )
     }
     
-    ListDialog(
-        state = rememberUseCaseState(visible = true, onCloseRequest = { onDismiss() }),
-        header = Header.Default(title = "Theme Mode"),
-        selection = ListSelection.Single(
-            showRadioButtons = true,
-            options = options
-        ) { index, _ ->
-            val selectedTheme = themeOptions[index].first
-            onThemeSelected(selectedTheme)
-        }
-    )
+    // Wrap the dialog in a Card to provide background
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainer
+        )
+    ) {
+        ListDialog(
+            state = rememberUseCaseState(visible = true, onCloseRequest = { onDismiss() }),
+            header = Header.Default(title = "Theme Mode"),
+            selection = ListSelection.Single(
+                showRadioButtons = true,
+                options = options
+            ) { index, _ ->
+                val selectedTheme = themeOptions[index].first
+                onThemeSelected(selectedTheme)
+            }
+        )
+    }
 }
