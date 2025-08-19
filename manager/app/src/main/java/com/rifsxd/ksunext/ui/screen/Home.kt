@@ -843,19 +843,8 @@ private fun InfoCard(autoExpand: Boolean = false) {
                             val wasFirstItem = isFirstItem
                             val isExtraItem = renderedCount >= maxItemsWhenCollapsed
                             
-                            if (isExtraItem) {
-                                // Animate extra items that appear when expanding
-                                AnimatedVisibility(
-                                    visible = expanded || alwaysExpanded,
-                                    enter = fadeIn(animationSpec = tween(300)) + expandVertically(animationSpec = tween(300)),
-                                    exit = fadeOut(animationSpec = tween(300)) + shrinkVertically(animationSpec = tween(300))
-                                ) {
-                                    RenderInfoCardItem(itemKey, wasFirstItem)
-                                }
-                            } else {
-                                // Always show first 5 items without animation
-                                RenderInfoCardItem(itemKey, wasFirstItem)
-                            }
+                            // Show all items without wrapper to fix spacing issues
+                            RenderInfoCardItem(itemKey, wasFirstItem)
                             
                             if (isFirstItem) {
                                 isFirstItem = false

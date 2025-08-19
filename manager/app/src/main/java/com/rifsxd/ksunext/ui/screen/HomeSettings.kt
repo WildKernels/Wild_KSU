@@ -123,26 +123,11 @@ fun HomeSettingsScreen(
     var selectedAppName by rememberSaveable {
         mutableStateOf(prefs.getString("selected_app_name", "kernelsu_next") ?: "kernelsu_next")
     }
-    var customAppName by rememberSaveable {
-        mutableStateOf(prefs.getString("custom_app_name", "") ?: "")
-    }
     
-    // Dialog states
-    val appNameDialog = rememberCustomDialog { dismiss ->
-        AppNameSelectionDialog(
-            selectedAppName = selectedAppName,
-            customAppName = customAppName,
-            onAppNameSelected = { newAppName ->
-                selectedAppName = newAppName
-                prefs.edit().putString("selected_app_name", newAppName).apply()
-                hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
-            },
-            onCustomAppNameChanged = { newCustomName ->
-                customAppName = newCustomName
-                prefs.edit().putString("custom_app_name", newCustomName).apply()
-            },
-            onDismiss = dismiss
-        )
+    val onSelectedAppNameChanged = { newAppName: String ->
+        selectedAppName = newAppName
+        prefs.edit().putString("selected_app_name", newAppName).apply()
+        hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
     }
 
     // InfoCard items data class
@@ -490,7 +475,7 @@ fun HomeSettingsScreen(
                 }
             }
 
-            // App Name Customization
+            // App Name Toggle
             item {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
@@ -501,10 +486,7 @@ fun HomeSettingsScreen(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(20.dp)
-                            .clickable {
-                                appNameDialog.show()
-                            },
+                            .padding(20.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
@@ -523,7 +505,6 @@ fun HomeSettingsScreen(
                             )
                             Text(
                                 text = when (selectedAppName) {
-                                    "kernelsu_next" -> stringResource(R.string.app_name_kernelsu_next)
                                     "wild_ksu" -> stringResource(R.string.app_name_wild_ksu)
                                     else -> stringResource(R.string.app_name_kernelsu_next)
                                 },
@@ -531,10 +512,12 @@ fun HomeSettingsScreen(
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                            contentDescription = "Navigate to settings",
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        Switch(
+                            checked = selectedAppName == "wild_ksu",
+                            onCheckedChange = { isChecked ->
+                                val newAppName = if (isChecked) "wild_ksu" else "kernelsu_next"
+                                onSelectedAppNameChanged(newAppName)
+                            }
                         )
                     }
                 }
@@ -796,60 +779,7 @@ fun HomeSettingsScreen(
     }
 }
 
-@Composable
-fun AppNameSelectionDialog(
-    selectedAppName: String,
-    customAppName: String,
-    onAppNameSelected: (String) -> Unit,
-    onCustomAppNameChanged: (String) -> Unit,
-    onDismiss: () -> Unit
-) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = {
-            Text(stringResource(R.string.app_name_dialog_title))
-        },
-        text = {
-            Column {
-                val options = listOf(
-                    "kernelsu_next" to stringResource(R.string.app_name_kernelsu_next),
-                    "wild_ksu" to stringResource(R.string.app_name_wild_ksu)
-                )
-                
-                options.forEach { (value, display) ->
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable {
-                                onAppNameSelected(value)
-                                onDismiss()
-                            }
-                            .padding(vertical = 8.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        RadioButton(
-                            selected = selectedAppName == value,
-                            onClick = {
-                                onAppNameSelected(value)
-                                onDismiss()
-                            }
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = display,
-                            style = MaterialTheme.typography.bodyLarge
-                        )
-                    }
-                }
-            }
-        },
-        confirmButton = {
-            TextButton(onClick = onDismiss) {
-                Text("Cancel")
-            }
-        }
-    )
-}
+
 
 @Preview
 @Composable
