@@ -82,26 +82,11 @@ fun ThemeSettingsScreen(
     var previousActiveImageUri by remember { mutableStateOf<String?>(null) }
     
     // Sync state with actual saved preferences when returning from other screens
-    LaunchedEffect(Unit) {
-        // Reset to actual saved value when screen loads/resumes
+    LaunchedEffect(backgroundImageUri) {
+        // Update backgroundImageUri from SharedPreferences
         val currentSavedUri = prefs.getString("background_image_uri", null)
-        val previousBackgroundUri = backgroundImageUri
-        backgroundImageUri = currentSavedUri
-        
-        // If we have a temp selection but the saved URI hasn't changed from what it was before,
-        // it means user cancelled - clear temp selection to revert to previous state
-        if (tempSelectedImageUri != null && currentSavedUri == previousBackgroundUri) {
-            tempSelectedImageUri = null // Clear temp selection, revert to saved background
-            
-            // If there was a previous image, restore its transformation settings
-            if (previousActiveImageUri != null && previousActiveImageUri == currentSavedUri) {
-                // The previous image is now the active one again, its saved settings will be loaded automatically
-                // by PhotoEditor when it's opened next time
-            }
-        } else if (tempSelectedImageUri != null && currentSavedUri != previousBackgroundUri) {
-            // User saved the temp selection, clear temp state and update previous reference
-            tempSelectedImageUri = null
-            previousActiveImageUri = currentSavedUri
+        if (backgroundImageUri != currentSavedUri) {
+            backgroundImageUri = currentSavedUri
         }
     }
 
@@ -241,25 +226,28 @@ fun ThemeSettingsScreen(
                                             val internalStoragePath = BackgroundCustomization.getInternalBackgroundImagePath(context)
                                             val isAlreadyInternal = uri.scheme == "file" && uri.path?.contains("images") == true
                                             
-                                            if (isAlreadyInternal) {
+                                            val finalUri = if (isAlreadyInternal) {
                                                 // Image is already in internal storage, just save the URI
                                                 BackgroundCustomization.saveBackgroundSettings(context, tempSelectedImageUri!!, transformation, saveUri = true)
+                                                tempSelectedImageUri!!
                                             } else {
                                                 // Copy the image to internal storage first
                                                 val internalPath = BackgroundCustomization.copyImageToInternalStorage(context, uri)
                                                 if (internalPath != null) {
                                                     val internalUri = BackgroundCustomization.filePathToUri(internalPath)
                                                     BackgroundCustomization.saveBackgroundSettings(context, internalUri, transformation, saveUri = true)
+                                                    internalUri
                                                 } else {
                                                     // Fallback to original URI if copy fails
                                                     BackgroundCustomization.saveBackgroundSettings(context, tempSelectedImageUri!!, transformation, saveUri = true)
+                                                    tempSelectedImageUri!!
                                                 }
                                             }
                                             
-                                            // Update state
-                                            backgroundImageUri = tempSelectedImageUri
+                                            // Update state - set backgroundImageUri to the final saved URI
+                                            backgroundImageUri = finalUri
                                             tempSelectedImageUri = null
-                                            previousActiveImageUri = backgroundImageUri
+                                            previousActiveImageUri = finalUri
                                         }) {
                                             Icon(Icons.Filled.Save, "Save Background")
                                         }
