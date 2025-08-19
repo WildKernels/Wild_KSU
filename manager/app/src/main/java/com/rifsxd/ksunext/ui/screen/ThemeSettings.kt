@@ -324,12 +324,9 @@ fun ThemeSettingsScreen(
                     modifier = Modifier.fillMaxWidth()
                 )
             }
-                        }
-                    }
-                }
-            }
+        }
 
-            // UI Transparency Section
+        // UI Transparency Section
             item {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
@@ -399,10 +396,8 @@ fun ThemeSettingsScreen(
                 modifier = Modifier.fillMaxWidth()
             )
         }
-                }
-            }
 
-            // DPI Scale Section
+        // DPI Scale Section
             item {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
