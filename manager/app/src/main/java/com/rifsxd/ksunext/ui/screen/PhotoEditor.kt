@@ -78,7 +78,8 @@ fun PhotoEditorScreen(
     }
     
     val saveFunction = { scale: Float, offsetX: Float, offsetY: Float, rotation: Float ->
-        // Save transform settings using BackgroundCustomization
+        // Save only transform settings, not the background URI
+        // This prevents automatic background application until user explicitly saves
         val transformation = BackgroundTransformation(
             scale = scale,
             offsetX = offsetX,
@@ -86,26 +87,8 @@ fun PhotoEditorScreen(
             rotation = rotation
         )
         
-        val uri = Uri.parse(imageUri)
-        
-        // Check if the URI is already pointing to internal storage
-        val internalStoragePath = BackgroundCustomization.getInternalBackgroundImagePath(context)
-        val isAlreadyInternal = uri.scheme == "file" && uri.path?.contains("images") == true
-        
-        if (isAlreadyInternal) {
-            // Image is already in internal storage, just save the settings
-            BackgroundCustomization.saveBackgroundSettings(context, imageUri, transformation, saveUri = true)
-        } else {
-            // Copy the image to internal storage first
-            val internalPath = BackgroundCustomization.copyImageToInternalStorage(context, uri)
-            if (internalPath != null) {
-                val internalUri = BackgroundCustomization.filePathToUri(internalPath)
-                BackgroundCustomization.saveBackgroundSettings(context, internalUri, transformation, saveUri = true)
-            } else {
-                // Fallback to original URI if copy fails
-                BackgroundCustomization.saveBackgroundSettings(context, imageUri, transformation, saveUri = true)
-            }
-        }
+        // Save transformation settings without applying as background
+        BackgroundCustomization.saveBackgroundSettings(context, imageUri, transformation, saveUri = false)
         
         navigator.popBackStack()
         Unit

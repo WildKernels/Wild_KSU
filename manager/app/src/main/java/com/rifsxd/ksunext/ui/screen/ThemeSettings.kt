@@ -10,11 +10,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AspectRatio
-
 import androidx.compose.material.icons.filled.Crop
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Image
+import androidx.compose.material.icons.filled.Save
 import androidx.compose.material.icons.filled.Opacity
 import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material.icons.filled.*
@@ -230,6 +229,41 @@ fun ThemeSettingsScreen(
                                 Row {
                                     // Determine which image to use for buttons (temp selection or saved background)
                                     val activeImageUri = tempSelectedImageUri ?: backgroundImageUri
+                                    
+                                    // Save button (only show if there's a temp selection)
+                                    if (tempSelectedImageUri != null) {
+                                        IconButton(onClick = {
+                                            // Apply temp selection as background
+                                            val uri = Uri.parse(tempSelectedImageUri!!)
+                                            val transformation = BackgroundCustomization.loadBackgroundTransformation(context)
+                                            
+                                            // Check if the URI is already pointing to internal storage
+                                            val internalStoragePath = BackgroundCustomization.getInternalBackgroundImagePath(context)
+                                            val isAlreadyInternal = uri.scheme == "file" && uri.path?.contains("images") == true
+                                            
+                                            if (isAlreadyInternal) {
+                                                // Image is already in internal storage, just save the URI
+                                                BackgroundCustomization.saveBackgroundSettings(context, tempSelectedImageUri!!, transformation, saveUri = true)
+                                            } else {
+                                                // Copy the image to internal storage first
+                                                val internalPath = BackgroundCustomization.copyImageToInternalStorage(context, uri)
+                                                if (internalPath != null) {
+                                                    val internalUri = BackgroundCustomization.filePathToUri(internalPath)
+                                                    BackgroundCustomization.saveBackgroundSettings(context, internalUri, transformation, saveUri = true)
+                                                } else {
+                                                    // Fallback to original URI if copy fails
+                                                    BackgroundCustomization.saveBackgroundSettings(context, tempSelectedImageUri!!, transformation, saveUri = true)
+                                                }
+                                            }
+                                            
+                                            // Update state
+                                            backgroundImageUri = tempSelectedImageUri
+                                            tempSelectedImageUri = null
+                                            previousActiveImageUri = backgroundImageUri
+                                        }) {
+                                            Icon(Icons.Filled.Save, "Save Background")
+                                        }
+                                    }
                                     
                                     // Crop button (only show if background image is selected)
                                     if (activeImageUri != null) {
