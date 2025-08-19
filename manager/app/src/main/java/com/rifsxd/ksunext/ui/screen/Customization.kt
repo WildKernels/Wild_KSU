@@ -637,17 +637,6 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                 mutableIntStateOf(savedDpi)
             }
             
-            // Update DPI values when preferences change (including after reset)
-            LaunchedEffect(Unit) {
-                val currentDpiFromPrefs = if (prefs.contains("app_dpi")) {
-                    prefs.getInt("app_dpi", systemDpi)
-                } else {
-                    systemDpi
-                }
-                savedDpi = currentDpiFromPrefs
-                currentDpi = currentDpiFromPrefs
-            }
-            
             // Listen for preference changes to update DPI slider when reset button is pressed
             DisposableEffect(Unit) {
                 val listener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
