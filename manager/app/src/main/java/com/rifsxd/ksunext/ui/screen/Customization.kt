@@ -116,7 +116,7 @@ import com.rifsxd.ksunext.ui.util.LocalSnackbarHost
 import com.rifsxd.ksunext.ui.util.*
 import com.rifsxd.ksunext.ui.util.IconPackHelper
 import com.rifsxd.ksunext.ui.util.IconPack
-import com.rifsxd.ksunext.ui.util.ImageStorageUtils
+import com.rifsxd.ksunext.ui.util.BackgroundUtils
 
 import java.util.Locale
 
@@ -383,10 +383,10 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                 if (result.resultCode == Activity.RESULT_OK) {
                     result.data?.data?.let { uri ->
                         // Copy image to internal storage to prevent permission issues
-                        val internalPath = ImageStorageUtils.copyImageToInternalStorage(context, uri)
+                        val internalPath = BackgroundUtils.copyImageToInternalStorage(context, uri)
                         if (internalPath != null) {
                             // Convert to file URI for consistent handling
-                            val fileUri = ImageStorageUtils.filePathToUri(internalPath)
+                            val fileUri = BackgroundUtils.filePathToUri(internalPath)
                             // Navigate to PhotoEditor screen
                             navigator.navigate(PhotoEditorScreenDestination(imageUri = fileUri))
                         } else {
@@ -435,7 +435,7 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                         if (backgroundImageUri != null) {
                             IconButton(onClick = {
                                 // Clean up internal storage if the image was stored there
-                                ImageStorageUtils.deleteInternalBackgroundImage(context)
+                                BackgroundUtils.deleteInternalBackgroundImage(context)
                                 prefs.edit().remove("background_image_uri").commit()
                                 backgroundImageUri = null
                             }) {
