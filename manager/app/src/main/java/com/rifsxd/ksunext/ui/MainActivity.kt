@@ -600,7 +600,6 @@ class MainActivity : ComponentActivity() {
                     LocalFlashViewModel provides flashViewModel,
                     LocalPhotoEditorSaveCallback provides photoEditorSaveCallback,
                     LocalPhotoEditorSaveCallbackSetter provides { callback -> 
-                        println("MainActivity: Setting photoEditorSaveCallback to $callback")
                         photoEditorSaveCallback = callback 
                     },
                     LocalPhotoEditorResetCallback provides photoEditorResetCallback,

@@ -72,18 +72,6 @@ fun PhotoEditorScreen(
 ) {
     val context = LocalContext.current
     
-    println("PhotoEditorScreen: Received imageUri: $imageUri")
-    
-    // Parse and validate the URI
-    val parsedUri = try {
-        Uri.parse(imageUri)
-    } catch (e: Exception) {
-        println("PhotoEditorScreen: Failed to parse URI: $imageUri, error: $e")
-        null
-    }
-    
-    println("PhotoEditorScreen: Parsed URI: $parsedUri, scheme: ${parsedUri?.scheme}, path: ${parsedUri?.path}")
-    
     // Reset background transparency and blur settings to 0% when entering photo editor
     LaunchedEffect(Unit) {
         BackgroundCustomization.resetBackgroundEffects(context)
@@ -98,23 +86,27 @@ fun PhotoEditorScreen(
             rotation = rotation
         )
         
-        println("PhotoEditor: Saving transformation: $transformation")
-        
-        // Copy the image to internal storage if it's not already there
         val uri = Uri.parse(imageUri)
-        val internalPath = BackgroundCustomization.copyImageToInternalStorage(context, uri)
-        if (internalPath != null) {
-            val internalUri = BackgroundCustomization.filePathToUri(internalPath)
-            // Save transformation settings and URI to preferences when user confirms
-            BackgroundCustomization.saveBackgroundSettings(context, internalUri, transformation, saveUri = true)
-            println("PhotoEditor: Image copied to internal storage and settings saved")
-        } else {
-            // Fallback to original URI if copy fails
+        
+        // Check if the URI is already pointing to internal storage
+        val internalStoragePath = BackgroundCustomization.getInternalBackgroundImagePath(context)
+        val isAlreadyInternal = uri.scheme == "file" && uri.path?.contains("images") == true
+        
+        if (isAlreadyInternal) {
+            // Image is already in internal storage, just save the settings
             BackgroundCustomization.saveBackgroundSettings(context, imageUri, transformation, saveUri = true)
-            println("PhotoEditor: Failed to copy to internal storage, using original URI")
+        } else {
+            // Copy the image to internal storage first
+            val internalPath = BackgroundCustomization.copyImageToInternalStorage(context, uri)
+            if (internalPath != null) {
+                val internalUri = BackgroundCustomization.filePathToUri(internalPath)
+                BackgroundCustomization.saveBackgroundSettings(context, internalUri, transformation, saveUri = true)
+            } else {
+                // Fallback to original URI if copy fails
+                BackgroundCustomization.saveBackgroundSettings(context, imageUri, transformation, saveUri = true)
+            }
         }
         
-        println("PhotoEditor: All settings saved, navigating back")
         navigator.popBackStack()
         Unit
     }
@@ -132,12 +124,10 @@ fun PhotoEditorScreen(
         offsetX = 0f
         offsetY = 0f
         rotation = 0f
-        
-        println("PhotoEditor: Starting with default transform settings for image: $imageUri")
     }
     
     PhotoEditor(
-        imageUri = parsedUri,
+        imageUri = Uri.parse(imageUri),
         scale = scale,
         offsetX = offsetX,
         offsetY = offsetY,
@@ -202,24 +192,12 @@ fun PhotoEditor(
         currentOffsetX = offsetX
         currentOffsetY = offsetY
         currentRotation = rotation
-        println("PhotoEditor: Loaded transform settings: scale=$scale, offsetX=$offsetX, offsetY=$offsetY, rotation=$rotation")
     }
         // Load image with ImageRequest for consistency
         val painter = rememberAsyncImagePainter(
             model = ImageRequest.Builder(context)
                 .data(imageUri)
                 .crossfade(false)
-                .listener(
-                    onStart = { 
-                        println("PhotoEditor: Started loading image from URI: $imageUri")
-                    },
-                    onSuccess = { _, _ -> 
-                        println("PhotoEditor: Successfully loaded image from URI: $imageUri")
-                    },
-                    onError = { _, result -> 
-                        println("PhotoEditor: Failed to load image from URI: $imageUri, error: ${result.throwable}")
-                    }
-                )
                 .build()
         )
     
@@ -257,9 +235,6 @@ fun PhotoEditor(
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background)
         ) {
-        // Debug painter state
-        println("PhotoEditor: Painter state: ${painter.state}")
-        
         // Main image display with touch gestures
         Image(
             painter = painter,
