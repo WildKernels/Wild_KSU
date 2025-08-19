@@ -151,7 +151,7 @@ fun ThemeSettingsScreen(
                     modifier = Modifier.padding(16.dp)
                 ) {
                     Text(
-                        text = "Theme",
+                        text = "Theme Mode",
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.padding(bottom = 16.dp)
@@ -180,9 +180,9 @@ fun ThemeSettingsScreen(
                     }
                     
                     ListItem(
-                        leadingContent = { Icon(Icons.Filled.Palette, "Theme") },
+                        leadingContent = { Icon(Icons.Filled.Palette, "Theme Mode") },
                         headlineContent = { Text(
-                            text = "Theme",
+                            text = "Theme Mode",
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.SemiBold,
                         ) },
@@ -604,7 +604,7 @@ private fun ThemeSelectionDialog(
     
     ListDialog(
         state = rememberUseCaseState(visible = true, onCloseRequest = { onDismiss() }),
-        header = Header.Default(title = "Theme"),
+        header = Header.Default(title = "Theme Mode"),
         selection = ListSelection.Single(
             showRadioButtons = true,
             options = options
