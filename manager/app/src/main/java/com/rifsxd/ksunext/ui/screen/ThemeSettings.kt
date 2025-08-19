@@ -89,6 +89,8 @@ fun ThemeSettingsScreen(
                         val savedUri = BackgroundCustomization.filePathToUri(savedPath)
                         prefs.edit().putString("background_image_uri", savedUri).commit()
                         backgroundImageUri = savedUri.toString()
+                        // Automatically navigate to photo editor after selecting image
+                        navigator.navigate(PhotoEditorScreenDestination(imageUri = savedUri.toString()))
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()
