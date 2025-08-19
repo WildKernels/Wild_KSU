@@ -76,10 +76,14 @@ fun ThemeSettingsScreen(
         mutableStateOf(prefs.getString("background_image_uri", null))
     }
     
+    // Temporary state for selected image (doesn't affect displayed background until save)
+    var tempSelectedImageUri by remember { mutableStateOf<String?>(null) }
+    
     // Sync state with actual saved preferences when returning from other screens
     LaunchedEffect(Unit) {
         // Reset to actual saved value when screen loads/resumes
         backgroundImageUri = prefs.getString("background_image_uri", null)
+        tempSelectedImageUri = null // Clear temp selection
     }
 
     // Image picker launcher
@@ -93,8 +97,8 @@ fun ThemeSettingsScreen(
                     val savedPath = BackgroundCustomization.copyImageToInternalStorage(context, uri)
                     if (savedPath != null) {
                         val savedUri = BackgroundCustomization.filePathToUri(savedPath)
-                        // Update state to show buttons, but don't save to preferences yet
-                        backgroundImageUri = savedUri.toString()
+                        // Update temp state to show buttons, but don't change displayed background
+                        tempSelectedImageUri = savedUri.toString()
                         // Navigate to photo editor with temp URI - settings will be saved only when user confirms
                         navigator.navigate(PhotoEditorScreenDestination(imageUri = savedUri.toString()))
                     }
@@ -200,24 +204,26 @@ fun ThemeSettingsScreen(
                             supportingContent = { Text(stringResource(R.string.settings_background_image_summary)) },
                             trailingContent = {
                                 Row {
+                                    // Determine which image to use for buttons (temp selection or saved background)
+                                    val activeImageUri = tempSelectedImageUri ?: backgroundImageUri
+                                    
                                     // Crop button (only show if background image is selected)
-                                    if (backgroundImageUri != null) {
+                                    if (activeImageUri != null) {
                                         IconButton(onClick = {
                                             // Navigate to PhotoEditor for current image
-                                            backgroundImageUri?.let { uriString ->
-                                                navigator.navigate(PhotoEditorScreenDestination(imageUri = uriString))
-                                            }
+                                            navigator.navigate(PhotoEditorScreenDestination(imageUri = activeImageUri))
                                         }) {
                                             Icon(Icons.Filled.Crop, stringResource(R.string.crop_background_image))
                                         }
                                     }
                                     // Delete button (only show if background image is selected)
-                                    if (backgroundImageUri != null) {
+                                    if (activeImageUri != null) {
                                         IconButton(onClick = {
                                             // Clean up internal storage if the image was stored there
                                             BackgroundCustomization.deleteInternalBackgroundImage(context)
                                             prefs.edit().remove("background_image_uri").commit()
                                             backgroundImageUri = null
+                                            tempSelectedImageUri = null
                                         }) {
                                             Icon(Icons.Filled.Delete, stringResource(R.string.background_image_remove))
                                         }
@@ -235,7 +241,7 @@ fun ThemeSettingsScreen(
                         )
 
                         // Background Transparency Slider (only show when background image is enabled)
-                        if (backgroundImageUri != null) {
+                        if (backgroundImageUri != null) { // Only show sliders for actually saved background
                             var backgroundTransparency by rememberSaveable {
                                 mutableFloatStateOf(
                                     prefs.getFloat("background_transparency", 0.0f)
