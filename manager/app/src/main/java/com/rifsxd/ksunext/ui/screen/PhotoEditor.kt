@@ -64,13 +64,25 @@ import com.rifsxd.ksunext.ui.util.LocalPhotoEditorScreenRotationCallback
 import com.rifsxd.ksunext.ui.util.LocalPhotoEditorScreenRotationLocked
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Destination<RootGraph>
+@Destination
 @Composable
 fun PhotoEditorScreen(
     imageUri: String,
     navigator: DestinationsNavigator
 ) {
     val context = LocalContext.current
+    
+    println("PhotoEditorScreen: Received imageUri: $imageUri")
+    
+    // Parse and validate the URI
+    val parsedUri = try {
+        Uri.parse(imageUri)
+    } catch (e: Exception) {
+        println("PhotoEditorScreen: Failed to parse URI: $imageUri, error: $e")
+        null
+    }
+    
+    println("PhotoEditorScreen: Parsed URI: $parsedUri, scheme: ${parsedUri?.scheme}, path: ${parsedUri?.path}")
     
     // Reset background transparency and blur settings to 0% when entering photo editor
     LaunchedEffect(Unit) {
@@ -125,7 +137,7 @@ fun PhotoEditorScreen(
     }
     
     PhotoEditor(
-        imageUri = Uri.parse(imageUri),
+        imageUri = parsedUri,
         scale = scale,
         offsetX = offsetX,
         offsetY = offsetY,
@@ -197,6 +209,17 @@ fun PhotoEditor(
             model = ImageRequest.Builder(context)
                 .data(imageUri)
                 .crossfade(false)
+                .listener(
+                    onStart = { 
+                        println("PhotoEditor: Started loading image from URI: $imageUri")
+                    },
+                    onSuccess = { _, _ -> 
+                        println("PhotoEditor: Successfully loaded image from URI: $imageUri")
+                    },
+                    onError = { _, result -> 
+                        println("PhotoEditor: Failed to load image from URI: $imageUri, error: ${result.throwable}")
+                    }
+                )
                 .build()
         )
     
@@ -234,6 +257,9 @@ fun PhotoEditor(
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background)
         ) {
+        // Debug painter state
+        println("PhotoEditor: Painter state: ${painter.state}")
+        
         // Main image display with touch gestures
         Image(
             painter = painter,
