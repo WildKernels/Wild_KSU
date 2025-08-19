@@ -525,38 +525,6 @@ fun ThemeSettingsScreen(
                                 }
                             }
                         }
-
-
-
-                        // Apply DPI Settings Button
-                        if (savedDpi != systemDpi || prefs.contains("app_dpi")) {
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.Center
-                            ) {
-                                Button(
-                                    onClick = {
-                                        // Restart activity to apply DPI changes
-                                        val intent = context.packageManager.getLaunchIntentForPackage(context.packageName)
-                                        intent?.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
-                                        context.startActivity(intent)
-                                        if (context is android.app.Activity) {
-                                            context.finish()
-                                        }
-                                    },
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = MaterialTheme.colorScheme.primary
-                                    )
-                                ) {
-                                    Text(
-                                        text = stringResource(R.string.dpi_apply_settings),
-                                        style = MaterialTheme.typography.labelLarge,
-                                        fontSize = 14.sp
-                                    )
-                                }
-                            }
-                        }
                     }
                 }
             }

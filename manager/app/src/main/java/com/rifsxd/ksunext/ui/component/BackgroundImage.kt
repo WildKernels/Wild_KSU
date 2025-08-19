@@ -16,8 +16,23 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.painter.BitmapPainter
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalDensity
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
+import com.rifsxd.ksunext.ui.util.BlurUtils
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
+import coil.compose.AsyncImagePainter
 
 @Composable
 fun BackgroundImageWrapper(
@@ -48,7 +63,11 @@ fun BackgroundImageWrapper(
                     return@let
                 }
                 
-                val painter = rememberAsyncImagePainter(
+                // State for blurred image
+                var blurredPainter by remember { mutableStateOf<BitmapPainter?>(null) }
+                var isProcessingBlur by remember { mutableStateOf(false) }
+                
+                val originalPainter = rememberAsyncImagePainter(
                     model = ImageRequest.Builder(context)
                         .data(Uri.parse(uriString))
                         .crossfade(false)
@@ -66,6 +85,41 @@ fun BackgroundImageWrapper(
                         .build()
                 )
                 
+                // Apply blur effect when needed
+                LaunchedEffect(backgroundBlur, originalPainter.state) {
+                    if (backgroundBlur > 0f && originalPainter.state is AsyncImagePainter.State.Success) {
+                        isProcessingBlur = true
+                        try {
+                            val drawable = (originalPainter.state as AsyncImagePainter.State.Success).result.drawable
+                            if (drawable is BitmapDrawable) {
+                                val bitmap = drawable.bitmap
+                                val blurredBitmap = withContext(Dispatchers.Default) {
+                                    when (BlurUtils.getBestBlurMethod(backgroundBlur)) {
+                                        BlurUtils.BlurMethod.BOX_BLUR -> BlurUtils.applyBoxBlur(bitmap, backgroundBlur)
+                                        BlurUtils.BlurMethod.GAUSSIAN_BLUR -> BlurUtils.applyGaussianBlur(bitmap, backgroundBlur)
+                                        BlurUtils.BlurMethod.RENDER_EFFECT -> bitmap // Fallback to original for RenderEffect
+                                    }
+                                }
+                                blurredPainter = BitmapPainter(blurredBitmap.asImageBitmap())
+                            }
+                        } catch (e: Exception) {
+                            Log.e("BackgroundImage", "Failed to apply blur: ${e.message}", e)
+                            blurredPainter = null
+                        } finally {
+                            isProcessingBlur = false
+                        }
+                    } else {
+                        blurredPainter = null
+                    }
+                }
+                
+                // Use blurred painter if available, otherwise use original
+                val painter = if (backgroundBlur > 0f && blurredPainter != null) {
+                    blurredPainter!!
+                } else {
+                    originalPainter
+                }
+                
                 // Load transform settings from SharedPreferences
                 val scale = prefs.getFloat("background_scale_x", 1f)
                 val offsetX = prefs.getFloat("background_pos_x", 0f)
@@ -76,7 +130,7 @@ fun BackgroundImageWrapper(
                 
                 Log.d("BackgroundImage", "Transform settings: scale=$scale, offsetX=$offsetX, offsetY=$offsetY, rotation=$rotation, flipH=$flipHorizontal, flipV=$flipVertical")
                 
-                // Apply transformations and blur
+                // Apply transformations (blur is now handled by custom painter)
                 val imageModifier = Modifier
                     .fillMaxSize()
                     .graphicsLayer {
@@ -85,13 +139,6 @@ fun BackgroundImageWrapper(
                         translationX = offsetX
                         translationY = offsetY
                         rotationZ = rotation
-                    }
-                    .let { modifier ->
-                        if (backgroundBlur > 0f) {
-                            modifier.blur(backgroundBlur.dp)
-                        } else {
-                            modifier
-                        }
                     }
                 
                 // Use ContentScale based on fit mode
