@@ -90,14 +90,13 @@ fun PhotoEditorScreen(
         // Preserve existing background_transparency setting instead of overriding it
         val currentTransparency = prefs.getFloat("background_transparency", 0.0f)
         
-        // Get current flip and color states from image-specific preferences
-        val imageUriString = imageUri.toString()
-        val flipHorizontal = prefs.getBoolean("${imageUriString}_flip_horizontal", false)
-        val flipVertical = prefs.getBoolean("${imageUriString}_flip_vertical", false)
-        val brightness = prefs.getFloat("${imageUriString}_brightness", 1.0f)
-        val contrast = prefs.getFloat("${imageUriString}_contrast", 1.0f)
-        val saturation = prefs.getFloat("${imageUriString}_saturation", 1.0f)
-        val hue = prefs.getFloat("${imageUriString}_hue", 0f)
+        // Get current flip and color states from main background preferences
+        val flipHorizontal = prefs.getBoolean("background_flip_horizontal", false)
+        val flipVertical = prefs.getBoolean("background_flip_vertical", false)
+        val brightness = prefs.getFloat("background_brightness", 1.0f)
+        val contrast = prefs.getFloat("background_contrast", 1.0f)
+        val saturation = prefs.getFloat("background_saturation", 1.0f)
+        val hue = prefs.getFloat("background_hue", 0f)
         
         println("PhotoEditor: Saving with scale=$scale, offsetX=$offsetX, offsetY=$offsetY, rotation=$rotation")
         println("PhotoEditor: Flip states - horizontal=$flipHorizontal, vertical=$flipVertical")
@@ -141,23 +140,13 @@ fun PhotoEditorScreen(
             offsetY = prefs.getFloat("background_pos_y", 0f)
             rotation = prefs.getFloat("background_rotation", 0f)
             
-            // Also load flip and color states from main background settings and copy to image-specific keys
+            // Load flip and color states from main background settings
             val flipHorizontal = prefs.getBoolean("background_flip_horizontal", false)
             val flipVertical = prefs.getBoolean("background_flip_vertical", false)
             val brightness = prefs.getFloat("background_brightness", 1.0f)
             val contrast = prefs.getFloat("background_contrast", 1.0f)
             val saturation = prefs.getFloat("background_saturation", 1.0f)
             val hue = prefs.getFloat("background_hue", 0f)
-            
-            // Copy to image-specific keys for the PhotoEditor to use
-            prefs.edit()
-                .putBoolean("${imageUri}_flip_horizontal", flipHorizontal)
-                .putBoolean("${imageUri}_flip_vertical", flipVertical)
-                .putFloat("${imageUri}_brightness", brightness)
-                .putFloat("${imageUri}_contrast", contrast)
-                .putFloat("${imageUri}_saturation", saturation)
-                .putFloat("${imageUri}_hue", hue)
-                .apply()
             
             println("PhotoEditor: Loaded existing settings for image: scale=$scale, offsetX=$offsetX, offsetY=$offsetY, rotation=$rotation")
             println("PhotoEditor: Loaded flip states - horizontal=$flipHorizontal, vertical=$flipVertical")
@@ -169,15 +158,7 @@ fun PhotoEditorScreen(
             offsetY = 0f
             rotation = 0f
             
-            // Reset image-specific settings to defaults
-            prefs.edit()
-                .putBoolean("${imageUri}_flip_horizontal", false)
-                .putBoolean("${imageUri}_flip_vertical", false)
-                .putFloat("${imageUri}_brightness", 1.0f)
-                .putFloat("${imageUri}_contrast", 1.0f)
-                .putFloat("${imageUri}_saturation", 1.0f)
-                .putFloat("${imageUri}_hue", 0f)
-                .apply()
+            // Settings will use defaults from main background preferences
             
             println("PhotoEditor: New image, using default transform settings")
         }
@@ -239,15 +220,14 @@ fun PhotoEditor(
     
     var screenRotationLocked by remember { mutableStateOf(false) }
     
-    // Load existing color settings for this specific image
+    // Load existing color settings from main background preferences
     LaunchedEffect(imageUri) {
-        val imageUriString = imageUri.toString()
-        brightness = prefs.getFloat("${imageUriString}_brightness", 1.0f)
-        contrast = prefs.getFloat("${imageUriString}_contrast", 1.0f)
-        saturation = prefs.getFloat("${imageUriString}_saturation", 1.0f)
-        hue = prefs.getFloat("${imageUriString}_hue", 0f)
-        flipHorizontal = prefs.getBoolean("${imageUriString}_flip_horizontal", false)
-        flipVertical = prefs.getBoolean("${imageUriString}_flip_vertical", false)
+        brightness = prefs.getFloat("background_brightness", 1.0f)
+        contrast = prefs.getFloat("background_contrast", 1.0f)
+        saturation = prefs.getFloat("background_saturation", 1.0f)
+        hue = prefs.getFloat("background_hue", 0f)
+        flipHorizontal = prefs.getBoolean("background_flip_horizontal", false)
+        flipVertical = prefs.getBoolean("background_flip_vertical", false)
     }
     
     // Update local state when props change
