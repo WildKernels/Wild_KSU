@@ -64,7 +64,7 @@ import com.rifsxd.ksunext.ui.util.LocalPhotoEditorScreenRotationCallback
 import com.rifsxd.ksunext.ui.util.LocalPhotoEditorScreenRotationLocked
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Destination
+@Destination<RootGraph>
 @Composable
 fun PhotoEditorScreen(
     imageUri: String,
