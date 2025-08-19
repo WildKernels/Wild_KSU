@@ -258,6 +258,10 @@
     <string name="dpi_system">System DPI: %d</string>
 
     <string name="dpi_apply_settings">Apply Settings</string>
+    <string name="dpi_scale_settings">DPI Scale Settings</string>
+    <string name="dpi_scale_settings_summary">Adjust the display density (DPI) of the app interface</string>
+    <string name="dpi_change_settings">Change DPI Settings</string>
+    <string name="dpi_dialog_description">Adjust the display density to change the size of UI elements. Higher values make elements smaller, lower values make them larger.</string>
     <!-- InfoCard Customization -->
     <string name="info_card_customization">Home Settings</string>
     <string name="info_card_customization_summary">Customize home screen appearance, help card, and system information display</string>

@@ -25,8 +25,8 @@ import androidx.compose.ui.unit.sp
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.ramcosta.composedestinations.generated.destinations.PhotoEditorScreenDestination
 import com.rifsxd.ksunext.R
-import com.rifsxd.ksunext.ui.screen.destinations.PhotoEditorScreenDestination
 import com.rifsxd.ksunext.ui.util.BackgroundCustomization
 import java.io.File
 
@@ -52,9 +52,10 @@ fun ThemeSettingsScreen(
             result.data?.data?.let { uri ->
                 try {
                     // Copy image to internal storage and save URI
-                    val savedUri = BackgroundCustomization.saveImageToInternalStorage(context, uri)
-                    if (savedUri != null) {
-                        prefs.edit().putString("background_image_uri", savedUri.toString()).commit()
+                    val savedPath = BackgroundCustomization.copyImageToInternalStorage(context, uri)
+                    if (savedPath != null) {
+                        val savedUri = BackgroundCustomization.filePathToUri(savedPath)
+                        prefs.edit().putString("background_image_uri", savedUri).commit()
                         backgroundImageUri = savedUri.toString()
                     }
                 } catch (e: Exception) {
