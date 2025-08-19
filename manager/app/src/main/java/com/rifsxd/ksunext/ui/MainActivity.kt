@@ -1208,9 +1208,10 @@ fun RegularTopBar(
                         ImageStorageUtils.deleteInternalBackgroundImage(context)
                         editor.remove("background_image_uri")
                         editor.remove("background_image_path")
-                        // Set darkness and blur to zero
+                        // Set darkness, blur, and transparency to zero
                         editor.putFloat("background_blur", 0.0f)
                         editor.putFloat("ui_transparency", 0.0f)
+                        editor.putFloat("background_transparency", 0.0f)
                         // Reset DPI to actual system DPI value
                         val systemDpi = context.resources.displayMetrics.densityDpi
                         editor.putInt("app_dpi", systemDpi)
