@@ -560,7 +560,7 @@ fun ThemeSettingsScreen(
                                  onValueChange = { newValue ->
                                      tempDpi = newValue.toInt()
                                  },
-                                 valueRange = 120f..720f,
+                                 valueRange = 100f..800f,
                                  modifier = Modifier.fillMaxWidth()
                              )
                             
@@ -569,13 +569,11 @@ fun ThemeSettingsScreen(
                             // DPI Preset Values
                             val dpiPresets = listOf(
                                 120 to "LDPI (120)",
-                                160 to "MDPI (160)", 
-                                213 to "TVDPI (213)",
+                                160 to "MDPI (160)",
                                 240 to "HDPI (240)",
                                 320 to "XHDPI (320)",
                                 480 to "XXHDPI (480)",
-                                640 to "XXXHDPI (640)",
-                                720 to "Max (720)"
+                                640 to "XXXHDPI (640)"
                             )
                             
                             // Dropdown menu state
@@ -592,7 +590,7 @@ fun ThemeSettingsScreen(
                                     text = {
                                         Column {
                                             Text(
-                                                text = "Enter a DPI value between 120 and 720:",
+                                                text = "Enter a DPI value between 100 and 800:",
                                                 style = MaterialTheme.typography.bodyMedium,
                                                 modifier = Modifier.padding(bottom = 16.dp)
                                             )
@@ -615,7 +613,7 @@ fun ThemeSettingsScreen(
                                         TextButton(
                                             onClick = {
                                                 val dpiValue = customDpiText.toIntOrNull()
-                                                if (dpiValue != null && dpiValue in 120..720) {
+                                                if (dpiValue != null && dpiValue in 100..800) {
                                                     tempDpi = dpiValue
                                                     showCustomDpiDialog = false
                                                     customDpiText = ""
@@ -623,7 +621,7 @@ fun ThemeSettingsScreen(
                                             },
                                             enabled = {
                                                 val dpiValue = customDpiText.toIntOrNull()
-                                                dpiValue != null && dpiValue in 120..720
+                                                dpiValue != null && dpiValue in 100..800
                                             }()
                                         ) {
                                             Text("Set")
@@ -642,43 +640,7 @@ fun ThemeSettingsScreen(
                                 )
                             }
                             
-                            // DPI Preset Dropdown
-                            Column {
-                                Button(
-                                    onClick = { showDpiDropdown = true },
-                                    modifier = Modifier.fillMaxWidth(),
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = MaterialTheme.colorScheme.surfaceVariant
-                                    )
-                                ) {
-                                    Text("Select DPI Preset")
-                                }
-                                
-                                DropdownMenu(
-                                    expanded = showDpiDropdown,
-                                    onDismissRequest = { showDpiDropdown = false }
-                                ) {
-                                    dpiPresets.forEach { (dpi, label) ->
-                                        DropdownMenuItem(
-                                            text = { Text(label) },
-                                            onClick = {
-                                                tempDpi = dpi
-                                                showDpiDropdown = false
-                                            }
-                                        )
-                                    }
-                                    DropdownMenuItem(
-                                        text = { Text("Custom...") },
-                                        onClick = {
-                                            customDpiText = tempDpi.toString()
-                                            showCustomDpiDialog = true
-                                            showDpiDropdown = false
-                                        }
-                                    )
-                                }
-                            }
-                            
-                            Spacer(modifier = Modifier.height(16.dp))
+
                             
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
@@ -703,21 +665,43 @@ fun ThemeSettingsScreen(
                                     )
                                 }
                                 
-                                // Custom button with Tune icon
-                                IconButton(
-                                    onClick = {
-                                        customDpiText = tempDpi.toString()
-                                        showCustomDpiDialog = true
-                                    },
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .padding(8.dp)
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Filled.Tune,
-                                        contentDescription = "Custom DPI",
-                                        tint = MaterialTheme.colorScheme.tertiary
-                                    )
+                                // Custom/Preset button with Tune icon
+                                Box {
+                                    IconButton(
+                                        onClick = { showDpiDropdown = true },
+                                        modifier = Modifier
+                                            .weight(1f)
+                                            .padding(8.dp)
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Filled.Tune,
+                                            contentDescription = "DPI Presets",
+                                            tint = MaterialTheme.colorScheme.tertiary
+                                        )
+                                    }
+                                    
+                                    DropdownMenu(
+                                        expanded = showDpiDropdown,
+                                        onDismissRequest = { showDpiDropdown = false }
+                                    ) {
+                                        dpiPresets.forEach { (dpi, label) ->
+                                            DropdownMenuItem(
+                                                text = { Text(label) },
+                                                onClick = {
+                                                    tempDpi = dpi
+                                                    showDpiDropdown = false
+                                                }
+                                            )
+                                        }
+                                        DropdownMenuItem(
+                                            text = { Text("Custom...") },
+                                            onClick = {
+                                                customDpiText = tempDpi.toString()
+                                                showCustomDpiDialog = true
+                                                showDpiDropdown = false
+                                            }
+                                        )
+                                    }
                                 }
                                 
                                 // Confirm button with Check icon
