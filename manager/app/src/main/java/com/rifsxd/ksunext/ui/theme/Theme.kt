@@ -55,8 +55,8 @@ fun KernelSUTheme(
     uiTransparency: Float = 1.0f,
     content: @Composable () -> Unit
 ) {
-    // Always apply UI transparency, regardless of background settings
-    val alphaValue = 1.0f - uiTransparency
+    // Only apply UI transparency when custom background is enabled
+    val alphaValue = if (isCustomBackgroundEnabled) 1.0f - uiTransparency else 1.0f
     val colorScheme = when {
         amoledMode && darkTheme && dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             val context = LocalContext.current
