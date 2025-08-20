@@ -34,6 +34,10 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.text.input.KeyboardType
 import com.maxkeppeker.sheets.core.models.base.Header
 import com.maxkeppeker.sheets.core.models.base.rememberUseCaseState
 import com.maxkeppeler.sheets.list.ListDialog
@@ -560,6 +564,67 @@ fun ThemeSettingsScreen(
                             
                             Spacer(modifier = Modifier.height(16.dp))
                             
+                            // Custom DPI Input Dialog
+                            var showCustomDpiDialog by remember { mutableStateOf(false) }
+                            var customDpiText by remember { mutableStateOf("") }
+                            
+                            if (showCustomDpiDialog) {
+                                AlertDialog(
+                                    onDismissRequest = { showCustomDpiDialog = false },
+                                    title = { Text("Set Custom DPI") },
+                                    text = {
+                                        Column {
+                                            Text(
+                                                text = "Enter a DPI value between 120 and 720:",
+                                                style = MaterialTheme.typography.bodyMedium,
+                                                modifier = Modifier.padding(bottom = 16.dp)
+                                            )
+                                            OutlinedTextField(
+                                                value = customDpiText,
+                                                onValueChange = { newValue ->
+                                                    // Only allow numeric input
+                                                    if (newValue.all { it.isDigit() } && newValue.length <= 3) {
+                                                        customDpiText = newValue
+                                                    }
+                                                },
+                                                label = { Text("DPI Value") },
+                                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                                                singleLine = true,
+                                                modifier = Modifier.fillMaxWidth()
+                                            )
+                                        }
+                                    },
+                                    confirmButton = {
+                                        TextButton(
+                                            onClick = {
+                                                val dpiValue = customDpiText.toIntOrNull()
+                                                if (dpiValue != null && dpiValue in 120..720) {
+                                                    tempDpi = dpiValue
+                                                    showCustomDpiDialog = false
+                                                    customDpiText = ""
+                                                }
+                                            },
+                                            enabled = {
+                                                val dpiValue = customDpiText.toIntOrNull()
+                                                dpiValue != null && dpiValue in 120..720
+                                            }()
+                                        ) {
+                                            Text("Set")
+                                        }
+                                    },
+                                    dismissButton = {
+                                        TextButton(
+                                            onClick = {
+                                                showCustomDpiDialog = false
+                                                customDpiText = ""
+                                            }
+                                        ) {
+                                            Text("Cancel")
+                                        }
+                                    }
+                                )
+                            }
+                            
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -576,6 +641,19 @@ fun ThemeSettingsScreen(
                                     )
                                 ) {
                                     Text("Reset")
+                                }
+                                
+                                Button(
+                                    onClick = {
+                                        customDpiText = tempDpi.toString()
+                                        showCustomDpiDialog = true
+                                    },
+                                    modifier = Modifier.weight(1f),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = MaterialTheme.colorScheme.tertiary
+                                    )
+                                ) {
+                                    Text("Custom")
                                 }
                                 
                                 Button(
