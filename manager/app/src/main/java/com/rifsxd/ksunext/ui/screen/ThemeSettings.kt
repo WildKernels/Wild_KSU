@@ -615,6 +615,8 @@ fun ThemeSettingsScreen(
                                                 val dpiValue = customDpiText.toIntOrNull()
                                                 if (dpiValue != null && dpiValue in 100..800) {
                                                     tempDpi = dpiValue
+                                                    savedDpi = dpiValue
+                                                    prefs.edit().putInt("app_dpi", dpiValue).commit()
                                                     showCustomDpiDialog = false
                                                     customDpiText = ""
                                                 }
