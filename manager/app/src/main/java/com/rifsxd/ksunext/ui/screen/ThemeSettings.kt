@@ -462,93 +462,74 @@ fun ThemeSettingsScreen(
                         }
                         var tempDpi by remember { mutableIntStateOf(savedDpi) }
 
-                        Card(
-                            modifier = Modifier.fillMaxWidth(),
-                            colors = CardDefaults.cardColors(
-                                containerColor = MaterialTheme.colorScheme.surfaceContainer
-                            ),
-                            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+                        ListItem(
+                            leadingContent = { Icon(Icons.Filled.AspectRatio, stringResource(R.string.dpi_scale_settings)) },
+                            headlineContent = { 
+                                Text(
+                                    text = stringResource(R.string.dpi_scale_settings),
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.SemiBold,
+                                ) 
+                            },
+                            supportingContent = { Text(stringResource(R.string.dpi_scale_settings_summary, savedDpi)) },
+                            trailingContent = {
+                                Text(
+                                    text = "${tempDpi}dpi",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                            }
+                        )
+                        
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 20.dp)
                         ) {
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(20.dp)
+                            Slider(
+                                 value = tempDpi.toFloat(),
+                                 onValueChange = { newValue ->
+                                     val commonDpiValues = listOf(120, 220, 320, 420, 520, 620)
+                                     val snapThreshold = 15
+                                     
+                                     val snappedValue = commonDpiValues.find { dpi ->
+                                         kotlin.math.abs(newValue - dpi) <= snapThreshold
+                                     } ?: newValue.toInt()
+                                     
+                                     tempDpi = snappedValue
+                                 },
+                                 valueRange = 120f..640f,
+                                 steps = 5,
+                                 modifier = Modifier.fillMaxWidth()
+                             )
+                            
+                            Spacer(modifier = Modifier.height(16.dp))
+                            
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Filled.AspectRatio,
-                                        contentDescription = null,
-                                        modifier = Modifier.padding(end = 16.dp),
-                                        tint = MaterialTheme.colorScheme.primary
+                                Button(
+                                    onClick = {
+                                        tempDpi = systemDpi
+                                    },
+                                    modifier = Modifier.weight(1f),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = MaterialTheme.colorScheme.secondary
                                     )
-                                    Column(
-                                        modifier = Modifier.weight(1f)
-                                    ) {
-                                        Text(
-                                            text = stringResource(R.string.dpi_scale_settings),
-                                            style = MaterialTheme.typography.bodyLarge,
-                                            fontWeight = FontWeight.Medium
-                                        )
-                                        Text(
-                                            text = stringResource(R.string.dpi_scale_settings_summary, savedDpi),
-                                            style = MaterialTheme.typography.bodySmall,
-                                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                                        )
-                                    }
-                                    Text(
-                                            text = "${tempDpi}dpi",
-                                            style = MaterialTheme.typography.bodySmall,
-                                            color = MaterialTheme.colorScheme.primary
-                                        )
-                                }
-                                Spacer(modifier = Modifier.height(16.dp))
-                                Slider(
-                                     value = tempDpi.toFloat(),
-                                     onValueChange = { newValue ->
-                                         val commonDpiValues = listOf(120, 160, 240, 320, 480, 640)
-                                         val snapThreshold = 15
-                                         
-                                         val snappedValue = commonDpiValues.find { dpi ->
-                                             kotlin.math.abs(newValue - dpi) <= snapThreshold
-                                         } ?: newValue.toInt()
-                                         
-                                         tempDpi = snappedValue
-                                     },
-                                     valueRange = 120f..640f,
-                                     steps = 5,
-                                     modifier = Modifier.fillMaxWidth()
-                                 )
-                                
-                                Spacer(modifier = Modifier.height(16.dp))
-                                
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                                 ) {
-                                    Button(
-                                        onClick = {
-                                            tempDpi = systemDpi
-                                        },
-                                        modifier = Modifier.weight(1f),
-                                        colors = ButtonDefaults.buttonColors(
-                                            containerColor = MaterialTheme.colorScheme.secondary
-                                        )
-                                    ) {
-                                        Text("Reset")
-                                    }
-                                    
-                                    Button(
-                                        onClick = {
-                                            savedDpi = tempDpi
-                                            prefs.edit().putInt("app_dpi", savedDpi).commit()
-                                        },
-                                        modifier = Modifier.weight(1f),
-                                        enabled = tempDpi != savedDpi
-                                    ) {
-                                        Text("Confirm")
-                                    }
+                                    Text("Reset")
+                                }
+                                
+                                Button(
+                                    onClick = {
+                                        savedDpi = tempDpi
+                                        prefs.edit().putInt("app_dpi", savedDpi).commit()
+                                    },
+                                    modifier = Modifier.weight(1f),
+                                    enabled = tempDpi != savedDpi
+                                ) {
+                                    Text("Confirm")
                                 }
                             }
                         }
