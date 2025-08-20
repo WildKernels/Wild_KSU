@@ -450,7 +450,16 @@ fun ThemeSettingsScreen(
                         )
 
                         // DPI Scale Settings
-                        val systemDpi = remember { context.resources.displayMetrics.densityDpi }
+                        val systemDpi = remember { 
+                            // Store original system DPI on first run
+                            if (!prefs.contains("original_system_dpi")) {
+                                val originalDpi = context.resources.displayMetrics.densityDpi
+                                prefs.edit().putInt("original_system_dpi", originalDpi).commit()
+                                originalDpi
+                            } else {
+                                prefs.getInt("original_system_dpi", 160) // 160 is default Android DPI
+                            }
+                        }
                         var savedDpi by remember { 
                             mutableIntStateOf(
                                 if (prefs.contains("app_dpi")) {
