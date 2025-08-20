@@ -489,7 +489,7 @@ fun ThemeSettingsScreen(
                             Slider(
                                  value = tempDpi.toFloat(),
                                  onValueChange = { newValue ->
-                                     val commonDpiValues = listOf(120, 220, 320, 420, 520, 620)
+                                     val commonDpiValues = listOf(120, 220, 320, 420, 520, 620, 720)
                                      val snapThreshold = 15
                                      
                                      val snappedValue = commonDpiValues.find { dpi ->
@@ -498,7 +498,8 @@ fun ThemeSettingsScreen(
                                      
                                      tempDpi = snappedValue
                                  },
-                                 valueRange = 120f..640f,
+                                 valueRange = 120f..720f,
+                                 steps = 5,
                                  modifier = Modifier.fillMaxWidth()
                              )
                             
