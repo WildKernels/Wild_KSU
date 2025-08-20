@@ -64,31 +64,38 @@ fun BackgroundImageWrapper(
                     Log.d("BackgroundImage", "Loading image from URI: $uriString")
                 }
                 
-                // Validate URI
-                try {
-                    val uri = Uri.parse(uriString)
-                    Log.d("BackgroundImage", "Parsed URI scheme: ${uri.scheme}, authority: ${uri.authority}")
-                } catch (e: Exception) {
-                    Log.e("BackgroundImage", "Invalid URI: $uriString", e)
-                    return@let
+                // Validate and parse URI - memoized to prevent continuous parsing
+                val validatedUri = remember(uriString) {
+                    try {
+                        val uri = Uri.parse(uriString)
+                        Log.d("BackgroundImage", "Parsed URI scheme: ${uri.scheme}, authority: ${uri.authority}")
+                        uri
+                    } catch (e: Exception) {
+                        Log.e("BackgroundImage", "Invalid URI: $uriString", e)
+                        null
+                    }
                 }
                 
+                if (validatedUri == null) return@let
+                
                 val originalPainter = rememberAsyncImagePainter(
-                    model = ImageRequest.Builder(context)
-                        .data(Uri.parse(uriString))
-                        .crossfade(false)
-                        .listener(
-                            onStart = { 
-                                Log.d("BackgroundImage", "Started loading image")
-                            },
-                            onSuccess = { _, _ -> 
-                                Log.d("BackgroundImage", "Successfully loaded image")
-                            },
-                            onError = { _, result -> 
-                                Log.e("BackgroundImage", "Failed to load image: ${result.throwable}")
-                            }
-                        )
-                        .build()
+                    model = remember(uriString) {
+                        ImageRequest.Builder(context)
+                            .data(validatedUri)
+                            .crossfade(false)
+                            .listener(
+                                onStart = { 
+                                    Log.d("BackgroundImage", "Started loading image")
+                                },
+                                onSuccess = { _, _ -> 
+                                    Log.d("BackgroundImage", "Successfully loaded image")
+                                },
+                                onError = { _, result -> 
+                                    Log.e("BackgroundImage", "Failed to load image: ${result.throwable}")
+                                }
+                            )
+                            .build()
+                    }
                 )
                 
                 // Clear blur immediately when backgroundBlur becomes 0
@@ -101,7 +108,7 @@ fun BackgroundImageWrapper(
                 }
                 
                 // Apply blur effect only when needed and blur value has actually changed
-                LaunchedEffect(backgroundBlur, originalPainter.state) {
+                LaunchedEffect(backgroundBlur, uriString) {
                     if (backgroundBlur > 0f && 
                         originalPainter.state is AsyncImagePainter.State.Success && 
                         lastProcessedBlur != backgroundBlur &&
@@ -133,13 +140,15 @@ fun BackgroundImageWrapper(
                     }
                 }
                 
-                // Use blurred painter if available, otherwise use original
-                val painter = if (backgroundBlur > 0f && blurredPainter != null) {
-                    Log.d("BackgroundImage", "Using blurred painter")
-                    blurredPainter!!
-                } else {
-                    Log.d("BackgroundImage", "Using original painter - backgroundBlur: $backgroundBlur, blurredPainter: $blurredPainter")
-                    originalPainter
+                // Use blurred painter if available, otherwise use original - memoized to prevent continuous logging
+                val painter = remember(backgroundBlur, blurredPainter, originalPainter) {
+                    if (backgroundBlur > 0f && blurredPainter != null) {
+                        Log.d("BackgroundImage", "Using blurred painter")
+                        blurredPainter!!
+                    } else {
+                        Log.d("BackgroundImage", "Using original painter - backgroundBlur: $backgroundBlur, blurredPainter: $blurredPainter")
+                        originalPainter
+                    }
                 }
                 
                 // Load transform settings from SharedPreferences - remember to prevent continuous reads
