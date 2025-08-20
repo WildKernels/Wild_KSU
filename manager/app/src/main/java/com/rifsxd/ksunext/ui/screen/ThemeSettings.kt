@@ -79,7 +79,7 @@ fun ThemeSettingsScreen(
     }
     
     // Temporary state for selected image (doesn't affect displayed background until save)
-    var tempSelectedImageUri by remember { mutableStateOf<String?>(null) }
+    var tempSelectedImageUri by rememberSaveable { mutableStateOf<String?>(null) }
     
     // Track the previously active image before new selection
     var previousActiveImageUri by remember { mutableStateOf<String?>(null) }
