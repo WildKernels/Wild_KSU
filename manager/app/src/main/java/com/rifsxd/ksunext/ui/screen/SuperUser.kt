@@ -39,6 +39,7 @@ import com.rifsxd.ksunext.R
 import com.rifsxd.ksunext.ui.viewmodel.SuperUserViewModel
 import com.rifsxd.ksunext.ui.LocalSuperUserViewModel
 import com.rifsxd.ksunext.ui.component.ThemedIcon
+import com.rifsxd.ksunext.ui.theme.getCardElevation
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
 @Destination<RootGraph>
@@ -186,11 +187,14 @@ private fun AppItem(
     }
     
     if (useIndividualCards) {
-        Card(
+        ElevatedCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 4.dp),
-            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+            colors = CardDefaults.elevatedCardColors(
+                containerColor = MaterialTheme.colorScheme.surfaceContainer
+            ),
+            elevation = getCardElevation()
         ) {
             content()
         }
