@@ -512,6 +512,8 @@ fun ThemeSettingsScreen(
                                 Button(
                                     onClick = {
                                         tempDpi = systemDpi
+                                        savedDpi = systemDpi
+                                        prefs.edit().putInt("app_dpi", systemDpi).commit()
                                     },
                                     modifier = Modifier.weight(1f),
                                     colors = ButtonDefaults.buttonColors(
