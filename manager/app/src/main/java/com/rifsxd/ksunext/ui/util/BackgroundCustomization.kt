@@ -236,7 +236,11 @@ object BackgroundCustomization {
      * @return Blurred bitmap
      */
     fun applyBlur(bitmap: Bitmap, radius: Float): Bitmap {
-        if (radius <= 0f) return bitmap
+        Log.d(TAG, "applyBlur called with radius: $radius, bitmap size: ${bitmap.width}x${bitmap.height}")
+        if (radius <= 0f) {
+            Log.d(TAG, "Radius is 0 or negative, returning original bitmap")
+            return bitmap
+        }
         
         val width = bitmap.width
         val height = bitmap.height
@@ -307,6 +311,7 @@ object BackgroundCustomization {
         
         val result = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
         result.setPixels(pixels, 0, width, 0, 0, width, height)
+        Log.d(TAG, "Blur processing completed successfully, returning blurred bitmap")
         return result
     }
     

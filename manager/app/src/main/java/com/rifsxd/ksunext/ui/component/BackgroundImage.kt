@@ -119,8 +119,10 @@ fun BackgroundImageWrapper(
                 
                 // Use blurred painter if available, otherwise use original
                 val painter = if (backgroundBlur > 0f && blurredPainter != null) {
+                    Log.d("BackgroundImage", "Using blurred painter")
                     blurredPainter!!
                 } else {
+                    Log.d("BackgroundImage", "Using original painter - backgroundBlur: $backgroundBlur, blurredPainter: $blurredPainter")
                     originalPainter
                 }
                 
