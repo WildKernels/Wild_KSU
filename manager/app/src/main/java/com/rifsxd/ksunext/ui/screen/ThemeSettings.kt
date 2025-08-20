@@ -499,7 +499,6 @@ fun ThemeSettingsScreen(
                                      tempDpi = snappedValue
                                  },
                                  valueRange = 120f..640f,
-                                 steps = 5,
                                  modifier = Modifier.fillMaxWidth()
                              )
                             
