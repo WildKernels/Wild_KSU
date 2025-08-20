@@ -666,12 +666,12 @@ fun ThemeSettingsScreen(
                                 }
                                 
                                 // Custom/Preset button with Tune icon
-                                Box {
+                                Box(
+                                    modifier = Modifier.weight(1f)
+                                ) {
                                     IconButton(
                                         onClick = { showDpiDropdown = true },
-                                        modifier = Modifier
-                                            .weight(1f)
-                                            .padding(8.dp)
+                                        modifier = Modifier.padding(8.dp)
                                     ) {
                                         Icon(
                                             imageVector = Icons.Filled.Tune,
