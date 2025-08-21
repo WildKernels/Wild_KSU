@@ -543,7 +543,7 @@ fun HomeSettingsScreen(
                                         onSelectedAppNameChanged(newAppName)
                                     }
                                 )
-                            )
+                            }
                         }
 
                         Spacer(modifier = Modifier.height(24.dp))
@@ -598,7 +598,7 @@ fun HomeSettingsScreen(
                                         showHelpCard = it
                                     }
                                 )
-                            )
+                            }
                         }
 
                         Spacer(modifier = Modifier.height(16.dp))
