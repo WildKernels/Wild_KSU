@@ -255,7 +255,11 @@ fun HomeSettingsScreen(
                 )
                 val newOrder = if (newSavedOrder.isNullOrEmpty()) {
                     defaultOrder
-                } else {
+                        }
+                    }
+                }
+            }
+        } else {
                     val saved = newSavedOrder.split(",")
                     val result = saved.filter { key -> defaultOrder.contains(key) }.toMutableList()
                     defaultOrder.forEach { key ->
