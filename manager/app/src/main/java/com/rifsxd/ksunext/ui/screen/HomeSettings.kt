@@ -801,6 +801,7 @@ fun HomeSettingsScreen(
             }
         }
     }
+    }
 }
 
 @Preview
