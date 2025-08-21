@@ -827,6 +827,6 @@ fun HomeSettingsScreen(
 
 @Preview
 @Composable
-private fun HomeSettingsPreview() {
+fun HomeSettingsPreview() {
     HomeSettingsScreen(EmptyDestinationsNavigator)
 }
