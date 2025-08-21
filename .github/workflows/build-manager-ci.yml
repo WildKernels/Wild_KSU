@@ -173,6 +173,17 @@ jobs:
             cached-artifacts/ksud_magic
           key: ${{ needs.check-cache.outputs.cache-key }}
 
+      # Force update cache by re-saving restored artifacts
+      - name: Force update cache with restored artifacts
+        if: needs.check-cache.outputs.cache-hit == 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            cached-artifacts/susfsd
+            cached-artifacts/ksud_overlayfs
+            cached-artifacts/ksud_magic
+          key: ${{ needs.check-cache.outputs.cache-key }}
+
       # Download fresh artifacts if cache miss
       - name: Download susfsd
         if: needs.check-cache.outputs.cache-hit != 'true'
