@@ -98,34 +98,29 @@ fun SuperuserSettingsScreen(navigator: DestinationsNavigator) {
 
                         SwitchItem(
                             icon = Icons.Filled.Apps,
-                            title = "Individual App Cards",
-                            summary = "Show each app in its own card instead of grouped view",
+                            title = stringResource(R.string.individual_app_cards),
+                            summary = stringResource(R.string.individual_app_cards_summary),
                             checked = useIndividualCards
                         ) {
                             prefs.edit().putBoolean("use_individual_app_cards", it).apply()
                             useIndividualCards = it
                         }
 
-                        // Enable Favorite Button Setting (includes sorting)
+                        // Enable Favorite Button
                         var enableFavoriteButton by rememberSaveable {
                             mutableStateOf(
-                                prefs.getBoolean("enable_favorite_button", false)
+                                !prefs.getBoolean("disable_favorite_button", true)
                             )
                         }
-
                         SwitchItem(
-                            icon = Icons.Filled.Bookmark,
+                            icon = Icons.Filled.Favorite,
                             title = "Enable Favorite Button",
-                            summary = "Show the favorite button and enable favorite sorting",
+                            summary = "Show favorite button on app cards to mark frequently used apps",
                             checked = enableFavoriteButton
                         ) {
-                            prefs.edit().apply {
-                                putBoolean("enable_favorite_button", it)
-                                // Set the disable preferences to the opposite of enable
-                                putBoolean("disable_favorite_button", !it)
-                                putBoolean("disable_favorite_sorting", !it)
-                                apply()
-                            }
+                            prefs.edit().putBoolean("disable_favorite_button", !it).apply()
+                            prefs.edit().putBoolean("enable_favorite_button", it).apply()
+                            prefs.edit().putBoolean("disable_favorite_sorting", !it).apply()
                             enableFavoriteButton = it
                         }
                     }
