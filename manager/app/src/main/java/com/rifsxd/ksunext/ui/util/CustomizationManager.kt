@@ -63,7 +63,7 @@ object CustomizationManager {
         const val HIDE_MODULE_DETAILS = false
         const val INDIVIDUAL_APP_CARDS = false
         const val HIDE_FAVORITES_AUTOMATICALLY = false
-        const val DISABLE_FAVORITE_BUTTON = false
+        const val DISABLE_FAVORITE_BUTTON = true
         
         val INFO_CARD_DEFAULT_ORDER = listOf(
             "info_card_show_manager_version",

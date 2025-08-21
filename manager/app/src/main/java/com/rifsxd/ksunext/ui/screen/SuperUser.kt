@@ -102,7 +102,7 @@ private fun AppItem(
     onClickListener: () -> Unit,
 ) {
     val viewModel = LocalSuperUserViewModel.current
-    val disableFavoriteButton = prefs.getBoolean("disable_favorite_button", false)
+    val disableFavoriteButton = prefs.getBoolean("disable_favorite_button", true)
     
     val content = @Composable {
         ListItem(
