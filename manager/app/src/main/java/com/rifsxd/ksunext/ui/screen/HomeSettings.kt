@@ -524,15 +524,7 @@ fun HomeSettingsScreen(
                             }
                         }
 
-                        Spacer(modifier = Modifier.height(24.dp))
-
-                        // Info Card Settings Section Header
-                        Text(
-                            text = stringResource(R.string.info_card_settings),
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.SemiBold,
-                            modifier = Modifier.padding(bottom = 16.dp)
-                        )
+                        Spacer(modifier = Modifier.height(16.dp))
 
                         // Help Card Toggle
                         Column(
