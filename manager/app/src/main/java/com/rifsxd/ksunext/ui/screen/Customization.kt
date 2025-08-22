@@ -293,8 +293,8 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clickable {
-                                    languageDialog = true
-                                }
+                                languageDialog.show()
+                            }
                     ) {
                         Icon(
                             imageVector = Icons.Filled.Translate,
