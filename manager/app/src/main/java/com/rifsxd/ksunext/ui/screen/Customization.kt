@@ -273,10 +273,9 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
     
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        contentPadding = PaddingValues(16.dp)
     ) {
-        // Language Settings Item
+        // All Settings in Single Card
         item {
             Card(
                 modifier = Modifier.fillMaxWidth(),
@@ -286,15 +285,16 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                 )
             ) {
                 Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable {
-                            languageDialog.show()
-                        }
-                        .padding(16.dp)
+                    modifier = Modifier.padding(16.dp)
                 ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
+                    // Language Settings Item
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    languageDialog = true
+                                }
                     ) {
                         Icon(
                             imageVector = Icons.Filled.Translate,
@@ -317,29 +317,17 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                             )
                         }
                     }
-                }
-            }
-        }
 
-        // Theme Settings Item
-        item {
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceContainer
-                )
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable {
-                            navigator.navigate(ThemeSettingsScreenDestination)
-                        }
-                        .padding(16.dp)
-                ) {
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // Theme Settings Item
                     Row(
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                navigator.navigate(ThemeSettingsScreenDestination)
+                            }
                     ) {
                         Icon(
                             imageVector = Icons.Filled.Palette,
@@ -368,29 +356,17 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                             modifier = Modifier.size(20.dp)
                         )
                     }
-                }
-            }
-        }
 
-        // Home Settings Item
-        item {
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceContainer
-                )
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable {
-                            navigator.navigate(HomeSettingsScreenDestination)
-                        }
-                        .padding(16.dp)
-                ) {
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // Home Settings Item
                     Row(
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                navigator.navigate(HomeSettingsScreenDestination)
+                            }
                     ) {
                         Icon(
                             imageVector = Icons.Filled.Info,
@@ -419,80 +395,17 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                             modifier = Modifier.size(20.dp)
                         )
                     }
-                }
-            }
-        }
 
-        // Module Settings Item
-        item {
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceContainer
-                )
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable {
-                            navigator.navigate(ModuleSettingsScreenDestination)
-                        }
-                        .padding(16.dp)
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.Extension,
-                            contentDescription = "Module Settings",
-                            modifier = Modifier.size(24.dp)
-                        )
-                        Spacer(modifier = Modifier.width(16.dp))
-                        Column(
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            Text(
-                                text = "Module Settings",
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.SemiBold
-                            )
-                            Text(
-                                text = "Customize module card appearance and behavior",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                            contentDescription = "Navigate to module settings",
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.size(20.dp)
-                        )
-                    }
-                }
-            }
-        }
+                    Spacer(modifier = Modifier.height(16.dp))
 
-        // Superuser Settings Item
-        item {
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceContainer
-                )
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable {
-                            navigator.navigate(SuperuserSettingsScreenDestination)
-                        }
-                        .padding(16.dp)
-                ) {
+                    // Superuser Settings Item
                     Row(
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                navigator.navigate(SuperuserSettingsScreenDestination)
+                            }
                     ) {
                         Icon(
                             imageVector = Icons.Filled.SupervisorAccount,
@@ -524,7 +437,6 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                 }
             }
         }
-
     }
 }
 
