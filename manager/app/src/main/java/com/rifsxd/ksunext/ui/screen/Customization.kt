@@ -124,10 +124,11 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        OutlinedCard(
+        Card(
             modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.outlinedCardColors(
-                containerColor = MaterialTheme.colorScheme.surface
+            shape = RoundedCornerShape(16.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surfaceContainer
             )
         ) {
             Column(
