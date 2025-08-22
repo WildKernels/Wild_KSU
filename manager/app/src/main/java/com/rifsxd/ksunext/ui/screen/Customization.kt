@@ -119,27 +119,21 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
     val isManager = Natives.becomeManager(ksuApp.packageName)
     val ksuVersion = if (isManager) Natives.version else null
 
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
 
-        val context = LocalContext.current
-        val scope = rememberCoroutineScope()
+    val prefs = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
 
-        val prefs = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
+    // Track language state with current app locale
+    var currentAppLocale by remember { mutableStateOf(LocaleHelper.getCurrentAppLocale(context)) }
+    
+    // Listen for preference changes
+    LaunchedEffect(Unit) {
+        currentAppLocale = LocaleHelper.getCurrentAppLocale(context)
+    }
 
-        // Track language state with current app locale
-        var currentAppLocale by remember { mutableStateOf(LocaleHelper.getCurrentAppLocale(context)) }
-        
-        // Listen for preference changes
-        LaunchedEffect(Unit) {
-            currentAppLocale = LocaleHelper.getCurrentAppLocale(context)
-        }
-
-        // Language setting with selection dialog
-        val languageDialog = rememberCustomDialog { dismiss ->
+    // Language setting with selection dialog
+    val languageDialog = rememberCustomDialog { dismiss ->
                 // Check if should use system language settings
                 if (LocaleHelper.useSystemLanguageSettings) {
                     // Android 13+ - Jump to system settings
@@ -265,18 +259,23 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                 }
             }
 
-        val language = stringResource(id = R.string.settings_language)
-        
-        // Compute display name based on current app locale (similar to the reference implementation)
-        val currentLanguageDisplay = remember(currentAppLocale) {
-            val locale = currentAppLocale
-            if (locale != null) {
-                locale.getDisplayName(locale)
-            } else {
-                context.getString(R.string.system_default)
-            }
+    val language = stringResource(id = R.string.settings_language)
+    
+    // Compute display name based on current app locale (similar to the reference implementation)
+    val currentLanguageDisplay = remember(currentAppLocale) {
+        val locale = currentAppLocale
+        if (locale != null) {
+            locale.getDisplayName(locale)
+        } else {
+            context.getString(R.string.system_default)
         }
-        
+    }
+    
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
         // Language Settings Item
         item {
             Card(
