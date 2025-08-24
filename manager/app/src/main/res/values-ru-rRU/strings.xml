@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
   <string name="issue_report_title">Возникли проблемы?</string>
-  <string name="issue_report_body">Обнаружена ошибка или нужна обратная связь?</string>
+  <string name="issue_report_body">Обнаружена ошибка или есть обратная связь?</string>
   <string name="issue_report_body_2">Сообщите об этом как можно скорее!</string>
   <string name="issue_report_github">Сообщить на GitHub</string>
   <string name="issue_report_telegram">Связаться через Telegram</string>
@@ -19,8 +19,8 @@
   <string name="home_module_update_count">Обновлений: %d</string>
   <string name="home_failure">Подпись KernelSU Next v2 не найдена в ядре! [ !KSU_NEXT || != size/hash ]</string>
   <string name="home_failure_tip">Напишите разработчику своего ядра, для интеграции KernelSU Next!</string>
-  <string name="home_kernel">Версия ядра</string>
-  <string name="hook_mode">Режим хуков</string>
+  <string name="home_kernel">Версия Ядра</string>
+  <string name="hook_mode">Режим Хуков</string>
   <string name="enable">Включить</string>
   <string name="disable">Выключить</string>
   <string name="enabled">Включено</string>
@@ -30,7 +30,7 @@
   <string name="home_susfs_version">Версия SuSFS</string>
   <string name="home_susfs_sus_su">SuS SU</string>
   <string name="home_android">Версия Android</string>
-  <string name="home_manager_version">Версия менеджера</string>
+  <string name="home_manager_version">Версия Менеджера</string>
   <string name="home_abi">ABI</string>
   <string name="home_selinux_status">Статус SELinux</string>
   <string name="selinux_status_disabled">Disabled</string>
@@ -43,8 +43,8 @@
   <string name="module_empty">Нет установленных модулей</string>
   <string name="module">Модули</string>
   <string name="module_install_prompt_with_name">Следующие модули будут установлены: %1$s</string>
-  <string name="module_sort_a_to_z">По имени (А → Я)</string>
-  <string name="module_sort_z_to_a">По имени (Я → А)</string>
+  <string name="module_sort_a_to_z">А → Я</string>
+  <string name="module_sort_z_to_a">Я → А</string>
   <string name="module_size_low_to_high">По размеру (Меньше → Больше)</string>
   <string name="module_size_high_to_low">По размеру (Больше → Меньше)</string>
   <string name="uninstall">Удалить</string>
@@ -55,10 +55,10 @@
   <string name="uninstalled">Удалено</string>
   <string name="settings">Настройки</string>
   <string name="reboot_userspace">Мягкая перезагрузка</string>
-  <string name="reboot_recovery">Перезагрузить в Recovery</string>
-  <string name="reboot_bootloader">Перезагрузить в Bootloader</string>
-  <string name="reboot_download">Перезагрузить в Download</string>
-  <string name="reboot_edl">Перезагрузить в EDL</string>
+  <string name="reboot_recovery">Перезагрузка в Recovery</string>
+  <string name="reboot_bootloader">Перезагрузка в Bootloader</string>
+  <string name="reboot_download">Перезагрузка в Download</string>
+  <string name="reboot_edl">Перезагрузка в EDL</string>
   <string name="about">О программе</string>
   <string name="module_uninstall_confirm">Вы действительно хотите удалить модуль %s?</string>
   <string name="module_uninstall_success">%s удалён</string>
@@ -82,7 +82,7 @@
   <string name="safe_mode">Безопасный режим</string>
   <string name="reboot_to_apply">Перезагрузите для применения изменений</string>
   <string name="module_magisk_conflict">Модули недоступны из-за конфликта с Magisk!</string>
-  <string name="home_mount_system">Система монтирования</string>
+  <string name="home_mount_system">Система Монтирования</string>
   <string name="home_magic_mount">Magic Mount</string>
   <string name="home_overlayfs_mount">OverlayFS</string>
   <string name="unavailable">Недоступно</string>
@@ -96,8 +96,8 @@
   <string name="module_backup">Бэкап модулей</string>
   <string name="allowlist_restore">Восстановить список прав</string>
   <string name="allowlist_restore_message">Восстановить список прав из последней резервной копии.</string>
-  <string name="allowlist_backup">Бэкап списка разрешений</string>
-  <string name="allowlist_backup_message">Резервное копирование текущего списка разрешений.</string>
+  <string name="allowlist_backup">Бэкап списка прав</string>
+  <string name="allowlist_backup_message">Резервное копирование текущего списка прав.</string>
   <string name="warning">Предупреждение</string>
   <string name="warning_message">Эта функция всё ещё находится в стадии бета-тестирования. Пожалуйста, убедитесь, что вы создали резервные копии модулей перед использованием. Используйте это только если понимаете возможные риски. Будьте осторожны.</string>
   <string name="proceed">Продолжить</string>
@@ -115,9 +115,9 @@
   <string name="home_experimental_kernelsu_body_point_3"> • Только для тестирования: предназначено для пользователей, которые понимают риски и готовы решать возникающие проблемы.</string>
   <string name="about_source_code">Исходный код на %1$s</string>
   <string name="profile">Профиль Приложения</string>
-  <string name="profile_default">По умолчанию</string>
+  <string name="profile_default">По дефолту</string>
   <string name="profile_template">Шаблон</string>
-  <string name="profile_custom">Пользовательский</string>
+  <string name="profile_custom">Настроить</string>
   <string name="profile_name">Имя профиля</string>
   <string name="profile_namespace">Пространство монтирования</string>
   <string name="profile_namespace_inherited">Унаследованный</string>
@@ -130,7 +130,7 @@
   <string name="failed_to_update_app_profile">Не удалось обновить Профиль Приложения для %s</string>
   <string name="require_kernel_version">Текущая версия KernelSU Next %1$d слишком низкая для корректной работы менеджера. Пожалуйста, обновитесь до версии %2$d или выше!</string>
   <string name="settings_umount_modules_default">Размонтировать модули</string>
-  <string name="settings_umount_modules_default_summary">По умолчанию включает статус \"Umount\" для приложений. Если эта настройка включена, то все модификации, внесённые модулями, будут удалены для приложений без включённого root-доступа.</string>
+  <string name="settings_umount_modules_default_summary">Глобальное значение по умолчанию для \"Размонтировать модули\" в Профиле Приложения. Если включено, это удалит все модификации системы модулями для приложений без установленного профиля.</string>
   <string name="settings_susfs_toggle">Скрыть хук kprobes</string>
   <string name="settings_susfs_toggle_summary">Эта опция отключает хук kprobes, созданный ksu, и вместо него активирует встроенный хук без использования kprobes, реализующий ту же функциональность, которая применяется к ядрам без GKI, не поддерживающим kprobe.</string>
   <string name="profile_umount_modules_summary">Если эта настройка включена, то все модификации, внесённые модулями, будут удалены для данного приложения.</string>
@@ -206,7 +206,7 @@
   <string name="save_log">Сохранить\nлоги</string>
   <string name="log_saved">Логи сохранены</string>
   <string name="send_log">Поделиться\nлогами</string>
-  <string name="settings_disable_su">Откл. совместимость с su</string>
+  <string name="settings_disable_su">Отключить совместимость с su</string>
   <string name="settings_disable_su_summary">Временно отключить возможность приложениям получать права root через команду su (существующие процессы с правами root не будут затронуты).</string>
   <string name="settings_language">Язык</string>
   <string name="system_default">Системный</string>
@@ -228,9 +228,89 @@
   <string name="home_module_count_singular">Модуль</string>
   <string name="home_module_count_plural">Модулей</string>
   <string name="module_backup_message">Резервное копирование текущих установленных модулей.</string>
-  <string name="module_sort_enabled_first">По статусу (Сначала включённые)</string>
-  <string name="module_sort_action_first">По статусу (Сначала со скриптом)</string>
-  <string name="module_sort_webui_first">По статусу (Сначала с WebUI)</string>
-  <string name="settings_global_namespace_mode">Общее пространство имён</string>
-  <string name="settings_global_namespace_mode_summary">Все сессии пользователя root будут использовать общее пространство имён</string>
+  <string name="module_sort_enabled_first">Сначала включённые</string>
+  <string name="module_sort_action_first">Сначала со скриптом</string>
+  <string name="module_sort_webui_first">Сначала с WebUI</string>
+  <string name="settings_global_namespace_mode">Общее пространство монтирования</string>
+  <string name="settings_global_namespace_mode_summary">Все сессии пользователя root будут использовать общее пространство монтирования</string>
+
+  <!-- New -->
+  
+  <string name="settings_background_image">Фоновое изображение</string>
+  <string name="settings_background_image_summary">Установить своё фоновое изображение в приложении</string>
+  <string name="background_image_select">Выбрать изображение</string>
+  <string name="background_image_remove">Убрать изображение</string>
+  <string name="background_image_fit_mode">Режим отображения</string>
+  <string name="background_image_fit_mode_summary">Как показывать фоновое изображение</string>
+  <string name="background_fit_edge_to_edge">Растянуть на весь экран</string>
+  <string name="background_fit_zoom_to_fit">Уместить по экрану</string>
+  <string name="background_image_edit">Редактировать позицию</string>
+  <string name="background_image_edit_summary">Сместить или изменить масштаб фонового изображения</string>
+  <string name="image_editor_hint">Сведите пальцы для масштаба, потяните для перемещения. Кнопка «на весь экран» сбрасывает изменения.</string>
+  <string name="reset_to_fullscreen">Сбросить на весь экран</string>
+  <string name="crop_background_image">Обрезать вручную</string>
+  <string name="background_transparency">Затемнение фона</string>
+  <string name="background_transparency_summary">Настройка уровня затемнения поверх фонового изображения</string>
+  
+  <string name="icon_theme">Тема иконок</string>
+  <string name="icon_theme_summary">Выбрать пакет иконок для приложений с root-доступом</string>
+  <string name="icon_theme_default">Системная по умолчанию</string>
+  <string name="icon_theme_none_found">Пакеты иконок не найдены</string>
+  
+  <string name="app_dpi_title">Масштаб DPI</string>
+  <string name="app_dpi_summary">Изменить плотность интерфейса (DPI)</string>
+  <string name="dpi_current">Текущий DPI: %d</string>
+  <string name="dpi_system">Системный DPI: %d</string>
+  
+  <string name="dpi_apply_settings">Применить</string>
+  <string name="dpi_scale_settings">Настройки DPI</string>
+  <string name="dpi_scale_settings_summary">Изменить плотность интерфейса (DPI)</string>
+  <string name="dpi_change_settings">Изменить DPI</string>
+  <string name="dpi_dialog_description">Изменение DPI меняет размер элементов интерфейса. Чем выше DPI, тем мельче элементы, и наоборот.</string>
+  
+  <!-- InfoCard Customization -->
+  <string name="info_card_customization">Главный экран</string>
+  <string name="info_card_customization_summary">Настройка внешнего вида, карточки помощи и информации о системе</string>
+  <string name="info_card_always_expanded">Всегда раскрыта</string>
+  <string name="info_card_always_expanded_summary">Инфо-карточка всегда будет открыта</string>
+  
+  <!-- Help Card Customization -->
+  <string name="help_card_customization">Карточка помощи</string>
+  <string name="help_card_customization_summary">Показать или скрыть карточку помощи внизу главного экрана</string>
+  <string name="help_card_show">Показывать карточку помощи</string>
+  
+  <!-- Home Screen Icon Style -->
+  <string name="home_screen_icon_style">Стиль иконок на главном экране</string>
+  <string name="home_screen_icon_style_summary">Выбрать стиль иконок или отключить их</string>
+  <string name="home_screen_icon_current">Текущий: %s</string>
+  <string name="home_screen_icon_select_dialog_title">Выбор стиля иконок</string>
+  
+  <!-- System Info Card Settings -->
+  <string name="system_info_card_settings">Инфо о системе</string>
+  <string name="system_info_card_settings_summary">Настройка отображения системной информации и элементов главного экрана</string>
+  
+  <!-- Module Settings Customization -->
+  <string name="module_card_customization">Модули</string>
+  <string name="module_card_customization_summary">Настройка сортировки, отображения и поведения модулей</string>
+  
+  <!-- App Name Customization -->
+  <string name="app_name_customization">Название приложения</string>
+  <string name="app_name_customization_summary">Изменить отображаемое название приложения</string>
+  <string name="app_name_kernelsu_next">KernelSU Next</string>
+  <string name="app_name_wild_ksu">Wild KSU</string>
+  <string name="app_name_custom">Своё</string>
+  <string name="app_name_custom_hint">Введите название</string>
+  <string name="app_name_dialog_title">Выбор названия</string>
+  <string name="app_name_custom_dialog_title">Своё название</string>
+  <string name="app_name_custom_dialog_message">Введите своё название (до 20 символов)</string>
+  
+  <!-- Home Settings Card Layout -->
+  <string name="home_screen_settings">Главный экран и карточки</string>
+  <string name="info_card_settings">Настройки инфо-карточек</string>
+  <string name="info_card_order_management">Порядок карточек</string>
+  <string name="info_card_order_description">Нажмите, чтобы поднять/опустить элемент. Долгое нажатие — переместить вверх/вниз списка. Переключатель включает или отключает элемент.</string>
+  
+  <!-- Individual App Cards Settings -->
+  <string name="individual_app_cards">Карточки приложений</string>
+  <string name="individual_app_cards_summary">Показывать каждое приложение в отдельной карточке вместо списка</string>
 </resources>
