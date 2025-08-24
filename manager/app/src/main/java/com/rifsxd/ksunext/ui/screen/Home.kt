@@ -496,7 +496,6 @@ private fun StatusCardContent(
             }
         }
     }
-}
 
 @Composable
 fun WarningCard(
@@ -969,7 +968,6 @@ private fun InfoCardContent(
             }
         }
     }
-}
 
 @Composable
 fun NextCard() {
