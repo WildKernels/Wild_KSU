@@ -115,15 +115,9 @@ fun HomeScreen(navigator: DestinationsNavigator) {
         }
 
         // Only show this item if there's content to display
-        val debugWarningCard =
-            LocalContext.current.getSharedPreferences("settings", Context.MODE_PRIVATE)
-                .getBoolean("debug_warning_card", false)
-        val debugUpdateCard =
-            LocalContext.current.getSharedPreferences("settings", Context.MODE_PRIVATE)
-                .getBoolean("debug_update_card", false)
-        val checkUpdate =
-            LocalContext.current.getSharedPreferences("settings", Context.MODE_PRIVATE)
-                .getBoolean("check_update", false)
+        val debugWarningCard = prefs.getBoolean("debug_warning_card", false)
+        val debugUpdateCard = prefs.getBoolean("debug_update_card", false)
+        val checkUpdate = prefs.getBoolean("check_update", false)
         
         val hasCardContent = (ksuVersion != null && rootAvailable()) ||
                             (debugWarningCard || (isManager && Natives.requireNewKernel())) ||
