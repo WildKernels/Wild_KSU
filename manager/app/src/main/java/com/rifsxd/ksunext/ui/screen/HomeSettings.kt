@@ -406,52 +406,7 @@ fun HomeSettingsScreen(
                             }
                         }
 
-                        Spacer(modifier = Modifier.height(16.dp))
 
-                        // Help Card Toggle (moved from above)
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clip(RoundedCornerShape(12.dp))
-                                .clickable { 
-                                    val newValue = !showHelpCard
-                                    prefs.edit().putBoolean("show_help_card", newValue).apply()
-                                    showHelpCard = newValue
-                                }
-                                .padding(16.dp)
-                        ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Filled.HelpOutline,
-                                    contentDescription = null,
-                                    modifier = Modifier.padding(end = 16.dp),
-                                    tint = MaterialTheme.colorScheme.primary
-                                )
-                                Column(
-                                    modifier = Modifier.weight(1f)
-                                ) {
-                                    Text(
-                                        text = stringResource(R.string.help_card_customization),
-                                        style = MaterialTheme.typography.bodyLarge,
-                                        fontWeight = FontWeight.Medium
-                                    )
-                                    Text(
-                                        text = stringResource(R.string.help_card_customization_summary),
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-                                }
-                                Switch(
-                                    checked = showHelpCard,
-                                    onCheckedChange = {
-                                        prefs.edit().putBoolean("show_help_card", it).apply()
-                                        showHelpCard = it
-                                    }
-                                )
-                            }
-                        }
                     }
                 }
             },
@@ -627,6 +582,53 @@ fun HomeSettingsScreen(
                                     onCheckedChange = {
                                         prefs.edit().putBoolean("card_background_enabled", it).apply()
                                         cardBackgroundEnabled = it
+                                    }
+                                )
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        // Help Card Toggle
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clip(RoundedCornerShape(12.dp))
+                                .clickable { 
+                                    val newValue = !showHelpCard
+                                    prefs.edit().putBoolean("show_help_card", newValue).apply()
+                                    showHelpCard = newValue
+                                }
+                                .padding(16.dp)
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Filled.HelpOutline,
+                                    contentDescription = null,
+                                    modifier = Modifier.padding(end = 16.dp),
+                                    tint = MaterialTheme.colorScheme.primary
+                                )
+                                Column(
+                                    modifier = Modifier.weight(1f)
+                                ) {
+                                    Text(
+                                        text = stringResource(R.string.help_card_customization),
+                                        style = MaterialTheme.typography.bodyLarge,
+                                        fontWeight = FontWeight.Medium
+                                    )
+                                    Text(
+                                        text = stringResource(R.string.help_card_customization_summary),
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                                Switch(
+                                    checked = showHelpCard,
+                                    onCheckedChange = {
+                                        prefs.edit().putBoolean("show_help_card", it).apply()
+                                        showHelpCard = it
                                     }
                                 )
                             }

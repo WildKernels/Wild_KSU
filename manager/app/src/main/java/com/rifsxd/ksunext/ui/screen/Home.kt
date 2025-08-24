@@ -286,15 +286,25 @@ fun UpdateCard() {
     val uriHandler = LocalUriHandler.current
     val title = stringResource(id = R.string.module_changelog)
     val updateText = stringResource(id = R.string.module_update)
+    
+    // Check if debug mode is enabled
+    val debugUpdateCard = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
+        .getBoolean("debug_update_card", false)
 
     AnimatedVisibility(
-        visible = newVersionCode > currentVersionCode,
+        visible = debugUpdateCard || newVersionCode > currentVersionCode,
         enter = fadeIn() + expandVertically(),
         exit = shrinkVertically() + fadeOut()
     ) {
         val updateDialog = rememberConfirmDialog(onConfirm = { uriHandler.openUri(newVersionUrl) })
+        val message = if (debugUpdateCard && newVersionCode <= currentVersionCode) {
+            "Debug: Update card forced to show (current version: $currentVersionCode, latest: $newVersionCode)"
+        } else {
+            stringResource(id = R.string.new_version_available).format(newVersionCode)
+        }
+        
         WarningCard(
-            message = stringResource(id = R.string.new_version_available).format(newVersionCode),
+            message = message,
             MaterialTheme.colorScheme.outlineVariant
         ) {
             if (changelog.isEmpty()) {
