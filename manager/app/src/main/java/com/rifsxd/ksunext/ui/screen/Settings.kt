@@ -141,43 +141,36 @@ fun SettingScreen(navigator: DestinationsNavigator) {
         contentPadding = PaddingValues(CardConstants.CARD_PADDING_MEDIUM),
         verticalArrangement = Arrangement.spacedBy(CardConstants.ITEM_SPACING_LARGE)
     ) {
-        item {
-            StandardCard(
-                cardType = CardType.SURFACE
-            ) {
-                Column {
+        val context = LocalContext.current
+        val scope = rememberCoroutineScope()
 
-            val context = LocalContext.current
-            val scope = rememberCoroutineScope()
-
-            val exportBugreportLauncher = rememberLauncherForActivityResult(
-                ActivityResultContracts.CreateDocument("application/gzip")
-            ) { uri: Uri? ->
-                if (uri == null) return@rememberLauncherForActivityResult
-                scope.launch(Dispatchers.IO) {
-                    loadingDialog.show()
-                    context.contentResolver.openOutputStream(uri)?.use { output ->
-                        getBugreportFile(context).inputStream().use {
-                            it.copyTo(output)
-                        }
+        val exportBugreportLauncher = rememberLauncherForActivityResult(
+            ActivityResultContracts.CreateDocument("application/gzip")
+        ) { uri: Uri? ->
+            if (uri == null) return@rememberLauncherForActivityResult
+            scope.launch(Dispatchers.IO) {
+                loadingDialog.show()
+                context.contentResolver.openOutputStream(uri)?.use { output ->
+                    getBugreportFile(context).inputStream().use {
+                        it.copyTo(output)
                     }
-                    loadingDialog.hide()
-                    snackBarHost.showSnackbar(context.getString(R.string.log_saved))
                 }
+                loadingDialog.hide()
+                snackBarHost.showSnackbar(context.getString(R.string.log_saved))
             }
+        }
 
-
-
-            var umountChecked by rememberSaveable {
-                mutableStateOf(Natives.isDefaultUmountModules())
-            }
-            
-            val prefs = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
-            val useOverlayFs by observePreferenceAsState(prefs, "use_overlay_fs", false)
-            var showRebootDialog by remember { mutableStateOf(false) }
-            val isOverlayAvailable = overlayFsAvailable()
-            
-            // First Card: Core Settings
+        var umountChecked by rememberSaveable {
+            mutableStateOf(Natives.isDefaultUmountModules())
+        }
+        
+        val prefs = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
+        val useOverlayFs by observePreferenceAsState(prefs, "use_overlay_fs", false)
+        var showRebootDialog by remember { mutableStateOf(false) }
+        val isOverlayAvailable = overlayFsAvailable()
+        
+        // First Card: Core Settings
+        item {
             StandardCard {
                 if (ksuVersion != null) {
                     CardSwitchContent(
@@ -302,10 +295,14 @@ fun SettingScreen(navigator: DestinationsNavigator) {
                     }
                 }
             }
-            
+        }
+        
+        item {
             Spacer(modifier = Modifier.height(16.dp))
-            
-            // Second Card: App Settings
+        }
+        
+        // Second Card: App Settings
+        item {
             StandardCard {
                 val checkUpdate by observePreferenceAsState(prefs, "check_update", false)
                 CardSwitchContent(
@@ -412,8 +409,9 @@ fun SettingScreen(navigator: DestinationsNavigator) {
                     }
                 )
             }
+        }
             
-            if (showRebootDialog) {
+        if (showRebootDialog) {
                 AlertDialog(
                     onDismissRequest = { showRebootDialog = false },
                     title = { Text(
