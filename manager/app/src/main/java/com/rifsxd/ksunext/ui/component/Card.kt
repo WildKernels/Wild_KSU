@@ -204,15 +204,15 @@ fun CenteredCardContent(
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(CardConstants.ITEM_SPACING_SMALL)
+        verticalArrangement = Arrangement.spacedBy(CardConstants.ITEM_SPACING_MEDIUM)
     ) {
         Text(
             text = title,
-            style = MaterialTheme.typography.bodySmall
+            style = MaterialTheme.typography.bodyLarge
         )
         Text(
             text = subtitle,
-            style = MaterialTheme.typography.titleMedium,
+            style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.SemiBold
         )
     }
