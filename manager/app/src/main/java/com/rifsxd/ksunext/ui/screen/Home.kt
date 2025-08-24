@@ -797,7 +797,6 @@ private fun InfoCard(autoExpand: Boolean = false) {
             }
         }
     }
-}
 
 @Composable
 fun NextCard() {
@@ -872,6 +871,7 @@ fun IssueReportCard() {
         cardType = CardType.SURFACE
     ) {
         CardRowContent(
+            text = "",
             icon = Icons.Filled.HelpOutline,
             title = stringResource(R.string.issue_report_title),
             subtitle = stringResource(R.string.issue_report_body),
