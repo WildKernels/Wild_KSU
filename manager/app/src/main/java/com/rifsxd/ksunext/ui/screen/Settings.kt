@@ -177,7 +177,7 @@ fun SettingScreen(navigator: DestinationsNavigator) {
             var showRebootDialog by remember { mutableStateOf(false) }
             val isOverlayAvailable = overlayFsAvailable()
             
-            // Core & Other Settings Card
+            // First Card: Core Settings
             StandardCard {
                 if (ksuVersion != null) {
                     CardSwitchContent(
@@ -211,9 +211,9 @@ fun SettingScreen(navigator: DestinationsNavigator) {
                         if (isManager) install()
                         showRebootDialog = true
                     }
-                    if (ksuVersion != null) CardItemSpacer()
+                    CardItemSpacer()
                 }
-            }
+
                 if (ksuVersion != null) {
                     if (Natives.version >= Natives.MINIMAL_SUPPORTED_SU_COMPAT) {
                         var isSuDisabled by rememberSaveable {
@@ -300,12 +300,12 @@ fun SettingScreen(navigator: DestinationsNavigator) {
                     UninstallItem(navigator) {
                         loadingDialog.withLoading(it)
                     }
-                    if (ksuVersion != null) CardItemSpacer()
                 }
+            }
             
             Spacer(modifier = Modifier.height(16.dp))
             
-            // Third Card: App Settings
+            // Second Card: App Settings
             StandardCard {
                 val checkUpdate by observePreferenceAsState(prefs, "check_update", false)
                 CardSwitchContent(
