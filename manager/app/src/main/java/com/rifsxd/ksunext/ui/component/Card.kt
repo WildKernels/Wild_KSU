@@ -182,16 +182,12 @@ fun CardItem(
             Text(
                 text = label,
                 style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                fontWeight = FontWeight.SemiBold
             )
             Text(
                 text = content,
                 style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier.padding(top = CardConstants.ITEM_SPACING_SMALL),
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis
+                modifier = Modifier.padding(top = CardConstants.ITEM_SPACING_SMALL)
             )
         }
     }
@@ -213,16 +209,12 @@ fun CenteredCardContent(
     ) {
         Text(
             text = title,
-            style = MaterialTheme.typography.titleMedium,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
+            style = MaterialTheme.typography.titleMedium
         )
         Text(
             text = subtitle,
             style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
+            fontWeight = FontWeight.Bold
         )
     }
 }
@@ -258,26 +250,20 @@ fun CardRowContent(
                 Text(
                     text = title,
                     style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Medium,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
+                    fontWeight = FontWeight.Medium
                 )
             }
             
             Text(
                 text = text,
-                style = MaterialTheme.typography.bodyMedium,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis
+                style = MaterialTheme.typography.bodyMedium
             )
             
             if (subtitle != null) {
                 Text(
                     text = subtitle,
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }
@@ -301,15 +287,11 @@ fun CardTextContent(
     ) {
         Text(
             text = title,
-            style = MaterialTheme.typography.titleSmall,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
+            style = MaterialTheme.typography.titleSmall
         )
         Text(
             text = body,
-            style = MaterialTheme.typography.bodyMedium,
-            maxLines = 3,
-            overflow = TextOverflow.Ellipsis
+            style = MaterialTheme.typography.bodyMedium
         )
     }
 }
