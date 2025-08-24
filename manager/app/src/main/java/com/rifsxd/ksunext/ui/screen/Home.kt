@@ -181,7 +181,7 @@ fun HomeScreen(navigator: DestinationsNavigator) {
 @Composable
 private fun SuperuserCard(onClick: () -> Unit = {}) {
     val count = getSuperuserCount()
-    StandardCard(
+    CompactCard(
         cardType = CardType.SECONDARY,
         onClick = onClick
     ) {
@@ -199,7 +199,7 @@ private fun SuperuserCard(onClick: () -> Unit = {}) {
 @Composable
 private fun ModuleCard(onClick: () -> Unit = {}) {
     val count = getModuleCount()
-    StandardCard(
+    CompactCard(
         cardType = CardType.SECONDARY,
         onClick = onClick
     ) {
