@@ -258,7 +258,8 @@ fun CardRowContent(
             
             Text(
                 text = text,
-                style = MaterialTheme.typography.bodyMedium
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Medium
             )
             
             if (subtitle != null) {
