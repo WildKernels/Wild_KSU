@@ -967,7 +967,6 @@ private fun InfoCardContent(
                 }
             }
         }
-    }
 
 @Composable
 fun NextCard() {
