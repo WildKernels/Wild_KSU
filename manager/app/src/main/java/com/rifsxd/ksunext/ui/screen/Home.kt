@@ -180,37 +180,81 @@ fun HomeScreen(navigator: DestinationsNavigator) {
 
 @Composable
 private fun SuperuserCard(onClick: () -> Unit = {}) {
+    val context = LocalContext.current
+    val prefs = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
+    val cardBackgroundEnabled = prefs.getBoolean("card_background_enabled", true)
     val count = getSuperuserCount()
-    CompactCard(
-        cardType = CardType.SECONDARY,
-        onClick = onClick
-    ) {
-        CenteredCardContent(
-            title = if (count <= 1) {
-                stringResource(R.string.home_superuser_count_singular)
-            } else {
-                stringResource(R.string.home_superuser_count_plural)
-            },
-            subtitle = count.toString()
-        )
+    
+    if (cardBackgroundEnabled) {
+        CompactCard(
+            cardType = CardType.SECONDARY,
+            onClick = onClick
+        ) {
+            CenteredCardContent(
+                title = if (count <= 1) {
+                    stringResource(R.string.home_superuser_count_singular)
+                } else {
+                    stringResource(R.string.home_superuser_count_plural)
+                },
+                subtitle = count.toString()
+            )
+        }
+    } else {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .clickable { onClick() },
+            contentAlignment = Alignment.Center
+        ) {
+            CenteredCardContent(
+                title = if (count <= 1) {
+                    stringResource(R.string.home_superuser_count_singular)
+                } else {
+                    stringResource(R.string.home_superuser_count_plural)
+                },
+                subtitle = count.toString()
+            )
+        }
     }
 }
 
 @Composable
 private fun ModuleCard(onClick: () -> Unit = {}) {
+    val context = LocalContext.current
+    val prefs = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
+    val cardBackgroundEnabled = prefs.getBoolean("card_background_enabled", true)
     val count = getModuleCount()
-    CompactCard(
-        cardType = CardType.SECONDARY,
-        onClick = onClick
-    ) {
-        CenteredCardContent(
-            title = if (count <= 1) {
-                stringResource(R.string.home_module_count_singular)
-            } else {
-                stringResource(R.string.home_module_count_plural)
-            },
-            subtitle = count.toString()
-        )
+    
+    if (cardBackgroundEnabled) {
+        CompactCard(
+            cardType = CardType.SECONDARY,
+            onClick = onClick
+        ) {
+            CenteredCardContent(
+                title = if (count <= 1) {
+                    stringResource(R.string.home_module_count_singular)
+                } else {
+                    stringResource(R.string.home_module_count_plural)
+                },
+                subtitle = count.toString()
+            )
+        }
+    } else {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .clickable { onClick() },
+            contentAlignment = Alignment.Center
+        ) {
+            CenteredCardContent(
+                title = if (count <= 1) {
+                    stringResource(R.string.home_module_count_singular)
+                } else {
+                    stringResource(R.string.home_module_count_plural)
+                },
+                subtitle = count.toString()
+            )
+        }
     }
 }
 

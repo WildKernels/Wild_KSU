@@ -119,6 +119,11 @@ fun HomeSettingsScreen(
         mutableStateOf<Boolean>(prefs.getBoolean("info_card_show_selinux_status", true))
     }
     
+    // Card background toggle state
+    var cardBackgroundEnabled by rememberSaveable {
+        mutableStateOf<Boolean>(prefs.getBoolean("card_background_enabled", true))
+    }
+    
     // App name customization state
     var selectedAppName by rememberSaveable {
         mutableStateOf(prefs.getString("selected_app_name", "kernelsu_next") ?: "kernelsu_next")
@@ -567,6 +572,53 @@ fun HomeSettingsScreen(
                                     onCheckedChange = {
                                         prefs.edit().putBoolean("show_help_card", it).apply()
                                         showHelpCard = it
+                                    }
+                                )
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        // Card Background Toggle
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clip(RoundedCornerShape(12.dp))
+                                .clickable { 
+                                    val newValue = !cardBackgroundEnabled
+                                    prefs.edit().putBoolean("card_background_enabled", newValue).apply()
+                                    cardBackgroundEnabled = newValue
+                                }
+                                .padding(16.dp)
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Filled.CropFree,
+                                    contentDescription = null,
+                                    modifier = Modifier.padding(end = 16.dp),
+                                    tint = MaterialTheme.colorScheme.primary
+                                )
+                                Column(
+                                    modifier = Modifier.weight(1f)
+                                ) {
+                                    Text(
+                                        text = "Card Background",
+                                        style = MaterialTheme.typography.bodyLarge,
+                                        fontWeight = FontWeight.Medium
+                                    )
+                                    Text(
+                                        text = "Toggle card background and padding for expanded layout",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                                Switch(
+                                    checked = cardBackgroundEnabled,
+                                    onCheckedChange = {
+                                        prefs.edit().putBoolean("card_background_enabled", it).apply()
+                                        cardBackgroundEnabled = it
                                     }
                                 )
                             }

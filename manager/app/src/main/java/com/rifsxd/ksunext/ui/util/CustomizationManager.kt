@@ -42,6 +42,9 @@ object CustomizationManager {
         const val INDIVIDUAL_APP_CARDS = "individual_app_cards"
         const val HIDE_FAVORITES_AUTOMATICALLY = "hide_favorites_automatically"
         const val DISABLE_FAVORITE_BUTTON = "disable_favorite_button"
+        
+        // Card appearance settings
+        const val CARD_BACKGROUND_ENABLED = "card_background_enabled"
     }
     
     // Default values for settings
@@ -64,6 +67,7 @@ object CustomizationManager {
         const val INDIVIDUAL_APP_CARDS = false
         const val HIDE_FAVORITES_AUTOMATICALLY = false
         const val DISABLE_FAVORITE_BUTTON = true
+        const val CARD_BACKGROUND_ENABLED = true
         
         val INFO_CARD_DEFAULT_ORDER = listOf(
             "info_card_show_manager_version",
@@ -88,6 +92,9 @@ object CustomizationManager {
     private val _showHelpCardFlow = MutableStateFlow(Defaults.SHOW_HELP_CARD)
     val showHelpCardFlow: StateFlow<Boolean> = _showHelpCardFlow.asStateFlow()
     
+    private val _cardBackgroundEnabledFlow = MutableStateFlow(Defaults.CARD_BACKGROUND_ENABLED)
+    val cardBackgroundEnabledFlow: StateFlow<Boolean> = _cardBackgroundEnabledFlow.asStateFlow()
+    
     /**
      * Get SharedPreferences for customization settings
      */
@@ -103,6 +110,7 @@ object CustomizationManager {
         _iconTypeFlow.value = prefs.getString(Keys.SELECTED_ICON_TYPE, Defaults.SELECTED_ICON_TYPE) ?: Defaults.SELECTED_ICON_TYPE
         _infoCardExpandedFlow.value = prefs.getBoolean(Keys.INFO_CARD_ALWAYS_EXPANDED, Defaults.INFO_CARD_ALWAYS_EXPANDED)
         _showHelpCardFlow.value = prefs.getBoolean(Keys.SHOW_HELP_CARD, Defaults.SHOW_HELP_CARD)
+        _cardBackgroundEnabledFlow.value = prefs.getBoolean(Keys.CARD_BACKGROUND_ENABLED, Defaults.CARD_BACKGROUND_ENABLED)
     }
     
     /**
@@ -130,6 +138,15 @@ object CustomizationManager {
         val prefs = getCustomizationPrefs(context)
         prefs.edit().putBoolean(Keys.SHOW_HELP_CARD, show).apply()
         _showHelpCardFlow.value = show
+    }
+    
+    /**
+     * Update card background enabled preference
+     */
+    fun updateCardBackgroundEnabled(context: Context, enabled: Boolean) {
+        val prefs = getCustomizationPrefs(context)
+        prefs.edit().putBoolean(Keys.CARD_BACKGROUND_ENABLED, enabled).apply()
+        _cardBackgroundEnabledFlow.value = enabled
     }
     
     /**
@@ -225,12 +242,16 @@ object CustomizationManager {
         editor.putBoolean(Keys.HIDE_FAVORITES_AUTOMATICALLY, Defaults.HIDE_FAVORITES_AUTOMATICALLY)
         editor.putBoolean(Keys.DISABLE_FAVORITE_BUTTON, Defaults.DISABLE_FAVORITE_BUTTON)
         
+        // Reset card appearance settings
+        editor.putBoolean(Keys.CARD_BACKGROUND_ENABLED, Defaults.CARD_BACKGROUND_ENABLED)
+        
         editor.apply()
         
         // Update state flows
         _iconTypeFlow.value = Defaults.SELECTED_ICON_TYPE
         _infoCardExpandedFlow.value = Defaults.INFO_CARD_ALWAYS_EXPANDED
         _showHelpCardFlow.value = Defaults.SHOW_HELP_CARD
+        _cardBackgroundEnabledFlow.value = Defaults.CARD_BACKGROUND_ENABLED
     }
     
     /**
@@ -258,5 +279,14 @@ object CustomizationManager {
     fun rememberShowHelpCard(): Boolean {
         val showHelpCard by showHelpCardFlow.collectAsState()
         return showHelpCard
+    }
+    
+    /**
+     * Composable function to observe card background enabled changes
+     */
+    @Composable
+    fun rememberCardBackgroundEnabled(): Boolean {
+        val cardBackgroundEnabled by cardBackgroundEnabledFlow.collectAsState()
+        return cardBackgroundEnabled
     }
 }
