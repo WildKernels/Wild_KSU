@@ -1051,37 +1051,30 @@ private fun IssueReportCardContent(
     githubIssueUrl: String,
     telegramUrl: String
 ) {
-    CardRowContent(
-        text = "",
-        icon = Icons.Filled.HelpOutline,
-        title = stringResource(R.string.issue_report_title),
-        subtitle = stringResource(R.string.issue_report_body),
-        actions = {
-            Row(horizontalArrangement = Arrangement.spacedBy(CardConstants.ACTION_SPACING)) {
-                IconButton(onClick = { uriHandler.openUri(githubIssueUrl) }) {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_github),
-                        contentDescription = stringResource(R.string.issue_report_github),
-                    )
-                }
-                IconButton(onClick = { uriHandler.openUri(telegramUrl) }) {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_telegram),
-                        contentDescription = stringResource(R.string.issue_report_telegram),
-                    )
+    Column {
+        CardRowContent(
+            text = stringResource(R.string.issue_report_body),
+            icon = Icons.Filled.HelpOutline,
+            title = stringResource(R.string.issue_report_title),
+            subtitle = stringResource(R.string.issue_report_body_2),
+            actions = {
+                Row(horizontalArrangement = Arrangement.spacedBy(CardConstants.ACTION_SPACING)) {
+                    IconButton(onClick = { uriHandler.openUri(githubIssueUrl) }) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_github),
+                            contentDescription = stringResource(R.string.issue_report_github),
+                        )
+                    }
+                    IconButton(onClick = { uriHandler.openUri(telegramUrl) }) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_telegram),
+                            contentDescription = stringResource(R.string.issue_report_telegram),
+                        )
+                    }
                 }
             }
-        }
-    )
-    // Additional body text
-    Text(
-        text = stringResource(R.string.issue_report_body_2),
-        style = MaterialTheme.typography.bodySmall,
-        modifier = Modifier.padding(
-            start = CardConstants.ICON_SIZE + CardConstants.ICON_TO_TEXT_SPACING_SMALL,
-            top = 2.dp
         )
-    )
+    }
 }
 
 fun getManagerVersion(context: Context): Pair<String, Long> {
