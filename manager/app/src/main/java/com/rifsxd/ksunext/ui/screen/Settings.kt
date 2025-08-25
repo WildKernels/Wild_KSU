@@ -411,7 +411,7 @@ fun SettingScreen(navigator: DestinationsNavigator) {
             }
         }
     }
-            
+    
     if (showRebootDialog) {
         AlertDialog(
             onDismissRequest = { showRebootDialog = false },
