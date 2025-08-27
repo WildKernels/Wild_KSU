@@ -184,7 +184,6 @@ fun SettingScreen(navigator: DestinationsNavigator) {
                             umountChecked = it
                         }
                     }
-                    CardItemSpacer()
                 }
 
                 if (ksuVersion != null && isOverlayAvailable) {
@@ -205,7 +204,6 @@ fun SettingScreen(navigator: DestinationsNavigator) {
                         if (isManager) install()
                         showRebootDialog = true
                     }
-                    CardItemSpacer()
                 }
 
                 if (ksuVersion != null) {
@@ -224,7 +222,6 @@ fun SettingScreen(navigator: DestinationsNavigator) {
                                 isSuDisabled = !shouldEnable
                             }
                         }
-                        CardItemSpacer()
                     }
                     
                     CardSwitchContent(
@@ -243,7 +240,6 @@ fun SettingScreen(navigator: DestinationsNavigator) {
                             isGlobalNamespaceEnabled = it
                         }
                     )
-                    CardItemSpacer()
                 }
 
                 val suSFS = getSuSFS()
@@ -265,7 +261,6 @@ fun SettingScreen(navigator: DestinationsNavigator) {
                             }
                             prefs.edit().putBoolean("enable_sus_su", it).apply()
                         }
-                        CardItemSpacer()
                     }
                 }
 
@@ -286,7 +281,6 @@ fun SettingScreen(navigator: DestinationsNavigator) {
                             }
                         }
                     )
-                    CardItemSpacer()
                 }
                 
                 val lkmMode = Natives.version >= Natives.MINIMAL_SUPPORTED_KERNEL_LKM && Natives.isLkmMode
@@ -310,7 +304,6 @@ fun SettingScreen(navigator: DestinationsNavigator) {
                 ) {
                     prefs.edit().putBoolean("check_update", it).apply()
                 }
-                CardItemSpacer()
 
                 val customization = stringResource(id = R.string.customization)
                 CardRowContent(
@@ -320,7 +313,6 @@ fun SettingScreen(navigator: DestinationsNavigator) {
                         navigator.navigate(CustomizationScreenDestination)
                     }
                 )
-                CardItemSpacer()
 
                 if (ksuVersion != null) {
                     val backupRestore = stringResource(id = R.string.backup_restore)
@@ -331,7 +323,6 @@ fun SettingScreen(navigator: DestinationsNavigator) {
                             navigator.navigate(BackupRestoreScreenDestination)
                         }
                     )
-                    CardItemSpacer()
                 }
 
                 val developer = stringResource(id = R.string.developer)
@@ -343,7 +334,6 @@ fun SettingScreen(navigator: DestinationsNavigator) {
                             navigator.navigate(DeveloperScreenDestination)
                         }
                     )
-                    CardItemSpacer()
                 }
 
                 val exportLogsDialog = rememberCustomDialog { dismiss ->
@@ -395,7 +385,6 @@ fun SettingScreen(navigator: DestinationsNavigator) {
                         exportLogsDialog.show()
                     }
                 )
-                CardItemSpacer()
 
                 val about = stringResource(id = R.string.about)
                 CardRowContent(
