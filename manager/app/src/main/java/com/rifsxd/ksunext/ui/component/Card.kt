@@ -36,7 +36,7 @@ object CardConstants {
     val ICON_TO_TEXT_SPACING = 20.dp
     val ICON_TO_TEXT_SPACING_SMALL = 16.dp
     val ACTION_SPACING = 8.dp
-    val RIPPLE_PADDING = 8.dp
+
     
     // Icon sizes
     val ICON_SIZE = 24.dp
@@ -110,7 +110,7 @@ fun StandardCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(
-                    horizontal = CardConstants.CARD_PADDING_MEDIUM + CardConstants.RIPPLE_PADDING,
+                    horizontal = CardConstants.CARD_PADDING_MEDIUM,
                     vertical = CardConstants.CARD_PADDING_MEDIUM
                 ),
             verticalArrangement = Arrangement.spacedBy(CardConstants.ITEM_SPACING_LARGE),
@@ -240,8 +240,7 @@ fun CardRowContent(
 ) {
     Row(
         modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = CardConstants.RIPPLE_PADDING),
+            .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
         if (icon != null) {
