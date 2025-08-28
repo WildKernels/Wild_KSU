@@ -324,7 +324,8 @@ fun CardSwitchContent(
         Switch(
             checked = checked,
             enabled = enabled,
-            onCheckedChange = onCheckedChange
+            onCheckedChange = onCheckedChange,
+            modifier = Modifier.padding(start = 8.dp)
         )
     }
 }
