@@ -97,6 +97,10 @@ import com.rifsxd.ksunext.ksuApp
 import com.rifsxd.ksunext.R
 import com.rifsxd.ksunext.ui.component.rememberCustomDialog
 import com.rifsxd.ksunext.ui.component.SwitchItem
+import com.rifsxd.ksunext.ui.component.StandardCard
+import com.rifsxd.ksunext.ui.component.CardConstants
+import com.rifsxd.ksunext.ui.component.CardRowContent
+import com.rifsxd.ksunext.ui.component.CardItemSpacer
 import com.rifsxd.ksunext.ui.util.LocaleHelper
 import com.rifsxd.ksunext.ui.util.LocalSnackbarHost
 import com.rifsxd.ksunext.ui.util.*
@@ -115,6 +119,7 @@ import java.util.Locale
 @Composable
 fun CustomizationScreen(navigator: DestinationsNavigator) {
     val snackBarHost = LocalSnackbarHost.current
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
 
     val isManager = Natives.becomeManager(ksuApp.packageName)
     val ksuVersion = if (isManager) Natives.version else null
@@ -271,186 +276,87 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
         }
     }
     
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp)
-    ) {
-        // All Settings in Single Card
+    Scaffold(
+        modifier = Modifier
+            .fillMaxSize(),
+        topBar = {
+            TopAppBar(
+                title = { Text(stringResource(R.string.settings_customization)) },
+                scrollBehavior = scrollBehavior
+            )
+        },
+        snackbarHost = { SnackbarHost(snackBarHost) },
+        contentWindowInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)
+    ) { innerPadding ->
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .nestedScroll(scrollBehavior.nestedScrollConnection),
+            contentPadding = PaddingValues(CardConstants.CARD_PADDING_MEDIUM),
+            verticalArrangement = Arrangement.spacedBy(CardConstants.ITEM_SPACING_LARGE)
+        ) {
+        // Customization Settings Card
         item {
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceContainer
+            StandardCard {
+                // Language Settings Item
+                CardRowContent(
+                    icon = Icons.Filled.Translate,
+                    text = language,
+                    subtitle = currentLanguageDisplay,
+                    modifier = Modifier.clickable {
+                        languageDialog.show()
+                    }
                 )
-            ) {
-                Column(
-                    modifier = Modifier.padding(16.dp)
-                ) {
-                    // Language Settings Item
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable {
-                                languageDialog.show()
-                            }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.Translate,
-                            contentDescription = language,
-                            modifier = Modifier.size(24.dp)
-                        )
-                        Spacer(modifier = Modifier.width(16.dp))
-                        Column(
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            Text(
-                                text = language,
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.SemiBold
-                            )
-                            Text(
-                                text = currentLanguageDisplay,
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
+
+                CardItemSpacer()
+
+                // Theme Settings Item
+                CardRowContent(
+                    icon = Icons.Filled.Palette,
+                    text = "Theme Settings",
+                    subtitle = "Customize background, UI transparency, and display settings",
+                    modifier = Modifier.clickable {
+                        navigator.navigate(ThemeSettingsScreenDestination)
                     }
+                )
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                CardItemSpacer()
 
-                    // Theme Settings Item
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable {
-                                navigator.navigate(ThemeSettingsScreenDestination)
-                            }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.Palette,
-                            contentDescription = "Theme Settings",
-                            modifier = Modifier.size(24.dp)
-                        )
-                        Spacer(modifier = Modifier.width(16.dp))
-                        Column(
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            Text(
-                                text = "Theme Settings",
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.SemiBold
-                            )
-                            Text(
-                                text = "Customize background, UI transparency, and display settings",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
+                // Home Settings Item
+                CardRowContent(
+                    icon = Icons.Filled.Info,
+                    text = stringResource(R.string.info_card_customization),
+                    subtitle = stringResource(R.string.info_card_customization_summary),
+                    modifier = Modifier.clickable {
+                        navigator.navigate(HomeSettingsScreenDestination)
                     }
+                )
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                CardItemSpacer()
 
-                    // Home Settings Item
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable {
-                                navigator.navigate(HomeSettingsScreenDestination)
-                            }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.Info,
-                            contentDescription = "Home Settings",
-                            modifier = Modifier.size(24.dp)
-                        )
-                        Spacer(modifier = Modifier.width(16.dp))
-                        Column(
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            Text(
-                                text = stringResource(R.string.info_card_customization),
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.SemiBold
-                            )
-                            Text(
-                                text = stringResource(R.string.info_card_customization_summary),
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
+                // Superuser Settings Item
+                CardRowContent(
+                    icon = Icons.Filled.SupervisorAccount,
+                    text = "Superuser Settings",
+                    subtitle = "Customize superuser app display and behavior",
+                    modifier = Modifier.clickable {
+                        navigator.navigate(SuperuserSettingsScreenDestination)
                     }
+                )
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                CardItemSpacer()
 
-                    // Superuser Settings Item
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable {
-                                navigator.navigate(SuperuserSettingsScreenDestination)
-                            }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.SupervisorAccount,
-                            contentDescription = "Superuser Settings",
-                            modifier = Modifier.size(24.dp)
-                        )
-                        Spacer(modifier = Modifier.width(16.dp))
-                        Column(
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            Text(
-                                text = "Superuser Settings",
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.SemiBold
-                            )
-                            Text(
-                                text = "Customize superuser app display and behavior",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
+                // Module Settings Item
+                CardRowContent(
+                    icon = Icons.Filled.Extension,
+                    text = stringResource(R.string.module_card_customization),
+                    subtitle = stringResource(R.string.module_card_customization_summary),
+                    modifier = Modifier.clickable {
+                        navigator.navigate(ModuleSettingsScreenDestination)
                     }
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    // Module Settings Item
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable {
-                                navigator.navigate(ModuleSettingsScreenDestination)
-                            }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.Extension,
-                            contentDescription = "Module Settings",
-                            modifier = Modifier.size(24.dp)
-                        )
-                        Spacer(modifier = Modifier.width(16.dp))
-                        Column(
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            Text(
-                                text = stringResource(R.string.module_card_customization),
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.SemiBold
-                            )
-                            Text(
-                                text = stringResource(R.string.module_card_customization_summary),
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                    }
-                }
+                )
             }
+        }
         }
     }
 }
