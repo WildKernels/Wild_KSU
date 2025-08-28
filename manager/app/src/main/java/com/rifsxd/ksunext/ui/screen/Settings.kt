@@ -7,6 +7,7 @@ import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -48,6 +49,7 @@ import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.LaunchedEffect
@@ -470,9 +472,11 @@ fun UninstallItem(
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.SemiBold
         ) },
-        modifier = Modifier.clickable {
-            uninstallDialog.show()
-        }
+        modifier = Modifier.clickable(
+            onClick = { uninstallDialog.show() },
+            interactionSource = remember { MutableInteractionSource() },
+            indication = null
+        )
     )
 }
 
@@ -584,7 +588,11 @@ fun ExportLogsDialog(
                     Column(
                         modifier = Modifier
                             .weight(1f)
-                            .clickable { onShareLog() }
+                            .clickable(
+                                onClick = { onShareLog() },
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = null
+                            )
                             .padding(16.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
