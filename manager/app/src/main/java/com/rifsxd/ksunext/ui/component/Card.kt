@@ -291,7 +291,7 @@ fun CardSwitchContent(
 ) {
     Row(
         modifier = modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.Top
+        verticalAlignment = Alignment.CenterVertically
     ) {
         if (icon != null) {
             Icon(
@@ -306,23 +306,11 @@ fun CardSwitchContent(
         Column(
             modifier = Modifier.weight(1f)
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.Top
-            ) {
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Medium,
-                    modifier = Modifier.weight(1f)
-                )
-                
-                Switch(
-                    checked = checked,
-                    enabled = enabled,
-                    onCheckedChange = onCheckedChange
-                )
-            }
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Medium
+            )
             
             if (subtitle != null) {
                 Text(
@@ -332,6 +320,12 @@ fun CardSwitchContent(
                 )
             }
         }
+        
+        Switch(
+            checked = checked,
+            enabled = enabled,
+            onCheckedChange = onCheckedChange
+        )
     }
 }
 
