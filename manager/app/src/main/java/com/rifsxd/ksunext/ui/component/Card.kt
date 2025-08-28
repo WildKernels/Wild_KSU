@@ -327,7 +327,7 @@ fun CardSwitchContent(
             enabled = enabled,
             onCheckedChange = onCheckedChange,
             modifier = if (subtitle != null) {
-                Modifier.padding(top = 12.dp)
+                Modifier.padding(top = 8.dp)
             } else {
                 Modifier
             }
