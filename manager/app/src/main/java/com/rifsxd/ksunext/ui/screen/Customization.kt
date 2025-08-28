@@ -277,7 +277,7 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
         modifier = Modifier
             .fillMaxSize(),
         contentPadding = PaddingValues(CardConstants.CARD_PADDING_MEDIUM),
-        verticalArrangement = Arrangement.spacedBy(CardConstants.ITEM_SPACING_LARGE)
+        verticalArrangement = Arrangement.spacedBy(CardConstants.ITEM_SPACING_MEDIUM)
     ) {
         // Customization Settings Card
         item {
@@ -288,12 +288,14 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                     text = language,
                     subtitle = currentLanguageDisplay,
                     modifier = Modifier
-                        .clickable {
-                            languageDialog.show()
-                        }
+                        .clickable(
+                            onClick = { languageDialog.show() },
+                            interactionSource = rememberNoRippleInteractionSource(),
+                            indication = null
+                        )
                 )
 
-                CardItemSpacer()
+                CardItemSpacer(CardConstants.ITEM_SPACING_MEDIUM)
 
                 // Theme Settings Item
                 CardRowContent(
@@ -301,12 +303,14 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                     text = "Theme Settings",
                     subtitle = "Customize background, UI transparency, and display settings",
                     modifier = Modifier
-                        .clickable {
-                            navigator.navigate(ThemeSettingsScreenDestination)
-                        }
+                        .clickable(
+                            onClick = { navigator.navigate(ThemeSettingsScreenDestination) },
+                            interactionSource = rememberNoRippleInteractionSource(),
+                            indication = null
+                        )
                 )
 
-                CardItemSpacer()
+                CardItemSpacer(CardConstants.ITEM_SPACING_MEDIUM)
 
                 // Home Settings Item
                 CardRowContent(
@@ -321,7 +325,7 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                          )
                 )
 
-                CardItemSpacer()
+                CardItemSpacer(CardConstants.ITEM_SPACING_MEDIUM)
 
                 // Superuser Settings Item
                 CardRowContent(
@@ -336,7 +340,7 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                          )
                 )
 
-                CardItemSpacer()
+                CardItemSpacer(CardConstants.ITEM_SPACING_MEDIUM)
 
                 // Module Settings Item
                 CardRowContent(
