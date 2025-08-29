@@ -295,7 +295,7 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                         )
                 )
 
-                CardItemSpacer(CardConstants.ITEM_SPACING_MEDIUM)
+                CardItemSpacer()
 
                 // Theme Settings Item
                 CardRowContent(
@@ -310,7 +310,7 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                         )
                 )
 
-                CardItemSpacer(CardConstants.ITEM_SPACING_MEDIUM)
+                CardItemSpacer()
 
                 // Home Settings Item
                 CardRowContent(
@@ -325,7 +325,7 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                          )
                 )
 
-                CardItemSpacer(CardConstants.ITEM_SPACING_MEDIUM)
+                CardItemSpacer()
 
                 // Superuser Settings Item
                 CardRowContent(
@@ -340,7 +340,7 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                          )
                 )
 
-                CardItemSpacer(CardConstants.ITEM_SPACING_MEDIUM)
+                CardItemSpacer()
 
                 // Module Settings Item
                 CardRowContent(
