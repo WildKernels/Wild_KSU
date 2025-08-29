@@ -126,80 +126,45 @@ fun ThemeSettingsScreen(
     ) {
         // Theme Mode Section
         item {
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceContainer
+            val themeOptions = listOf(
+                "system_default" to "System Default",
+                "light" to "Light Mode",
+                "dark" to "Dark Mode",
+                "amoled" to "AMOLED Dark"
+            )
+            
+            val currentThemeDisplay = themeOptions.find { it.first == themeMode }?.second ?: "System Default"
+            
+            val themeDialog = rememberCustomDialog { dismiss ->
+                ThemeSelectionDialog(
+                    themeOptions = themeOptions,
+                    currentTheme = themeMode,
+                    onThemeSelected = { selectedTheme ->
+                        prefs.edit().putString("theme_mode", selectedTheme).commit()
+                        themeMode = selectedTheme
+                        dismiss()
+                    },
+                    onDismiss = { dismiss() }
                 )
-            ) {
-                Column(
-                    modifier = Modifier.padding(16.dp)
-                ) {
-                    Text(
-                        text = "Theme",
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(bottom = 16.dp)
-                    )
-
-                    val themeOptions = listOf(
-                        "system_default" to "System Default",
-                        "light" to "Light Mode",
-                        "dark" to "Dark Mode",
-                        "amoled" to "AMOLED Dark"
-                    )
-                    
-                    val currentThemeDisplay = themeOptions.find { it.first == themeMode }?.second ?: "System Default"
-                    
-                    val themeDialog = rememberCustomDialog { dismiss ->
-                        ThemeSelectionDialog(
-                            themeOptions = themeOptions,
-                            currentTheme = themeMode,
-                            onThemeSelected = { selectedTheme ->
-                                prefs.edit().putString("theme_mode", selectedTheme).commit()
-                                themeMode = selectedTheme
-                                dismiss()
-                            },
-                            onDismiss = { dismiss() }
-                        )
+            }
+            
+            StandardCard {
+                Text(
+                    text = "Theme",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold
+                )
+                
+                CardItemSpacer()
+                
+                CardRowContent(
+                    icon = Icons.Filled.Palette,
+                    text = "Theme Mode",
+                    subtitle = "Current: $currentThemeDisplay",
+                    modifier = Modifier.clickable {
+                        themeDialog.show()
                     }
-                    
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clip(RoundedCornerShape(12.dp))
-                            .clickable {
-                                themeDialog.show()
-                            }
-                            .padding(20.dp)
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(
-                                imageVector = Icons.Filled.Palette,
-                                contentDescription = null,
-                                modifier = Modifier.padding(end = 16.dp),
-                                tint = MaterialTheme.colorScheme.primary
-                            )
-                            Column(
-                                modifier = Modifier.weight(1f)
-                            ) {
-                                Text(
-                                    text = "Theme Mode",
-                                    style = MaterialTheme.typography.bodyLarge,
-                                    fontWeight = FontWeight.Medium
-                                )
-                                Text(
-                                    text = "Current: $currentThemeDisplay",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            }
-                        }
-                    }
-                }
+                )
             }
         }
 
