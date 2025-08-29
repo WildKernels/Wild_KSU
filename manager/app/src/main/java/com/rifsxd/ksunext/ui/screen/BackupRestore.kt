@@ -111,16 +111,20 @@ fun BackupRestoreScreen(navigator: DestinationsNavigator) {
                 CardRowContent(
                     icon = Icons.Filled.Backup,
                     text = moduleBackup,
-                    onClick = {
-                        scope.launch {
-                            val result = backupDialog.awaitConfirm(title = moduleBackup, content = backupMessage)
-                            if (result == ConfirmResult.Confirmed) {
-                                loadingDialog.withLoading {
-                                    moduleBackup()
+                    modifier = Modifier.clickable(
+                        onClick = {
+                            scope.launch {
+                                val result = backupDialog.awaitConfirm(title = moduleBackup, content = backupMessage)
+                                if (result == ConfirmResult.Confirmed) {
+                                    loadingDialog.withLoading {
+                                        moduleBackup()
+                                    }
                                 }
                             }
-                        }
-                    }
+                        },
+                        interactionSource = rememberNoRippleInteractionSource(),
+                        indication = null
+                    )
                 )
 
                 CardItemSpacer()
@@ -131,17 +135,21 @@ fun BackupRestoreScreen(navigator: DestinationsNavigator) {
                 CardRowContent(
                     icon = Icons.Filled.Restore,
                     text = moduleRestore,
-                    onClick = {
-                        scope.launch {
-                            val result = restoreDialog.awaitConfirm(title = moduleRestore, content = restoreMessage)
-                            if (result == ConfirmResult.Confirmed) {
-                                loadingDialog.withLoading {
-                                    moduleRestore()
-                                    showRebootDialog = true
+                    modifier = Modifier.clickable(
+                        onClick = {
+                            scope.launch {
+                                val result = restoreDialog.awaitConfirm(title = moduleRestore, content = restoreMessage)
+                                if (result == ConfirmResult.Confirmed) {
+                                    loadingDialog.withLoading {
+                                        moduleRestore()
+                                        showRebootDialog = true
+                                    }
                                 }
                             }
-                        }
-                    }
+                        },
+                        interactionSource = rememberNoRippleInteractionSource(),
+                        indication = null
+                    )
                 )
 
             }
@@ -154,16 +162,20 @@ fun BackupRestoreScreen(navigator: DestinationsNavigator) {
                 CardRowContent(
                     icon = Icons.Filled.Backup,
                     text = allowlistBackup,
-                    onClick = {
-                        scope.launch {
-                            val result = backupDialog.awaitConfirm(title = allowlistBackup, content = allowlistBackupMessage)
-                            if (result == ConfirmResult.Confirmed) {
-                                loadingDialog.withLoading {
-                                    allowlistBackup()
+                    modifier = Modifier.clickable(
+                        onClick = {
+                            scope.launch {
+                                val result = backupDialog.awaitConfirm(title = allowlistBackup, content = allowlistBackupMessage)
+                                if (result == ConfirmResult.Confirmed) {
+                                    loadingDialog.withLoading {
+                                        allowlistBackup()
+                                    }
                                 }
                             }
-                        }
-                    }
+                        },
+                        interactionSource = rememberNoRippleInteractionSource(),
+                        indication = null
+                    )
                 )
 
                 CardItemSpacer()
@@ -173,16 +185,20 @@ fun BackupRestoreScreen(navigator: DestinationsNavigator) {
                 CardRowContent(
                     icon = Icons.Filled.Restore,
                     text = allowlistRestore,
-                    onClick = {
-                        scope.launch {
-                            val result = restoreDialog.awaitConfirm(title = allowlistRestore, content = allowlistRestoreMessage)
-                            if (result == ConfirmResult.Confirmed) {
-                                loadingDialog.withLoading {
-                                    allowlistRestore()
+                    modifier = Modifier.clickable(
+                        onClick = {
+                            scope.launch {
+                                val result = restoreDialog.awaitConfirm(title = allowlistRestore, content = allowlistRestoreMessage)
+                                if (result == ConfirmResult.Confirmed) {
+                                    loadingDialog.withLoading {
+                                        allowlistRestore()
+                                    }
                                 }
                             }
-                        }
-                    }
+                        },
+                        interactionSource = rememberNoRippleInteractionSource(),
+                        indication = null
+                    )
                 )
             }
         }
