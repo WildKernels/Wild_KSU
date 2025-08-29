@@ -78,7 +78,7 @@ fun SuperuserSettingsScreen(navigator: DestinationsNavigator) {
                 }
 
                 CardSwitchContent(
-                    text = stringResource(R.string.individual_app_cards),
+                    title = stringResource(R.string.individual_app_cards),
                     icon = Icons.Filled.Apps,
                     checked = useIndividualCards,
                     onCheckedChange = { checked ->
@@ -97,7 +97,7 @@ fun SuperuserSettingsScreen(navigator: DestinationsNavigator) {
                 }
                 
                 CardSwitchContent(
-                    text = "Enable Favorite Button",
+                    title = "Enable Favorite Button",
                     icon = Icons.Filled.Favorite,
                     checked = enableFavoriteButton,
                     onCheckedChange = { checked ->
