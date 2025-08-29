@@ -136,7 +136,7 @@ fun ThemeSettingsScreen(
             
             val currentThemeDisplay = themeOptions.find { it.first == themeMode }?.second ?: "System Default"
             
-            val themeDialog = rememberCustomDialog { dismiss ->
+            val themeDialog = rememberCustomDialog { dismiss: () -> Unit ->
                 ThemeSelectionDialog(
                     themeOptions = themeOptions,
                     currentTheme = themeMode,
@@ -313,6 +313,7 @@ fun ThemeSettingsScreen(
                             prefs.edit().putFloat("ui_transparency", value).commit()
                         }
                     )
+                }
             }
 
             // DPI Scale Section
@@ -573,7 +574,7 @@ fun ThemeSettingsScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun ThemeSelectionDialog(
+fun ThemeSelectionDialog(
     themeOptions: List<Pair<String, String>>,
     currentTheme: String,
     onThemeSelected: (String) -> Unit,
