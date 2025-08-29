@@ -19,6 +19,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.rifsxd.ksunext.ui.theme.getCardElevation
 
 /**
@@ -276,26 +277,27 @@ fun CardRowContent(
         }
         
         Column(
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(CardConstants.ITEM_SPACING_SMALL)
         ) {
             if (title != null) {
                 Text(
                     text = title,
-                    style = MaterialTheme.typography.titleMedium,
+                    style = MaterialTheme.typography.titleMedium.copy(lineHeight = 20.sp),
                     fontWeight = FontWeight.Medium
                 )
             }
             
             Text(
                 text = text,
-                style = MaterialTheme.typography.titleMedium,
+                style = MaterialTheme.typography.titleMedium.copy(lineHeight = 20.sp),
                 fontWeight = FontWeight.Medium
             )
             
             if (subtitle != null) {
                 Text(
                     text = subtitle,
-                    style = MaterialTheme.typography.bodySmall,
+                    style = MaterialTheme.typography.bodySmall.copy(lineHeight = 16.sp),
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
@@ -333,18 +335,19 @@ fun CardSwitchContent(
         }
         
         Column(
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(CardConstants.ITEM_SPACING_SMALL)
         ) {
             Text(
                 text = title,
-                style = MaterialTheme.typography.titleMedium,
+                style = MaterialTheme.typography.titleMedium.copy(lineHeight = 20.sp),
                 fontWeight = FontWeight.Medium
             )
             
             if (subtitle != null) {
                 Text(
                     text = subtitle,
-                    style = MaterialTheme.typography.bodySmall,
+                    style = MaterialTheme.typography.bodySmall.copy(lineHeight = 16.sp),
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
@@ -387,7 +390,7 @@ fun CardTextContent(
  * Spacer component for consistent spacing between card items
  */
 @Composable
-fun CardItemSpacer(size: Dp = CardConstants.CARD_PADDING_MEDIUM) {
+fun CardItemSpacer(size: Dp = CardConstants.ITEM_SPACING_MEDIUM) {
     Spacer(modifier = Modifier.height(size))
 }
 
