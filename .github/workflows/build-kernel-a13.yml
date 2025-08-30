@@ -113,14 +113,6 @@ jobs:
             echo "$BOOT_SIGN_KEY" > ./kernel-build-tools/linux-x86/share/avb/testkey_rsa2048.pem
           fi
 
-      - name: Bot session cache
-        id: bot_session_cache
-        uses: actions/cache@v4
-        if: false
-        with:
-          path: scripts/wildksubot.session
-          key: ${{ runner.os }}-bot-session
-
       - name: Build boot images
         run: |
           export AVBTOOL=$GITHUB_WORKSPACE/kernel-build-tools/linux-x86/bin/avbtool
