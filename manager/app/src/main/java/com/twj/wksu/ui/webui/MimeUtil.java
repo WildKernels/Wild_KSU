@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.rifsxd.ksunext.ui.webui;
+package com.twj.wksu.ui.webui;
 
 import java.net.URLConnection;
 

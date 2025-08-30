@@ -1,4 +1,4 @@
-package com.rifsxd.ksunext.ui.webui;
+package com.twj.wksu.ui.webui;
 
 import android.content.Context;
 import android.content.pm.ApplicationInfo;

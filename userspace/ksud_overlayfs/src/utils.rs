@@ -289,7 +289,7 @@ pub fn uninstall(magiskboot_path: Option<PathBuf>) -> Result<()> {
     boot_patch::restore(None, magiskboot_path, true)?;
     println!("- Uninstall KernelSU Next manager..");
     Command::new("pm")
-        .args(["uninstall", "com.rifsxd.ksunext"])
+        .args(["uninstall", "com.twj.wksu"])
         .spawn()?;
     println!("- Rebooting in 5 seconds..");
     std::thread::sleep(std::time::Duration::from_secs(5));

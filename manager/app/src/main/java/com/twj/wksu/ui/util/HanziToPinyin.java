@@ -1,4 +1,4 @@
-package com.rifsxd.ksunext.ui.util;
+package com.twj.wksu.ui.util;
 /*
  * Copyright (C) 2009 The Android Open Source Project
  *

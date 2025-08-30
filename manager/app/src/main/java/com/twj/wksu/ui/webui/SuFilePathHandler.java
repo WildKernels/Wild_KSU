@@ -1,4 +1,4 @@
-package com.rifsxd.ksunext.ui.webui;
+package com.twj.wksu.ui.webui;
 
 import android.content.Context;
 import android.os.Build;
@@ -20,7 +20,7 @@ import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.zip.GZIPInputStream;
 
-import com.rifsxd.ksunext.ui.webui.MonetColorsProvider;
+import com.twj.wksu.ui.webui.MonetColorsProvider;
 
 /**
  * Handler class to open files from file system by root access

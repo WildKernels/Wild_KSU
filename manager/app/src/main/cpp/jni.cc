@@ -12,7 +12,7 @@
 
 extern "C"
 JNIEXPORT jboolean JNICALL
-Java_com_rifsxd_ksunext_Natives_becomeManager(JNIEnv *env, jobject, jstring pkg) {
+Java_com_twj_wksu_Natives_becomeManager(JNIEnv *env, jobject, jstring pkg) {
     auto cpkg = env->GetStringUTFChars(pkg, nullptr);
     auto result = become_manager(cpkg);
     env->ReleaseStringUTFChars(pkg, cpkg);
@@ -21,27 +21,27 @@ Java_com_rifsxd_ksunext_Natives_becomeManager(JNIEnv *env, jobject, jstring pkg)
 
 extern "C"
 JNIEXPORT jint JNICALL
-Java_com_rifsxd_ksunext_Natives_getVersion(JNIEnv *env, jobject) {
+Java_com_twj_wksu_Natives_getVersion(JNIEnv *env, jobject) {
     return get_version();
 }
 
 extern "C"
 JNIEXPORT jint JNICALL
-Java_com_rifsxd_ksunext_Natives_getManagerUid(JNIEnv *env, jobject) {
+Java_com_twj_wksu_Natives_getManagerUid(JNIEnv *env, jobject) {
     uid_t manager_uid = get_manager_uid();
     return (jint)manager_uid;
 }
 
 extern "C"
 JNIEXPORT jstring JNICALL
-Java_com_rifsxd_ksunext_Natives_getHookMode(JNIEnv *env, jobject) {
+Java_com_twj_wksu_Natives_getHookMode(JNIEnv *env, jobject) {
     const char* mode = get_hook_mode();
     return env->NewStringUTF(mode);
 }
 
 extern "C"
 JNIEXPORT jintArray JNICALL
-Java_com_rifsxd_ksunext_Natives_getAllowList(JNIEnv *env, jobject) {
+Java_com_twj_wksu_Natives_getAllowList(JNIEnv *env, jobject) {
     int uids[1024];
     int size = 0;
     bool result = get_allow_list(uids, &size);
@@ -56,13 +56,13 @@ Java_com_rifsxd_ksunext_Natives_getAllowList(JNIEnv *env, jobject) {
 
 extern "C"
 JNIEXPORT jboolean JNICALL
-Java_com_rifsxd_ksunext_Natives_isSafeMode(JNIEnv *env, jclass clazz) {
+Java_com_twj_wksu_Natives_isSafeMode(JNIEnv *env, jclass clazz) {
     return is_safe_mode();
 }
 
 extern "C"
 JNIEXPORT jboolean JNICALL
-Java_com_rifsxd_ksunext_Natives_isLkmMode(JNIEnv *env, jclass clazz) {
+Java_com_twj_wksu_Natives_isLkmMode(JNIEnv *env, jclass clazz) {
     return is_lkm_mode();
 }
 
@@ -125,7 +125,7 @@ static void fillArrayWithList(JNIEnv *env, jobject list, int *data, int count) {
 
 extern "C"
 JNIEXPORT jobject JNICALL
-Java_com_rifsxd_ksunext_Natives_getAppProfile(JNIEnv *env, jobject, jstring pkg, jint uid) {
+Java_com_twj_wksu_Natives_getAppProfile(JNIEnv *env, jobject, jstring pkg, jint uid) {
     if (env->GetStringLength(pkg) > KSU_MAX_PACKAGE_NAME) {
         return nullptr;
     }
@@ -143,7 +143,7 @@ Java_com_rifsxd_ksunext_Natives_getAppProfile(JNIEnv *env, jobject, jstring pkg,
 
     bool useDefaultProfile = !get_app_profile(key, &profile);
 
-    auto cls = env->FindClass("com/rifsxd/ksunext/Natives$Profile");
+    auto cls = env->FindClass("com/twj/wksu/Natives$Profile");
     auto constructor = env->GetMethodID(cls, "<init>", "()V");
     auto obj = env->NewObject(cls, constructor);
     auto keyField = env->GetFieldID(cls, "name", "Ljava/lang/String;");
@@ -221,8 +221,8 @@ Java_com_rifsxd_ksunext_Natives_getAppProfile(JNIEnv *env, jobject, jstring pkg,
 
 extern "C"
 JNIEXPORT jboolean JNICALL
-Java_com_rifsxd_ksunext_Natives_setAppProfile(JNIEnv *env, jobject clazz, jobject profile) {
-    auto cls = env->FindClass("com/rifsxd/ksunext/Natives$Profile");
+Java_com_twj_wksu_Natives_setAppProfile(JNIEnv *env, jobject clazz, jobject profile) {
+    auto cls = env->FindClass("com/twj/wksu/Natives$Profile");
 
     auto keyField = env->GetFieldID(cls, "name", "Ljava/lang/String;");
     auto currentUidField = env->GetFieldID(cls, "currentUid", "I");
@@ -307,22 +307,22 @@ Java_com_rifsxd_ksunext_Natives_setAppProfile(JNIEnv *env, jobject clazz, jobjec
 }
 extern "C"
 JNIEXPORT jboolean JNICALL
-Java_com_rifsxd_ksunext_Natives_uidShouldUmount(JNIEnv *env, jobject thiz, jint uid) {
+Java_com_twj_wksu_Natives_uidShouldUmount(JNIEnv *env, jobject thiz, jint uid) {
     return uid_should_umount(uid);
 }
 extern "C"
 JNIEXPORT jboolean JNICALL
-Java_com_rifsxd_ksunext_Natives_isSuEnabled(JNIEnv *env, jobject thiz) {
+Java_com_twj_wksu_Natives_isSuEnabled(JNIEnv *env, jobject thiz) {
     return is_su_enabled();
 }
 extern "C"
 JNIEXPORT jboolean JNICALL
-Java_com_rifsxd_ksunext_Natives_setSuEnabled(JNIEnv *env, jobject thiz, jboolean enabled) {
+Java_com_twj_wksu_Natives_setSuEnabled(JNIEnv *env, jobject thiz, jboolean enabled) {
     return set_su_enabled(enabled);
 }
 
 extern "C"
 JNIEXPORT jboolean JNICALL
-Java_com_rifsxd_ksunext_Natives_isZygiskEnabled(JNIEnv *env, jobject) {
+Java_com_twj_wksu_Natives_isZygiskEnabled(JNIEnv *env, jobject) {
     return is_zygisk_enabled();
 }

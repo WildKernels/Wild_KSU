@@ -1,4 +1,4 @@
-package com.rifsxd.ksunext.ui;
+package com.twj.wksu;
 
 import android.content.Context;
 import android.content.Intent;
@@ -17,7 +17,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.rifsxd.ksunext.IKsuInterface;
+import com.twj.wksu.IKsuInterface;
 import rikka.parcelablelist.ParcelableListSlice;
 
 /**
