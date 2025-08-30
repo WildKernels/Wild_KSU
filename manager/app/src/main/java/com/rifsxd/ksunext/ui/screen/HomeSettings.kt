@@ -98,6 +98,13 @@ fun HomeSettingsScreen(
             prefs.getString("selected_icon_type", "SEASONAL") ?: "SEASONAL"
         )
     }
+    
+    // Home layout selection state
+    var selectedLayoutType by rememberSaveable {
+        mutableStateOf(
+            prefs.getString("home_layout_type", "STOCK") ?: "STOCK"
+        )
+    }
     var showManagerVersion by rememberSaveable {
         mutableStateOf<Boolean>(prefs.getBoolean("info_card_show_manager_version", true))
     }
@@ -138,6 +145,12 @@ fun HomeSettingsScreen(
     val onSelectedAppNameChanged = { newAppName: String ->
         selectedAppName = newAppName
         prefs.edit().putString("selected_app_name", newAppName).apply()
+        hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
+    }
+    
+    val onSelectedLayoutTypeChanged = { newLayoutType: String ->
+        selectedLayoutType = newLayoutType
+        prefs.edit().putString("home_layout_type", newLayoutType).apply()
         hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
     }
 
@@ -300,6 +313,17 @@ fun HomeSettingsScreen(
     // State for showing icon selection dialog
     var showIconDialog by remember { mutableStateOf(false) }
     
+    // Layout options for selection
+    val layoutOptions = listOf(
+        "STOCK" to "Stock",
+        "MIUIX" to "MIUIX"
+    )
+    
+    val currentLayoutDisplay = layoutOptions.find { it.first == selectedLayoutType }?.second ?: "Stock"
+    
+    // State for showing layout selection dialog
+    var showLayoutDialog by remember { mutableStateOf(false) }
+    
     // Icon selection dialog with visual icons
     if (showIconDialog) {
         AlertDialog(
@@ -415,6 +439,100 @@ fun HomeSettingsScreen(
             }
         )
     }
+    
+    // Layout selection dialog
+    if (showLayoutDialog) {
+        AlertDialog(
+            onDismissRequest = { showLayoutDialog = false },
+            title = {
+                Text(
+                    text = "Select Home Layout",
+                    style = MaterialTheme.typography.headlineSmall
+                )
+            },
+            text = {
+                LazyColumn(
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    items(layoutOptions) { (value, display) ->
+                        val isSelected = value == selectedLayoutType
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    onSelectedLayoutTypeChanged(value)
+                                    showLayoutDialog = false
+                                },
+                            colors = CardDefaults.cardColors(
+                                containerColor = if (isSelected) 
+                                    MaterialTheme.colorScheme.primaryContainer 
+                                else 
+                                    MaterialTheme.colorScheme.surface
+                            ),
+                            border = if (isSelected) 
+                                BorderStroke(2.dp, MaterialTheme.colorScheme.primary) 
+                            else null
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(16.dp)
+                            ) {
+                                // Layout icon
+                                Box(
+                                    modifier = Modifier
+                                        .size(48.dp)
+                                        .background(
+                                            MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
+                                            CircleShape
+                                        ),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Icon(
+                                        imageVector = if (value == "STOCK") Icons.Filled.GridView else Icons.Filled.ViewModule,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(24.dp),
+                                        tint = MaterialTheme.colorScheme.primary
+                                    )
+                                }
+                                
+                                // Text
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(
+                                        text = display,
+                                        style = MaterialTheme.typography.bodyLarge,
+                                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
+                                    )
+                                    Text(
+                                        text = if (value == "STOCK") "Current default layout" else "Alternative layout style",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                                
+                                // Selection indicator
+                                if (isSelected) {
+                                    Icon(
+                                        imageVector = Icons.Filled.CheckCircle,
+                                        contentDescription = "Selected",
+                                        tint = MaterialTheme.colorScheme.primary
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { showLayoutDialog = false }) {
+                    Text("Done")
+                }
+            }
+        )
+    }
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -439,6 +557,24 @@ fun HomeSettingsScreen(
                         subtitle = stringResource(R.string.home_screen_icon_style_summary) + ". " + stringResource(R.string.home_screen_icon_current, currentIconDisplay),
                         modifier = Modifier.clickable {
                             showIconDialog = true
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                            contentDescription = null,
+                            tint = Color.White
+                        )
+                    }
+                    
+                    CardItemSpacer()
+                    
+                    // Home Layout Selection
+                    CardRowContent(
+                        icon = Icons.Filled.ViewModule,
+                        text = "Home Layout Style",
+                        subtitle = "Choose between Stock and MIUIX layouts. Current: $currentLayoutDisplay",
+                        modifier = Modifier.clickable {
+                            showLayoutDialog = true
                         }
                     ) {
                         Icon(

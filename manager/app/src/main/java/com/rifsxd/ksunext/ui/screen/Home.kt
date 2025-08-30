@@ -98,6 +98,7 @@ fun HomeScreen(navigator: DestinationsNavigator) {
     val prefs = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
     val developerOptionsEnabled = prefs.getBoolean("enable_developer_options", false)
     val showHelpCard = prefs.getBoolean("show_help_card", true)
+    val selectedLayoutType = prefs.getString("home_layout_type", "STOCK") ?: "STOCK"
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -128,30 +129,56 @@ fun HomeScreen(navigator: DestinationsNavigator) {
             item {
                 CardItemsColumn {
                     if (ksuVersion != null && rootAvailable()) {
-                        CardRow(
-                            modifier = Modifier.height(IntrinsicSize.Min)
-                        ) {
-                            Box(modifier = Modifier.weight(1f)) { 
-                                SuperuserCard(onClick = { 
-                                    navigator.navigate(SuperUserScreenDestination) {
-                                        popUpTo(NavGraphs.root) {
-                                            saveState = true
-                                        }
-                                        launchSingleTop = true
-                                        restoreState = true
+                        if (selectedLayoutType == "MIUIX") {
+                            // MIUIX Layout: Vertical stacking
+                            SuperuserCard(onClick = { 
+                                navigator.navigate(SuperUserScreenDestination) {
+                                    popUpTo(NavGraphs.root) {
+                                        saveState = true
                                     }
-                                }) 
-                            }
-                            Box(modifier = Modifier.weight(1f)) { 
-                                ModuleCard(onClick = { 
-                                    navigator.navigate(ModuleScreenDestination) {
-                                        popUpTo(NavGraphs.root) {
-                                            saveState = true
-                                        }
-                                        launchSingleTop = true
-                                        restoreState = true
+                                    launchSingleTop = true
+                                    restoreState = true
+                                }
+                            })
+                            
+                            CardItemSpacer()
+                            
+                            ModuleCard(onClick = { 
+                                navigator.navigate(ModuleScreenDestination) {
+                                    popUpTo(NavGraphs.root) {
+                                        saveState = true
                                     }
-                                }) 
+                                    launchSingleTop = true
+                                    restoreState = true
+                                }
+                            })
+                        } else {
+                            // STOCK Layout: Side-by-side arrangement
+                            CardRow(
+                                modifier = Modifier.height(IntrinsicSize.Min)
+                            ) {
+                                Box(modifier = Modifier.weight(1f)) { 
+                                    SuperuserCard(onClick = { 
+                                        navigator.navigate(SuperUserScreenDestination) {
+                                            popUpTo(NavGraphs.root) {
+                                                saveState = true
+                                            }
+                                            launchSingleTop = true
+                                            restoreState = true
+                                        }
+                                    }) 
+                                }
+                                Box(modifier = Modifier.weight(1f)) { 
+                                    ModuleCard(onClick = { 
+                                        navigator.navigate(ModuleScreenDestination) {
+                                            popUpTo(NavGraphs.root) {
+                                                saveState = true
+                                            }
+                                            launchSingleTop = true
+                                            restoreState = true
+                                        }
+                                    }) 
+                                }
                             }
                         }
                     }
