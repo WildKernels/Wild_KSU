@@ -108,13 +108,16 @@ fun HomeScreen(navigator: DestinationsNavigator) {
         contentPadding = PaddingValues(CardConstants.CARD_SPACING),
         verticalArrangement = Arrangement.spacedBy(CardConstants.CARD_SPACING)
     ) {
-        item {
-            val lkmMode = ksuVersion?.let {
-                if (it >= Natives.MINIMAL_SUPPORTED_KERNEL_LKM && kernelVersion.isGKI()) Natives.isLkmMode else null
-            }
+        // Only show StatusCard in STOCK layout, not in MIUIX layout
+        if (selectedLayoutType != "MIUIX") {
+            item {
+                val lkmMode = ksuVersion?.let {
+                    if (it >= Natives.MINIMAL_SUPPORTED_KERNEL_LKM && kernelVersion.isGKI()) Natives.isLkmMode else null
+                }
 
-            StatusCard(kernelVersion, ksuVersion, lkmMode) {
-                navigator.navigate(InstallScreenDestination)
+                StatusCard(kernelVersion, ksuVersion, lkmMode) {
+                    navigator.navigate(InstallScreenDestination)
+                }
             }
         }
 
@@ -134,8 +137,13 @@ fun HomeScreen(navigator: DestinationsNavigator) {
                     if (ksuVersion != null && rootAvailable()) {
                         if (selectedLayoutType == "MIUIX") {
                             // MIUIX Layout: Tiann's StatusCard design
+                            val lkmMode = ksuVersion.let {
+                                if (it >= Natives.MINIMAL_SUPPORTED_KERNEL_LKM && kernelVersion.isGKI()) Natives.isLkmMode else null
+                            }
                             TiannStatusCard(
                                 ksuVersion = ksuVersion,
+                                kernelVersion = kernelVersion,
+                                lkmMode = lkmMode,
                                 onClickSuperuser = {
                                     navigator.navigate(SuperUserScreenDestination) {
                                         popUpTo(NavGraphs.root) {
@@ -978,6 +986,8 @@ private fun IssueReportCardContent(
 @Composable
 fun TiannStatusCard(
     ksuVersion: Int,
+    kernelVersion: KernelVersion,
+    lkmMode: Boolean?,
     onClickSuperuser: () -> Unit = {},
     onClickModule: () -> Unit = {},
 ) {
@@ -986,7 +996,16 @@ fun TiannStatusCard(
         else -> ""
     }
     
-    val workingText = "${stringResource(id = R.string.home_working)}$safeMode"
+    val workingMode = when {
+        lkmMode == true -> "LKM"
+        lkmMode == false || kernelVersion.isGKI() -> "GKI2"
+        lkmMode == null && kernelVersion.isULegacy() -> "U-LEGACY"
+        lkmMode == null && kernelVersion.isLegacy() -> "LEGACY"
+        lkmMode == null && kernelVersion.isGKI1() -> "GKI1"
+        else -> "NON-STANDARD"
+    }
+    
+    val workingText = "${stringResource(id = R.string.home_working)} in $workingMode$safeMode"
     
     CardRow(
         modifier = Modifier.height(IntrinsicSize.Min)
