@@ -136,11 +136,11 @@ fun HomeScreen(navigator: DestinationsNavigator) {
                 CardItemsColumn {
                     if (ksuVersion != null && rootAvailable()) {
                         if (selectedLayoutType == "MIUIX") {
-                            // MIUIX Layout: Tiann's StatusCard design
+                            // MIUIX Layout: Custom StatusCard design
                             val lkmMode = ksuVersion.let {
                                 if (it >= Natives.MINIMAL_SUPPORTED_KERNEL_LKM && kernelVersion.isGKI()) Natives.isLkmMode else null
                             }
-                            TiannStatusCard(
+                            MiuixStatusCard(
                                 ksuVersion = ksuVersion,
                                 kernelVersion = kernelVersion,
                                 lkmMode = lkmMode,
@@ -984,7 +984,7 @@ private fun IssueReportCardContent(
 }
 
 @Composable
-fun TiannStatusCard(
+fun MiuixStatusCard(
     ksuVersion: Int,
     kernelVersion: KernelVersion,
     lkmMode: Boolean?,
