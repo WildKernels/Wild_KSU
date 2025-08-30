@@ -64,7 +64,7 @@ object CustomizationManager {
         const val KEEP_MODULE_CARDS_EXPANDED = false
         const val ENABLE_MODULE_BANNERS = true
         const val HIDE_MODULE_DETAILS = false
-        const val INDIVIDUAL_APP_CARDS = false
+        const val INDIVIDUAL_APP_CARDS = true
         const val HIDE_FAVORITES_AUTOMATICALLY = false
         const val DISABLE_FAVORITE_BUTTON = true
         const val CARD_BACKGROUND_ENABLED = true

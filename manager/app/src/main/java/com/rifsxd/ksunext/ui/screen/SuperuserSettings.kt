@@ -73,7 +73,7 @@ fun SuperuserSettingsScreen(navigator: DestinationsNavigator) {
                 // Individual App Cards Setting
                 var useIndividualCards by rememberSaveable {
                     mutableStateOf(
-                        prefs.getBoolean("use_individual_app_cards", false)
+                        prefs.getBoolean("use_individual_app_cards", true)
                     )
                 }
 
