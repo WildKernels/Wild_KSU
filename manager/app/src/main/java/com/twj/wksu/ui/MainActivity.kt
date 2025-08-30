@@ -1080,7 +1080,7 @@ fun RegularTopBar(
     val containerColor = remember(surfaceContainer) { surfaceContainer }
     
     // Get the selected app name from preferences for home screen title
-    val selectedAppName = prefs.getString("selected_app_name", "kernelsu_next") ?: "kernelsu_next"
+    val selectedAppName = prefs.getString("selected_app_name", "wild_ksu") ?: "wild_ksu"
     val homeTitle = when (selectedAppName) {
         "kernelsu_next" -> stringResource(R.string.app_name_kernelsu_next)
         "wild_ksu" -> stringResource(R.string.app_name_wild_ksu)

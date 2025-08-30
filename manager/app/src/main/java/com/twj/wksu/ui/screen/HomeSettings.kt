@@ -137,7 +137,7 @@ fun HomeSettingsScreen(
     
     // App name customization state
     var selectedAppName by rememberSaveable {
-        mutableStateOf(prefs.getString("selected_app_name", "kernelsu_next") ?: "kernelsu_next")
+        mutableStateOf(prefs.getString("selected_app_name", "wild_ksu") ?: "wild_ksu")
     }
     
 
@@ -590,10 +590,10 @@ fun HomeSettingsScreen(
                     CardSwitchContent(
                         icon = Icons.Filled.Title,
                         title = stringResource(R.string.app_name_customization),
-                        subtitle = "Switch to Wild KSU",
-                        checked = selectedAppName == "wild_ksu",
+                        subtitle = "Switch to KernelSU Next",
+                        checked = selectedAppName == "kernelsu_next",
                         onCheckedChange = { isChecked ->
-                            val newAppName = if (isChecked) "wild_ksu" else "kernelsu_next"
+                            val newAppName = if (isChecked) "kernelsu_next" else "wild_ksu"
                             onSelectedAppNameChanged(newAppName)
                         }
                     )
