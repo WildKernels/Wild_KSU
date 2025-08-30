@@ -5,7 +5,7 @@ on:
     paths:
       - '.github/workflows/build-su.yml'
       - 'userspace/su/**'
-      - 'scripts/ksunextbot.py'
+      - 'scripts/wildksubot.py'
   pull_request:
     branches: [ "next" ]
     paths:

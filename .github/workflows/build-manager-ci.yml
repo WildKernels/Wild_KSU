@@ -320,7 +320,7 @@ jobs:
         id: bot_session_cache
         uses: actions/cache@v4
         with:
-          path: scripts/ksunextbot.session
+          path: scripts/wildksubot.session
           key: ${{ runner.os }}-bot-session
 
       - name: Upload to Telegram
@@ -340,7 +340,7 @@ jobs:
             export VERSION=$(git rev-list --count HEAD)
             APK=$(find ./app/build/outputs/apk/release -name "*.apk")
             pip3 install telethon
-            python3 $GITHUB_WORKSPACE/scripts/ksunextbot.py $APK
+            python3 $GITHUB_WORKSPACE/scripts/wildksubot.py $APK
           fi
 
       - name: Send APK to Telegram

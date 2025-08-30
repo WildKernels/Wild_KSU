@@ -87,7 +87,7 @@
     <string name="home_overlayfs_mount">OverlayFS</string>
     <string name="unavailable">Unavailable</string>
     <string name="use_overlay_fs">Use OverlayFS</string>
-    <string name="use_overlay_fs_summary">Toggle between using OverlayFS over Magic Mount for KernelSU Next\'s mount system.</string>
+    <string name="use_overlay_fs_summary">Toggle between using OverlayFS over Magic Mount for Wild KSU\'s mount system.</string>
     <string name="reboot_required">Reboot required</string>
     <string name="reboot_message">The changes will take effect after the system restart. Do you want to reboot now?</string>
     <string name="module_restore">Restore module</string>
@@ -106,7 +106,7 @@
     <string name="later">Later</string>
     <string name="lkm_warning_message">The LKM patch relies on closed source components. Do you want to continue?</string>
     <string name="home_next_kernelsu">🔥 Next build</string>
-    <string name="home_next_kernelsu_repo">https://github.com/KernelSU-Next/KernelSU-Next</string>
+    <string name="home_next_kernelsu_repo">https://github.com/WildKernels/Wild_KSU</string>
     <string name="home_next_kernelsu_body">Next experimental branch. Check it out on GitHub!</string>
     <string name="home_experimental_kernelsu">⚠️ Experimental development warning!</string>
     <string name="home_experimental_kernelsu_repo">127.0.0.1</string>
@@ -294,7 +294,7 @@
     <!-- App Name Customization -->
     <string name="app_name_customization">App Name</string>
     <string name="app_name_customization_summary">Change the app name displayed in the interface</string>
-    <string name="app_name_kernelsu_next">KernelSU Next</string>
+    <string name="app_name_kernelsu_next">Wild KSU</string>
     <string name="app_name_wild_ksu">Wild KSU</string>
     <string name="app_name_custom">Custom</string>
     <string name="app_name_custom_hint">Enter custom app name</string>

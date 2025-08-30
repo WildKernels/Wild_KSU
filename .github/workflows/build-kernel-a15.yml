@@ -109,7 +109,7 @@ jobs:
         uses: actions/cache@v4
         if: false
         with:
-          path: scripts/ksunextbot.session
+          path: scripts/wildksubot.session
           key: ${{ runner.os }}-bot-session
 
       - name: Build boot images
