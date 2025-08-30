@@ -316,7 +316,8 @@ fun HomeSettingsScreen(
     // Layout options for selection
     val layoutOptions = listOf(
         "STOCK" to "Stock",
-        "MIUIX" to "MIUIX"
+        "MIUIX" to "MIUIX",
+        "MIUIX_NORMAL" to "MIUIX (Normal Colors)"
     )
     
     val currentLayoutDisplay = layoutOptions.find { it.first == selectedLayoutType }?.second ?: "Stock"
