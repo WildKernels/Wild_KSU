@@ -1005,7 +1005,7 @@ fun MiuixStatusCard(
         else -> "NON-STANDARD"
     }
     
-    val workingText = "${stringResource(id = R.string.home_working)} in $workingMode$safeMode"
+    val workingText = "${stringResource(id = R.string.home_working)}$safeMode"
     
     CardRow(
         modifier = Modifier.height(IntrinsicSize.Min)
@@ -1040,12 +1040,37 @@ fun MiuixStatusCard(
                         .fillMaxSize()
                         .padding(all = 16.dp)
                 ) {
-                    Text(
+                    Row(
                         modifier = Modifier.fillMaxWidth(),
-                        text = workingText,
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.SemiBold,
-                    )
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Text(
+                            text = workingText,
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.SemiBold,
+                        )
+                        val labelStyle = LabelItemDefaults.style
+                        LabelItem(
+                            icon = if (Natives.isSafeMode) {
+                                {
+                                    Icon(
+                                        tint = labelStyle.contentColor,
+                                        imageVector = Icons.Filled.Security,
+                                        contentDescription = null
+                                    )
+                                }
+                            } else {
+                                null
+                            },
+                            text = {
+                                Text(
+                                    text = workingMode,
+                                    style = labelStyle.textStyle.copy(color = labelStyle.contentColor),
+                                )
+                            }
+                        )
+                    }
                     Spacer(Modifier.height(2.dp))
                     Text(
                         modifier = Modifier.fillMaxWidth(),
