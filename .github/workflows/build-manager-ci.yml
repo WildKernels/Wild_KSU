@@ -121,237 +121,13 @@ jobs:
             cached-artifacts/ksud_magic
           key: ${{ needs.check-cache.outputs.cache-key }}
 
-  build-manager-normal:
+  build-manager:
     needs: [check-cache, build-ksud]
     if: always() && needs.check-cache.result == 'success' && (needs.check-cache.outputs.cache-hit == 'true' || needs.build-ksud.result == 'success')
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./manager
-
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Setup need_upload
-        id: need_upload
-        run: |
-          if [ ! -z "${{ secrets.TELEGRAM_BOT_TOKEN }}" ]; then
-            echo "UPLOAD=true" >> $GITHUB_OUTPUT
-          else
-            echo "UPLOAD=false" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Write Key
-        run: |
-          if [ ! -z "${{ secrets.KEYSTORE }}" ]; then
-            {
-              echo KEYSTORE_PASSWORD='${{ secrets.KEYSTORE_PASSWORD }}'
-              echo KEY_ALIAS='${{ secrets.KEY_ALIAS }}'
-              echo KEY_PASSWORD='${{ secrets.KEY_PASSWORD }}'
-              echo KEYSTORE_FILE='key.jks'
-            } >> gradle.properties
-            echo ${{ secrets.KEYSTORE }} | base64 -d > key.jks
-          fi
-
-      - name: Setup Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: 21
-
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
-
-      # Restore cached artifacts if cache hit
-      - name: Restore cached artifacts
-        if: needs.check-cache.outputs.cache-hit == 'true'
-        uses: actions/cache/restore@v4
-        with:
-          path: |
-            cached-artifacts/susfsd
-            cached-artifacts/ksud_overlayfs
-            cached-artifacts/ksud_magic
-          key: ${{ needs.check-cache.outputs.cache-key }}
-
-      # Force update cache by re-saving restored artifacts
-      - name: Force update cache with restored artifacts
-        if: needs.check-cache.outputs.cache-hit == 'true'
-        uses: actions/cache/save@v4
-        with:
-          path: |
-            cached-artifacts/susfsd
-            cached-artifacts/ksud_overlayfs
-            cached-artifacts/ksud_magic
-          key: ${{ needs.check-cache.outputs.cache-key }}
-
-      # Download fresh artifacts if cache miss
-      - name: Download susfsd
-        if: needs.check-cache.outputs.cache-hit != 'true'
-        uses: actions/download-artifact@v4
-        with:
-          name: susfsd-linux-android
-          path: .
-
-      # Download fresh ksud artifacts if cache miss
-      - name: Download arm64 ksud_overlayfs
-        if: needs.check-cache.outputs.cache-hit != 'true'
-        uses: actions/download-artifact@v4
-        with:
-          name: ksud_overlayfs-aarch64-linux-android
-          path: ksud_overlayfs
-          
-      - name: Download arm ksud_overlayfs
-        if: needs.check-cache.outputs.cache-hit != 'true'
-        uses: actions/download-artifact@v4
-        with:
-          name: ksud_overlayfs-armv7-linux-androideabi
-          path: ksud_overlayfs
-
-      - name: Download x86_64 ksud_overlayfs
-        if: needs.check-cache.outputs.cache-hit != 'true'
-        uses: actions/download-artifact@v4
-        with:
-          name: ksud_overlayfs-x86_64-linux-android
-          path: ksud_overlayfs
-
-      - name: Download arm64 ksud_magic
-        if: needs.check-cache.outputs.cache-hit != 'true'
-        uses: actions/download-artifact@v4
-        with:
-          name: ksud_magic-aarch64-linux-android
-          path: ksud_magic
-          
-      - name: Download arm ksud_magic
-        if: needs.check-cache.outputs.cache-hit != 'true'
-        uses: actions/download-artifact@v4
-        with:
-          name: ksud_magic-armv7-linux-androideabi
-          path: ksud_magic
-        
-      - name: Download x86_64 ksud_magic
-        if: needs.check-cache.outputs.cache-hit != 'true'
-        uses: actions/download-artifact@v4
-        with:
-          name: ksud_magic-x86_64-linux-android
-          path: ksud_magic
-
-      # Copy artifacts to jniLibs (works for both cached and fresh)
-      - name: Copy susfsd to app jniLibs
-        run: |
-          mkdir -p app/src/main/jniLibs/arm64-v8a
-          mkdir -p app/src/main/jniLibs/armeabi-v7a
-          mkdir -p app/src/main/jniLibs/x86_64
-          
-          if [ "${{ needs.check-cache.outputs.cache-hit }}" == "true" ]; then
-            # Copy from cached artifacts
-            cp -f ../cached-artifacts/susfsd/arm64-v8a/susfsd ../manager/app/src/main/jniLibs/arm64-v8a/libsusfsd.so
-            cp -f ../cached-artifacts/susfsd/armeabi-v7a/susfsd ../manager/app/src/main/jniLibs/armeabi-v7a/libsusfsd.so
-            cp -f ../cached-artifacts/susfsd/x86_64/susfsd ../manager/app/src/main/jniLibs/x86_64/libsusfsd.so
-          else
-            # Copy from fresh artifacts
-            cp -f ../arm64-v8a/susfsd ../manager/app/src/main/jniLibs/arm64-v8a/libsusfsd.so
-            cp -f ../armeabi-v7a/susfsd ../manager/app/src/main/jniLibs/armeabi-v7a/libsusfsd.so
-            cp -f ../x86_64/susfsd ../manager/app/src/main/jniLibs/x86_64/libsusfsd.so
-          fi
-
-      - name: Copy ksud_overlayfs to app jniLibs
-        run: |
-          mkdir -p app/src/main/jniLibs/arm64-v8a
-          mkdir -p app/src/main/jniLibs/armeabi-v7a
-          mkdir -p app/src/main/jniLibs/x86_64
-
-          if [ "${{ needs.check-cache.outputs.cache-hit }}" == "true" ]; then
-            # Copy from cached artifacts
-            cp -f ../cached-artifacts/ksud_overlayfs/aarch64-linux-android/release/ksud ../manager/app/src/main/jniLibs/arm64-v8a/libksud_overlayfs.so
-            cp -f ../cached-artifacts/ksud_overlayfs/armv7-linux-androideabi/release/ksud ../manager/app/src/main/jniLibs/armeabi-v7a/libksud_overlayfs.so
-            cp -f ../cached-artifacts/ksud_overlayfs/x86_64-linux-android/release/ksud ../manager/app/src/main/jniLibs/x86_64/libksud_overlayfs.so
-          else
-            # Copy from fresh artifacts
-            cp -f ../ksud_overlayfs/aarch64-linux-android/release/ksud ../manager/app/src/main/jniLibs/arm64-v8a/libksud_overlayfs.so
-            cp -f ../ksud_overlayfs/armv7-linux-androideabi/release/ksud ../manager/app/src/main/jniLibs/armeabi-v7a/libksud_overlayfs.so
-            cp -f ../ksud_overlayfs/x86_64-linux-android/release/ksud ../manager/app/src/main/jniLibs/x86_64/libksud_overlayfs.so
-          fi
-
-      - name: Copy ksud_magic to app jniLibs
-        run: |
-          mkdir -p app/src/main/jniLibs/arm64-v8a
-          mkdir -p app/src/main/jniLibs/armeabi-v7a
-          mkdir -p app/src/main/jniLibs/x86_64
-
-          if [ "${{ needs.check-cache.outputs.cache-hit }}" == "true" ]; then
-            # Copy from cached artifacts
-            cp -f ../cached-artifacts/ksud_magic/aarch64-linux-android/release/ksud ../manager/app/src/main/jniLibs/arm64-v8a/libksud_magic.so
-            cp -f ../cached-artifacts/ksud_magic/armv7-linux-androideabi/release/ksud ../manager/app/src/main/jniLibs/armeabi-v7a/libksud_magic.so
-            cp -f ../cached-artifacts/ksud_magic/x86_64-linux-android/release/ksud ../manager/app/src/main/jniLibs/x86_64/libksud_magic.so
-          else
-            # Copy from fresh artifacts
-            cp -f ../ksud_magic/aarch64-linux-android/release/ksud ../manager/app/src/main/jniLibs/arm64-v8a/libksud_magic.so
-            cp -f ../ksud_magic/armv7-linux-androideabi/release/ksud ../manager/app/src/main/jniLibs/armeabi-v7a/libksud_magic.so
-            cp -f ../ksud_magic/x86_64-linux-android/release/ksud ../manager/app/src/main/jniLibs/x86_64/libksud_magic.so
-          fi
-
-      - name: Build with Gradle
-        run: |
-          {
-            echo 'org.gradle.parallel=true'
-            echo 'org.gradle.vfs.watch=true'
-            echo 'org.gradle.jvmargs=-Xmx2048m'
-            echo 'android.native.buildOutput=verbose'
-          } >> gradle.properties
-          sed -i 's/org.gradle.configuration-cache=true//g' gradle.properties
-          chmod +x gradlew
-          ./gradlew clean assembleRelease
-
-      - name: Upload Build Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: Manager
-          path: manager/app/build/outputs/apk/release/*.apk
-
-      - name: Upload Mappings
-        uses: actions/upload-artifact@v4
-        with:
-          name: Mappings
-          path: manager/app/build/outputs/mapping/release/
-
-      - name: Send APK to Telegram
-        run: |
-          # Check if required secrets are available
-          if [ -z "${{ secrets.TELEGRAM_BOT_TOKEN }}" ] || [ -z "${{ secrets.TELEGRAM_CHAT_ID }}" ]; then
-            echo "⚠️ Telegram secrets not configured - skipping upload"
-            echo "Required: TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID"
-            exit 0
-          fi
-          
-          APK=$(find ./app/build/outputs/apk/release -name "*.apk")
-          if [ -f "$APK" ]; then
-            echo "📱 Found APK: $APK"
-            VERSION=$(git rev-list --count HEAD)
-            CAPTION="🔧 CI Manager (TEST BUILD) #ci_${VERSION}
-            
-            📝 ${{ github.event.head_commit.message }}
-            
-            🔗 Commit: ${{ github.event.head_commit.url }}
-            🏃 Workflow: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-            
-            echo "📤 Uploading to Telegram..."
-            curl -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" \
-                 -F "document=@${APK}" \
-                 -F "caption=${CAPTION}" \
-                 -F "message_thread_id=${{ secrets.TELEGRAM_TOPIC_ID }}" \
-                 "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument"
-          else
-            echo "❌ APK file not found!"
-            exit 1
-          fi
-
-  build-manager-spoofed:
-    needs: [check-cache, build-ksud]
-    if: always() && needs.check-cache.result == 'success' && (needs.check-cache.outputs.cache-hit == 'true' || needs.build-ksud.result == 'success')
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        build_type: [normal, spoofed]
     defaults:
       run:
         working-directory: ./manager
@@ -363,18 +139,10 @@ jobs:
           fetch-depth: 0
 
       - name: Spoof Package ID
+        if: matrix.build_type == 'spoofed'
         run: |
           chmod +x spoof
           ./spoof
-
-      - name: Setup need_upload
-        id: need_upload
-        run: |
-          if [ ! -z "${{ secrets.TELEGRAM_BOT_TOKEN }}" ]; then
-            echo "UPLOAD=true" >> $GITHUB_OUTPUT
-          else
-            echo "UPLOAD=false" >> $GITHUB_OUTPUT
-          fi
 
       - name: Write Key
         run: |
@@ -471,7 +239,7 @@ jobs:
           path: ksud_magic
 
       # Copy artifacts to jniLibs (works for both cached and fresh)
-      - name: Copy susfsd to app jniLibs
+      - name: Copy artifacts to jniLibs
         run: |
           mkdir -p app/src/main/jniLibs/arm64-v8a
           mkdir -p app/src/main/jniLibs/armeabi-v7a
@@ -482,44 +250,20 @@ jobs:
             cp -f ../cached-artifacts/susfsd/arm64-v8a/susfsd ../manager/app/src/main/jniLibs/arm64-v8a/libsusfsd.so
             cp -f ../cached-artifacts/susfsd/armeabi-v7a/susfsd ../manager/app/src/main/jniLibs/armeabi-v7a/libsusfsd.so
             cp -f ../cached-artifacts/susfsd/x86_64/susfsd ../manager/app/src/main/jniLibs/x86_64/libsusfsd.so
-          else
-            # Copy from fresh artifacts
-            cp -f ../arm64-v8a/susfsd ../manager/app/src/main/jniLibs/arm64-v8a/libsusfsd.so
-            cp -f ../armeabi-v7a/susfsd ../manager/app/src/main/jniLibs/armeabi-v7a/libsusfsd.so
-            cp -f ../x86_64/susfsd ../manager/app/src/main/jniLibs/x86_64/libsusfsd.so
-          fi
-
-      - name: Copy ksud_overlayfs to app jniLibs
-        run: |
-          mkdir -p app/src/main/jniLibs/arm64-v8a
-          mkdir -p app/src/main/jniLibs/armeabi-v7a
-          mkdir -p app/src/main/jniLibs/x86_64
-
-          if [ "${{ needs.check-cache.outputs.cache-hit }}" == "true" ]; then
-            # Copy from cached artifacts
             cp -f ../cached-artifacts/ksud_overlayfs/aarch64-linux-android/release/ksud ../manager/app/src/main/jniLibs/arm64-v8a/libksud_overlayfs.so
             cp -f ../cached-artifacts/ksud_overlayfs/armv7-linux-androideabi/release/ksud ../manager/app/src/main/jniLibs/armeabi-v7a/libksud_overlayfs.so
             cp -f ../cached-artifacts/ksud_overlayfs/x86_64-linux-android/release/ksud ../manager/app/src/main/jniLibs/x86_64/libksud_overlayfs.so
-          else
-            # Copy from fresh artifacts
-            cp -f ../ksud_overlayfs/aarch64-linux-android/release/ksud ../manager/app/src/main/jniLibs/arm64-v8a/libksud_overlayfs.so
-            cp -f ../ksud_overlayfs/armv7-linux-androideabi/release/ksud ../manager/app/src/main/jniLibs/armeabi-v7a/libksud_overlayfs.so
-            cp -f ../ksud_overlayfs/x86_64-linux-android/release/ksud ../manager/app/src/main/jniLibs/x86_64/libksud_overlayfs.so
-          fi
-
-      - name: Copy ksud_magic to app jniLibs
-        run: |
-          mkdir -p app/src/main/jniLibs/arm64-v8a
-          mkdir -p app/src/main/jniLibs/armeabi-v7a
-          mkdir -p app/src/main/jniLibs/x86_64
-
-          if [ "${{ needs.check-cache.outputs.cache-hit }}" == "true" ]; then
-            # Copy from cached artifacts
             cp -f ../cached-artifacts/ksud_magic/aarch64-linux-android/release/ksud ../manager/app/src/main/jniLibs/arm64-v8a/libksud_magic.so
             cp -f ../cached-artifacts/ksud_magic/armv7-linux-androideabi/release/ksud ../manager/app/src/main/jniLibs/armeabi-v7a/libksud_magic.so
             cp -f ../cached-artifacts/ksud_magic/x86_64-linux-android/release/ksud ../manager/app/src/main/jniLibs/x86_64/libksud_magic.so
           else
             # Copy from fresh artifacts
+            cp -f ../arm64-v8a/susfsd ../manager/app/src/main/jniLibs/arm64-v8a/libsusfsd.so
+            cp -f ../armeabi-v7a/susfsd ../manager/app/src/main/jniLibs/armeabi-v7a/libsusfsd.so
+            cp -f ../x86_64/susfsd ../manager/app/src/main/jniLibs/x86_64/libsusfsd.so
+            cp -f ../ksud_overlayfs/aarch64-linux-android/release/ksud ../manager/app/src/main/jniLibs/arm64-v8a/libksud_overlayfs.so
+            cp -f ../ksud_overlayfs/armv7-linux-androideabi/release/ksud ../manager/app/src/main/jniLibs/armeabi-v7a/libksud_overlayfs.so
+            cp -f ../ksud_overlayfs/x86_64-linux-android/release/ksud ../manager/app/src/main/jniLibs/x86_64/libksud_overlayfs.so
             cp -f ../ksud_magic/aarch64-linux-android/release/ksud ../manager/app/src/main/jniLibs/arm64-v8a/libksud_magic.so
             cp -f ../ksud_magic/armv7-linux-androideabi/release/ksud ../manager/app/src/main/jniLibs/armeabi-v7a/libksud_magic.so
             cp -f ../ksud_magic/x86_64-linux-android/release/ksud ../manager/app/src/main/jniLibs/x86_64/libksud_magic.so
@@ -540,16 +284,38 @@ jobs:
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Manager-Spoofed
+          name: Manager${{ matrix.build_type == 'spoofed' && '-Spoofed' || '' }}
           path: manager/app/build/outputs/apk/release/*.apk
 
       - name: Upload Mappings
         uses: actions/upload-artifact@v4
         with:
-          name: Mappings-Spoofed
+          name: Mappings${{ matrix.build_type == 'spoofed' && '-Spoofed' || '' }}
           path: manager/app/build/outputs/mapping/release/
 
-      - name: Send APK to Telegram
+  telegram-upload:
+    needs: [build-manager]
+    if: always() && needs.build-manager.result == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download Normal Manager APK
+        uses: actions/download-artifact@v4
+        with:
+          name: Manager
+          path: ./normal
+
+      - name: Download Spoofed Manager APK
+        uses: actions/download-artifact@v4
+        with:
+          name: Manager-Spoofed
+          path: ./spoofed
+
+      - name: Send APKs to Telegram
         run: |
           # Check if required secrets are available
           if [ -z "${{ secrets.TELEGRAM_BOT_TOKEN }}" ] || [ -z "${{ secrets.TELEGRAM_CHAT_ID }}" ]; then
@@ -558,10 +324,33 @@ jobs:
             exit 0
           fi
           
-          APK=$(find ./app/build/outputs/apk/release -name "*.apk")
-          if [ -f "$APK" ]; then
-            echo "📱 Found APK: $APK"
-            VERSION=$(git rev-list --count HEAD)
+          VERSION=$(git rev-list --count HEAD)
+          
+          # Upload Normal APK
+          NORMAL_APK=$(find ./normal -name "*.apk")
+          if [ -f "$NORMAL_APK" ]; then
+            echo "📱 Found Normal APK: $NORMAL_APK"
+            CAPTION="🔧 CI Manager (TEST BUILD) #ci_${VERSION}
+            
+            📝 ${{ github.event.head_commit.message }}
+            
+            🔗 Commit: ${{ github.event.head_commit.url }}
+            🏃 Workflow: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            
+            echo "📤 Uploading Normal APK to Telegram..."
+            curl -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" \
+                 -F "document=@${NORMAL_APK}" \
+                 -F "caption=${CAPTION}" \
+                 -F "message_thread_id=${{ secrets.TELEGRAM_TOPIC_ID }}" \
+                 "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument"
+          else
+            echo "❌ Normal APK file not found!"
+          fi
+          
+          # Upload Spoofed APK
+          SPOOFED_APK=$(find ./spoofed -name "*.apk")
+          if [ -f "$SPOOFED_APK" ]; then
+            echo "📱 Found Spoofed APK: $SPOOFED_APK"
             CAPTION="🔧 Spoofed Manager (TEST BUILD) #spoofed_${VERSION}
             
             📝 ${{ github.event.head_commit.message }}
@@ -569,13 +358,12 @@ jobs:
             🔗 Commit: ${{ github.event.head_commit.url }}
             🏃 Workflow: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
             
-            echo "📤 Uploading to Telegram..."
+            echo "📤 Uploading Spoofed APK to Telegram..."
             curl -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" \
-                 -F "document=@${APK}" \
+                 -F "document=@${SPOOFED_APK}" \
                  -F "caption=${CAPTION}" \
                  -F "message_thread_id=${{ secrets.TELEGRAM_TOPIC_ID }}" \
                  "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument"
           else
-            echo "❌ APK file not found!"
-            exit 1
+            echo "❌ Spoofed APK file not found!"
           fi
