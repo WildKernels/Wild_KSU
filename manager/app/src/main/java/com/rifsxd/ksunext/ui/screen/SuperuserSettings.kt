@@ -38,9 +38,9 @@ fun SuperuserSettingsScreen(navigator: DestinationsNavigator) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(CardConstants.CARD_PADDING_MEDIUM),
-        verticalArrangement = Arrangement.spacedBy(CardConstants.ITEM_SPACING_MEDIUM)
+        verticalArrangement = Arrangement.spacedBy(CardConstants.CARD_PADDING_MEDIUM)
     ) {
-        // Superuser Settings Card
+        // Icon Theme Settings Card
         item {
             StandardCard {
                 // Icon Theme Selection
@@ -67,9 +67,12 @@ fun SuperuserSettingsScreen(navigator: DestinationsNavigator) {
                         onDismiss = { showIconThemeManager = false }
                     )
                 }
-
-                CardItemSpacer()
-
+            }
+        }
+        
+        // App Display Settings Card
+        item {
+            StandardCard {
                 // Individual App Cards Setting
                 var useIndividualCards by rememberSaveable {
                     mutableStateOf(
@@ -92,7 +95,7 @@ fun SuperuserSettingsScreen(navigator: DestinationsNavigator) {
                 // Enable Favorite Button
                 var enableFavoriteButton by rememberSaveable {
                     mutableStateOf(
-                        !prefs.getBoolean("disable_favorite_button", true)
+                        !prefs.getBoolean("disable_favorite_button", false)
                     )
                 }
                 

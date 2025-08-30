@@ -1307,7 +1307,7 @@ fun RegularTopBar(
                         // Reset all superuser settings to default
                         val editor = prefs.edit()
                         editor.remove("selected_icon_pack") // Reset to default icon theme
-                        editor.putBoolean("use_individual_app_cards", true)
+                        editor.putBoolean("use_individual_app_cards", false)
                         editor.putBoolean("enable_favorite_button", false) // Default off
                         editor.putBoolean("disable_favorite_button", true) // Opposite of enable
                         editor.putBoolean("disable_favorite_sorting", true) // Opposite of enable
