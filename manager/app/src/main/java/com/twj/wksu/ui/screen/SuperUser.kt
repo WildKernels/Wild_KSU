@@ -85,7 +85,7 @@ fun SuperUserScreen(navigator: DestinationsNavigator) {
             state = listState,
             modifier = Modifier.fillMaxSize(),
             contentPadding = if (useIndividualCards) PaddingValues(16.dp) else PaddingValues(0.dp),
-            verticalArrangement = if (useIndividualCards) Arrangement.spacedBy(8.dp) else Arrangement.Top
+            verticalArrangement = if (useIndividualCards) Arrangement.spacedBy(16.dp) else Arrangement.Top
         ) {
             items(viewModel.appList, key = { it.packageName + it.uid }) { app ->
                 AppItem(app, prefs, useIndividualCards) {
