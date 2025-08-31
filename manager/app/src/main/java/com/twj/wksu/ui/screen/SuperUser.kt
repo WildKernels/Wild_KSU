@@ -198,12 +198,10 @@ private fun AppItem(
         StandardCard(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 4.dp),
+                .padding(horizontal = 16.dp, vertical = 8.dp),
             cardType = CardType.SURFACE
         ) {
-            Box(modifier = Modifier.padding(horizontal = 0.dp)) {
-                content()
-            }
+            content()
         }
     } else {
         content()
