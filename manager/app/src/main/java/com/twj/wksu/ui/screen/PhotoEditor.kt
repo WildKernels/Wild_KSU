@@ -231,15 +231,12 @@ fun PhotoEditor(
         // Close any open menus
         activeMenu = null
         
-        // Reset all settings to defaults (local state only)
+        // Reset photo position to defaults (local state only)
         currentScale = 1f
         currentOffsetX = 0f
         currentOffsetY = 0f
         currentRotation = 0f
         freeFormEditing = true
-        
-        // Reset UI transparency to 0% when reset button is pressed
-        BackgroundCustomization.resetUITransparency(context)
         
         // Update transformations (local state only)
         onTransformChange(currentScale, currentOffsetX, currentOffsetY, currentRotation)
@@ -378,15 +375,12 @@ fun PhotoEditor(
                             // Close any open menus
                             activeMenu = null
                             
-                            // Reset all settings to defaults (local state only)
+                            // Reset photo position to defaults (local state only)
                             currentScale = 1f
                             currentOffsetX = 0f
                             currentOffsetY = 0f
                             currentRotation = 0f
                             freeFormEditing = true
-                            
-                            // Reset UI transparency to 0% when reset button is pressed
-                            BackgroundCustomization.resetUITransparency(context)
                             
                             // Update transformations (local state only)
                             onTransformChange(currentScale, currentOffsetX, currentOffsetY, currentRotation)
@@ -400,7 +394,7 @@ fun PhotoEditor(
                     ) {
                         Icon(
                             imageVector = Icons.Default.Refresh,
-                            contentDescription = "Reset All",
+                            contentDescription = "Reset Position",
                             tint = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.size(24.dp)
                         )
