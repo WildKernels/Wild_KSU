@@ -162,8 +162,6 @@ object BackgroundCustomization {
             .putFloat("background_pos_x", transformation.offsetX)
             .putFloat("background_pos_y", transformation.offsetY)
             .putFloat("background_rotation", transformation.rotation)
-            .putFloat("background_transparency", 0.0f)
-            .putFloat("background_blur", 0.0f)
             .putString("background_fit_mode", "fit")
             
         // Only save URI if explicitly requested

@@ -72,11 +72,6 @@ fun PhotoEditorScreen(
 ) {
     val context = LocalContext.current
     
-    // Reset background transparency and blur settings to 0% when entering photo editor
-    LaunchedEffect(Unit) {
-        BackgroundCustomization.resetBackgroundEffects(context)
-    }
-    
     val saveFunction = { scale: Float, offsetX: Float, offsetY: Float, rotation: Float ->
         // Create transformation object
         val transformation = BackgroundTransformation(
