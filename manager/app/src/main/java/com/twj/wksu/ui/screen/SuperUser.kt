@@ -39,7 +39,8 @@ import com.twj.wksu.R
 import com.twj.wksu.ui.viewmodel.SuperUserViewModel
 import com.twj.wksu.ui.LocalSuperUserViewModel
 import com.twj.wksu.ui.component.ThemedIcon
-import com.twj.wksu.ui.theme.getCardElevation
+import com.twj.wksu.ui.component.StandardCard
+import com.twj.wksu.ui.component.CardType
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
 @Destination<RootGraph>
@@ -187,14 +188,11 @@ private fun AppItem(
     }
     
     if (useIndividualCards) {
-        ElevatedCard(
+        StandardCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 4.dp),
-            colors = CardDefaults.elevatedCardColors(
-                containerColor = MaterialTheme.colorScheme.surfaceContainer
-            ),
-            elevation = getCardElevation()
+            cardType = CardType.SURFACE
         ) {
             content()
         }
