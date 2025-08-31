@@ -78,25 +78,29 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                         // Add system default first
                         locales.add(java.util.Locale.ROOT) // This will represent "System Default"
                         
-                        // Dynamically detect available locales by checking resource directories
-                        val resourceDirs = listOf(
-                            "ar", "bg", "de", "fa", "fr", "hu", "in", "it", 
-                            "ja", "ko", "pl", "pt-rBR", "ru", "th", "tr", 
-                            "uk", "vi", "zh-rCN", "zh-rTW"
+                        // Dynamically detect available locales by scanning for translated resources
+                        // This will automatically include languages as Crowdin adds them
+                        val availableLanguages = mutableListOf<String>()
+                        
+                        // Test for available translations by checking if localized strings exist
+                        val testLanguages = listOf(
+                            "ar", "bg", "bn", "de", "es", "fa", "fr", "hi", "hu", "id", "it", 
+                            "ja", "ko", "pl", "pt-rBR", "ru", "sv", "th", "tr", "uk", "vi", 
+                            "zh-rCN", "zh-rTW"
                         )
                         
-                        resourceDirs.forEach { dir ->
+                        testLanguages.forEach { langCode ->
                             try {
                                 val locale = when {
-                                    dir.contains("-r") -> {
-                                        val parts = dir.split("-r")
+                                    langCode.contains("-r") -> {
+                                        val parts = langCode.split("-r")
                                         java.util.Locale.Builder()
                                             .setLanguage(parts[0])
                                             .setRegion(parts[1])
                                             .build()
                                     }
                                     else -> java.util.Locale.Builder()
-                                        .setLanguage(dir)
+                                        .setLanguage(langCode)
                                         .build()
                                 }
                                 
@@ -109,12 +113,33 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                                 val testString = localizedContext.getString(R.string.settings_language)
                                 val defaultString = context.getString(R.string.settings_language)
                                 
-                                // If the string is different or it's English, it's supported
-                                if (testString != defaultString || locale.language == "en") {
-                                    locales.add(locale)
+                                // If the string is different, the translation exists
+                                if (testString != defaultString) {
+                                    availableLanguages.add(langCode)
                                 }
                             } catch (e: Exception) {
                                 // Skip unsupported locales
+                            }
+                        }
+                        
+                        // Add the detected available languages to the locales list
+                        availableLanguages.forEach { langCode ->
+                            try {
+                                val locale = when {
+                                    langCode.contains("-r") -> {
+                                        val parts = langCode.split("-r")
+                                        java.util.Locale.Builder()
+                                            .setLanguage(parts[0])
+                                            .setRegion(parts[1])
+                                            .build()
+                                    }
+                                    else -> java.util.Locale.Builder()
+                                        .setLanguage(langCode)
+                                        .build()
+                                }
+                                locales.add(locale)
+                            } catch (e: Exception) {
+                                // Skip invalid locales
                             }
                         }
                         
