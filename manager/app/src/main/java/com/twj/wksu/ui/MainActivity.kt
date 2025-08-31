@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.compose.BackHandler
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
@@ -501,6 +502,61 @@ class MainActivity : ComponentActivity() {
 
                 val navigator = navController.rememberDestinationsNavigator()
                 
+                // Handle system back navigation
+                BackHandler {
+                    val currentRoute = currentDestination?.route
+                    when (currentRoute) {
+                        // Main screens - navigate to home
+                        SuperUserScreenDestination.route,
+                        ModuleScreenDestination.route,
+                        SettingScreenDestination.route -> {
+                            navigator.navigate(HomeScreenDestination) {
+                                popUpTo(NavGraphs.root) {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        }
+                        // Sub-screens - navigate to parent
+                        CustomizationScreenDestination.route,
+                        DeveloperScreenDestination.route,
+                        BackupRestoreScreenDestination.route,
+                        HomeSettingsScreenDestination.route,
+                        ModuleSettingsScreenDestination.route,
+                        SuperuserSettingsScreenDestination.route,
+                        ThemeSettingsScreenDestination.route -> {
+                            navigator.navigate(SettingScreenDestination) {
+                                popUpTo(SettingScreenDestination) {
+                                    inclusive = false
+                                }
+                                launchSingleTop = true
+                            }
+                        }
+                        AppProfileScreenDestination.route,
+                        AppProfileTemplateScreenDestination.route -> {
+                            navigator.navigate(SuperUserScreenDestination) {
+                                popUpTo(SuperUserScreenDestination) {
+                                    inclusive = false
+                                }
+                                launchSingleTop = true
+                            }
+                        }
+                        InstallScreenDestination.route -> {
+                            navigator.navigate(HomeScreenDestination) {
+                                popUpTo(HomeScreenDestination) {
+                                    inclusive = false
+                                }
+                                launchSingleTop = true
+                            }
+                        }
+                        // For other screens, use default back navigation
+                        else -> {
+                            navigator.navigateUp()
+                        }
+                    }
+                }
+                
                 // Disable background when in PhotoEditor
                 val isInPhotoEditor = currentDestination?.route == PhotoEditorScreenDestination.route
                 val effectiveBackgroundUri = if (isInPhotoEditor) null else backgroundImageUri
@@ -571,7 +627,11 @@ class MainActivity : ComponentActivity() {
                             BottomBar(navController, moduleUpdateCount, Modifier)
                         }
                     },
-                    contentWindowInsets = WindowInsets(0, 0, 0, 0)
+                    contentWindowInsets = if (showBottomBar) {
+                        WindowInsets(0, 0, 0, 0)
+                    } else {
+                        WindowInsets.systemBars.only(WindowInsetsSides.Bottom)
+                    }
                 ) { innerPadding ->
                     // Create a mutable state for PhotoEditor save callback
                 var photoEditorSaveCallback by remember { mutableStateOf<(() -> Unit)?>(null) }
