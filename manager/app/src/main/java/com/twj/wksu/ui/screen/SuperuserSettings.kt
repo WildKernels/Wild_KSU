@@ -71,10 +71,23 @@ fun SuperuserSettingsScreen(navigator: DestinationsNavigator) {
                 CardItemSpacer()
 
                 // Individual App Cards Setting
-                var useIndividualCards by rememberSaveable {
+                var useIndividualCards by remember {
                     mutableStateOf(
                         prefs.getBoolean("use_individual_app_cards", true)
                     )
+                }
+
+                // Listen for preference changes
+                DisposableEffect(Unit) {
+                    val listener = android.content.SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
+                        if (key == "use_individual_app_cards") {
+                            useIndividualCards = prefs.getBoolean("use_individual_app_cards", true)
+                        }
+                    }
+                    prefs.registerOnSharedPreferenceChangeListener(listener)
+                    onDispose {
+                        prefs.unregisterOnSharedPreferenceChangeListener(listener)
+                    }
                 }
 
                 CardSwitchContent(
