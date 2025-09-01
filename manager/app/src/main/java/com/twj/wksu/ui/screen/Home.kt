@@ -1008,17 +1008,16 @@ fun MiuixStatusCard(
     
     val workingText = "${stringResource(id = R.string.home_working)}$safeMode"
     
-    // Square cards layout with centered spacing
-    Column(
+    // Horizontal layout: Square main card on left, two stacked cards on right
+    Row(
         modifier = Modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(CardConstants.CARD_SPACING),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalArrangement = Arrangement.spacedBy(CardConstants.CARD_SPACING)
     ) {
-        // Main status card (full width, square aspect ratio)
+        // Main status card (square)
         Card(
             modifier = Modifier
-                .fillMaxWidth()
-                .aspectRatio(2.5f), // Wide rectangle for main status
+                .weight(2f)
+                .aspectRatio(1f), // Perfect square
             colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.primaryContainer
             )
@@ -1029,11 +1028,11 @@ fun MiuixStatusCard(
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .offset(38.dp, 45.dp),
+                        .offset(20.dp, 25.dp),
                     contentAlignment = Alignment.BottomEnd
                 ) {
                     Icon(
-                        modifier = Modifier.size(120.dp), // Reduced size for better proportion
+                        modifier = Modifier.size(80.dp), // Smaller icon for square card
                         imageVector = Icons.Rounded.CheckCircleOutline,
                         tint = Color(0xFF36D167),
                         contentDescription = null
@@ -1051,7 +1050,7 @@ fun MiuixStatusCard(
                     ) {
                         Text(
                             text = workingText,
-                            fontSize = 20.sp,
+                            fontSize = 18.sp, // Slightly smaller for square layout
                             fontWeight = FontWeight.SemiBold,
                         )
                         val labelStyle = LabelItemDefaults.style
@@ -1079,41 +1078,41 @@ fun MiuixStatusCard(
                     Text(
                         modifier = Modifier.fillMaxWidth(),
                         text = stringResource(R.string.home_working_version, ksuVersion),
-                        fontSize = 14.sp,
+                        fontSize = 13.sp, // Slightly smaller for square layout
                         fontWeight = FontWeight.Medium,
                     )
                 }
             }
         }
         
-        // Square cards row for Superuser and Module
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(CardConstants.CARD_SPACING, Alignment.CenterHorizontally)
+        // Right side: Stacked Superuser and Module cards
+        Column(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(CardConstants.CARD_SPACING)
         ) {
             Card(
                 modifier = Modifier
-                    .weight(1f)
-                    .aspectRatio(1f), // Perfect square
+                    .fillMaxWidth()
+                    .aspectRatio(1f), // Square
                 onClick = onClickSuperuser
             ) {
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(16.dp),
+                        .padding(12.dp), // Slightly less padding for smaller cards
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
                     Text(
                         text = stringResource(R.string.superuser),
                         fontWeight = FontWeight.Medium,
-                        fontSize = 15.sp,
+                        fontSize = 13.sp, // Smaller text for compact layout
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
-                    Spacer(Modifier.height(8.dp))
+                    Spacer(Modifier.height(4.dp))
                     Text(
                         text = getSuperuserCount().toString(),
-                        fontSize = 26.sp,
+                        fontSize = 22.sp, // Smaller number for compact layout
                         fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.colorScheme.onSurface,
                     )
@@ -1122,27 +1121,27 @@ fun MiuixStatusCard(
             
             Card(
                 modifier = Modifier
-                    .weight(1f)
-                    .aspectRatio(1f), // Perfect square
+                    .fillMaxWidth()
+                    .aspectRatio(1f), // Square
                 onClick = onClickModule
             ) {
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(16.dp),
+                        .padding(12.dp), // Slightly less padding for smaller cards
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
                     Text(
                         text = stringResource(R.string.module),
                         fontWeight = FontWeight.Medium,
-                        fontSize = 15.sp,
+                        fontSize = 13.sp, // Smaller text for compact layout
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
-                    Spacer(Modifier.height(8.dp))
+                    Spacer(Modifier.height(4.dp))
                     Text(
                         text = getModuleCount().toString(),
-                        fontSize = 26.sp,
+                        fontSize = 22.sp, // Smaller number for compact layout
                         fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.colorScheme.onSurface,
                     )
