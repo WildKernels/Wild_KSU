@@ -1008,51 +1008,59 @@ fun MiuixStatusCard(
     
     val workingText = "${stringResource(id = R.string.home_working)}$safeMode"
     
-    // Horizontal layout: Square main card on left, two stacked cards on right
+    // Horizontal layout: Square main card on left, two smaller cards on right, both sides centered
     Row(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(CardConstants.CARD_SPACING)
+        horizontalArrangement = Arrangement.spacedBy(CardConstants.CARD_SPACING),
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        // Main status card (square)
-        Card(
-            modifier = Modifier
-                .weight(2f)
-                .aspectRatio(1f), // Perfect square
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.primaryContainer
-            )
+        // Main status card (square) - centered on left side
+        Box(
+            modifier = Modifier.weight(1f),
+            contentAlignment = Alignment.Center
         ) {
-            Box(
-                modifier = Modifier.fillMaxSize()
+            Card(
+                modifier = Modifier
+                    .size(180.dp), // Fixed square size
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer
+                )
             ) {
                 Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .offset(20.dp, 25.dp),
-                    contentAlignment = Alignment.BottomEnd
+                    modifier = Modifier.fillMaxSize()
                 ) {
-                    Icon(
-                        modifier = Modifier.size(80.dp), // Smaller icon for square card
-                        imageVector = Icons.Rounded.CheckCircleOutline,
-                        tint = Color(0xFF36D167),
-                        contentDescription = null
-                    )
-                }
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(all = 16.dp)
-                ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .offset(15.dp, 20.dp),
+                        contentAlignment = Alignment.BottomEnd
                     ) {
-                        Text(
-                            text = workingText,
-                            fontSize = 18.sp, // Slightly smaller for square layout
-                            fontWeight = FontWeight.SemiBold,
+                        Icon(
+                            modifier = Modifier.size(70.dp),
+                            imageVector = Icons.Rounded.CheckCircleOutline,
+                            tint = Color(0xFF36D167),
+                            contentDescription = null
                         )
+                    }
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(all = 16.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(6.dp)
+                        ) {
+                            Text(
+                                text = workingText,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
+                        Spacer(Modifier.height(4.dp))
                         val labelStyle = LabelItemDefaults.style
                         LabelItem(
                             icon = if (Natives.isSafeMode) {
@@ -1073,78 +1081,83 @@ fun MiuixStatusCard(
                                 )
                             }
                         )
+                        Spacer(Modifier.height(4.dp))
+                        Text(
+                            modifier = Modifier.fillMaxWidth(),
+                            text = stringResource(R.string.home_working_version, ksuVersion),
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Medium,
+                        )
                     }
-                    Spacer(Modifier.height(2.dp))
-                    Text(
-                        modifier = Modifier.fillMaxWidth(),
-                        text = stringResource(R.string.home_working_version, ksuVersion),
-                        fontSize = 13.sp, // Slightly smaller for square layout
-                        fontWeight = FontWeight.Medium,
-                    )
                 }
             }
         }
         
-        // Right side: Stacked Superuser and Module cards
-        Column(
+        // Right side: Two smaller cards stacked vertically - centered on right side
+        Box(
             modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(CardConstants.CARD_SPACING)
+            contentAlignment = Alignment.Center
         ) {
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(1f), // Square
-                onClick = onClickSuperuser
+            Column(
+                verticalArrangement = Arrangement.spacedBy(CardConstants.CARD_SPACING),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(12.dp), // Slightly less padding for smaller cards
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
+                Card(
+                    modifier = Modifier.size(85.dp), // Smaller square cards
+                    onClick = onClickSuperuser
                 ) {
-                    Text(
-                        text = stringResource(R.string.superuser),
-                        fontWeight = FontWeight.Medium,
-                        fontSize = 13.sp, // Smaller text for compact layout
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                    Spacer(Modifier.height(4.dp))
-                    Text(
-                        text = getSuperuserCount().toString(),
-                        fontSize = 22.sp, // Smaller number for compact layout
-                        fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.onSurface,
-                    )
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(8.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = stringResource(R.string.superuser),
+                            fontWeight = FontWeight.Medium,
+                            fontSize = 11.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                        Spacer(Modifier.height(2.dp))
+                        Text(
+                            text = getSuperuserCount().toString(),
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = MaterialTheme.colorScheme.onSurface,
+                        )
+                    }
                 }
-            }
-            
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(1f), // Square
-                onClick = onClickModule
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(12.dp), // Slightly less padding for smaller cards
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
+                
+                Card(
+                    modifier = Modifier.size(85.dp), // Smaller square cards
+                    onClick = onClickModule
                 ) {
-                    Text(
-                        text = stringResource(R.string.module),
-                        fontWeight = FontWeight.Medium,
-                        fontSize = 13.sp, // Smaller text for compact layout
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                    Spacer(Modifier.height(4.dp))
-                    Text(
-                        text = getModuleCount().toString(),
-                        fontSize = 22.sp, // Smaller number for compact layout
-                        fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.onSurface,
-                    )
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(8.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = stringResource(R.string.module),
+                            fontWeight = FontWeight.Medium,
+                            fontSize = 11.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                        Spacer(Modifier.height(2.dp))
+                        Text(
+                            text = getModuleCount().toString(),
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = MaterialTheme.colorScheme.onSurface,
+                        )
+                    }
                 }
             }
         }
