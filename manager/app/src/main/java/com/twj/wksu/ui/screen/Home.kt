@@ -1030,7 +1030,7 @@ fun MiuixStatusCard(
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .aspectRatio(if (layoutMode == "MIUIX_RECTANGLE") 1.8f else 1f), // Rectangle or square aspect ratio
+                    .height(if (layoutMode == "MIUIX_RECTANGLE") 120.dp else 160.dp), // Fixed height for better control
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer
                 )
@@ -1114,7 +1114,7 @@ fun MiuixStatusCard(
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .aspectRatio(2f), // Rectangular cards that fit the available space
+                        .height(75.dp), // Fixed height that scales with available width
                     onClick = onClickSuperuser
                 ) {
                     Column(
@@ -1145,7 +1145,7 @@ fun MiuixStatusCard(
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .aspectRatio(2f), // Rectangular cards that fit the available space
+                        .height(75.dp), // Fixed height that scales with available width
                     onClick = onClickModule
                 ) {
                     Column(
