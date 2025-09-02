@@ -1012,8 +1012,8 @@ fun MiuixStatusCard(
     
     // Calculate weights based on layout mode
     val (mainCardWeight, sideCardWeight) = when (layoutMode) {
-        "MIUIX_RECTANGLE" -> 0.6f to 0.4f  // 60% main card, 40% side cards
-        else -> 0.6f to 0.4f  // 60% main card, 40% side cards for both modes
+        "MIUIX_RECTANGLE" -> 0.65f to 0.35f  // 65% main card, 35% side cards
+        else -> 0.5f to 0.5f  // 50% each for square mode
     }
     
     // Horizontal layout: Main card on left, two smaller cards on right, both sides centered
@@ -1030,7 +1030,7 @@ fun MiuixStatusCard(
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .aspectRatio(if (layoutMode == "MIUIX_RECTANGLE") 2.5f else 1f), // Rectangle or square aspect ratio
+                    .aspectRatio(if (layoutMode == "MIUIX_RECTANGLE") 1.8f else 1f), // Rectangle or square aspect ratio
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer
                 )
@@ -1114,7 +1114,7 @@ fun MiuixStatusCard(
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(80.dp), // Fixed height, let width scale naturally
+                        .aspectRatio(2f), // Rectangular cards that fit the available space
                     onClick = onClickSuperuser
                 ) {
                     Column(
@@ -1145,7 +1145,7 @@ fun MiuixStatusCard(
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(80.dp), // Fixed height, let width scale naturally
+                        .aspectRatio(2f), // Rectangular cards that fit the available space
                     onClick = onClickModule
                 ) {
                     Column(
