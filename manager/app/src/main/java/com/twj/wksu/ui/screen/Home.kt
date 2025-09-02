@@ -59,6 +59,7 @@ import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.core.content.pm.PackageInfoCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.dergoogler.mmrl.ui.component.LabelItem
@@ -1010,19 +1011,22 @@ fun MiuixStatusCard(
     
     val workingText = "${stringResource(id = R.string.home_working)}$safeMode"
     
-    // Calculate weights based on layout mode
-    val (mainCardWeight, sideCardWeight) = when (layoutMode) {
-        "MIUIX_RECTANGLE" -> 0.65f to 0.35f  // 65% main card, 35% side cards
-        else -> 0.5f to 0.5f  // 50% each for square mode
-    }
+    // Calculate weights - always 50/50 for proper square layout
+    val (mainCardWeight, sideCardWeight) = 0.5f to 0.5f
     
-    // Horizontal layout: Main card on left, two smaller cards on right, both sides aligned to top
+    // Calculate square height based on available width
+    val screenWidth = LocalConfiguration.current.screenWidthDp.dp
+    val availableWidth = screenWidth - (CardConstants.CARD_SPACING * 3) // Account for padding and spacing
+    val squareSize = (availableWidth * 0.5f) - (CardConstants.CARD_SPACING * 0.5f)
+    val halfCardHeight = (squareSize - CardConstants.CARD_SPACING) / 2
+    
+    // Horizontal layout: Square card on left, two half-height cards on right
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(CardConstants.CARD_SPACING),
         verticalAlignment = Alignment.Top
     ) {
-        // Main status card - responsive width based on layout mode
+        // Main status card - perfect square
         Box(
             modifier = Modifier.weight(mainCardWeight),
             contentAlignment = Alignment.TopCenter
@@ -1030,7 +1034,7 @@ fun MiuixStatusCard(
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(if (layoutMode == "MIUIX_RECTANGLE") 120.dp else 160.dp), // Fixed height for better control
+                    .height(squareSize), // Perfect square
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer
                 )
@@ -1114,7 +1118,7 @@ fun MiuixStatusCard(
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(75.dp), // Fixed height that scales with available width
+                        .height(halfCardHeight), // Half the height of the square card
                     onClick = onClickSuperuser
                 ) {
                     Column(
@@ -1145,7 +1149,7 @@ fun MiuixStatusCard(
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(75.dp), // Fixed height that scales with available width
+                        .height(halfCardHeight), // Half the height of the square card
                     onClick = onClickModule
                 ) {
                     Column(
