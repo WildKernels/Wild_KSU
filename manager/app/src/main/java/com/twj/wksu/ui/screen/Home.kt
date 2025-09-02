@@ -1041,7 +1041,7 @@ fun MiuixStatusCard(
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(squareSize), // Perfect square
+                    .aspectRatio(1f), // Perfect square - width equals height
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer
                 )
