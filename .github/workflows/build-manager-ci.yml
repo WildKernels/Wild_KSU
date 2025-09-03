@@ -330,7 +330,7 @@ jobs:
             curl -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" \
                  -F "document=@${NORMAL_APK}" \
                  -F "caption=${CAPTION}" \
-                 -F "message_thread_id=${{ secrets.TELEGRAM_TOPIC_ID }}" \
+                 -F "message_thread_id=${{ secrets.TELEGRAM_TOPIC_ID_WKSU }}" \
                  "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument"
           else
             echo "❌ Normal APK file not found!"
