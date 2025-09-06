@@ -1,135 +1,58 @@
-# Crowdin configuration for KSU Next translation management
-# This file configures automatic translation sync with Crowdin
-# Supports the top 30 most spoken languages worldwide
+# Crowdin configuration for Wild KSU Manager translations
+# This will automatically sync translations with the dynamic language detection system
 
-# Project configuration
-project_id: "YOUR_PROJECT_ID"  # Replace with your actual Crowdin project ID
-api_token_env: "CROWDIN_TOKEN"  # Environment variable containing your API token
+project_id: 8
+api_token_env: CROWDIN_TOKEN
 
-# File mappings for Android string resources
 files:
-  - source: "/manager/app/src/main/res/values/strings.xml"
-    translation: "/manager/app/src/main/res/values-%android_code%/strings.xml"
-    
-  # Additional string files if they exist
-  - source: "/manager/app/src/main/res/values/arrays.xml"
-    translation: "/manager/app/src/main/res/values-%android_code%/arrays.xml"
-    ignore_missing: true
-    
-  - source: "/manager/app/src/main/res/values/plurals.xml"
-    translation: "/manager/app/src/main/res/values-%android_code%/plurals.xml"
-    ignore_missing: true
+  - source: '/manager/app/src/main/res/values/strings.xml'
+    translation: '/manager/app/src/main/res/values-%android_code%/strings.xml'
+    languages_mapping:
+      android_code:
+        # Common Android locale mappings
+        'ar': 'ar-rSA'        # Arabic (Saudi Arabia)
+        'bg': 'bg-rBG'        # Bulgarian
+        'de': 'de-rDE'        # German
+        'es': 'es-rES'        # Spanish
+        'fa': 'fa-rIR'        # Persian (Iran)
+        'fr': 'fr-rFR'        # French
+        'hu': 'hu-rHU'        # Hungarian
+        'id': 'in-rID'        # Indonesian
+        'it': 'it-rIT'        # Italian
+        'ja': 'ja-rJP'        # Japanese
+        'ko': 'ko-rKR'        # Korean
+        'pl': 'pl-rPL'        # Polish
+        'pt-BR': 'pt-rBR'     # Portuguese (Brazil)
+        'ru': 'ru-rRU'        # Russian
+        'th': 'th-rTH'        # Thai
+        'tr': 'tr-rTR'        # Turkish
+        'uk': 'uk-rUA'        # Ukrainian
+        'vi': 'vi-rVN'        # Vietnamese
+        'zh-CN': 'zh-rCN'     # Chinese (Simplified)
+        'zh-TW': 'zh-rTW'     # Chinese (Traditional)
 
-# Language mappings for Android locale codes
-# Top 30 most spoken languages worldwide with proper Android locale codes
-language_mapping:
-  android_code:
-    # Top 10 most spoken languages
-    zh-CN: "zh-rCN"     # Chinese (Mandarin, Simplified) - 918M speakers
-    zh-TW: "zh-rTW"     # Chinese (Traditional) - Taiwan variant
-    es: "es"            # Spanish - 460M speakers
-    es-MX: "es-rMX"     # Spanish (Mexico)
-    es-AR: "es-rAR"     # Spanish (Argentina)
-    en: "en"            # English - 379M speakers (already default)
-    hi: "hi"            # Hindi - 341M speakers
-    ar: "ar"            # Arabic - 422M speakers
-    pt: "pt"            # Portuguese - 260M speakers
-    pt-BR: "pt-rBR"     # Portuguese (Brazil)
-    bn: "bn"            # Bengali - 228M speakers
-    ru: "ru"            # Russian - 154M speakers
-    ja: "ja"            # Japanese - 128M speakers
-    
-    # Languages 11-20
-    pa: "pa"            # Punjabi - 113M speakers
-    de: "de"            # German - 95M speakers
-    jv: "jv"            # Javanese - 84M speakers (if supported)
-    ko: "ko"            # Korean - 81M speakers
-    fr: "fr"            # French - 280M speakers
-    te: "te"            # Telugu - 74M speakers
-    mr: "mr"            # Marathi - 72M speakers
-    tr: "tr"            # Turkish - 71M speakers
-    
-    # Languages 21-30
-    ta: "ta"            # Tamil - 69M speakers
-    vi: "vi"            # Vietnamese - 68M speakers
-    ur: "ur"            # Urdu - 64M speakers
-    it: "it"            # Italian - 64M speakers
-    th: "th"            # Thai - 61M speakers
-    gu: "gu"            # Gujarati - 56M speakers
-    pl: "pl"            # Polish - 45M speakers
-    uk: "uk"            # Ukrainian - 41M speakers
-    fa: "fa"            # Persian/Farsi - 62M speakers
-    ml: "ml"            # Malayalam - 34M speakers
-    
-    # Additional major languages
-    nl: "nl"            # Dutch - 23M speakers
-    sv: "sv"            # Swedish - 10M speakers
-    da: "da"            # Danish - 6M speakers
-    no: "no"            # Norwegian - 5M speakers
-    fi: "fi"            # Finnish - 5M speakers
-    he: "he"            # Hebrew - 9M speakers
-    cs: "cs"            # Czech - 10M speakers
-    hu: "hu"            # Hungarian - 13M speakers
-    ro: "ro"            # Romanian - 24M speakers
-    bg: "bg"            # Bulgarian - 9M speakers
-    hr: "hr"            # Croatian - 5M speakers
-    sk: "sk"            # Slovak - 5M speakers
-    sl: "sl"            # Slovenian - 2M speakers
-    et: "et"            # Estonian - 1M speakers
-    lv: "lv"            # Latvian - 2M speakers
-    lt: "lt"            # Lithuanian - 3M speakers
-    el: "el"            # Greek - 13M speakers
-    ca: "ca"            # Catalan - 10M speakers
-    eu: "eu"            # Basque - 750K speakers
-    gl: "gl"            # Galician - 2.4M speakers
-    cy: "cy"            # Welsh - 562K speakers
-    ga: "ga"            # Irish - 170K speakers
-    mt: "mt"            # Maltese - 520K speakers
-    is: "is"            # Icelandic - 314K speakers
-    mk: "mk"            # Macedonian - 2M speakers
-    sq: "sq"            # Albanian - 7.6M speakers
-    sr: "sr"            # Serbian - 12M speakers
-    bs: "bs"            # Bosnian - 2.5M speakers
-    me: "me"            # Montenegrin - 230K speakers
-
-# Preserve directory structure
+# Preserve hierarchy for organized translations
 preserve_hierarchy: true
 
-# Export languages - Top 30 most spoken languages
+# Export options
 export_languages:
-  # Top 10
-  - "zh-CN"  # Chinese (Simplified)
-  - "zh-TW"  # Chinese (Traditional)
-  - "es"     # Spanish
-  - "es-MX"  # Spanish (Mexico)
-  - "hi"     # Hindi
-  - "ar"     # Arabic
-  - "pt"     # Portuguese
-  - "pt-BR"  # Portuguese (Brazil)
-  - "bn"     # Bengali
-  - "ru"     # Russian
-  - "ja"     # Japanese
-  
-  # 11-20
-  - "pa"     # Punjabi
-  - "de"     # German
-  - "ko"     # Korean
-  - "fr"     # French
-  - "te"     # Telugu
-  - "mr"     # Marathi
-  - "tr"     # Turkish
-  - "ta"     # Tamil
-  - "vi"     # Vietnamese
-  - "ur"     # Urdu
-  
-  # 21-30
-  - "it"     # Italian
-  - "th"     # Thai
-  - "gu"     # Gujarati
-  - "pl"     # Polish
-  - "uk"     # Ukrainian
-  - "fa"     # Persian/Farsi
-  - "ml"     # Malayalam
-  - "nl"     # Dutch
-  - "ro"     # Romanian
-  - "he"     # Hebrew
+  - 'ar'
+  - 'bg' 
+  - 'de'
+  - 'es'
+  - 'fa'
+  - 'fr'
+  - 'hu'
+  - 'id'
+  - 'it'
+  - 'ja'
+  - 'ko'
+  - 'pl'
+  - 'pt-BR'
+  - 'ru'
+  - 'th'
+  - 'tr'
+  - 'uk'
+  - 'vi'
+  - 'zh-CN'
+  - 'zh-TW'
