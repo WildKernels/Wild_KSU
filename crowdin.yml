@@ -1,2 +1,58 @@
-bundles:
-  - 8
+# Crowdin configuration for Wild KSU Manager translations
+# This will automatically sync translations with the dynamic language detection system
+
+project_id: 8
+api_token_env: CROWDIN_TOKEN
+
+files:
+  - source: '/manager/app/src/main/res/values/strings.xml'
+    translation: '/manager/app/src/main/res/values-%android_code%/strings.xml'
+    languages_mapping:
+      android_code:
+        # Common Android locale mappings
+        'ar': 'ar-rSA'        # Arabic (Saudi Arabia)
+        'bg': 'bg-rBG'        # Bulgarian
+        'de': 'de-rDE'        # German
+        'es': 'es-rES'        # Spanish
+        'fa': 'fa-rIR'        # Persian (Iran)
+        'fr': 'fr-rFR'        # French
+        'hu': 'hu-rHU'        # Hungarian
+        'id': 'in-rID'        # Indonesian
+        'it': 'it-rIT'        # Italian
+        'ja': 'ja-rJP'        # Japanese
+        'ko': 'ko-rKR'        # Korean
+        'pl': 'pl-rPL'        # Polish
+        'pt-BR': 'pt-rBR'     # Portuguese (Brazil)
+        'ru': 'ru-rRU'        # Russian
+        'th': 'th-rTH'        # Thai
+        'tr': 'tr-rTR'        # Turkish
+        'uk': 'uk-rUA'        # Ukrainian
+        'vi': 'vi-rVN'        # Vietnamese
+        'zh-CN': 'zh-rCN'     # Chinese (Simplified)
+        'zh-TW': 'zh-rTW'     # Chinese (Traditional)
+
+# Preserve hierarchy for organized translations
+preserve_hierarchy: true
+
+# Export options
+export_languages:
+  - 'ar'
+  - 'bg' 
+  - 'de'
+  - 'es'
+  - 'fa'
+  - 'fr'
+  - 'hu'
+  - 'id'
+  - 'it'
+  - 'ja'
+  - 'ko'
+  - 'pl'
+  - 'pt-BR'
+  - 'ru'
+  - 'th'
+  - 'tr'
+  - 'uk'
+  - 'vi'
+  - 'zh-CN'
+  - 'zh-TW'
