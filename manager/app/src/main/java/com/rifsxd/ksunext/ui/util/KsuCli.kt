@@ -2,7 +2,6 @@ package com.rifsxd.ksunext.ui.util
 
 import android.content.ContentResolver
 import android.content.Context
-import android.content.Intent
 import android.database.Cursor
 import android.net.Uri
 import android.os.Environment
@@ -11,17 +10,19 @@ import android.os.SystemClock
 import android.provider.OpenableColumns
 import android.system.Os
 import android.util.Log
+import com.rifsxd.ksunext.Natives
+import com.rifsxd.ksunext.ksuApp
 import com.topjohnwu.superuser.CallbackList
 import com.topjohnwu.superuser.Shell
 import com.topjohnwu.superuser.ShellUtils
+import com.topjohnwu.superuser.io.SuFile
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
-import com.rifsxd.ksunext.BuildConfig
-import com.rifsxd.ksunext.Natives
-import com.rifsxd.ksunext.ksuApp
 import org.json.JSONArray
 import java.io.File
+import java.text.SimpleDateFormat
+import java.util.*
 
 /**
  * @author weishu
@@ -30,18 +31,17 @@ import java.io.File
 private const val TAG = "KsuCli"
 private const val BUSYBOX = "/data/adb/ksu/bin/busybox"
 
-private fun ksuDaemonMagicPath(): String {
-    return ksuApp.applicationInfo.nativeLibraryDir + File.separator + "libksud_magic.so"
+private val ksuDaemonMagicPath by lazy {
+    "${ksuApp.applicationInfo.nativeLibraryDir}${File.separator}libksud_magic.so"
 }
 
-private fun ksuDaemonOverlayfsPath(): String {
-    return ksuApp.applicationInfo.nativeLibraryDir + File.separator + "libksud_overlayfs.so"
+private val ksuDaemonOverlayfsPath by lazy {
+    "${ksuApp.applicationInfo.nativeLibraryDir}${File.separator}libksud_overlayfs.so"
 }
 
 fun readMountSystemFile(): Boolean {
-    val shell = getRootShell()
     val filePath = "/data/adb/ksu/mount_system"
-    val result = ShellUtils.fastCmd(shell, "cat $filePath").trim()
+    val result = ShellUtils.fastCmd("cat $filePath").trim()
     return result == "OVERLAYFS"
 }
 
@@ -50,19 +50,18 @@ fun getKsuDaemonPath(): String {
     val useOverlayFs = readMountSystemFile()
     
     return if (useOverlayFs) {
-        ksuDaemonOverlayfsPath()
+        ksuDaemonOverlayfsPath
     } else {
-        ksuDaemonMagicPath()
+        ksuDaemonMagicPath
     }
 }
 
 fun updateMountSystemFile(useOverlayFs: Boolean) {
-    val shell = getRootShell()
     val filePath = "/data/adb/ksu/mount_system"
     if (useOverlayFs) {
-        ShellUtils.fastCmd(shell, "echo -n OVERLAYFS > $filePath")
+        ShellUtils.fastCmd("echo -n OVERLAYFS > $filePath")
     } else {
-        ShellUtils.fastCmd(shell, "echo -n MAGIC_MOUNT > $filePath")
+        ShellUtils.fastCmd("echo -n MAGIC_MOUNT > $filePath")
     }
 }
 
