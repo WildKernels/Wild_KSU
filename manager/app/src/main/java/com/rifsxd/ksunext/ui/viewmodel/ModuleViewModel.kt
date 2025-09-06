@@ -19,6 +19,8 @@ import org.json.JSONObject
 import java.io.File
 import java.text.Collator
 import java.util.*
+import com.rifsxd.ksunext.ui.util.HanziToPinyin
+import com.rifsxd.ksunext.ui.util.listModules
 
 class ModuleViewModel : ViewModel() {
 

@@ -4,7 +4,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.topjohnwu.superuser.io.SuFile
 import com.rifsxd.ksunext.R
-import com.topjohnwu.superuser.io.SuFile
 
 @Composable
 fun getSELinuxStatus() = SuFile("/sys/fs/selinux/enforce").run {
