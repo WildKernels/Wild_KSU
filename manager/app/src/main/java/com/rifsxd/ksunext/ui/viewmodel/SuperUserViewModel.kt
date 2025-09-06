@@ -25,10 +25,6 @@ import com.rifsxd.ksunext.Natives
 import com.rifsxd.ksunext.ksuApp
 import com.rifsxd.ksunext.KsuService
 import com.rifsxd.ksunext.ui.util.HanziToPinyin
-import com.topjohnwu.superuser.Shell
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import kotlinx.parcelize.Parcelize
 import java.text.Collator
 import java.util.*
 import kotlin.coroutines.resume
