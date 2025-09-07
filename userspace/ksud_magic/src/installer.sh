@@ -11,7 +11,7 @@ ui_print() {
   if $BOOTMODE; then
     echo "$1"
   else
-    echo -e "ui_print $1\nui_print" >> /proc/self/fd/$OUTFD
+    printf "ui_print %s\nui_print\n" "$1" >> /proc/self/fd/$OUTFD
   fi
 }
 
