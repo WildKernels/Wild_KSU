@@ -121,55 +121,13 @@ jobs:
             cached-artifacts/ksud_magic
           key: ${{ needs.check-cache.outputs.cache-key }}
 
-  create-version-tag:
-    needs: [check-cache]
-    if: always() && needs.check-cache.result == 'success' && github.ref == 'refs/heads/wild'
-    runs-on: ubuntu-latest
-    outputs:
-      new_version: ${{ steps.version.outputs.new_version }}
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Generate version and create tag
-        id: version
-        run: |
-          # Get the latest tag that matches v*.*.* pattern
-          LATEST_TAG=$(git tag -l "v*.*.*" | sort -V | tail -n1)
-          
-          if [ -z "$LATEST_TAG" ]; then
-            # No previous version tags, start with v0.0.0
-            NEW_VERSION="v0.0.1"
-          else
-            # Extract version numbers and increment patch version
-            VERSION_PART=$(echo $LATEST_TAG | sed 's/v//')
-            MAJOR=$(echo $VERSION_PART | cut -d. -f1)
-            MINOR=$(echo $VERSION_PART | cut -d. -f2)
-            PATCH=$(echo $VERSION_PART | cut -d. -f3)
-            
-            # Increment patch version by 1
-            NEW_PATCH=$((PATCH + 1))
-            NEW_VERSION="v${MAJOR}.${MINOR}.${NEW_PATCH}"
-          fi
-          
-          echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
-          echo "Generated version: $NEW_VERSION"
-          
-          # Create and push the new tag
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git tag -a "$NEW_VERSION" -m "Automated release $NEW_VERSION"
-          git push origin "$NEW_VERSION"
-
   build-manager:
-    needs: [check-cache, cache-artifacts, create-version-tag]
-    if: always() && needs.check-cache.result == 'success' && (needs.check-cache.outputs.cache-hit == 'true' || needs.cache-artifacts.result == 'success') && (needs.create-version-tag.result == 'success' || github.ref != 'refs/heads/wild')
+    needs: [check-cache, cache-artifacts, generate-version]
+    if: always() && needs.check-cache.result == 'success' && (needs.check-cache.outputs.cache-hit == 'true' || needs.cache-artifacts.result == 'success')
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        build_type: [normal, spoofed]
+        type: [normal, spoofed]
     defaults:
       run:
         working-directory: ./manager
@@ -179,9 +137,10 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          ref: ${{ needs.generate-version.outputs.version }}
 
       - name: Spoof Package ID
-        if: matrix.build_type == 'spoofed'
+        if: matrix.type == 'spoofed'
         run: |
           chmod +x spoof
           ./spoof
@@ -315,19 +274,62 @@ jobs:
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Manager${{ matrix.build_type == 'spoofed' && '-Spoofed' || '' }}
+          name: Manager${{ matrix.type == 'spoofed' && '-Spoofed' || '' }}
           path: manager/app/build/outputs/apk/release/*.apk
 
       - name: Upload Mappings
         uses: actions/upload-artifact@v4
         with:
-          name: Mappings${{ matrix.build_type == 'spoofed' && '-Spoofed' || '' }}
+          name: Mappings${{ matrix.type == 'spoofed' && '-Spoofed' || '' }}
           path: manager/app/build/outputs/mapping/release/
 
-  create-prerelease:
-    needs: [build-manager, create-version-tag]
-    if: always() && needs.build-manager.result == 'success' && github.ref == 'refs/heads/wild'
+  generate-version:
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/wild'
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      commit_count: ${{ steps.version.outputs.commit_count }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Generate version and create tag
+        id: version
+        run: |
+          # Get the latest tag that matches v*.*.* pattern
+          LATEST_TAG=$(git tag -l "v*.*.*" | sort -V | tail -n1)
+          COMMIT_COUNT=$(git rev-list --count HEAD)
+          
+          if [ -z "$LATEST_TAG" ]; then
+            # No previous version tags, start with v0.0.0
+            NEW_VERSION="v0.0.1"
+          else
+            # Extract version numbers and increment patch version
+            VERSION_PART=$(echo $LATEST_TAG | sed 's/v//')
+            MAJOR=$(echo $VERSION_PART | cut -d. -f1)
+            MINOR=$(echo $VERSION_PART | cut -d. -f2)
+            PATCH=$(echo $VERSION_PART | cut -d. -f3)
+            NEW_PATCH=$((PATCH + 1))
+            NEW_VERSION="v${MAJOR}.${MINOR}.${NEW_PATCH}"
+          fi
+          
+          echo "Previous version: $LATEST_TAG"
+          echo "New version: $NEW_VERSION"
+          echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
+          echo "commit_count=$COMMIT_COUNT" >> $GITHUB_OUTPUT
+          
+          # Create and push the tag
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag -a "$NEW_VERSION" -m "CI Build $NEW_VERSION"
+          git push origin "$NEW_VERSION"
+
+  create-prerelease:
+    needs: [build-manager, generate-version]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/wild'
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -347,26 +349,20 @@ jobs:
           path: ./spoofed
 
       - name: Generate release notes
-        id: notes
         run: |
-          NEW_VERSION="${{ needs.create-version-tag.outputs.new_version }}"
-          
-          # Get the previous tag for changelog
+          # Get the previous tag
           PREVIOUS_TAG=$(git tag -l "v*.*.*" | sort -V | tail -n2 | head -n1)
           
           # Generate release notes from recent commits
-          if [ -z "$PREVIOUS_TAG" ] || [ "$PREVIOUS_TAG" = "$NEW_VERSION" ]; then
-            # If no previous tag or same tag, get last 10 commits
+          if [ -z "$PREVIOUS_TAG" ]; then
             RELEASE_NOTES=$(git log --oneline -10 --pretty=format:"- %s (%h)")
           else
-            # Get commits since previous tag
-            RELEASE_NOTES=$(git log ${PREVIOUS_TAG}..${NEW_VERSION} --oneline --pretty=format:"- %s (%h)")
+            RELEASE_NOTES=$(git log ${PREVIOUS_TAG}..${{ needs.generate-version.outputs.version }} --oneline --pretty=format:"- %s (%h)")
           fi
-          
           
           # Create release notes with header
           cat > release_notes.md << EOF
-          ## 🚀 Pre-release Build $NEW_VERSION
+          ## 🚀 Pre-release Build ${{ needs.generate-version.outputs.version }}
           
           This is an automated pre-release build from the latest successful CI run.
           
@@ -389,8 +385,8 @@ jobs:
       - name: Create Pre-release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ needs.create-version-tag.outputs.new_version }}
-          name: "Pre-release ${{ needs.create-version-tag.outputs.new_version }}"
+          tag_name: ${{ needs.generate-version.outputs.version }}
+          name: "Pre-release ${{ needs.generate-version.outputs.version }}"
           body_path: release_notes.md
           prerelease: true
           draft: false
