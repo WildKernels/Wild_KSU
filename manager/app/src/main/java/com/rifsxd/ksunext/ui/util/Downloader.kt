@@ -86,7 +86,8 @@ fun checkNewVersion(): LatestVersionInfo {
                         continue
                     }
 
-                    val regex = Regex("v(.+?)_(\\d+)-")
+                    // Match APK naming format: Wild_KSU_${versionName}_${versionCode}-${buildType}.apk
+                    val regex = Regex("Wild_KSU_(.+?)_(\\d+)-")
                     val matchResult = regex.find(name) ?: continue
                     val versionName = matchResult.groupValues[1]
                     val versionCode = matchResult.groupValues[2].toInt()
