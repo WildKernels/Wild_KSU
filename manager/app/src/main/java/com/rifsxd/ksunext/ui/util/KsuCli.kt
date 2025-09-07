@@ -525,22 +525,22 @@ fun allowlistRestore(): Boolean {
     return ShellUtils.fastCmdResult(extractCmd)
 }
 
-fun themeBackup(): Boolean {
+fun themeBackup(customPath: String? = null): Boolean {
     try {
         val context = ksuApp
         val prefs = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
         
         val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
-        val backupDir = "/data/adb/ksu/backup/theme"
-        val zipName = "theme_backup_$timestamp.zip"
+        val tarName = "theme_backup_$timestamp.tar"
+        val tarPath = "/data/local/tmp/$tarName"
+        val internalBackupDir = customPath ?: "/data/adb/ksu/backup/theme"
+        val internalBackupPath = "$internalBackupDir/$tarName"
         val tempDir = "/data/local/tmp/theme_backup_$timestamp"
-        val zipPath = "$backupDir/$zipName"
         
-        // Create backup directory
-        if (!SuFile(backupDir).mkdirs()) return false
+        // Create temp directory
         if (!SuFile(tempDir).mkdirs()) return false
         
-        // Create JSON with theme settings
+        // Create JSON with theme settings (each value on a line as requested)
         val themeSettings = JSONObject().apply {
             put("theme_mode", prefs.getString("theme_mode", "system_default"))
             put("background_image_uri", prefs.getString("background_image_uri", ""))
@@ -553,13 +553,12 @@ fun themeBackup(): Boolean {
             put("backup_timestamp", timestamp)
         }
         
-        // Write JSON to temp file
+        // Write JSON to temp file with each value on a line
         val jsonFile = SuFile("$tempDir/theme_settings.json")
         jsonFile.writeText(themeSettings.toString(2))
         
         // Copy background image if it exists
         val backgroundUri = prefs.getString("background_image_uri", null)
-        var hasBackgroundImage = false
         if (!backgroundUri.isNullOrEmpty()) {
             try {
                 val sourceFile = if (backgroundUri.startsWith("file://")) {
@@ -571,49 +570,59 @@ fun themeBackup(): Boolean {
                 if (sourceFile.exists()) {
                     val destFile = SuFile("$tempDir/background_image.${sourceFile.extension}")
                     ShellUtils.fastCmdResult("cp \"${sourceFile.absolutePath}\" \"${destFile.absolutePath}\"")
-                    hasBackgroundImage = true
                 }
             } catch (e: Exception) {
                 Log.w(TAG, "Failed to copy background image: ${e.message}")
             }
         }
         
-        // Create zip file
-        val zipCmd = if (hasBackgroundImage) {
-            "cd $tempDir && $BUSYBOX zip -r $zipPath theme_settings.json background_image.*"
-        } else {
-            "cd $tempDir && $BUSYBOX zip -r $zipPath theme_settings.json"
+        // Create tar file
+        val tarCmd = "$BUSYBOX tar -cpf $tarPath -C $tempDir ."
+        val tarResult = ShellUtils.fastCmdResult(tarCmd)
+        if (!tarResult) {
+            ShellUtils.fastCmdResult("rm -rf $tempDir")
+            return false
         }
         
-        val zipResult = ShellUtils.fastCmdResult(zipCmd)
+        // Create backup directory and copy tar file
+        if (!SuFile(internalBackupDir).mkdirs()) {
+            ShellUtils.fastCmdResult("rm -rf $tempDir")
+            SuFile(tarPath).delete()
+            return false
+        }
         
-        // Clean up temp directory
+        val cpResult = ShellUtils.fastCmdResult("cp $tarPath $internalBackupPath")
+        
+        // Clean up temp files
         ShellUtils.fastCmdResult("rm -rf $tempDir")
+        SuFile(tarPath).delete()
         
-        return zipResult
+        return cpResult
     } catch (e: Exception) {
         Log.e(TAG, "Theme backup failed: ${e.message}")
         return false
     }
 }
 
-fun themeRestore(): Boolean {
+fun themeRestore(customPath: String? = null): Boolean {
     try {
         val context = ksuApp
         val prefs = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
         
-        // Find the latest theme backup
-        val findZipCmd = "ls -t /data/adb/ksu/backup/theme/theme_backup_*.zip 2>/dev/null | head -n 1"
-        val zipPath = ShellUtils.fastCmd(findZipCmd).trim()
-        if (zipPath.isEmpty()) return false
+        val backupDir = customPath ?: "/data/adb/ksu/backup/theme"
+        
+        // Find the latest theme backup tar file
+        val findTarCmd = "ls -t $backupDir/theme_backup_*.tar 2>/dev/null | head -n 1"
+        val tarPath = ShellUtils.fastCmd(findTarCmd).trim()
+        if (tarPath.isEmpty()) return false
         
         val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
         val tempDir = "/data/local/tmp/theme_restore_$timestamp"
         
-        // Create temp directory and extract zip
+        // Create temp directory and extract tar
         if (!SuFile(tempDir).mkdirs()) return false
         
-        val extractCmd = "cd $tempDir && $BUSYBOX unzip -o $zipPath"
+        val extractCmd = "$BUSYBOX tar -xpf $tarPath -C $tempDir"
         if (!ShellUtils.fastCmdResult(extractCmd)) {
             ShellUtils.fastCmdResult("rm -rf $tempDir")
             return false

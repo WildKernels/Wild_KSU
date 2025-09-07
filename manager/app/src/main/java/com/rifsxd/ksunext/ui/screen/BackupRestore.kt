@@ -93,6 +93,10 @@ fun BackupRestoreScreen(navigator: DestinationsNavigator) {
         item {
             var isThemeBackupLoading by remember { mutableStateOf(false) }
             var isThemeRestoreLoading by remember { mutableStateOf(false) }
+            var showBackupPathDialog by remember { mutableStateOf(false) }
+            var showRestorePathDialog by remember { mutableStateOf(false) }
+            var backupPath by remember { mutableStateOf("/data/adb/ksu/backup/theme") }
+            var restorePath by remember { mutableStateOf("/data/adb/ksu/backup/theme") }
             
             val themeBackupDialog = rememberLoadingDialog(
                 isLoading = isThemeBackupLoading,
@@ -106,6 +110,136 @@ fun BackupRestoreScreen(navigator: DestinationsNavigator) {
                 message = "Restoring theme settings..."
             )
             
+            // Backup Path Dialog
+            if (showBackupPathDialog) {
+                AlertDialog(
+                    onDismissRequest = { showBackupPathDialog = false },
+                    title = { Text("Select Backup Path") },
+                    text = {
+                        Column {
+                            Text("Enter the path where you want to save the theme backup:")
+                            Spacer(modifier = Modifier.height(8.dp))
+                            OutlinedTextField(
+                                value = backupPath,
+                                onValueChange = { backupPath = it },
+                                label = { Text("Backup Path") },
+                                placeholder = { Text("/data/adb/ksu/backup/theme") },
+                                singleLine = true
+                            )
+                        }
+                    },
+                    confirmButton = {
+                        TextButton(
+                            onClick = {
+                                showBackupPathDialog = false
+                                scope.launch {
+                                    isThemeBackupLoading = true
+                                    themeBackupDialog.show()
+                                    
+                                    try {
+                                        val success = withContext(Dispatchers.IO) {
+                                            themeBackup(backupPath.takeIf { it.isNotBlank() })
+                                        }
+                                        
+                                        if (success) {
+                                            snackbarHostState.showSnackbar(
+                                                "Theme backup created successfully at $backupPath",
+                                                duration = SnackbarDuration.Short
+                                            )
+                                        } else {
+                                            snackbarHostState.showSnackbar(
+                                                "Failed to create theme backup",
+                                                duration = SnackbarDuration.Short
+                                            )
+                                        }
+                                    } catch (e: Exception) {
+                                        snackbarHostState.showSnackbar(
+                                            "Error creating theme backup: ${e.message}",
+                                            duration = SnackbarDuration.Short
+                                        )
+                                    } finally {
+                                        isThemeBackupLoading = false
+                                        themeBackupDialog.hide()
+                                    }
+                                }
+                            }
+                        ) {
+                            Text("Backup")
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { showBackupPathDialog = false }) {
+                            Text("Cancel")
+                        }
+                    }
+                )
+            }
+            
+            // Restore Path Dialog
+            if (showRestorePathDialog) {
+                AlertDialog(
+                    onDismissRequest = { showRestorePathDialog = false },
+                    title = { Text("Select Restore Path") },
+                    text = {
+                        Column {
+                            Text("Enter the path where your theme backup is located:")
+                            Spacer(modifier = Modifier.height(8.dp))
+                            OutlinedTextField(
+                                value = restorePath,
+                                onValueChange = { restorePath = it },
+                                label = { Text("Restore Path") },
+                                placeholder = { Text("/data/adb/ksu/backup/theme") },
+                                singleLine = true
+                            )
+                        }
+                    },
+                    confirmButton = {
+                        TextButton(
+                            onClick = {
+                                showRestorePathDialog = false
+                                scope.launch {
+                                    isThemeRestoreLoading = true
+                                    themeRestoreDialog.show()
+                                    
+                                    try {
+                                        val success = withContext(Dispatchers.IO) {
+                                            themeRestore(restorePath.takeIf { it.isNotBlank() })
+                                        }
+                                        
+                                        if (success) {
+                                            snackbarHostState.showSnackbar(
+                                                "Theme restored successfully. Restart app to see changes.",
+                                                duration = SnackbarDuration.Long
+                                            )
+                                        } else {
+                                            snackbarHostState.showSnackbar(
+                                                "Failed to restore theme. No backup found or restore failed.",
+                                                duration = SnackbarDuration.Short
+                                            )
+                                        }
+                                    } catch (e: Exception) {
+                                        snackbarHostState.showSnackbar(
+                                            "Error restoring theme: ${e.message}",
+                                            duration = SnackbarDuration.Short
+                                        )
+                                    } finally {
+                                        isThemeRestoreLoading = false
+                                        themeRestoreDialog.hide()
+                                    }
+                                }
+                            }
+                        ) {
+                            Text("Restore")
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { showRestorePathDialog = false }) {
+                            Text("Cancel")
+                        }
+                    }
+                )
+            }
+            
             StandardCard {
                 Text(
                     text = "Theme Settings",
@@ -118,41 +252,12 @@ fun BackupRestoreScreen(navigator: DestinationsNavigator) {
                 CardRowContent(
                     icon = Icons.Filled.Backup,
                     text = "Backup Theme",
-                    subtitle = "Save theme settings, background image, and preferences to a zip file",
+                    subtitle = "Save theme settings and background image to a tar file",
                     modifier = Modifier.clickable(
                         interactionSource = rememberNoRippleInteractionSource(),
                         indication = null
                     ) {
-                        scope.launch {
-                            isThemeBackupLoading = true
-                            themeBackupDialog.show()
-                            
-                            try {
-                                val success = withContext(Dispatchers.IO) {
-                                    themeBackup()
-                                }
-                                
-                                if (success) {
-                                    snackbarHostState.showSnackbar(
-                                        "Theme backup created successfully",
-                                        duration = SnackbarDuration.Short
-                                    )
-                                } else {
-                                    snackbarHostState.showSnackbar(
-                                        "Failed to create theme backup",
-                                        duration = SnackbarDuration.Short
-                                    )
-                                }
-                            } catch (e: Exception) {
-                                snackbarHostState.showSnackbar(
-                                    "Error creating theme backup: ${e.message}",
-                                    duration = SnackbarDuration.Short
-                                )
-                            } finally {
-                                isThemeBackupLoading = false
-                                themeBackupDialog.hide()
-                            }
-                        }
+                        showBackupPathDialog = true
                     }
                 )
                 
@@ -161,41 +266,12 @@ fun BackupRestoreScreen(navigator: DestinationsNavigator) {
                 CardRowContent(
                     icon = Icons.Filled.Restore,
                     text = "Restore Theme",
-                    subtitle = "Restore theme settings from the latest backup zip file",
+                    subtitle = "Restore theme settings from the latest backup tar file",
                     modifier = Modifier.clickable(
                         interactionSource = rememberNoRippleInteractionSource(),
                         indication = null
                     ) {
-                        scope.launch {
-                            isThemeRestoreLoading = true
-                            themeRestoreDialog.show()
-                            
-                            try {
-                                val success = withContext(Dispatchers.IO) {
-                                    themeRestore()
-                                }
-                                
-                                if (success) {
-                                    snackbarHostState.showSnackbar(
-                                        "Theme restored successfully. Restart app to see changes.",
-                                        duration = SnackbarDuration.Long
-                                    )
-                                } else {
-                                    snackbarHostState.showSnackbar(
-                                        "Failed to restore theme. No backup found or restore failed.",
-                                        duration = SnackbarDuration.Short
-                                    )
-                                }
-                            } catch (e: Exception) {
-                                snackbarHostState.showSnackbar(
-                                    "Error restoring theme: ${e.message}",
-                                    duration = SnackbarDuration.Short
-                                )
-                            } finally {
-                                isThemeRestoreLoading = false
-                                themeRestoreDialog.hide()
-                            }
-                        }
+                        showRestorePathDialog = true
                     }
                 )
             }
