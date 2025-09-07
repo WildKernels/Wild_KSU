@@ -5,8 +5,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Archive
 import androidx.compose.material.icons.filled.Backup
 import androidx.compose.material.icons.filled.Restore
+import androidx.compose.material.icons.filled.Unarchive
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -30,6 +32,8 @@ import com.rifsxd.ksunext.ui.component.rememberConfirmDialog
 import com.rifsxd.ksunext.ui.component.rememberLoadingDialog
 import com.rifsxd.ksunext.ui.component.rememberNoRippleInteractionSource
 import com.rifsxd.ksunext.ui.util.*
+import com.rifsxd.ksunext.ui.util.themeBackup
+import com.rifsxd.ksunext.ui.util.themeRestore
 import kotlinx.coroutines.launch
 
 /**
@@ -85,6 +89,118 @@ fun BackupRestoreScreen(navigator: DestinationsNavigator) {
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
+        // Theme Settings Backup & Restore
+        item {
+            var isThemeBackupLoading by remember { mutableStateOf(false) }
+            var isThemeRestoreLoading by remember { mutableStateOf(false) }
+            
+            val themeBackupDialog = rememberLoadingDialog(
+                isLoading = isThemeBackupLoading,
+                title = "Theme Backup",
+                message = "Creating theme backup..."
+            )
+            
+            val themeRestoreDialog = rememberLoadingDialog(
+                isLoading = isThemeRestoreLoading,
+                title = "Theme Restore",
+                message = "Restoring theme settings..."
+            )
+            
+            StandardCard {
+                Text(
+                    text = "Theme Settings",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold
+                )
+                
+                CardItemSpacer()
+                
+                CardRowContent(
+                    icon = Icons.Filled.Backup,
+                    text = "Backup Theme",
+                    subtitle = "Save theme settings, background image, and preferences to a zip file",
+                    modifier = Modifier.clickable(
+                        interactionSource = rememberNoRippleInteractionSource(),
+                        indication = null
+                    ) {
+                        scope.launch {
+                            isThemeBackupLoading = true
+                            themeBackupDialog.show()
+                            
+                            try {
+                                val success = withContext(Dispatchers.IO) {
+                                    themeBackup()
+                                }
+                                
+                                if (success) {
+                                    snackbarHostState.showSnackbar(
+                                        "Theme backup created successfully",
+                                        duration = SnackbarDuration.Short
+                                    )
+                                } else {
+                                    snackbarHostState.showSnackbar(
+                                        "Failed to create theme backup",
+                                        duration = SnackbarDuration.Short
+                                    )
+                                }
+                            } catch (e: Exception) {
+                                snackbarHostState.showSnackbar(
+                                    "Error creating theme backup: ${e.message}",
+                                    duration = SnackbarDuration.Short
+                                )
+                            } finally {
+                                isThemeBackupLoading = false
+                                themeBackupDialog.hide()
+                            }
+                        }
+                    }
+                )
+                
+                CardItemSpacer()
+                
+                CardRowContent(
+                    icon = Icons.Filled.Restore,
+                    text = "Restore Theme",
+                    subtitle = "Restore theme settings from the latest backup zip file",
+                    modifier = Modifier.clickable(
+                        interactionSource = rememberNoRippleInteractionSource(),
+                        indication = null
+                    ) {
+                        scope.launch {
+                            isThemeRestoreLoading = true
+                            themeRestoreDialog.show()
+                            
+                            try {
+                                val success = withContext(Dispatchers.IO) {
+                                    themeRestore()
+                                }
+                                
+                                if (success) {
+                                    snackbarHostState.showSnackbar(
+                                        "Theme restored successfully. Restart app to see changes.",
+                                        duration = SnackbarDuration.Long
+                                    )
+                                } else {
+                                    snackbarHostState.showSnackbar(
+                                        "Failed to restore theme. No backup found or restore failed.",
+                                        duration = SnackbarDuration.Short
+                                    )
+                                }
+                            } catch (e: Exception) {
+                                snackbarHostState.showSnackbar(
+                                    "Error restoring theme: ${e.message}",
+                                    duration = SnackbarDuration.Short
+                                )
+                            } finally {
+                                isThemeRestoreLoading = false
+                                themeRestoreDialog.hide()
+                            }
+                        }
+                    }
+                )
+            }
+        }
+        
         item {
             StandardCard {
 
