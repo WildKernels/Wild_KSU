@@ -61,19 +61,13 @@ fun getVersionCode(): Int {
 }
 
 fun getVersionName(): String {
-    // Try to get the latest tag, fallback to commit count based versioning
+    // Get the latest tag
     val out = ByteArrayOutputStream()
-    return try {
-        exec {
-            commandLine("git", "describe", "--tags", "--exact-match", "HEAD")
-            standardOutput = out
-        }
-        out.toString().trim()
-    } catch (e: Exception) {
-        // If no tag on current commit, use commit count based versioning
-        val commitCount = getGitCommitCount()
-        "v0.0.${commitCount}"
+    exec {
+        commandLine("git", "describe", "--tags", "--exact-match", "HEAD")
+        standardOutput = out
     }
+    return out.toString().trim()
 }
 
 subprojects {
