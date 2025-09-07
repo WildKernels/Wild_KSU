@@ -41,7 +41,7 @@ fun DeveloperScreen(navigator: DestinationsNavigator) {
     val scope = rememberCoroutineScope()
     val prefs = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
     
-    val isManager = Natives.becomeManager(ksuApp.packageName)
+    val isManager = Natives.becomeManager(context.packageName)
     val ksuVersion = if (isManager) Natives.version else null
 
     LazyColumn(
