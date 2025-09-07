@@ -88,10 +88,9 @@ fun HomeScreen(navigator: DestinationsNavigator) {
     val kernelVersion = getKernelVersion()
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
 
+    val context = LocalContext.current
     val isManager = Natives.becomeManager(context.packageName)
     val ksuVersion = if (isManager) Natives.version else null
-
-    val context = LocalContext.current
     val prefs = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
     val developerOptionsEnabled = prefs.getBoolean("enable_developer_options", false)
     val showHelpCard = prefs.getBoolean("show_help_card", true)
