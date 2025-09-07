@@ -7,10 +7,7 @@ import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -40,11 +37,7 @@ import com.maxkeppeler.sheets.list.models.ListOption
 import com.maxkeppeler.sheets.list.models.ListSelection
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
-
-import com.ramcosta.composedestinations.generated.destinations.FlashScreenDestination
-import com.ramcosta.composedestinations.generated.destinations.BackupRestoreScreenDestination
-import com.ramcosta.composedestinations.generated.destinations.CustomizationScreenDestination
-import com.ramcosta.composedestinations.generated.destinations.DeveloperScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.*
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
 import com.rifsxd.ksunext.BuildConfig
@@ -56,25 +49,6 @@ import com.rifsxd.ksunext.ui.util.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import com.rifsxd.ksunext.ui.component.AboutDialog
-import com.rifsxd.ksunext.ui.component.ConfirmResult
-import com.rifsxd.ksunext.ui.component.DialogHandle
-import com.rifsxd.ksunext.ui.component.SwitchItem
-import com.rifsxd.ksunext.ui.component.rememberConfirmDialog
-import com.rifsxd.ksunext.ui.component.rememberCustomDialog
-import com.rifsxd.ksunext.ui.component.rememberLoadingDialog
-import com.rifsxd.ksunext.ui.component.StandardCard
-import com.rifsxd.ksunext.ui.component.CardType
-import com.rifsxd.ksunext.ui.component.CardConstants
-import com.rifsxd.ksunext.ui.component.CardRowContent
-import com.rifsxd.ksunext.ui.component.CardSwitchContent
-import com.rifsxd.ksunext.ui.component.CardItemSpacer
-import com.rifsxd.ksunext.ui.component.rememberNoRippleInteractionSource
-import com.rifsxd.ksunext.ui.util.LocalSnackbarHost
-import com.rifsxd.ksunext.ui.util.getBugreportFile
-import com.rifsxd.ksunext.ui.util.*
-import com.rifsxd.ksunext.ui.util.isGlobalNamespaceEnabled
-import com.rifsxd.ksunext.ui.util.setGlobalNamespaceEnabled
 
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter

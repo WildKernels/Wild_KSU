@@ -1,7 +1,6 @@
 package com.rifsxd.ksunext.ui.screen
 
 import android.content.Context
-import android.content.SharedPreferences
 import android.os.Build
 import android.os.PowerManager
 import android.system.Os
@@ -22,9 +21,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
-import androidx.compose.material.icons.outlined.*
-import androidx.compose.material.icons.automirrored.filled.HelpOutline
-import androidx.compose.material.icons.rounded.CheckCircleOutline
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -37,39 +33,29 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.platform.LocalHapticFeedback
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalDensity
+
 import androidx.core.content.pm.PackageInfoCompat
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import com.dergoogler.mmrl.ui.component.LabelItem
 import com.dergoogler.mmrl.ui.component.LabelItemDefaults
 import com.dergoogler.mmrl.ui.component.text.TextRow
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.generated.destinations.InstallScreenDestination
-import com.ramcosta.composedestinations.generated.destinations.SuperUserScreenDestination
-import com.ramcosta.composedestinations.generated.destinations.ModuleScreenDestination
-import com.ramcosta.composedestinations.generated.NavGraphs
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.rifsxd.ksunext.*
 import com.rifsxd.ksunext.R
 import com.rifsxd.ksunext.ui.component.rememberConfirmDialog
 import com.rifsxd.ksunext.ui.util.*
-import com.rifsxd.ksunext.ui.util.IconUtils
 import com.rifsxd.ksunext.ui.util.module.LatestVersionInfo
-import com.rifsxd.ksunext.ui.theme.getCardElevation
-import com.rifsxd.ksunext.ui.component.*
-import com.rifsxd.ksunext.ui.component.CardConstants
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.util.*
 
 @OptIn(ExperimentalMaterial3Api::class)

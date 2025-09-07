@@ -9,7 +9,7 @@ import android.os.UserHandle;
 import android.os.UserManager;
 import android.util.Log;
 import androidx.annotation.NonNull;
-import com.twj.wksu.IKsuInterface;
+import com.rifsxd.ksunext.IKsuInterface;
 import com.topjohnwu.superuser.ipc.RootService;
 import rikka.parcelablelist.ParcelableListSlice;
 

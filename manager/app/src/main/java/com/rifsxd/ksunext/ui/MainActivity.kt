@@ -12,44 +12,13 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.displayCutout
-import androidx.compose.foundation.layout.only
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemBars
-import androidx.compose.foundation.layout.union
-import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.Row
-import androidx.compose.material3.Badge
-import androidx.compose.material3.BadgedBox
-import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.LocalContentColor
-import androidx.compose.material3.TextButton
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -74,15 +43,7 @@ import androidx.compose.material.icons.filled.ScreenRotation
 import androidx.compose.material.icons.filled.ScreenLockRotation
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.graphics.Color
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
 import android.content.SharedPreferences
 import androidx.compose.ui.Modifier
@@ -100,6 +61,7 @@ import androidx.compose.runtime.compositionLocalOf
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.animations.NavHostAnimatedDestinationStyle
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.ramcosta.composedestinations.generated.NavGraphs
 import com.ramcosta.composedestinations.generated.destinations.ExecuteModuleActionScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.FlashScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.HomeScreenDestination
@@ -132,19 +94,6 @@ import com.rifsxd.ksunext.ui.theme.KernelSUTheme
 import com.rifsxd.ksunext.ui.component.BackgroundImageWrapper
 import com.rifsxd.ksunext.ui.component.SearchAppBar
 import com.rifsxd.ksunext.ui.util.*
-import com.rifsxd.ksunext.ui.util.LocalSnackbarHost
-import com.rifsxd.ksunext.ui.util.LocalPhotoEditorSaveCallback
-import com.rifsxd.ksunext.ui.util.LocalPhotoEditorSaveCallbackSetter
-import com.rifsxd.ksunext.ui.util.LocalPhotoEditorResetCallback
-import com.rifsxd.ksunext.ui.util.LocalPhotoEditorScreenRotationCallback
-import com.rifsxd.ksunext.ui.util.LocalPhotoEditorScreenRotationLocked
-import com.rifsxd.ksunext.ui.util.LocaleHelper
-import com.rifsxd.ksunext.ui.util.rootAvailable
-import com.rifsxd.ksunext.ui.util.install
-import com.rifsxd.ksunext.ui.util.isSuCompatDisabled
-import com.rifsxd.ksunext.ui.util.reboot
-import com.rifsxd.ksunext.ui.util.BackgroundCustomization
-import com.rifsxd.ksunext.ui.util.readMountSystemFile
 import com.rifsxd.ksunext.ui.viewmodel.ModuleViewModel
 import com.rifsxd.ksunext.ui.viewmodel.SuperUserViewModel
 import com.rifsxd.ksunext.ui.viewmodel.FlashViewModel
@@ -235,7 +184,7 @@ class MainActivity : ComponentActivity() {
 
         super.onCreate(savedInstanceState)
 
-        val isManager = Natives.becomeManager(ksuApp.packageName)
+        val isManager = Natives.becomeManager(packageName)
         if (isManager) {
             install()
             
@@ -582,7 +531,8 @@ class MainActivity : ComponentActivity() {
 @Composable
 private fun BottomBar(navController: NavHostController, moduleUpdateCount: Int, modifier: Modifier = Modifier) {
     val navigator = navController.rememberDestinationsNavigator()
-    val isManager = Natives.becomeManager(ksuApp.packageName)
+    val context = LocalContext.current
+    val isManager = Natives.becomeManager(context.packageName)
     val fullFeatured = isManager && !Natives.requireNewKernel() && rootAvailable()
     val suCompatDisabled = isSuCompatDisabled()
     val suSFS = getSuSFS()

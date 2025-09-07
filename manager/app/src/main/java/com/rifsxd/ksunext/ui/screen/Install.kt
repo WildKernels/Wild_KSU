@@ -19,7 +19,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
@@ -37,12 +37,7 @@ import com.ramcosta.composedestinations.generated.destinations.FlashScreenDestin
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
 import com.rifsxd.ksunext.R
-import com.rifsxd.ksunext.ui.component.CardColumn
-import com.rifsxd.ksunext.ui.component.CardConstants
-import com.rifsxd.ksunext.ui.component.CardRowContent
-import com.rifsxd.ksunext.ui.component.CardType
 import com.rifsxd.ksunext.ui.component.DialogHandle
-import com.rifsxd.ksunext.ui.component.StandardCard
 import com.rifsxd.ksunext.ui.component.rememberConfirmDialog
 import com.rifsxd.ksunext.ui.component.rememberCustomDialog
 import com.rifsxd.ksunext.ui.util.*

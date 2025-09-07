@@ -4,20 +4,7 @@ import android.widget.Toast
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.only
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -27,31 +14,9 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ImportExport
 import androidx.compose.material.icons.filled.Sync
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExtendedFloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ListItem
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.TopAppBarScrollBehavior
+import androidx.compose.material3.*
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import androidx.compose.material3.rememberTopAppBarState
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
+import androidx.compose.runtime.*
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -73,8 +38,6 @@ import com.ramcosta.composedestinations.result.ResultRecipient
 import com.ramcosta.composedestinations.result.getOr
 import com.rifsxd.ksunext.R
 import com.rifsxd.ksunext.ui.viewmodel.TemplateViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 /**
  * @author weishu
