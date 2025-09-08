@@ -604,6 +604,175 @@ fun themeBackup(customPath: String? = null): Boolean {
     }
 }
 
+// Overloaded function for Uri-based backup
+fun themeBackup(context: Context, uri: Uri): Boolean {
+    try {
+        val prefs = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
+        
+        val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+        val tempDir = "/data/local/tmp/theme_backup_$timestamp"
+        val tarPath = "/data/local/tmp/theme_backup_$timestamp.tar"
+        
+        // Create temp directory
+        if (!SuFile(tempDir).mkdirs()) return false
+        
+        // Create JSON with theme settings
+        val themeSettings = JSONObject().apply {
+            put("theme_mode", prefs.getString("theme_mode", "system_default"))
+            put("background_image_uri", prefs.getString("background_image_uri", ""))
+            put("hide_bottom_bar", prefs.getBoolean("hide_bottom_bar", false))
+            put("background_transparency", prefs.getFloat("background_transparency", 0.0f).toDouble())
+            put("background_blur", prefs.getFloat("background_blur", 0.0f).toDouble())
+            put("ui_transparency", prefs.getFloat("ui_transparency", 0.0f).toDouble())
+            put("app_dpi", prefs.getInt("app_dpi", 160))
+            put("original_system_dpi", prefs.getInt("original_system_dpi", 160))
+            put("backup_timestamp", timestamp)
+        }
+        
+        // Write JSON to temp file
+        val jsonFile = SuFile("$tempDir/theme_settings.json")
+        jsonFile.writeText(themeSettings.toString(2))
+        
+        // Copy background image if it exists
+        val backgroundUri = prefs.getString("background_image_uri", null)
+        if (!backgroundUri.isNullOrEmpty()) {
+            try {
+                val sourceFile = if (backgroundUri.startsWith("file://")) {
+                    File(Uri.parse(backgroundUri).path!!)
+                } else {
+                    File(backgroundUri)
+                }
+                
+                if (sourceFile.exists()) {
+                    val destFile = SuFile("$tempDir/background_image.${sourceFile.extension}")
+                    ShellUtils.fastCmdResult("cp \"${sourceFile.absolutePath}\" \"${destFile.absolutePath}\"")
+                }
+            } catch (e: Exception) {
+                Log.w(TAG, "Failed to copy background image: ${e.message}")
+            }
+        }
+        
+        // Create tar file
+        val tarCmd = "$BUSYBOX tar -cpf $tarPath -C $tempDir ."
+        val tarResult = ShellUtils.fastCmdResult(tarCmd)
+        if (!tarResult) {
+            ShellUtils.fastCmdResult("rm -rf $tempDir")
+            return false
+        }
+        
+        // Write tar file to selected Uri using ContentResolver
+        context.contentResolver.openOutputStream(uri)?.use { outputStream ->
+            SuFile(tarPath).inputStream().use { inputStream ->
+                inputStream.copyTo(outputStream)
+            }
+        }
+        
+        // Clean up temp files
+        ShellUtils.fastCmdResult("rm -rf $tempDir")
+        SuFile(tarPath).delete()
+        
+        return true
+    } catch (e: Exception) {
+        Log.e(TAG, "Theme backup failed: ${e.message}")
+        return false
+    }
+}
+
+// Overloaded function for Uri-based restore
+fun themeRestore(context: Context, uri: Uri): Boolean {
+    try {
+        val prefs = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
+        
+        val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+        val tempDir = "/data/local/tmp/theme_restore_$timestamp"
+        val tarPath = "/data/local/tmp/theme_restore_$timestamp.tar"
+        
+        // Copy tar file from Uri to temp location
+        context.contentResolver.openInputStream(uri)?.use { inputStream ->
+            SuFile(tarPath).outputStream().use { outputStream ->
+                inputStream.copyTo(outputStream)
+            }
+        } ?: return false
+        
+        // Create temp directory and extract tar
+        if (!SuFile(tempDir).mkdirs()) {
+            SuFile(tarPath).delete()
+            return false
+        }
+        
+        val extractCmd = "$BUSYBOX tar -xpf $tarPath -C $tempDir"
+        if (!ShellUtils.fastCmdResult(extractCmd)) {
+            ShellUtils.fastCmdResult("rm -rf $tempDir")
+            SuFile(tarPath).delete()
+            return false
+        }
+        
+        // Read and parse JSON settings
+        val jsonFile = SuFile("$tempDir/theme_settings.json")
+        if (!jsonFile.exists()) {
+            ShellUtils.fastCmdResult("rm -rf $tempDir")
+            SuFile(tarPath).delete()
+            return false
+        }
+        
+        val jsonContent = jsonFile.readText()
+        val themeSettings = JSONObject(jsonContent)
+        
+        // Restore theme settings to SharedPreferences
+        val editor = prefs.edit()
+        
+        // Restore all theme settings
+        themeSettings.optString("theme_mode", "system_default").let {
+            editor.putString("theme_mode", it)
+        }
+        
+        editor.putBoolean("hide_bottom_bar", themeSettings.optBoolean("hide_bottom_bar", false))
+        editor.putFloat("background_transparency", themeSettings.optDouble("background_transparency", 0.0).toFloat())
+        editor.putFloat("background_blur", themeSettings.optDouble("background_blur", 0.0).toFloat())
+        editor.putFloat("ui_transparency", themeSettings.optDouble("ui_transparency", 0.0).toFloat())
+        editor.putInt("app_dpi", themeSettings.optInt("app_dpi", 160))
+        editor.putInt("original_system_dpi", themeSettings.optInt("original_system_dpi", 160))
+        
+        // Handle background image restoration
+        val originalBackgroundUri = themeSettings.optString("background_image_uri", "")
+        if (originalBackgroundUri.isNotEmpty()) {
+            // Look for background image files in the backup
+            val backgroundFiles = SuFile(tempDir).listFiles()?.filter {
+                it.name.startsWith("background_image.")
+            }
+            
+            if (!backgroundFiles.isNullOrEmpty()) {
+                val backgroundFile = backgroundFiles.first()
+                val internalDir = File(context.filesDir, "backgrounds")
+                if (!internalDir.exists()) internalDir.mkdirs()
+                
+                val restoredFile = File(internalDir, "background.${backgroundFile.extension}")
+                val copyCmd = "cp \"${backgroundFile.absolutePath}\" \"${restoredFile.absolutePath}\""
+                
+                if (ShellUtils.fastCmdResult(copyCmd)) {
+                    editor.putString("background_image_uri", restoredFile.absolutePath)
+                }
+            } else {
+                // Clear background image if file not found in backup
+                editor.remove("background_image_uri")
+            }
+        } else {
+            editor.remove("background_image_uri")
+        }
+        
+        editor.commit()
+        
+        // Clean up temp files
+        ShellUtils.fastCmdResult("rm -rf $tempDir")
+        SuFile(tarPath).delete()
+        
+        return true
+    } catch (e: Exception) {
+        Log.e(TAG, "Theme restore failed: ${e.message}")
+        return false
+    }
+}
+
 fun themeRestore(customPath: String? = null): Boolean {
     try {
         val context = ksuApp

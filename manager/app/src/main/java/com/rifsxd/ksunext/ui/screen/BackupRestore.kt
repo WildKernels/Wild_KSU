@@ -4,14 +4,22 @@ import android.content.Context
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import android.app.Activity
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Archive
 import androidx.compose.material.icons.filled.Backup
 import androidx.compose.material.icons.filled.Restore
 import androidx.compose.material.icons.filled.Unarchive
+import androidx.compose.material.icons.filled.Folder
+import androidx.compose.material.icons.filled.InsertDriveFile
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
+import java.io.File
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
@@ -19,6 +27,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import android.content.Intent
+import android.net.Uri
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -98,140 +108,48 @@ fun BackupRestoreScreen(navigator: DestinationsNavigator) {
         item {
             var isThemeBackupLoading by remember { mutableStateOf(false) }
             var isThemeRestoreLoading by remember { mutableStateOf(false) }
-            var showBackupPathDialog by remember { mutableStateOf(false) }
-            var showRestorePathDialog by remember { mutableStateOf(false) }
-            var backupPath by remember { mutableStateOf("/data/adb/ksu/backup/theme") }
-            var restorePath by remember { mutableStateOf("/data/adb/ksu/backup/theme") }
+            var backupPath by rememberSaveable { mutableStateOf("") }
+            var restorePath by rememberSaveable { mutableStateOf("") }
+            
+            // System file picker launchers
+            val backupFileLauncher = rememberLauncherForActivityResult(
+                contract = ActivityResultContracts.StartActivityForResult()
+            ) { result ->
+                if (result.resultCode == Activity.RESULT_OK) {
+                    result.data?.data?.let { uri ->
+                        backupPath = uri.toString()
+                        scope.launch {
+                            loadingDialog.withLoading {
+                                themeBackup(context, uri)
+                            }
+                        }
+                    }
+                }
+            }
+            
+            val restoreFileLauncher = rememberLauncherForActivityResult(
+                contract = ActivityResultContracts.StartActivityForResult()
+            ) { result ->
+                if (result.resultCode == Activity.RESULT_OK) {
+                    result.data?.data?.let { uri ->
+                        restorePath = uri.toString()
+                        scope.launch {
+                            loadingDialog.withLoading {
+                                themeRestore(context, uri)
+                            }
+                        }
+                    }
+                }
+            }
             
             val themeBackupDialog = rememberLoadingDialog()
             val themeRestoreDialog = rememberLoadingDialog()
             
-            // Backup Path Dialog
-            if (showBackupPathDialog) {
-                AlertDialog(
-                    onDismissRequest = { showBackupPathDialog = false },
-                    title = { Text("Select Backup Path") },
-                    text = {
-                        Column {
-                            Text("Enter the path where you want to save the theme backup:")
-                            Spacer(modifier = Modifier.height(8.dp))
-                            OutlinedTextField(
-                                value = backupPath,
-                                onValueChange = { backupPath = it },
-                                label = { Text("Backup Path") },
-                                placeholder = { Text("/data/adb/ksu/backup/theme") },
-                                singleLine = true
-                            )
-                        }
-                    },
-                    confirmButton = {
-                        TextButton(
-                            onClick = {
-                                showBackupPathDialog = false
-                                scope.launch {
-                                    try {
-                                        val success = themeBackupDialog.withLoading {
-                                            themeBackup(backupPath.takeIf { it.isNotBlank() })
-                                        }
-                                        
-                                        if (success) {
-                                            snackbarHostState.showSnackbar(
-                                                "Theme backup created successfully at $backupPath",
-                                                duration = SnackbarDuration.Short
-                                            )
-                                        } else {
-                                            snackbarHostState.showSnackbar(
-                                                "Failed to create theme backup",
-                                                duration = SnackbarDuration.Short
-                                            )
-                                        }
-                                    } catch (e: Exception) {
-                                        snackbarHostState.showSnackbar(
-                                            "Error creating theme backup: ${e.message}",
-                                            duration = SnackbarDuration.Short
-                                        )
-                                    }
-                                }
-                            }
-                        ) {
-                            Text("Backup")
-                        }
-                    },
-                    dismissButton = {
-                        TextButton(onClick = { showBackupPathDialog = false }) {
-                            Text("Cancel")
-                        }
-                    }
-                )
-            }
+
             
-            // Restore Path Dialog
-            if (showRestorePathDialog) {
-                AlertDialog(
-                    onDismissRequest = { showRestorePathDialog = false },
-                    title = { Text("Select Restore Path") },
-                    text = {
-                        Column {
-                            Text("Enter the path where your theme backup is located:")
-                            Spacer(modifier = Modifier.height(8.dp))
-                            OutlinedTextField(
-                                value = restorePath,
-                                onValueChange = { restorePath = it },
-                                label = { Text("Restore Path") },
-                                placeholder = { Text("/data/adb/ksu/backup/theme") },
-                                singleLine = true
-                            )
-                        }
-                    },
-                    confirmButton = {
-                        TextButton(
-                            onClick = {
-                                 showRestorePathDialog = false
-                                 scope.launch {
-                                     try {
-                                         val success = themeRestoreDialog.withLoading {
-                                             themeRestore(restorePath.takeIf { it.isNotBlank() })
-                                         }
-                                         
-                                         if (success) {
-                                             snackbarHostState.showSnackbar(
-                                                 "Theme restored successfully. Restart app to see changes.",
-                                                 duration = SnackbarDuration.Long
-                                             )
-                                         } else {
-                                             snackbarHostState.showSnackbar(
-                                                 "Failed to restore theme. No backup found or restore failed.",
-                                                 duration = SnackbarDuration.Short
-                                             )
-                                         }
-                                     } catch (e: Exception) {
-                                         snackbarHostState.showSnackbar(
-                                             "Error restoring theme: ${e.message}",
-                                             duration = SnackbarDuration.Short
-                                         )
-                                     }
-                                 }
-                             }
-                        ) {
-                            Text("Restore")
-                        }
-                    },
-                    dismissButton = {
-                        TextButton(onClick = { showRestorePathDialog = false }) {
-                            Text("Cancel")
-                        }
-                    }
-                )
-            }
+
             
             StandardCard {
-                Text(
-                    text = "Theme Settings",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold
-                )
-                
-                CardItemSpacer()
                 
                 CardRowContent(
                     icon = Icons.Filled.Backup,
@@ -241,7 +159,13 @@ fun BackupRestoreScreen(navigator: DestinationsNavigator) {
                         interactionSource = rememberNoRippleInteractionSource(),
                         indication = null
                     ) {
-                        showBackupPathDialog = true
+                        // Launch system file manager for backup location
+                        val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
+                            addCategory(Intent.CATEGORY_OPENABLE)
+                            type = "application/x-tar"
+                            putExtra(Intent.EXTRA_TITLE, "theme_backup.tar")
+                        }
+                        backupFileLauncher.launch(intent)
                     }
                 )
                 
@@ -255,7 +179,12 @@ fun BackupRestoreScreen(navigator: DestinationsNavigator) {
                         interactionSource = rememberNoRippleInteractionSource(),
                         indication = null
                     ) {
-                        showRestorePathDialog = true
+                        // Launch system file manager for restore file selection
+                        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+                            addCategory(Intent.CATEGORY_OPENABLE)
+                            type = "application/x-tar"
+                        }
+                        restoreFileLauncher.launch(intent)
                     }
                 )
             }
