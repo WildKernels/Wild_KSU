@@ -651,6 +651,9 @@ private fun UnifiedTopBar(
         TemplateEditorScreenDestination.route -> {
             // TemplateEditor handles its own top bar, so we don't show one here
         }
+        BackupRestoreScreenDestination.route -> {
+            // BackupRestore screen doesn't need a top bar, only the unified one
+        }
         else -> {
             RegularTopBar(
                 currentDestination = currentDestination, 
