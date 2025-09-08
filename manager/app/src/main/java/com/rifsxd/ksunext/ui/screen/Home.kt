@@ -116,13 +116,12 @@ fun HomeScreen(navigator: DestinationsNavigator) {
 
         // Only show this item if there's content to display
         val debugWarningCard = prefs.getBoolean("debug_warning_card", false)
-        val debugUpdateCard = prefs.getBoolean("debug_update_card", false)
         val checkUpdate = prefs.getBoolean("check_update", false)
         
         val hasCardContent = (ksuVersion != null && rootAvailable()) ||
                             (debugWarningCard || (isManager && Natives.requireNewKernel())) ||
                             (debugWarningCard || (ksuVersion != null && !rootAvailable())) ||
-                            (debugUpdateCard || checkUpdate)
+                            checkUpdate
         
         if (hasCardContent) {
             item {
@@ -203,7 +202,7 @@ fun HomeScreen(navigator: DestinationsNavigator) {
                         )
                     }
 
-                    if (debugUpdateCard || checkUpdate) {
+                    if (checkUpdate) {
                         UpdateCard()
                     }
                 }
@@ -280,22 +279,14 @@ fun UpdateCard() {
     val uriHandler = LocalUriHandler.current
     val title = stringResource(id = R.string.module_changelog)
     val updateText = stringResource(id = R.string.module_update)
-    
-    // Check if debug mode is enabled
-    val debugUpdateCard = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
-        .getBoolean("debug_update_card", false)
 
     AnimatedVisibility(
-        visible = debugUpdateCard || newVersionCode > currentVersionCode,
+        visible = newVersionCode > currentVersionCode,
         enter = fadeIn() + expandVertically(),
         exit = shrinkVertically() + fadeOut()
     ) {
         val updateDialog = rememberConfirmDialog(onConfirm = { uriHandler.openUri(newVersionUrl) })
-        val message = if (debugUpdateCard && newVersionCode <= currentVersionCode) {
-            "Debug: Update card forced to show (current version: $currentVersionCode, latest: $newVersionCode)"
-        } else {
-            "⚠️ Testing: ${stringResource(id = R.string.new_version_available).format(newVersionCode)}\n\nThis update feature is still in testing phase. Please verify the update manually."
-        }
+        val message = stringResource(id = R.string.new_version_available).format(newVersionCode)
         
         WarningCard(
             message = message,
