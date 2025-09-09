@@ -602,7 +602,6 @@ fun themeBackup(customPath: String? = null): Boolean {
         
         // Clean up temp files
         ShellUtils.fastCmdResult("rm -rf $tempDir")
-        SuFile(zipPath).delete()
         
         return cpResult
     } catch (e: Exception) {
@@ -618,7 +617,6 @@ fun themeBackup(context: Context, uri: Uri): Boolean {
         
         val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
         val tempDir = "/data/local/tmp/theme_backup_$timestamp"
-        val zipPath = "/data/local/tmp/theme_backup_$timestamp.zip"
         
         // Create temp directory
         if (!SuFile(tempDir).mkdirs()) return false
@@ -660,21 +658,17 @@ fun themeBackup(context: Context, uri: Uri): Boolean {
         }
         
         // Create zip file
-        val zipCmd = "$BUSYBOX zip -r $zipPath -C $tempDir ."
+        val zipName = "theme_backup_$timestamp.zip"
+        val zipCmd = "cd $tempDir && $BUSYBOX zip -r $zipName ."
         val zipResult = ShellUtils.fastCmdResult(zipCmd)
         if (!zipResult) {
-            // Fallback to alternative zip command if the first one fails
-            val fallbackZipCmd = "cd $tempDir && $BUSYBOX zip -r ../$(basename $zipPath) ."
-            val fallbackResult = ShellUtils.fastCmdResult(fallbackZipCmd)
-            if (!fallbackResult) {
-                ShellUtils.fastCmdResult("rm -rf $tempDir")
-                return false
-            }
+            ShellUtils.fastCmdResult("rm -rf $tempDir")
+            return false
         }
         
         // Write zip file to selected Uri using ContentResolver
         context.contentResolver.openOutputStream(uri)?.use { outputStream ->
-            SuFile(zipPath).inputStream().use { inputStream ->
+            SuFile("$tempDir/$zipName").inputStream().use { inputStream ->
                 inputStream.copyTo(outputStream)
             }
         }
