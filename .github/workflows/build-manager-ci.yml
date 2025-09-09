@@ -327,7 +327,6 @@ jobs:
   create-release:
     needs: [build-manager, generate-version]
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/wild'
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
