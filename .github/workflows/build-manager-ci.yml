@@ -283,7 +283,6 @@ jobs:
 
   generate-version:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/wild'
     outputs:
       version: ${{ steps.version.outputs.version }}
       commit_count: ${{ steps.version.outputs.commit_count }}
