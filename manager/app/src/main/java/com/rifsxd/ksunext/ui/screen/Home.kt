@@ -282,9 +282,9 @@ fun UpdateCard() {
     
     // Show update if:
     // 1. New version code is higher than current, OR
-    // 2. Current version is spoofed and there's a spoofed update available (even same version code)
+    // 2. Current version is spoofed and there's a spoofed update available with higher version code
     val shouldShowUpdate = newVersionCode > currentVersionCode || 
-        (isCurrentSpoofed && newVersionCode > 0 && newVersionUrl.isNotEmpty())
+        (isCurrentSpoofed && newVersionCode > currentVersionCode && newVersionUrl.isNotEmpty())
 
     val uriHandler = LocalUriHandler.current
     val title = stringResource(id = R.string.module_changelog)
