@@ -1,13 +1,13 @@
 name: Build SU
 on:
   push:
-    branches: [ "next" ]
+    branches: [ "wild" ]
     paths:
       - '.github/workflows/build-su.yml'
       - 'userspace/su/**'
       - 'scripts/wildksubot.py'
   pull_request:
-    branches: [ "next" ]
+    branches: [ "wild" ]
     paths:
       - 'userspace/su/**'
 jobs:

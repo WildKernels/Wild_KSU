@@ -1,13 +1,13 @@
 name: Build Kernel - WSA
 on:
   push:
-    branches: ["next"]
+    branches: ["wild"]
     paths:
       - ".github/workflows/build-kernel-wsa.yml"
       - ".github/workflows/wsa-kernel.yml"
       - "kernel/**"
   pull_request:
-    branches: ["next"]
+    branches: ["wild"]
     paths:
       - ".github/workflows/build-kernel-wsa.yml"
       - ".github/workflows/wsa-kernel.yml"

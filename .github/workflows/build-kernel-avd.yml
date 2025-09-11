@@ -1,13 +1,13 @@
 name: Build Kernel - AVD
 on:
   push:
-    branches: ["next"]
+    branches: ["wild"]
     paths:
       - ".github/workflows/build-kernel-avd.yml"
       - ".github/workflows/avd-kernel.yml"
       - "kernel/**"
   pull_request:
-    branches: ["next"]
+    branches: ["wild"]
     paths:
       - ".github/workflows/build-kernel-avd.yml"
       - ".github/workflows/avd-kernel.yml"

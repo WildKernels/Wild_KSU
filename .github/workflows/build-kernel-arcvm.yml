@@ -1,12 +1,12 @@
 name: Build Kernel - ChromeOS ARCVM
 on:
   push:
-    branches: ["next"]
+    branches: ["wild"]
     paths:
       - ".github/workflows/build-kernel-arcvm.yml"
       - "kernel/**"
   pull_request:
-    branches: ["next"]
+    branches: ["wild"]
     paths:
       - ".github/workflows/build-kernel-arcvm.yml"
       - "kernel/**"

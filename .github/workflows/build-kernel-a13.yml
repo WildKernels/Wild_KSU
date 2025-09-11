@@ -1,14 +1,14 @@
 name: Build Kernel - Android 13
 on:
   push:
-    branches: [ "next" ]
+    branches: [ "wild" ]
     paths:
       - ".github/workflows/build-kernel-a13.yml"
       - ".github/workflows/gki-kernel.yml"
       - ".github/scripts/build_a13.sh"
       - "kernel/**"
   pull_request:
-    branches: [ "next" ]
+    branches: [ "wild" ]
     paths:
       - ".github/workflows/build-kernel-a13.yml"
       - ".github/workflows/gki-kernel.yml"
@@ -17,7 +17,7 @@ on:
   workflow_call:
 jobs:
   build-kernel:
-    if: github.event_name != 'pull_request' && github.ref != 'refs/heads/next'
+    if: github.event_name != 'pull_request' && github.ref != 'refs/heads/wild'
     strategy:
       matrix:
         include:
@@ -75,7 +75,7 @@ jobs:
   upload-artifacts:
     needs: build-kernel
     runs-on: ubuntu-latest
-    if: ${{ ( github.event_name != 'pull_request' && github.ref == 'refs/heads/next' ) || github.ref_type == 'tag' || github.ref == 'refs/heads/next' }}
+    if: ${{ ( github.event_name != 'pull_request' && github.ref == 'refs/heads/wild' ) || github.ref_type == 'tag' || github.ref == 'refs/heads/wild' }}
     env:
       CHAT_ID: ${{ secrets.CHAT_ID }}
       BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
@@ -136,7 +136,7 @@ jobs:
           path: Image-android13*/*.img.gz
 
   check-build-kernel:
-    if: (github.event_name == 'pull_request' && !github.event.pull_request.draft) || github.ref == 'refs/heads/next'
+    if: (github.event_name == 'pull_request' && !github.event.pull_request.draft) || github.ref == 'refs/heads/wild'
     strategy:
       matrix:
         include:
