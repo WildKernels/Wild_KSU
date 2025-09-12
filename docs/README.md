@@ -60,7 +60,7 @@ These two modes are suitable for different scenarios, and you can choose the one
 
 ---
 
-## 🔧 Kernel Integration
+## 🔧 Kernel Integration / GKI Mode
 
 > 🚀 **Ready to integrate Wild KSU into your kernel?** 
 > 
@@ -71,6 +71,8 @@ curl -LSs "https://raw.githubusercontent.com/WildKernels/Wild_KSU/wild/kernel/se
 ```
 
 > 📋 **Note:** This script will automatically configure your kernel source tree with Wild KSU support.
+
+#
 
 ---
 
