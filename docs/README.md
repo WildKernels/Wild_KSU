@@ -5,6 +5,8 @@
   
   **🔥 A customization and root hiding focused fork 🔥**
   
+  > ⚠️ **IMPORTANT NOTICE**: This project is currently in testing mode. All releases should be considered unstable and may be unstable until version 1.0.0 is released. Use at your own risk.
+  
   <p align="center">
     <a href="https://github.com/WildKernels/Wild_KSU/releases/latest">
       <img src="https://img.shields.io/github/v/release/WildKernels/Wild_KSU?label=Release&logo=github&style=for-the-badge&color=blue" alt="Latest Release">
