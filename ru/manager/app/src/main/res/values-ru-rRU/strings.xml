@@ -279,17 +279,17 @@
     <string name="app_name_customization_summary">Изменить название приложения, отображаемое в интерфейсе</string>
     <string name="app_name_kernelsu_next">KernelSU Next</string>
     <string name="app_name_wild_ksu">Wild KSU</string>
-    <string name="app_name_custom">Custom</string>
-    <string name="app_name_custom_hint">Enter custom app name</string>
-    <string name="app_name_dialog_title">Select App Name</string>
-    <string name="app_name_custom_dialog_title">Custom App Name</string>
-    <string name="app_name_custom_dialog_message">Enter your custom app name (max 20 characters)</string>
+    <string name="app_name_custom">Настроить</string>
+    <string name="app_name_custom_hint">Введите своё название приложения</string>
+    <string name="app_name_dialog_title">Выберите название приложения</string>
+    <string name="app_name_custom_dialog_title">Своё название приложения</string>
+    <string name="app_name_custom_dialog_message">Введите название вашего приложения (максимум 20 символов)</string>
     <!-- Home Settings Card Layout -->
-    <string name="home_screen_settings">Home &amp; Cards</string>
-    <string name="info_card_settings">Info Card Settings</string>
-    <string name="info_card_order_management">Info Card Order Management</string>
-    <string name="info_card_order_description">Tap to move items up/down one position, or long press to move to top/bottom. Use the toggle to enable/disable items.</string>
+    <string name="home_screen_settings">Дом и Карточки</string>
+    <string name="info_card_settings">Настройки карточек информации</string>
+    <string name="info_card_order_management">Управление порядком карточек информации</string>
+    <string name="info_card_order_description">Нажмите, чтобы переместить элементы на одну позицию вверх/вниз, или долгое нажатие для перемещения в начало/конец. Используйте переключатель для включения/отключения элементов.</string>
     <!-- Individual App Cards Settings -->
-    <string name="individual_app_cards">Individual App Cards</string>
-    <string name="individual_app_cards_summary">Show each app in its own card instead of a list</string>
+    <string name="individual_app_cards">Индивидуальные карточки приложений</string>
+    <string name="individual_app_cards_summary">Показывать каждое приложение в отдельной карточке вместо списка</string>
 </resources>
