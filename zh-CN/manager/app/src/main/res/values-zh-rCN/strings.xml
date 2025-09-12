@@ -123,7 +123,7 @@
     <string name="settings_umount_modules_default_summary">应用配置文件中“卸载模块”的全局默认值。如果启用，它将移除所有未设置配置文件的应用程序对系统的模块修改。</string>
     <string name="settings_susfs_toggle">隐藏 kprobes hook</string>
     <string name="settings_susfs_toggle_summary">This option disables the kprobes hook created by ksu and, instead, activates the embedded non-kprobes hook, implementing the same functionality that would be applied to a non-GKI kernel, which doesn\'t support kprobe.</string>
-    <string name="profile_umount_modules_summary">Enabling this option will allow Wild KSU to restore any modified files by the modules for this app.</string>
+    <string name="profile_umount_modules_summary">启用此选项将允许Wild KSU 恢复此应用程序的模块所修改的文件。</string>
     <string name="profile_selinux_domain">Domain</string>
     <string name="profile_selinux_rules">Rules</string>
     <string name="module_update">Update</string>
