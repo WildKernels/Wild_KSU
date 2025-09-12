@@ -86,20 +86,6 @@ Wild KSU supports a wide range of Android kernel versions from **4.4 up to 6.6**
 
 ---
 
-## 🔧 Kernel Integration
-
-> 🚀 **Ready to integrate Wild KSU into your kernel?** 
-> 
-> Use our automated setup script to integrate Wild KSU into your kernel source:
-
-```bash
-curl -LSs "https://raw.githubusercontent.com/WildKernels/Wild_KSU/wild/kernel/setup.sh" | bash -s wild
-```
-
-> 📋 **Note:** This script will automatically configure your kernel source tree with Wild KSU support.
-
----
-
 ## 🔐 Security & Reporting
 
 Security is our top priority. If you discover any security vulnerabilities or issues:
@@ -139,14 +125,25 @@ If Wild KSU has been helpful to you, consider supporting our development efforts
 
 ## 📚 Documentation & Installation
 
+### 🔧 **Kernel Integration**
+
+> 🚀 **Ready to integrate Wild KSU into your kernel?** 
+> 
+> Use our automated setup script to integrate Wild KSU into your kernel source:
+
+```bash
+curl -LSs "https://raw.githubusercontent.com/WildKernels/Wild_KSU/wild/kernel/setup.sh" | bash -s wild
+```
+
+> 📋 **Note:** This script will automatically configure your kernel source tree with Wild KSU support.
+
+### 📖 **Complete Documentation**
+
 For detailed installation instructions and comprehensive documentation, please refer to the original KernelSU project:
 
 🔗 **[KernelSU Official Documentation](https://kernelsu.org/guide/what-is-kernelsu.html)**
 
 This documentation covers installation procedures, usage guidelines, and technical details that apply to Wild KSU as well.
-
-**Quick Installation:**
-Make sure to use our curl command for the latest Wild KSU installation script.
 
 ---
 
