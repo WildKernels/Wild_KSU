@@ -46,7 +46,7 @@
 
 ## ✨ What is Wild KSU?
 
-Wild KSU is a customization and root hiding focused fork of KernelSU Next, designed to provide enhanced root management with specialized hiding capabilities for Android devices.
+Wild KSU is a specialized fork of KernelSU Next that excels in advanced customizations and sophisticated root hiding techniques. Crafted for users who demand seamless stealth and extensive personalization options for their Android devices.
 
 ---
 
