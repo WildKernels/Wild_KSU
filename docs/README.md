@@ -60,26 +60,17 @@ These two modes are suitable for different scenarios, and you can choose the one
 
 ---
 
-## 🔧 Kernel Integration / GKI Mode
+## 🔧 Kernel Integration
 
-> 🚀 **GKI Mode Integration** 
+> 🚀 **Ready to integrate Wild KSU into your kernel?** 
 > 
-> For GKI (Generic Kernel Image) mode, Wild KSU replaces your device's original kernel with a custom GKI that includes Wild KSU support.
-
-### 📦 **Automated GKI Setup**
-Use our automated setup script to integrate Wild KSU into your kernel source:
+> Use our automated setup script to integrate Wild KSU into your kernel source:
 
 ```bash
 curl -LSs "https://raw.githubusercontent.com/WildKernels/Wild_KSU/wild/kernel/setup.sh" | bash -s wild
 ```
 
-### 🔧 **GKI Mode Benefits**
-- **Complete kernel control** - Full access to kernel-level functionality
-- **Maximum compatibility** - Works with most Android devices supporting GKI
-- **Enhanced security** - Kernel-level root management and hiding
-- **Better performance** - Direct kernel integration without module overhead
-
-> 📋 **Note:** GKI mode requires unlocked bootloader and custom recovery. This method provides the most comprehensive Wild KSU experience but requires replacing your device's kernel.
+> 📋 **Note:** This script will automatically configure your kernel source tree with Wild KSU support.
 
 ---
 
