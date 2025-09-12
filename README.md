@@ -12,9 +12,14 @@
   
   ---
   
-  ### 🌍 Available Languages
+  ### 🌍 Languages & Translations
   
-  **English** | [简体中文](docs/README_CN.md) | [繁體中文](docs/README_TW.md) | [Türkçe](docs/README_TR.md) | [Português (Brasil)](docs/README_PT-BR.md) | [한국어](docs/README_KO.md) | [Français](docs/README_FR.md) | [Bahasa Indonesia](docs/README_ID.md) | [Русский](docs/README_RU.md) | [Українська](docs/README_UA.md) | [ภาษาไทย](docs/README_TH.md) | [Tiếng Việt](docs/README_VI.md) | [Italiano](docs/README_IT.md) | [Polski](docs/README_PL.md) | [Български](docs/README_BG.md) | [日本語](docs/README_JA.md) | [Español](docs/README_ES.md)
+  **English** (Current)
+  
+  > 🌐 **Translation contributions are welcome!**  
+  > Help us make Wild KSU accessible to more users worldwide by contributing translations via:  
+  > - 📝 **Pull Requests** - Submit translation files directly  
+  > - 🔗 **[Crowdin](https://crowdin.com/project/wild-ksu)** - Collaborative translation platform
   
 </div>
 
@@ -62,11 +67,17 @@ Wild KSU supports a wide range of Android kernel versions from **4.4 up to 6.6**
 
 ---
 
-## 📦 Installation Guide
+## 🔧 Kernel Integration
 
-> 🚀 **Ready to get started?** 
+> 🚀 **Ready to integrate Wild KSU into your kernel?** 
 > 
-> Check out our comprehensive [**Installation Guide**](https://wildkernels.github.io/Wild_KSU/pages/installation.html) for detailed setup instructions tailored to your device and kernel version.
+> Use our automated setup script to integrate Wild KSU into your kernel source:
+
+```bash
+curl -LSs "https://raw.githubusercontent.com/WildKernels/Wild_KSU/wild/kernel/setup.sh" | bash -s wild
+```
+
+> 📋 **Note:** This script will automatically configure your kernel source tree with Wild KSU support. Make sure you have the necessary build dependencies installed before running the integration script.
 
 ---
 
