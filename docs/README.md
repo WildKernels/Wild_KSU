@@ -33,6 +33,8 @@
   
   ---
   
+  ![Stats](../assets/gray0_ctp_on_line.svg)
+
   ### 🌍 Languages & Translations
   
   **English** (Current)
@@ -182,5 +184,7 @@ Wild KSU stands on the shoulders of giants. We extend our gratitude to:
   [![GitHub stars](https://img.shields.io/github/stars/WildKernels/Wild_KSU?style=social)](https://github.com/WildKernels/Wild_KSU/stargazers)
   [![GitHub forks](https://img.shields.io/github/forks/WildKernels/Wild_KSU?style=social)](https://github.com/WildKernels/Wild_KSU/network/members)
   [![GitHub watchers](https://img.shields.io/github/watchers/WildKernels/Wild_KSU?style=social)](https://github.com/WildKernels/Wild_KSU/watchers)
+  
+  ![Stats](../assets/gray0_ctp_on_line.svg)
   
 </div>
