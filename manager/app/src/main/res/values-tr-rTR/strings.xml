@@ -47,7 +47,7 @@ KSU!</string>
 %1$s</string>
     <string name="module_sort_a_to_z">Sırala (A - Z)</string>
     <string name="module_sort_z_to_a">Sırala (Z - A)</string>
-    <string name="module_size_low_to_high">Sırala (Düşük > Yüksek)</string>
+    <string name="module_size_low_to_high">Sırala (Düşük &gt; Yüksek)</string>
     <string name="module_size_high_to_low">Sırala (Yüksek → Düşük)</string>
     <string name="uninstall">Kaldır</string>
     <string name="restore">Geri Yükle</string>
