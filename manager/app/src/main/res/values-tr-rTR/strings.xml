@@ -5,7 +5,7 @@
     <string name="issue_report_body_2">En kısa sürede bildirin!</string>
     <string name="issue_report_github">GitHub da rapor edin</string>
     <string name="issue_report_telegram">Telegram aracılığıyla iletişim kurun</string>
-    <string name="issue_report_github_link"></string>
+    <string name="issue_report_github_link">https://github.com/WildKernels/Wild_KSU/i ssues</string>
     <string name="issue_report_telegram_link">https://t.me/Wild_Kernels/2</string>
     <string name="confirm">Onayla</string>
     <string name="home">Ana Ekran</string>
@@ -18,8 +18,7 @@
     <string name="home_module_update_count">Güncellemeler: %d</string>
     <string name="home_failure">Çekirdekte Wild KSU v2 imzası bulunamadı!
 [!KSU_NEXT || != boyut/karma ]</string>
-    <string name="home_failure_tip">Çekirdek geliştiricinizden Wild\'ı entegre etmesini isteyin
-KSU!</string>
+    <string name="home_failure_tip">Çekirdek geliştiricinizden Wild KSU- yu entegre etmesini isteyin!</string>
     <string name="home_kernel">Çekirdek Sürümü</string>
     <string name="hook_mode">Kanca Modülü</string>
     <string name="enable">Etkinleştir</string>
