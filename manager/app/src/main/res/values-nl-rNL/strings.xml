@@ -34,9 +34,9 @@
     <string name="home_selinux_status">SELinux-status</string>
     <string name="selinux_status_disabled">Uitgeschakeld</string>
     <string name="selinux_status_enforcing">Afgedwongen</string>
-    <string name="selinux_status_permissive">Tolerant</string>
+    <string name="selinux_status_permissive">Permissief</string>
     <string name="selinux_status_unknown">Onbekend</string>
-    <string name="superuser">Supergebruiker</string>
+    <string name="superuser">Superuser</string>
     <string name="module_failed_to_enable">Kan module niet inschakelen: %s</string>
     <string name="module_failed_to_disable">Kan module niet uitschakelen: %s</string>
     <string name="module_empty">Geen module geïnstalleerd</string>
@@ -142,7 +142,7 @@
     <string name="restart_app_message">De app moet opnieuw opstarten om deze wijziging door te voeren.</string>
     <string name="failed_to_update_sepolicy">Kan SELinux-regels niet bijwerken voor: %s</string>
     <string name="su_not_allowed">Kan geen Superuser-toegang verlenen aan %s</string>
-    <string name="module_changelog">Lijst met veranderingen</string>
+    <string name="module_changelog">Changelog</string>
     <string name="settings_profile_template">App-profielsjabloon</string>
     <string name="settings_profile_template_summary">Lokale en online sjabloon van App Profiel beheren</string>
     <string name="app_profile_template_create">Sjabloon aanmaken</string>
@@ -173,7 +173,7 @@
     <string name="open">Open</string>
     <string name="enable_web_debugging">WebView-foutopsporing inschakelen</string>
     <string name="enable_web_debugging_summary">Kan worden gebruikt om WebUI te debuggen. Schakel dit alleen in als dat nodig is.</string>
-    <string name="direct_install">Directe installatie (aanbevolen)</string>
+    <string name="direct_install">Directe installatie (Aanbevolen)</string>
     <string name="select_file">Bestand selecteren</string>
     <string name="install_inactive_slot">Installeer op inactieve sleuf (Na OTA)</string>
     <string name="install_inactive_slot_warning">Uw apparaat wordt **GEFORCEERD** om na een herstart op te starten naar het huidige inactieve slot!
@@ -195,7 +195,7 @@
     <string name="flash_success">Het flashen is gelukt</string>
     <string name="flash_failed">Het flashen is mislukt</string>
     <string name="selected_lkm">Geselecteerde LKM: %s</string>
-    <string name="save_log">Logboeken Opslaan</string>
+    <string name="save_log">Logs opslaan</string>
     <string name="log_saved">Logs opgeslagen</string>
     <string name="send_log">Logs delen</string>
     <string name="settings_disable_su">Su-compatibiliteit uitschakelen</string>
@@ -208,7 +208,7 @@
     <string name="settings_banner_summary">Toon achtergrond banners voor modules.</string>
     <string name="use_webuix">Gebruik WebUI X</string>
     <string name="use_webuix_summary">Gebruik WebUI X in plaats van WebUI, dat meer API\'s ondersteunt.</string>
-    <string name="use_webuix_eruda">Eruda injecteren in WebUI X</string>
+    <string name="use_webuix_eruda">Injecteer Eruda in WebUI X</string>
     <string name="use_webuix_eruda_summary">Injecteer een debugconsole in WebUI X om debuggen gemakkelijker te maken. Vereist dat webdebuggen is ingeschakeld.</string>
     <string name="customization">Aanpassingen</string>
     <string name="developer">Ontwikkelaar</string>
@@ -219,7 +219,7 @@
     <string name="sucompat_disabled">SUCOMPAT UITGESCHAKELD</string>
     <string name="zygisk_required">Zygisk vereist</string>
     <string name="zygisk_status">Zygisk-injectie</string>
-    <string name="home_superuser_count_singular">Supergebruiker</string>
+    <string name="home_superuser_count_singular">Superuser</string>
     <string name="home_superuser_count_plural">Supergebruikers</string>
     <string name="home_module_count_singular">Module</string>
     <string name="home_module_count_plural">Modules</string>
