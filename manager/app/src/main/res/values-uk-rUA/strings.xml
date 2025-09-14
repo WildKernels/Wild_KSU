@@ -69,7 +69,7 @@
     <string name="module_author">Автор</string>
     <string name="module_id">ID</string>
     <string name="module_version_code">Код версії</string>
-    <string name="module_update_json">UpdateJson</string>
+    <string name="module_update_json">Json обновления</string>
     <string name="module_update_json_empty">Порожньо</string>
     <string name="enable_developer_options">Режим розробника</string>
     <string name="enable_developer_options_summary">Показувати приховані налаштування і відладкову інформацію, актуальну лише для розробників.</string>
@@ -99,7 +99,7 @@
     <string name="allowlist_backup">Бекап списку дозволів</string>
     <string name="allowlist_backup_message">Бекап поточного списку дозволів.</string>
     <string name="warning">Попередження</string>
-    <string name="warning_message">Ця функція все ще перебуває у стадії бета-тестування. Будь ласка, переконайтеся, що ви створили бекап модулів перед використанням. Використовуйте це лише якщо розумієте можливі ризики. Будьте обережні.</string>
+    <string name="warning_message">Ця функція всеще перебуває у стадії бета-тестування. Будь ласка, переконайтеся, що ви створили бекап модулів перед використанням. Використовуйте це лише якщо розумієте можливі ризики. Будьте обережні.</string>
     <string name="proceed">Продовжити</string>
     <string name="cancel">Скасувати</string>
     <string name="later">Пізніше</string>
@@ -149,7 +149,7 @@
     <string name="app_profile_template_edit">Редагувати шаблон</string>
     <string name="app_profile_template_id">Ідентифікатор</string>
     <string name="app_profile_template_id_invalid">Неправильний ідентифікатор шаблону</string>
-    <string name="app_profile_template_name">Ім’я</string>
+    <string name="app_profile_template_name">Имя</string>
     <string name="app_profile_template_description">Опис</string>
     <string name="app_profile_template_save">Зберегти</string>
     <string name="app_profile_template_delete">Видалити</string>
@@ -228,7 +228,7 @@
     <string name="settings_global_namespace_mode_summary">Усі сесії користувача root будуть використовувати спільний простір імен</string>
     <string name="settings_background_image">Фонове зображення</string>
     <string name="settings_background_image_summary">Встановіть власне фонове зображення для програми</string>
-    <string name="background_image_select">Виберіть фонове зображення</string>
+    <string name="background_image_select">Вибрати додаток</string>
     <string name="background_image_remove">Видалити фонове зображення</string>
     <string name="background_image_fit_mode">Режим налаштування фону</string>
     <string name="background_image_fit_mode_summary">Виберіть, як має відображатися фонове зображення</string>
@@ -241,21 +241,21 @@
     <string name="crop_background_image">Власне обрізання</string>
     <string name="background_transparency">Темний фон</string>
     <string name="background_transparency_summary">Налаштуйте накладення темряви на фонове зображення</string>
-    <string name="icon_theme">Тема значка</string>
+    <string name="icon_theme">Тема іконок</string>
     <string name="icon_theme_summary">Виберіть пакет значків для значків програм SuperUser</string>
     <string name="icon_theme_default">Системні за замовчуванням</string>
     <string name="icon_theme_none_found">Не знайдено пакетів значків</string>
-    <string name="app_dpi_title">Шкала DPI</string>
+    <string name="app_dpi_title">Маштаб DPI</string>
     <string name="app_dpi_summary">Налаштуйте щільність відображення (DPI) інтерфейсу програми</string>
     <string name="dpi_current">Поточний DPI: %d</string>
     <string name="dpi_system">DPI системи: %d</string>
     <string name="dpi_apply_settings">Застосувати параметри</string>
-    <string name="dpi_scale_settings">Налаштування масштабу DPI</string>
+    <string name="dpi_scale_settings">Налаштування DPI</string>
     <string name="dpi_scale_settings_summary">Налаштуйте щільність відображення (DPI) інтерфейсу програми</string>
     <string name="dpi_change_settings">Змінити параметри DPI</string>
     <string name="dpi_dialog_description">Налаштуйте щільність відображення, щоб змінити розмір елементів інтерфейсу. Вищі значення зменшують елементи, нижчі — збільшують.</string>
     <!-- InfoCard Customization -->
-    <string name="info_card_customization">Налаштування домашнього екрана</string>
+    <string name="info_card_customization">Головний екран</string>
     <string name="info_card_customization_summary">Налаштування зовнішнього вигляду головного екрана, картки довідки та відображення системної інформації</string>
     <string name="info_card_always_expanded">Завжди розширений</string>
     <string name="info_card_always_expanded_summary">Завжди тримайте інформаційну картку розгорнутою</string>
