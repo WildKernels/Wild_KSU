@@ -16,7 +16,7 @@
     <string name="home_working">工作中</string>
     <string name="home_working_version">版本： %d</string>
     <string name="home_module_update_count">更新：%d</string>
-    <string name="home_failure">内核中未获取到Wild KSU v2签名！ [ !KSU_NEXT || != size/hash ]</string>
+    <string name="home_failure">内核中未找到 Wild KSU v2 签名！[KSU_NEXT 未启用 || ≠大小/哈希值]</string>
     <string name="home_failure_tip">请让您的内核开发者集成 Wild KSU！</string>
     <string name="home_kernel">内核版本</string>
     <string name="hook_mode">Hook 模式</string>
@@ -232,7 +232,7 @@
     <string name="background_image_remove">移除背景图像</string>
     <string name="background_image_fit_mode">背景适配模式</string>
     <string name="background_image_fit_mode_summary">选择背景图像的显示方式</string>
-    <string name="background_fit_edge_to_edge">Fit edge to edge</string>
+    <string name="background_fit_edge_to_edge">边缘对齐</string>
     <string name="background_fit_zoom_to_fit">缩放显示屏幕</string>
     <string name="background_image_edit">编辑位置</string>
     <string name="background_image_edit_summary">调整背景图像的位置和缩放比例</string>
@@ -291,5 +291,5 @@
     <string name="info_card_order_description">点击移动项目上下一位，或长按移动到顶部/底部。使用切换按钮启用/禁用项目。</string>
     <!-- Individual App Cards Settings -->
     <string name="individual_app_cards">独立应用卡片</string>
-    <string name="individual_app_cards_summary">Show each app in its own card instead of a list</string>
+    <string name="individual_app_cards_summary">卡片视图</string>
 </resources>
