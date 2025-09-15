@@ -230,7 +230,11 @@ fun ModuleScreen(navigator: DestinationsNavigator) {
                         selectZipLauncher.launch(intent)
                     },
                     modifier = Modifier.defaultMinSize(minWidth = 140.dp, minHeight = 56.dp),
-                    contentPadding = PaddingValues(horizontal = 20.dp, vertical = 16.dp)
+                    contentPadding = PaddingValues(horizontal = 20.dp, vertical = 16.dp),
+                    colors = ButtonDefaults.filledTonalButtonColors(
+                        containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 1.0f),
+                        contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                    )
                 ) {
                     Icon(
                         imageVector = Icons.Filled.Add,
