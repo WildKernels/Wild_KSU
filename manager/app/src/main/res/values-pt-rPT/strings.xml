@@ -4,7 +4,7 @@
     <string name="issue_report_body">Encontrou um bug ou tem feedback?</string>
     <string name="issue_report_body_2">Reporte-o o mais rápido possível!</string>
     <string name="issue_report_github">Reportar no GitHub</string>
-    <string name="issue_report_telegram">Contatar via Telegram</string>
+    <string name="issue_report_telegram">Contactar via Telegram</string>
     <string name="issue_report_github_link">https://github.com/WildKernels/Wild_KSU/issues</string>
     <string name="issue_report_telegram_link">https://t.me/Wild_Kernels/2</string>
     <string name="confirm">Confirmar</string>
@@ -29,7 +29,7 @@
     <string name="home_susfs_version">Versão do SuSFS</string>
     <string name="home_susfs_sus_su">SuS SU</string>
     <string name="home_android">Versão do Android</string>
-    <string name="home_manager_version">Versão do Gerenciador</string>
+    <string name="home_manager_version">Versão do Manager</string>
     <string name="home_abi">ABI</string>
     <string name="home_selinux_status">Status do SELinux</string>
     <string name="selinux_status_disabled">Desativado</string>
@@ -54,8 +54,8 @@
     <string name="uninstalled">Desinstalado</string>
     <string name="settings">Definições</string>
     <string name="reboot_userspace">Soft reboot</string>
-    <string name="reboot_recovery">Reboot para a Recovery</string>
-    <string name="reboot_bootloader">Reboot para o Bootloader</string>
+    <string name="reboot_recovery">Reboot para Recovery</string>
+    <string name="reboot_bootloader">Reboot para Bootloader</string>
     <string name="reboot_download">Reboot para Download</string>
     <string name="reboot_edl">Reboot para EDL</string>
     <string name="about">Acerca</string>
@@ -88,7 +88,7 @@
     <string name="use_overlay_fs">Usar OverlayFS</string>
     <string name="use_overlay_fs_summary">Alternar entre usar OverlayFS invés do Magic Mount para o sistema de montagem do Wild KSU.</string>
     <string name="reboot_required">Reinicialização necessária</string>
-    <string name="reboot_message">The changes will take effect after the system restart. Do you want to reboot now?</string>
+    <string name="reboot_message">As alterações serão aplicadas após o reiniciar o sistema. Deseja reiniciar agora?</string>
     <string name="module_restore">Restaurar módulos</string>
     <string name="module_restore_message">Restaurar módulos do backup recente.</string>
     <string name="backup_restore">Backup &amp; Restauro</string>
@@ -118,7 +118,7 @@
     <string name="profile_selinux_context">Contexto SELinux</string>
     <string name="profile_umount_modules">Umount dos módulos</string>
     <string name="failed_to_update_app_profile">Falha ao atualizar o perfil da aplicação para %s</string>
-    <string name="require_kernel_version">A versão atual do Wild KSU %1$d é muito baixa para o gerenciador funcionar corretamente. Atualize para a versão %2$d ou superior!</string>
+    <string name="require_kernel_version">A versão atual do Wild KSU %1$d é muito baixa para o manager funcionar corretamente. Atualize para a versão %2$d ou superior!</string>
     <string name="settings_umount_modules_default">Umount dos módulos</string>
     <string name="settings_umount_modules_default_summary">O valor padrão global para \"Umount dos módulos\" no perfil da aplicação. Se ativado, removerá todas as modificações de módulo no sistema para aplicações que não têm um perfil definido.</string>
     <string name="settings_susfs_toggle">Ocultar kprobes hook</string>
@@ -141,10 +141,10 @@
     <string name="restart_required">Reinicialização necessária</string>
     <string name="restart_app_message">O aplicativo precisa reiniciar para que esta alteração entre em vigor.</string>
     <string name="failed_to_update_sepolicy">Falha ao atualizar as regras do SELinux para %s</string>
-    <string name="su_not_allowed">Não foi possível conceder acesso de Superusuário a %s</string>
+    <string name="su_not_allowed">Não foi possível conceder acesso de superusuário a %s</string>
     <string name="module_changelog">Changelog</string>
     <string name="settings_profile_template">Modelo de perfil da aplicação</string>
-    <string name="settings_profile_template_summary">Gerenciar modelo local e online do perfil da aplicação</string>
+    <string name="settings_profile_template_summary">Gerir modelo local e online do perfil da aplicação</string>
     <string name="app_profile_template_create">Criar modelo</string>
     <string name="app_profile_template_edit">Editar modelo</string>
     <string name="app_profile_template_id">ID</string>
@@ -187,7 +187,7 @@
     <string name="settings_uninstall_permanent">Desinstalar permanentemente</string>
     <string name="settings_restore_stock_image">Restaurar imagem de stock</string>
     <string name="settings_uninstall_temporary_message">Desinstalar temporariamente o Wild KSU, restaurar ao estado original após o próximo reinício.</string>
-    <string name="settings_uninstall_permanent_message">Desinstalar o Wild KSU (Root e todos os módulos) completamente e permanentemente.</string>
+    <string name="settings_uninstall_permanent_message">Desinstalar o Wild KSU (root e todos os módulos) completamente e permanentemente.</string>
     <string name="settings_restore_stock_image_message">Restaura a imagem de fábrica original (caso exista uma cópia de segurança), um procedimento normalmente usado antes de atualizações OTA; se pretender desinstalar o Wild KSU, por favor, utilize a opção «Desinstalar permanentemente».</string>
     <string name="flashing">A instalar</string>
     <string name="flash_success">Instalação com sucesso</string>
