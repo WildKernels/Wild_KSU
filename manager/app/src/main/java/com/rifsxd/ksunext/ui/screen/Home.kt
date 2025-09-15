@@ -22,7 +22,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
-import androidx.compose.material.icons.outlined.HelpOutline
+import androidx.compose.material.icons.automirrored.outlined.HelpOutline
 import androidx.compose.material.icons.outlined.CheckCircleOutline
 import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.rounded.CheckCircleOutline
@@ -956,7 +956,7 @@ private fun IssueReportCardContent(
     Column {
         CardRowContent(
             text = "${stringResource(R.string.issue_report_body)} ${stringResource(R.string.issue_report_body_2)}",
-            icon = Icons.Outlined.HelpOutline,
+            icon = Icons.AutoMirrored.Outlined.HelpOutline,
             title = stringResource(R.string.issue_report_title),
             actions = {
                 Row(horizontalArrangement = Arrangement.spacedBy(CardConstants.ACTION_SPACING)) {
