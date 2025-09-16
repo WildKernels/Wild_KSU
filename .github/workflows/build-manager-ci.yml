@@ -127,6 +127,7 @@ jobs:
 
   build-manager:
     needs: [check-cache, cache-artifacts]
+    if: always() && (needs.check-cache.result == 'success' && (needs.cache-artifacts.result == 'success' || needs.cache-artifacts.result == 'skipped'))
     runs-on: ubuntu-latest
     strategy:
       matrix:
