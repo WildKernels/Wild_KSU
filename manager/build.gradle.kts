@@ -61,25 +61,32 @@ fun getVersionCode(): Int {
 }
 
 fun getVersionName(): String {
-    // Get the latest tag or fallback to commit hash
-    val out = ByteArrayOutputStream()
-    return try {
+    // Check if this is a release build (workflow_dispatch) by looking for exact tag match
+    val exactTagOut = ByteArrayOutputStream()
+    val isReleaseBuild = try {
         exec {
             commandLine("git", "describe", "--tags", "--exact-match", "HEAD")
-            standardOutput = out
+            standardOutput = exactTagOut
         }
-        out.toString().trim()
+        true
     } catch (e: Exception) {
-        // If no exact tag match, get the latest tag or use commit hash
-        val tagOut = ByteArrayOutputStream()
-        try {
+        false
+    }
+    
+    if (isReleaseBuild) {
+        // Release build: return just the tag
+        return exactTagOut.toString().trim()
+    } else {
+        // Auto build: return tag-commit format
+        val tagCommitOut = ByteArrayOutputStream()
+        return try {
             exec {
-                commandLine("git", "describe", "--tags", "--abbrev=0")
-                standardOutput = tagOut
+                commandLine("git", "describe", "--tags", "--always")
+                standardOutput = tagCommitOut
             }
-            tagOut.toString().trim()
-        } catch (e2: Exception) {
-            // If no tags exist, use commit hash
+            tagCommitOut.toString().trim()
+        } catch (e: Exception) {
+            // Fallback: if no tags exist, use commit hash with version prefix
             val hashOut = ByteArrayOutputStream()
             exec {
                 commandLine("git", "rev-parse", "--short", "HEAD")
