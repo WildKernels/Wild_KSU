@@ -61,13 +61,33 @@ fun getVersionCode(): Int {
 }
 
 fun getVersionName(): String {
-    // Get the latest tag
+    // Get the latest tag or fallback to commit hash
     val out = ByteArrayOutputStream()
-    exec {
-        commandLine("git", "describe", "--tags", "--exact-match", "HEAD")
-        standardOutput = out
+    return try {
+        exec {
+            commandLine("git", "describe", "--tags", "--exact-match", "HEAD")
+            standardOutput = out
+        }
+        out.toString().trim()
+    } catch (e: Exception) {
+        // If no exact tag match, get the latest tag or use commit hash
+        val tagOut = ByteArrayOutputStream()
+        try {
+            exec {
+                commandLine("git", "describe", "--tags", "--abbrev=0")
+                standardOutput = tagOut
+            }
+            tagOut.toString().trim()
+        } catch (e2: Exception) {
+            // If no tags exist, use commit hash
+            val hashOut = ByteArrayOutputStream()
+            exec {
+                commandLine("git", "rev-parse", "--short", "HEAD")
+                standardOutput = hashOut
+            }
+            "v0.0.0-${hashOut.toString().trim()}"
+        }
     }
-    return out.toString().trim()
 }
 
 subprojects {
