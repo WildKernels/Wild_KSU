@@ -126,8 +126,8 @@ jobs:
           key: ${{ needs.check-cache.outputs.cache-key }}
 
   build-manager:
-    needs: [check-cache, cache-artifacts]
-    if: always() && (needs.check-cache.result == 'success' && (needs.cache-artifacts.result == 'success' || needs.cache-artifacts.result == 'skipped'))
+    needs: [check-cache, cache-artifacts, generate-version]
+    if: always() && (needs.check-cache.result == 'success' && (needs.cache-artifacts.result == 'success' || needs.cache-artifacts.result == 'skipped') && (github.event_name != 'workflow_dispatch' || needs.generate-version.result == 'success'))
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -289,7 +289,7 @@ jobs:
   generate-version:
     needs: [cache-artifacts]
     runs-on: ubuntu-latest
-    if: inputs.release
+    if: github.event_name == 'workflow_dispatch' && inputs.release
     outputs:
       version: ${{ steps.version.outputs.version }}
       commit_count: ${{ steps.version.outputs.commit_count }}
@@ -332,7 +332,7 @@ jobs:
 
   create-release:
     needs: [build-manager, generate-version]
-    if: inputs.release
+    if: github.event_name == 'workflow_dispatch' && inputs.release
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
