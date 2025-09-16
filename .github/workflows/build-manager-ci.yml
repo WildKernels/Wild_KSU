@@ -126,7 +126,8 @@ jobs:
           key: ${{ needs.check-cache.outputs.cache-key }}
 
   build-manager:
-    needs: [check-cache, cache-artifacts, generate-version]
+    needs: [check-cache, cache-artifacts]
+    if: always() && (needs.check-cache.result == 'success' && (needs.cache-artifacts.result == 'success' || needs.cache-artifacts.result == 'skipped'))
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -286,7 +287,6 @@ jobs:
           path: manager/app/build/outputs/mapping/release/
 
   generate-version:
-    needs: [cache-artifacts]
     runs-on: ubuntu-latest
     if: inputs.release
     outputs:
@@ -331,7 +331,7 @@ jobs:
 
   create-release:
     needs: [build-manager, generate-version]
-    if: inputs.release
+    if: inputs.release && needs.generate-version.result == 'success'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
@@ -404,7 +404,7 @@ jobs:
 
   telegram-upload:
     needs: [build-manager, create-release]
-    if: inputs.release
+    if: inputs.release && needs.create-release.result == 'success'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
