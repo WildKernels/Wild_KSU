@@ -120,8 +120,8 @@ jobs:
           key: ${{ needs.check-cache.outputs.cache-key }}
 
   build-manager:
-    needs: [check-cache, cache-artifacts, generate-version]
-    if: always() && (needs.check-cache.result == 'success' && needs.cache-artifacts.result == 'success' && (github.event_name != 'workflow_dispatch' || needs.generate-version.result == 'success'))
+    needs: [check-cache, cache-artifacts]
+    if: always() && (needs.check-cache.result == 'success' && (needs.cache-artifacts.result == 'success' || needs.cache-artifacts.result == 'skipped'))
     runs-on: ubuntu-latest
     strategy:
       matrix:
