@@ -288,7 +288,7 @@ jobs:
 
   generate-version:
     runs-on: ubuntu-latest
-    if: inputs.release
+    if: github.event_name == 'workflow_dispatch' && inputs.release == true
     outputs:
       version: ${{ steps.version.outputs.version }}
       commit_count: ${{ steps.version.outputs.commit_count }}
@@ -331,7 +331,7 @@ jobs:
 
   create-release:
     needs: [build-manager, generate-version]
-    if: inputs.release
+    if: github.event_name == 'workflow_dispatch' && inputs.release == true
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
@@ -404,7 +404,7 @@ jobs:
 
   telegram-upload:
     needs: [build-manager, create-release]
-    if: inputs.release
+    if: github.event_name == 'workflow_dispatch' && inputs.release == true
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
