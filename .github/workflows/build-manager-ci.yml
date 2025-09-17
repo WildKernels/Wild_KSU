@@ -331,7 +331,7 @@ jobs:
 
   create-release:
     needs: [build-manager, generate-version]
-    if: inputs.release && needs.generate-version.result == 'success'
+    if: inputs.release
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
@@ -404,7 +404,7 @@ jobs:
 
   telegram-upload:
     needs: [build-manager, create-release]
-    if: inputs.release && needs.create-release.result == 'success'
+    if: inputs.release
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
