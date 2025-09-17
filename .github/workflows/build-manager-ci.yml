@@ -20,7 +20,7 @@ on:
     inputs:
       release:
         description: 'Release build?'
-        required: false
+        required: true
         default: true
         type: boolean
 
@@ -126,8 +126,8 @@ jobs:
           key: ${{ needs.check-cache.outputs.cache-key }}
 
   build-manager:
-    needs: [check-cache, cache-artifacts]
-    if: always() && (needs.check-cache.result == 'success' && (needs.cache-artifacts.result == 'success' || needs.cache-artifacts.result == 'skipped'))
+    needs: [check-cache, cache-artifacts, generate-version]
+    if: always() && (needs.check-cache.result == 'success' && (needs.cache-artifacts.result == 'success' || needs.cache-artifacts.result == 'skipped') && (needs.generate-version.result == 'success' || needs.generate-version.result == 'skipped'))
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -331,7 +331,7 @@ jobs:
 
   create-release:
     needs: [build-manager, generate-version]
-    if: github.event_name == 'workflow_dispatch' && inputs.release == true
+    if: github.event_name == 'workflow_dispatch' && inputs.release == true && needs.build-manager.result == 'success' && needs.generate-version.result == 'success'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
@@ -404,7 +404,7 @@ jobs:
 
   telegram-upload:
     needs: [build-manager, create-release]
-    if: github.event_name == 'workflow_dispatch' && inputs.release == true
+    if: github.event_name == 'workflow_dispatch' && inputs.release == true && needs.build-manager.result == 'success' && needs.create-release.result == 'success'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
