@@ -125,6 +125,49 @@ jobs:
             cached-artifacts/ksud_magic
           key: ${{ needs.check-cache.outputs.cache-key }}
 
+  generate-version:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' && inputs.release == true
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      commit_count: ${{ steps.version.outputs.commit_count }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Generate version and create tag
+        id: version
+        run: |
+          # Get the latest tag that matches v*.*.* pattern
+          LATEST_TAG=$(git tag -l "v*.*.*" | sort -V | tail -n1)
+          COMMIT_COUNT=$(git rev-list --count HEAD)
+          
+          if [ -z "$LATEST_TAG" ]; then
+            # No previous version tags, start with v0.0.0
+            NEW_VERSION="v0.0.1"
+          else
+            # Extract version numbers and increment patch version
+            VERSION_PART=$(echo $LATEST_TAG | sed 's/v//')
+            MAJOR=$(echo $VERSION_PART | cut -d. -f1)
+            MINOR=$(echo $VERSION_PART | cut -d. -f2)
+            PATCH=$(echo $VERSION_PART | cut -d. -f3)
+            NEW_PATCH=$((PATCH + 1))
+            NEW_VERSION="v${MAJOR}.${MINOR}.${NEW_PATCH}"
+          fi
+          
+          echo "Previous version: $LATEST_TAG"
+          echo "New version: $NEW_VERSION"
+          echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
+          echo "commit_count=$COMMIT_COUNT" >> $GITHUB_OUTPUT
+          
+          # Create and push the tag
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag -a "$NEW_VERSION" -m "CI Build $NEW_VERSION"
+          git push origin "$NEW_VERSION"
+
   build-manager:
     needs: [check-cache, cache-artifacts, generate-version]
     if: always() && (needs.check-cache.result == 'success' && (needs.cache-artifacts.result == 'success' || needs.cache-artifacts.result == 'skipped') && (inputs.release != true || needs.generate-version.result == 'success'))
@@ -286,52 +329,9 @@ jobs:
           name: Mappings${{ matrix.type == 'spoofed' && '-Spoofed' || '' }}
           path: manager/app/build/outputs/mapping/release/
 
-  generate-version:
-    runs-on: ubuntu-latest
-    if: inputs.release == true
-    outputs:
-      version: ${{ steps.version.outputs.version }}
-      commit_count: ${{ steps.version.outputs.commit_count }}
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Generate version and create tag
-        id: version
-        run: |
-          # Get the latest tag that matches v*.*.* pattern
-          LATEST_TAG=$(git tag -l "v*.*.*" | sort -V | tail -n1)
-          COMMIT_COUNT=$(git rev-list --count HEAD)
-          
-          if [ -z "$LATEST_TAG" ]; then
-            # No previous version tags, start with v0.0.0
-            NEW_VERSION="v0.0.1"
-          else
-            # Extract version numbers and increment patch version
-            VERSION_PART=$(echo $LATEST_TAG | sed 's/v//')
-            MAJOR=$(echo $VERSION_PART | cut -d. -f1)
-            MINOR=$(echo $VERSION_PART | cut -d. -f2)
-            PATCH=$(echo $VERSION_PART | cut -d. -f3)
-            NEW_PATCH=$((PATCH + 1))
-            NEW_VERSION="v${MAJOR}.${MINOR}.${NEW_PATCH}"
-          fi
-          
-          echo "Previous version: $LATEST_TAG"
-          echo "New version: $NEW_VERSION"
-          echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
-          echo "commit_count=$COMMIT_COUNT" >> $GITHUB_OUTPUT
-          
-          # Create and push the tag
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git tag -a "$NEW_VERSION" -m "CI Build $NEW_VERSION"
-          git push origin "$NEW_VERSION"
-
   create-release:
     needs: [build-manager, generate-version]
-    if: inputs.release == true && needs.build-manager.result == 'success' && needs.generate-version.result == 'success'
+    if: github.event_name == 'workflow_dispatch' && inputs.release == true && needs.build-manager.result == 'success' && needs.generate-version.result == 'success'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
@@ -404,7 +404,7 @@ jobs:
 
   telegram-upload:
     needs: [build-manager, create-release]
-    if: inputs.release == true && needs.build-manager.result == 'success' && needs.create-release.result == 'success'
+    if: github.event_name == 'workflow_dispatch' && inputs.release == true && needs.build-manager.result == 'success' && needs.create-release.result == 'success'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
