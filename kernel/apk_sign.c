@@ -5,14 +5,15 @@
 #include <linux/slab.h>
 #include <linux/string.h>
 #include <linux/version.h>
+#ifdef CONFIG_KSU_DEBUG
 #include <linux/moduleparam.h>
+#endif
 #include <crypto/hash.h>
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 11, 0)
 #include <crypto/sha2.h>
 #else
 #include <crypto/sha.h>
 #endif
-
 #include "apk_sign.h"
 #include "klog.h" // IWYU pragma: keep
 #include "kernel_compat.h"
@@ -313,55 +314,6 @@ static struct kernel_param_ops expected_size_ops = {
 
 module_param_cb(ksu_debug_manager_uid, &expected_size_ops,
 		&ksu_debug_manager_uid, S_IRUSR | S_IWUSR);
-
-#endif
-
-#ifdef CONFIG_KSU_SWITCH_MANAGER
-
-static int set_expected_size(const char *val, const struct kernel_param *kp)
-{
-    int rv = param_set_uint(val, kp);
-    pr_info("expected_manager_size set to %u\n", expected_manager_size);
-    return rv;
-}
-
-static int get_expected_size(char *buf, const struct kernel_param *kp)
-{
-    return snprintf(buf, PAGE_SIZE, "%u\n", expected_manager_size);
-}
-
-static int set_expected_hash(const char *val, const struct kernel_param *kp)
-{
-    if (strlen(val) != SHA256_DIGEST_SIZE * 2) {
-        pr_err("Invalid hash length: %s\n", val);
-        return -EINVAL;
-    }
-
-    strncpy(expected_manager_hash, val, SHA256_DIGEST_SIZE * 2);
-    expected_manager_hash[SHA256_DIGEST_SIZE * 2] = '\0';
-
-    pr_info("expected_manager_hash set to %s\n", expected_manager_hash);
-    return 0;
-}
-
-static int get_expected_hash(char *buf, const struct kernel_param *kp)
-{
-    return snprintf(buf, PAGE_SIZE, "%s\n", expected_manager_hash);
-}
-
-static struct kernel_param_ops expected_size_ops = {
-    .set = set_expected_size,
-    .get = get_expected_size,
-};
-
-static struct kernel_param_ops expected_hash_ops = {
-    .set = set_expected_hash,
-    .get = get_expected_hash,
-};
-
-module_param_cb(expected_manager_size, &expected_size_ops, &expected_manager_size, 0644);
-
-module_param_cb(expected_manager_hash, &expected_hash_ops, &expected_manager_hash, 0644);
 
 #endif
 
