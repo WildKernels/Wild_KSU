@@ -403,8 +403,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   telegram-upload:
-    needs: [build-manager, create-release]
-    if: github.event_name == 'workflow_dispatch' && inputs.release == true && needs.build-manager.result == 'success' && needs.create-release.result == 'success'
+    needs: [build-manager, generate-version]
+    if: github.event_name == 'workflow_dispatch' && inputs.release == true && needs.build-manager.result == 'success' && needs.generate-version.result == 'success'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
