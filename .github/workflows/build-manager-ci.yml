@@ -326,7 +326,7 @@ jobs:
   create-release:
     needs: build-manager
     runs-on: ubuntu-latest
-    if: github.event_name == 'workflow_dispatch'
+    if: github.event_name == 'workflow_dispatch' || github.event_name == 'push'
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
