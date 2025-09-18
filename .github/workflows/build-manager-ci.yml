@@ -121,6 +121,7 @@ jobs:
 
   generate-version:
     runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
     outputs:
       version: ${{ steps.version.outputs.version }}
       commit_count: ${{ steps.version.outputs.commit_count }}
@@ -322,8 +323,9 @@ jobs:
           path: manager/app/build/outputs/mapping/release/
 
   create-release:
-    needs: build-manager
+    needs: [build-manager
     runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' && needs.build-manager.result == 'success' && needs.generate-version.result == 'success'
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -394,8 +396,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   telegram-upload:
-    needs: build-manager
+    needs: [build-manager, generate-version]
     runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' && needs.build-manager.result == 'success' && needs.generate-version.result == 'success'
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
