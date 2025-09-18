@@ -215,7 +215,7 @@
     <string name="superuser_settings">超级用户设置</string>
     <string name="superuser_settings_summary">管理超级用户访问权限</string>
     <string name="sucompat_disabled">SU 兼容性已禁用</string>
-    <string name="zygisk_required">需要 Zygis</string>
+    <string name="zygisk_required">需要 Zygisk</string>
     <string name="zygisk_status">Zygisk 注入状态</string>
     <string name="home_superuser_count_singular">超级用户</string>
     <string name="home_superuser_count_plural">多个超级用户</string>
