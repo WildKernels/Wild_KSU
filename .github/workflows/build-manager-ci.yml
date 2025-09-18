@@ -164,6 +164,7 @@ jobs:
 
   build-manager:
     needs: [check-cache, cache-artifacts, generate-version]
+    if: ${{ always() }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
