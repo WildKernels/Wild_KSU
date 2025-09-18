@@ -121,7 +121,7 @@ jobs:
 
   generate-version:
     runs-on: ubuntu-latest
-    if: github.event_name == 'workflow_dispatch'
+    if: github.event_name == 'workflow_dispatch' || github.event_name == 'push'
     outputs:
       version: ${{ steps.version.outputs.version }}
       commit_count: ${{ steps.version.outputs.commit_count }}
@@ -399,7 +399,7 @@ jobs:
   telegram-upload:
     needs: build-manager
     runs-on: ubuntu-latest
-    if: github.event_name == 'workflow_dispatch'
+    if: github.event_name == 'workflow_dispatch' || github.event_name == 'push'
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
