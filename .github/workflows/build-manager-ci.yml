@@ -324,7 +324,7 @@ jobs:
           path: manager/app/build/outputs/mapping/release/
 
   create-release:
-    needs: build-manager
+    needs: [build-manager, generate-version]
     runs-on: ubuntu-latest
     if: github.event_name == 'workflow_dispatch' || github.event_name == 'push'
     steps:
