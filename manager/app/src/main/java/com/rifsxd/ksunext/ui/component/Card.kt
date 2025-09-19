@@ -36,7 +36,7 @@ fun rememberNoRippleInteractionSource(): MutableInteractionSource {
  */
 object CardConstants {
     // Spacing constants
-    val CARD_SPACING = 16.dp
+    val CARD_SPACING = 12.dp
     val CARD_PADDING_LARGE = 24.dp
     val CARD_PADDING_MEDIUM = 16.dp
     val ITEM_SPACING_LARGE = 22.dp
