@@ -164,7 +164,7 @@ jobs:
 
   build-manager:
     needs: [check-cache, cache-artifacts, generate-version]
-    if: success() || skipped()
+    if: success()
     runs-on: ubuntu-latest
     strategy:
       matrix:
