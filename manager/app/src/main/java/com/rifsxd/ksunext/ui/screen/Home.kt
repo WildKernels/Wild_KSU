@@ -118,15 +118,18 @@ fun HomeScreen(navigator: DestinationsNavigator) {
         val debugWarningCard = prefs.getBoolean("debug_warning_card", false)
         val checkUpdate = prefs.getBoolean("check_update", false)
         
-        val hasCardContent = (ksuVersion != null && rootAvailable()) ||
-                            (debugWarningCard || (isManager && Natives.requireNewKernel())) ||
-                            (debugWarningCard || (ksuVersion != null && !rootAvailable())) ||
-                            checkUpdate
+        // Check each condition individually to avoid empty CardItemsColumn
+        val hasRootCards = ksuVersion != null && rootAvailable()
+        val hasKernelWarning = debugWarningCard || (isManager && Natives.requireNewKernel())
+        val hasRootWarning = debugWarningCard || (ksuVersion != null && !rootAvailable())
+        val hasUpdateCard = checkUpdate
         
-        if (hasCardContent) {
+        val hasAnyCardContent = hasRootCards || hasKernelWarning || hasRootWarning || hasUpdateCard
+        
+        if (hasAnyCardContent) {
             item {
                 CardItemsColumn {
-                    if (ksuVersion != null && rootAvailable()) {
+                    if (hasRootCards) {
                         if (selectedLayoutType == "MIUIX_SQUARE" || selectedLayoutType == "MIUIX_RECTANGLE") {
                             // MIUIX Layout: Custom StatusCard design
                             val lkmMode = ksuVersion.let {
@@ -188,7 +191,7 @@ fun HomeScreen(navigator: DestinationsNavigator) {
                         }
                     }
 
-                    if (debugWarningCard || (isManager && Natives.requireNewKernel())) {
+                    if (hasKernelWarning) {
                         WarningCard(
                             stringResource(id = R.string.require_kernel_version).format(
                                 ksuVersion, Natives.MINIMAL_SUPPORTED_KERNEL
@@ -196,13 +199,13 @@ fun HomeScreen(navigator: DestinationsNavigator) {
                         )
                     }
 
-                    if (debugWarningCard || (ksuVersion != null && !rootAvailable())) {
+                    if (hasRootWarning) {
                         WarningCard(
                             stringResource(id = R.string.grant_root_failed)
                         )
                     }
 
-                    if (checkUpdate) {
+                    if (hasUpdateCard) {
                         UpdateCard()
                     }
                 }
