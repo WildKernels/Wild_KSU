@@ -114,22 +114,21 @@ fun HomeScreen(navigator: DestinationsNavigator) {
             }
         }
 
-        // Only show this item if there's content to display
+        // Only show this item if there's actual content to display
         val debugWarningCard = prefs.getBoolean("debug_warning_card", false)
         val checkUpdate = prefs.getBoolean("check_update", false)
         
-        // Check each condition individually to avoid empty CardItemsColumn
-        val hasRootCards = ksuVersion != null && rootAvailable()
-        val hasKernelWarning = debugWarningCard || (isManager && Natives.requireNewKernel())
-        val hasRootWarning = debugWarningCard || (ksuVersion != null && !rootAvailable())
-        val hasUpdateCard = checkUpdate
+        val hasRootContent = ksuVersion != null && rootAvailable()
+        val hasWarningContent = debugWarningCard || (isManager && Natives.requireNewKernel()) || 
+                               (debugWarningCard || (ksuVersion != null && !rootAvailable()))
+        val hasUpdateContent = checkUpdate
         
-        val hasAnyCardContent = hasRootCards || hasKernelWarning || hasRootWarning || hasUpdateCard
+        val hasCardContent = hasRootContent || hasWarningContent || hasUpdateContent
         
-        if (hasAnyCardContent) {
+        if (hasCardContent) {
             item {
                 CardItemsColumn {
-                    if (hasRootCards) {
+                    if (hasRootContent) {
                         if (selectedLayoutType == "MIUIX_SQUARE" || selectedLayoutType == "MIUIX_RECTANGLE") {
                             // MIUIX Layout: Custom StatusCard design
                             val lkmMode = ksuVersion.let {
@@ -191,7 +190,7 @@ fun HomeScreen(navigator: DestinationsNavigator) {
                         }
                     }
 
-                    if (hasKernelWarning) {
+                    if (hasWarningContent && (debugWarningCard || (isManager && Natives.requireNewKernel()))) {
                         WarningCard(
                             stringResource(id = R.string.require_kernel_version).format(
                                 ksuVersion, Natives.MINIMAL_SUPPORTED_KERNEL
@@ -199,13 +198,13 @@ fun HomeScreen(navigator: DestinationsNavigator) {
                         )
                     }
 
-                    if (hasRootWarning) {
+                    if (hasWarningContent && (debugWarningCard || (ksuVersion != null && !rootAvailable()))) {
                         WarningCard(
                             stringResource(id = R.string.grant_root_failed)
                         )
                     }
 
-                    if (hasUpdateCard) {
+                    if (hasUpdateContent) {
                         UpdateCard()
                     }
                 }
