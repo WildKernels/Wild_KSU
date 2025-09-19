@@ -121,7 +121,7 @@ jobs:
 
   generate-version:
     runs-on: ubuntu-latest
-    if: ${{ always() }} && (github.event_name == 'workflow_dispatch' || github.event_name == 'push')
+    if: github.event_name == 'workflow_dispatch' || github.event_name == 'push'
     outputs:
       version: ${{ steps.version.outputs.version }}
       commit_count: ${{ steps.version.outputs.commit_count }}
@@ -164,7 +164,7 @@ jobs:
 
   build-manager:
     needs: [check-cache, cache-artifacts, generate-version]
-    if: ${{ always() }}
+    if: success() || skipped()
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -326,7 +326,7 @@ jobs:
   create-release:
     needs: [build-manager, generate-version]
     runs-on: ubuntu-latest
-    if: ${{ always() }} && (github.event_name == 'workflow_dispatch' || github.event_name == 'push')
+    if: success() && (github.event_name == 'workflow_dispatch' || github.event_name == 'push')
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -399,7 +399,7 @@ jobs:
   telegram-upload:
     needs: [build-manager, generate-version]
     runs-on: ubuntu-latest
-    if: ${{ always() }} && (github.event_name == 'workflow_dispatch' || github.event_name == 'push')
+    if: success() && (github.event_name == 'workflow_dispatch' || github.event_name == 'push')
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
