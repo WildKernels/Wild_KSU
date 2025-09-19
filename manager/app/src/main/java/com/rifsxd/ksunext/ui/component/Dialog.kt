@@ -426,6 +426,7 @@ private fun ConfirmDialog(visuals: ConfirmDialogVisuals, confirm: () -> Unit, di
                 Text(text = visuals.dismiss ?: stringResource(id = android.R.string.cancel))
             }
         },
+        containerColor = MaterialTheme.colorScheme.surfaceContainer.copy(alpha = 1.0f)
     )
 }
 
