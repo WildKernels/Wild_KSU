@@ -7,7 +7,7 @@ on:
       - '.github/workflows/build-manager-ci.yml'
       - 'manager/**'
       - 'kernel/**'
-      - 'userspace/ksud_overlayfs/**'
+      - 'userspace/ksud_overlayfs**'
       - 'userspace/ksud_magic/**'
       - 'userspace/susfsd/**'
   pull_request:
@@ -120,7 +120,6 @@ jobs:
           key: ${{ needs.check-cache.outputs.cache-key }}
 
   generate-version:
-    needs: [check-cache, build-lkm, build-susfsd, build-ksud, cache-artifacts]
     runs-on: ubuntu-latest
     if: github.event_name == 'workflow_dispatch' || github.event_name == 'push'
     outputs:
@@ -164,8 +163,8 @@ jobs:
           git push origin "$NEW_VERSION"
 
   build-manager:
-    needs: [check-cache, cache-artifacts, generate-version]
-    if: success() || needs.generate-version.result == 'skipped'
+    needs: [check-cache, build-ksud, generate-version]
+    if: ${{ always() && needs.check-cache.result == 'success' && ((needs.build-ksud.result == 'success') || (needs.build-ksud.result == 'skipped' && needs.check-cache.outputs.cache-hit == 'true')) && (needs.generate-version.result == 'success' || needs.generate-version.result == 'skipped') }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
