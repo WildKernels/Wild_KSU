@@ -7,16 +7,16 @@
     <string name="issue_report_telegram">Contact via Telegram</string>
     <string name="issue_report_github_link">https://github.com/WildKernels/Wild_KSU/issues</string>
     <string name="issue_report_telegram_link">https://t.me/Wild_Kernels/2</string>
-    <string name="confirm">Confirm</string>
-    <string name="home">Home</string>
-    <string name="home_not_installed">Not installed</string>
-    <string name="home_click_to_install">Click to install</string>
-    <string name="lkm_mode_deprecated">LKM mode is now deprecated!</string>
-    <string name="lkm_alternative_suggestion">Install GKI kernel or integrate Wild KSU to your device.</string>
-    <string name="home_working">Working</string>
-    <string name="home_working_version">Version: %d</string>
-    <string name="home_module_update_count">Updates: %d</string>
-    <string name="home_failure">Wild KSU v2 signature not found in kernel! [ !KSU_NEXT || != size/hash ]</string>
+    <string name="confirm">Potvrdit</string>
+    <string name="home">Domů</string>
+    <string name="home_not_installed">Není nainstalováno</string>
+    <string name="home_click_to_install">Kliknutím nainstalovat</string>
+    <string name="lkm_mode_deprecated">LKM režim je nyní zastaralý!</string>
+    <string name="lkm_alternative_suggestion">Nainstalovat GKI jádro nebo integrovat KSU do systému.</string>
+    <string name="home_working">Pracuje</string>
+    <string name="home_working_version">Verze: %d</string>
+    <string name="home_module_update_count">Aktualizace: %d</string>
+    <string name="home_failure">Jádro neobsahuje podpis Wild KSU v2! [ !KSU_NEXT || != velikost/kontrolní součet ]</string>
     <string name="home_failure_tip">Ask your kernel developer to integrate Wild KSU!</string>
     <string name="home_kernel">Kernel Version</string>
     <string name="hook_mode">Hook Mode</string>
