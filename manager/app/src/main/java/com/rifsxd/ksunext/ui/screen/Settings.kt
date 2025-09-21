@@ -598,7 +598,8 @@ fun ExportLogsDialog(
             ) {
                 Text("Cancel")
             }
-        }
+        },
+        containerColor = MaterialTheme.colorScheme.surfaceContainer.copy(alpha = 1.0f)
     )
 }
 
