@@ -113,6 +113,12 @@ $(shell sed -i '/^extern void __init mnt_init/a int path_umount(struct path *pat
 $(info -- WKSU: adding 'int path_umount(struct path *path, int flags);' to $(srctree)/fs/internal.h)
 endif
 
+ifneq ($(shell grep -q "atomic_t filter_count;" $(srctree)/include/linux/seccomp.h; echo $$?),0)
+$(info -- KSU_NEXT: patching struct seccomp for filter_count)
+$(shell sed -i '/int mode;/a\	atomic_t filter_count;' $(srctree)/include/linux/seccomp.h)
+$(shell sed -i '/#include <linux\/thread_info.h>/a\#include <linux/atomic.h>' $(srctree)/include/linux/seccomp.h)
+endif
+
 ccflags-y += -Wno-implicit-function-declaration -Wno-strict-prototypes -Wno-int-conversion -Wno-gcc-compat
 ccflags-y += -Wno-declaration-after-statement -Wno-unused-function
 
