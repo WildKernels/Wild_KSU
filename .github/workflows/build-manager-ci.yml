@@ -163,8 +163,10 @@ jobs:
           git push origin "$NEW_VERSION"
 
   build-manager:
-    needs: [check-cache, cache-artifacts, generate-version]
-    if: success() || needs.generate-version.result == 'skipped'
+    needs: [check-cache, build-ksud]
+    if: |
+      needs.check-cache.result == 'success' &&
+      (needs.build-ksud.result == 'success' || needs.build-ksud.result == 'skipped')
     runs-on: ubuntu-latest
     strategy:
       matrix:
