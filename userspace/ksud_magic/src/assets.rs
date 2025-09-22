@@ -28,6 +28,21 @@ struct Asset;
 #[folder = "bin/x86_64"]
 struct Asset;
 
+#[cfg(all(target_arch = "x86_64", target_os = "linux"))]
+#[derive(RustEmbed)]
+#[folder = "bin/x86_64"]
+struct Asset;
+
+#[cfg(all(target_arch = "aarch64", target_os = "linux"))]
+#[derive(RustEmbed)]
+#[folder = "bin/aarch64"]
+struct Asset;
+
+#[cfg(all(target_arch = "arm", target_os = "linux"))]
+#[derive(RustEmbed)]
+#[folder = "bin/arm"]
+struct Asset;
+
 pub fn ensure_binaries(ignore_if_exist: bool) -> Result<()> {
     for file in Asset::iter() {
         if file == "ksuinit" || file.ends_with(".ko") {
