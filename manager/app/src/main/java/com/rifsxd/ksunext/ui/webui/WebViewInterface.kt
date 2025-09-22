@@ -25,6 +25,9 @@ import com.rifsxd.ksunext.ui.util.withNewRootShell
 import com.topjohnwu.superuser.CallbackList
 import com.topjohnwu.superuser.ShellUtils
 import com.topjohnwu.superuser.internal.UiThreadHandler
+import com.topjohnwu.superuser.io.SuFile
+import com.topjohnwu.superuser.io.SuFileInputStream
+import com.topjohnwu.superuser.io.SuFileOutputStream
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
@@ -342,6 +345,90 @@ class WebViewInterface(
             jsonArray.put(obj)
         }
         return jsonArray.toString()
+    }
+
+     @JavascriptInterface
+    fun listFile(path: String): String {
+        return try {
+            val suFile = SuFile(path)
+            val files = suFile.listFiles()?.map { it.name } ?: emptyList()
+            JSONArray(files).toString()
+        } catch (e: Exception) {
+            JSONArray().toString()
+        }
+    }
+
+    @JavascriptInterface
+    fun readFile(path: String): String {
+        return try {
+            val cmd = "cat '${path.replace("'", "'\\''")}'"
+            withNewRootShell(true) { ShellUtils.fastCmd(this, cmd) }
+        } catch (e: Exception) {
+            ""
+        }
+    }
+
+    @JavascriptInterface
+    fun writeFile(path: String, content: String): Boolean {
+        return try {
+            val tmpFile = File.createTempFile("webuinext_write", null, context.cacheDir)
+            tmpFile.writeText(content)
+            val cmd = "cat '${tmpFile.absolutePath.replace("'", "'\\''")}' > '${path.replace("'", "'\\''")}'"
+            var result = ""
+            withNewRootShell(true) {
+                result = ShellUtils.fastCmd(this, cmd)
+                this.close()
+            }
+            tmpFile.delete()
+            result.isNotEmpty()
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+    @JavascriptInterface
+    fun removeFile(path: String): Boolean {
+        return try {
+            val cmd = "rm -rf '${path.replace("'", "'\\''")}'"
+            var result = ""
+            withNewRootShell(true) {
+                result = ShellUtils.fastCmd(this, cmd)
+                this.close()
+            }
+            result.isNotEmpty()
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+    @JavascriptInterface
+    fun moveFile(src: String, dest: String): Boolean {
+        return try {
+            val cmd = "mv '${src.replace("'", "'\\''")}' '${dest.replace("'", "'\\''")}'"
+            var result = ""
+            withNewRootShell(true) {
+                result = ShellUtils.fastCmd(this, cmd)
+                this.close()
+            }
+            result.isNotEmpty()
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+    @JavascriptInterface
+    fun copyFile(src: String, dest: String): Boolean {
+        return try {
+            val cmd = "cp -a '${src.replace("'", "'\\''")}' '${dest.replace("'", "'\\''")}'"
+            var result = ""
+            withNewRootShell(true) {
+                result = ShellUtils.fastCmd(this, cmd)
+                this.close()
+            }
+            result.isNotEmpty()
+        } catch (e: Exception) {
+            false
+        }
     }
 }
 
