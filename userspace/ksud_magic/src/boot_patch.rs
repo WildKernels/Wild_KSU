@@ -709,9 +709,7 @@ fn do_patch(
     }
 
     #[cfg(target_os = "android")]
-    if need_backup
-        && let Err(e) = do_backup(&magiskboot, workdir, &bootimage)
-    {
+    if need_backup && let Err(e) = do_backup(&magiskboot, workdir, &bootimage) {
         println!("- Backup stock image failed: {e}");
     }
 
