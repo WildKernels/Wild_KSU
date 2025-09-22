@@ -15,6 +15,7 @@ on:
       - '.github/workflows/rustfmt.yml'
       - 'userspace/ksud_magic/**'
       - 'userspace/ksud_overlayfs/**'
+  workflow_dispatch:
 
 permissions:
   checks: write
