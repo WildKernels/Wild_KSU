@@ -2,7 +2,7 @@ name: Build Manager
 
 on:
   # push:
-  #   branches: [ "next" ]
+  #   branches: [ "wild" ]
   #   paths:
   #     - '.github/workflows/build-manager.yml'
   #     - 'manager/**'
@@ -11,7 +11,7 @@ on:
   #     - 'userspace/ksud_magic/**'
   #     - 'userspace/susfsd/**'
   # pull_request:
-  #   branches: [ "next" ]
+  #   branches: [ "wild" ]
   #   paths:
   #     - '.github/workflows/build-manager-ci.yml'
   #     - 'manager/**'

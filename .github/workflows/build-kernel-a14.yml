@@ -1,14 +1,14 @@
 name: Build Kernel - Android 14
 on:
   push:
-    branches: [ "next" ]
+    branches: [ "wild" ]
     paths:
       - ".github/workflows/build-kernel-a14.yml"
       - ".github/workflows/gki-kernel.yml"
       - ".github/scripts/build_a13.sh"
       - "kernel/**"
   pull_request:
-    branches: [ "next" ]
+    branches: [ "wild" ]
     paths:
       - ".github/workflows/build-kernel-a14.yml"
       - ".github/workflows/gki-kernel.yml"
@@ -17,7 +17,7 @@ on:
   workflow_call:
 jobs:
   build-kernel:
-    if: github.event_name != 'pull_request' && github.ref != 'refs/heads/next'
+    if: github.event_name != 'pull_request' && github.ref != 'refs/heads/wild'
     strategy:
       matrix:
         include:
