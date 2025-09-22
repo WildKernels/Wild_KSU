@@ -14,6 +14,7 @@ on:
       - '.github/workflows/shellcheck.yml'
       - '**/*.sh'
   workflow_dispatch:
+  workflow_call:
 
 jobs:
   shellcheck:
