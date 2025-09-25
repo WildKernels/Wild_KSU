@@ -202,7 +202,7 @@
     <string name="system_default">Dle systému (výchozí)</string>
     <string name="settings_legacyui">Použít staré UI</string>
     <string name="settings_legacyui_summary">Přepnout na předchozí styl uživatelského rozhraní.</string>
-    <string name="settings_banner">Zapnout banery</string>
+    <string name="settings_banner">Povolit banery</string>
     <string name="settings_banner_summary">Zobrazit banery na pozadí modulů.</string>
     <string name="use_webuix">Použít WebUI X</string>
     <string name="use_webuix_summary">Use WebUI X instead of WebUI, which supports more APIs.</string>
@@ -212,7 +212,7 @@
     <string name="developer">Vývojář</string>
     <string name="theme_settings">Nastavení vzhledu</string>
     <string name="theme_settings_summary">Customize app appearance and theme options</string>
-    <string name="superuser_settings">Upravit záložku Superuživatel</string>
+    <string name="superuser_settings">Upravit obrazovku superuživatelů</string>
     <string name="superuser_settings_summary">Manage superuser access and permissions</string>
     <string name="sucompat_disabled">SUCOMPAT DISABLED</string>
     <string name="zygisk_required">Vyžaduje se Zygisk</string>
@@ -255,24 +255,24 @@
     <string name="dpi_change_settings">Change DPI Settings</string>
     <string name="dpi_dialog_description">Adjust the display density to change the size of UI elements. Higher values make elements smaller, lower values make them larger.</string>
     <!-- InfoCard Customization -->
-    <string name="info_card_customization">Upravit záložku Domů</string>
+    <string name="info_card_customization">Upravit domovskou obrazovku</string>
     <string name="info_card_customization_summary">Customize home screen appearance, help card, and system information display</string>
-    <string name="info_card_always_expanded">Always expanded</string>
+    <string name="info_card_always_expanded">Vždy rozbalit</string>
     <string name="info_card_always_expanded_summary">Keep the info card expanded at all times</string>
     <!-- Help Card Customization -->
-    <string name="help_card_customization">Help Card</string>
+    <string name="help_card_customization">Panel s kontakty</string>
     <string name="help_card_customization_summary">Show or hide the help card at the bottom of the home screen</string>
-    <string name="help_card_show">Show help card</string>
+    <string name="help_card_show">Zobrazit panel s kontakty</string>
     <!-- Home Screen Icon Style -->
     <string name="home_screen_icon_style">Styl ikon domovské obrazovky</string>
     <string name="home_screen_icon_style_summary">Change the home screen icon style or turn it off</string>
-    <string name="home_screen_icon_current">Current: %s</string>
+    <string name="home_screen_icon_current">Nyní: %s</string>
     <string name="home_screen_icon_select_dialog_title">Vybrat styl ikon domovské obrazovky</string>
     <!-- System Info Card Settings -->
     <string name="system_info_card_settings">System Info Card Settings</string>
     <string name="system_info_card_settings_summary">Customize system information display and home screen elements</string>
     <!-- Module Settings Customization -->
-    <string name="module_card_customization">Upravit záložku Modul</string>
+    <string name="module_card_customization">Upravit obrazovku modulů</string>
     <string name="module_card_customization_summary">Configure module behavior, sorting, and display options</string>
     <!-- App Name Customization -->
     <string name="app_name_customization">Název aplikace</string>
@@ -285,11 +285,11 @@
     <string name="app_name_custom_dialog_title">Vlastní název aplikace</string>
     <string name="app_name_custom_dialog_message">Enter your custom app name (max 20 characters)</string>
     <!-- Home Settings Card Layout -->
-    <string name="home_screen_settings">Home &amp; Cards</string>
-    <string name="info_card_settings">Info Card Settings</string>
+    <string name="home_screen_settings">Domovská obrazovka &amp; panely</string>
+    <string name="info_card_settings">Nastavení informačního panelu</string>
     <string name="info_card_order_management">Info Card Order Management</string>
     <string name="info_card_order_description">Tap to move items up/down one position, or long press to move to top/bottom. Use the toggle to enable/disable items.</string>
     <!-- Individual App Cards Settings -->
-    <string name="individual_app_cards">Individual App Cards</string>
-    <string name="individual_app_cards_summary">Show each app in its own card instead of a list</string>
+    <string name="individual_app_cards">Panel pro každou aplikaci</string>
+    <string name="individual_app_cards_summary">Zobrazit aplikace v samostatných panelech místo v seznamu</string>
 </resources>
