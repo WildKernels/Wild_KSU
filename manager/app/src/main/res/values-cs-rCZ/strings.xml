@@ -99,7 +99,7 @@
     <string name="allowlist_backup">Zálohovat seznam povolených</string>
     <string name="allowlist_backup_message">Zálohovat aktuální seznam superuživatelů a odpojených aplikací.</string>
     <string name="warning">Varování</string>
-    <string name="warning_message">This feature is still in beta and under development. Please ensure you backup your modules before proceeding. Only use this feature if you understand the potential risks. Proceed with caution.</string>
+    <string name="warning_message">Tato funkce je stále ve fázi beta a ve vývoji. Než budete pokračovat, ujistěte se, že jste zálohovali své moduly. Tuto funkci používejte pouze v případě, že rozumíte možným rizikům. Postupujte opatrně.</string>
     <string name="proceed">Pokračovat</string>
     <string name="cancel">Zrušit</string>
     <string name="later">Později</string>
@@ -122,7 +122,7 @@
     <string name="settings_umount_modules_default">Odpojit moduly</string>
     <string name="settings_umount_modules_default_summary">Výchozí globální hodnota pro \"Odpojení modulů\" v profilu aplikace. Zapnutí odstraní všechny změny provedené moduly v systému pro aplikace, které nemají nastavený profil.</string>
     <string name="settings_susfs_toggle">Skrýt kprobes háček</string>
-    <string name="settings_susfs_toggle_summary">This option disables the kprobes hook created by ksu and, instead, activates the embedded non-kprobes hook, implementing the same functionality that would be applied to a non-GKI kernel, which doesn\'t support kprobe.</string>
+    <string name="settings_susfs_toggle_summary">Tato volba zakáže háček kprobes vytvořený pomocí ksu a místo toho aktivuje vložený háček bez kprobes implementující stejnou funkčnost. Tato funkce byla aplikována na jádro jiné než GKI, které nepodporuje kprobe.</string>
     <string name="profile_umount_modules_summary">Zapnutí umožní Wild KSU pro tuto aplikaci, použít soubory, které nebyly upraveny moduly.</string>
     <string name="profile_selinux_domain">Doména</string>
     <string name="profile_selinux_rules">Pravidla</string>
@@ -137,14 +137,14 @@
     <string name="force_stop_app">Vynutit ukončení</string>
     <string name="restart_app">Restartovat</string>
     <string name="settings_amoled_mode">Režim AMOLED</string>
-    <string name="settings_amoled_mode_summary">Enable a pure black theme useful for AMOLED screens to reduce eye strain and save battery.</string>
+    <string name="settings_amoled_mode_summary">Povolit čistě černý motiv užitečný pro obrazovky AMOLED. Tato volba šetří oči a baterii.</string>
     <string name="restart_required">Je vyžadován restart</string>
-    <string name="restart_app_message">The app needs to restart for this change to take effect.</string>
-    <string name="failed_to_update_sepolicy">Failed to update SELinux rules for %s</string>
-    <string name="su_not_allowed">Couldn\'t grant Superuser access to %s</string>
+    <string name="restart_app_message">Aby se tato změna projevila, je třeba aplikaci restartovat.</string>
+    <string name="failed_to_update_sepolicy">Aktualizace pravidel SELinuxu pro %s se nezdařila</string>
+    <string name="su_not_allowed">Nezdařilo se udělit superuživateli přístup k %s</string>
     <string name="module_changelog">Popis změn</string>
-    <string name="settings_profile_template">App Profile template</string>
-    <string name="settings_profile_template_summary">Manage local and online template of App Profile</string>
+    <string name="settings_profile_template">Šablona profilu aplikace</string>
+    <string name="settings_profile_template_summary">Spravovat místní a online šablonu profilu aplikace</string>
     <string name="app_profile_template_create">Vytvořit šablonu</string>
     <string name="app_profile_template_edit">Upravit šablonu</string>
     <string name="app_profile_template_id">ID</string>
@@ -205,8 +205,8 @@
     <string name="settings_banner">Povolit banery</string>
     <string name="settings_banner_summary">Zobrazit banery na pozadí modulů.</string>
     <string name="use_webuix">Použít WebUI X</string>
-    <string name="use_webuix_summary">Use WebUI X instead of WebUI, which supports more APIs.</string>
-    <string name="use_webuix_eruda">Inject Eruda into WebUI X</string>
+    <string name="use_webuix_summary">Místo WebUI použít WebUI X, které podporuje další API.</string>
+    <string name="use_webuix_eruda">Vstřikovat Erudu do WebUI X</string>
     <string name="use_webuix_eruda_summary">Inject a debug console into WebUI X to make debugging easier. Requires web debugging to be on.</string>
     <string name="customization">Upravit</string>
     <string name="developer">Vývojář</string>
@@ -214,7 +214,7 @@
     <string name="theme_settings_summary">Customize app appearance and theme options</string>
     <string name="superuser_settings">Upravit obrazovku superuživatelů</string>
     <string name="superuser_settings_summary">Manage superuser access and permissions</string>
-    <string name="sucompat_disabled">SUCOMPAT DISABLED</string>
+    <string name="sucompat_disabled">SUCOMPAT vypnuto</string>
     <string name="zygisk_required">Vyžaduje se Zygisk</string>
     <string name="zygisk_status">Vstřikování Zygisku</string>
     <string name="home_superuser_count_singular">Superuživatel</string>
@@ -246,13 +246,13 @@
     <string name="icon_theme_default">Dle systému (výchozí)</string>
     <string name="icon_theme_none_found">Balíček s ikonami nenalezen</string>
     <string name="app_dpi_title">DPI Scale</string>
-    <string name="app_dpi_summary">Adjust the display density (DPI) of the app interface</string>
-    <string name="dpi_current">Current DPI: %d</string>
+    <string name="app_dpi_summary">Změnit rozlišení (DPI) pro tuto aplikaci</string>
+    <string name="dpi_current">Aktuální ADI: %d</string>
     <string name="dpi_system">Systémové DPI: %d</string>
     <string name="dpi_apply_settings">Použít nastavení</string>
-    <string name="dpi_scale_settings">DPI Scale Settings</string>
-    <string name="dpi_scale_settings_summary">Adjust the display density (DPI) of the app interface</string>
-    <string name="dpi_change_settings">Change DPI Settings</string>
+    <string name="dpi_scale_settings">Změnit rozlišení</string>
+    <string name="dpi_scale_settings_summary">Změnit rozlišení (DPI) pro tuto aplikaci</string>
+    <string name="dpi_change_settings">Změnit nastavení DPI</string>
     <string name="dpi_dialog_description">Adjust the display density to change the size of UI elements. Higher values make elements smaller, lower values make them larger.</string>
     <!-- InfoCard Customization -->
     <string name="info_card_customization">Upravit domovskou obrazovku</string>
@@ -261,15 +261,15 @@
     <string name="info_card_always_expanded_summary">Keep the info card expanded at all times</string>
     <!-- Help Card Customization -->
     <string name="help_card_customization">Panel s kontakty</string>
-    <string name="help_card_customization_summary">Show or hide the help card at the bottom of the home screen</string>
+    <string name="help_card_customization_summary">Zobrazit nebo skrýt panel s kontakty ve spodní části domovské obrazovky</string>
     <string name="help_card_show">Zobrazit panel s kontakty</string>
     <!-- Home Screen Icon Style -->
     <string name="home_screen_icon_style">Styl ikon domovské obrazovky</string>
-    <string name="home_screen_icon_style_summary">Change the home screen icon style or turn it off</string>
+    <string name="home_screen_icon_style_summary">Změnit nebo vypnout styl ikon na domovské obrazovce</string>
     <string name="home_screen_icon_current">Nyní: %s</string>
     <string name="home_screen_icon_select_dialog_title">Vybrat styl ikon domovské obrazovky</string>
     <!-- System Info Card Settings -->
-    <string name="system_info_card_settings">System Info Card Settings</string>
+    <string name="system_info_card_settings">Nastavení panelu se systémovými informacemi</string>
     <string name="system_info_card_settings_summary">Customize system information display and home screen elements</string>
     <!-- Module Settings Customization -->
     <string name="module_card_customization">Upravit obrazovku modulů</string>
@@ -283,12 +283,12 @@
     <string name="app_name_custom_hint">Zadejte vlastní název aplikace</string>
     <string name="app_name_dialog_title">Vyberte název aplikace</string>
     <string name="app_name_custom_dialog_title">Vlastní název aplikace</string>
-    <string name="app_name_custom_dialog_message">Enter your custom app name (max 20 characters)</string>
+    <string name="app_name_custom_dialog_message">Zadejte vlastní název aplikace (maximálně 20 znaků)</string>
     <!-- Home Settings Card Layout -->
     <string name="home_screen_settings">Domovská obrazovka &amp; panely</string>
     <string name="info_card_settings">Nastavení informačního panelu</string>
-    <string name="info_card_order_management">Info Card Order Management</string>
-    <string name="info_card_order_description">Tap to move items up/down one position, or long press to move to top/bottom. Use the toggle to enable/disable items.</string>
+    <string name="info_card_order_management">Uspořádání informačního panelu</string>
+    <string name="info_card_order_description">Kliknutím přesunete položky nahoru/dolů o jednu pozici. Dlouhým stisknutím je přesunete nahoru/dolů. Pomocí přepínače je zobrazíte/skryjete.</string>
     <!-- Individual App Cards Settings -->
     <string name="individual_app_cards">Panel pro každou aplikaci</string>
     <string name="individual_app_cards_summary">Zobrazit aplikace v samostatných panelech místo v seznamu</string>
