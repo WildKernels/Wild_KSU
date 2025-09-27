@@ -5,8 +5,8 @@
     <string name="issue_report_body_2">Nahlaste to co nejdříve!</string>
     <string name="issue_report_github">Odeslat na GitHub</string>
     <string name="issue_report_telegram">Kontaktovat přes Telegram</string>
-    <string name="issue_report_github_link">https://github.com/WildKernels/Wild_KSU/issues</string>
-    <string name="issue_report_telegram_link">https://t.me/Wild_Kernels/2</string>
+    <string name="issue_report_github_link"></string>
+    <string name="issue_report_telegram_link"></string>
     <string name="confirm">Potvrdit</string>
     <string name="home">Domů</string>
     <string name="home_not_installed">Není nainstalováno</string>
@@ -256,7 +256,7 @@
     <string name="dpi_dialog_description">Adjust the display density to change the size of UI elements. Higher values make elements smaller, lower values make them larger.</string>
     <!-- InfoCard Customization -->
     <string name="info_card_customization">Upravit domovskou obrazovku</string>
-    <string name="info_card_customization_summary">Customize home screen appearance, help card, and system information display</string>
+    <string name="info_card_customization_summary">Upravit domovskou obrazovku, panel s kontakty a panel se systémovými informacemi</string>
     <string name="info_card_always_expanded">Vždy rozbalit</string>
     <string name="info_card_always_expanded_summary">Informační panel se automaticky rozbalí</string>
     <!-- Help Card Customization -->
