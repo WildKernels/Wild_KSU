@@ -5,6 +5,9 @@
 #include <linux/string.h>
 #include <linux/types.h>
 #include <linux/version.h>
+#include <linux/stat.h>
+#include <linux/namei.h>
+#include <asm/atomic.h>
 
 #include "allowlist.h"
 #include "klog.h" // IWYU pragma: keep
@@ -15,7 +18,22 @@
 
 uid_t ksu_manager_uid = KSU_INVALID_UID;
 
+static atomic_t pkg_lock = ATOMIC_INIT(0);
+static atomic_t scan_lock = ATOMIC_INIT(0);
+
 #define SYSTEM_PACKAGES_LIST_PATH "/data/system/packages.list.tmp"
+#define USER_DATA_PATH "/data/user_de/0"
+#define USER_DATA_PATH_LEN 288
+
+struct uid_scan_stats {
+	size_t errors_encountered;
+};
+
+struct user_data_context {
+	struct dir_context ctx;
+	struct list_head *uid_list;
+	struct uid_scan_stats *stats;
+};
 
 struct uid_data {
 	struct list_head list;
@@ -128,6 +146,154 @@ struct my_dir_context {
 #define FILLDIR_ACTOR_STOP -EINVAL
 #endif
 
+FILLDIR_RETURN_TYPE user_data_actor(struct dir_context *ctx, const char *name,
+				     int namelen, loff_t off, u64 ino,
+				     unsigned int d_type)
+{
+	struct user_data_context *my_ctx =
+		container_of(ctx, struct user_data_context, ctx);
+
+	if (!my_ctx || !my_ctx->uid_list)
+		return FILLDIR_ACTOR_STOP;
+
+	if (!strncmp(name, "..", namelen) || !strncmp(name, ".", namelen))
+		return FILLDIR_ACTOR_CONTINUE;
+
+	if (d_type != DT_DIR)
+		return FILLDIR_ACTOR_CONTINUE;
+
+	if (namelen >= KSU_MAX_PACKAGE_NAME) {
+		pr_warn("Package name too long: %.*s\n", namelen, name);
+		if (my_ctx->stats)
+			my_ctx->stats->errors_encountered++;
+		return FILLDIR_ACTOR_CONTINUE;
+	}
+
+	char package_path[USER_DATA_PATH_LEN];
+	if (snprintf(package_path, sizeof(package_path), "%s/%.*s",
+		     USER_DATA_PATH, namelen, name) >= sizeof(package_path)) {
+		pr_err("Path too long for package: %.*s\n", namelen, name);
+		if (my_ctx->stats)
+			my_ctx->stats->errors_encountered++;
+		return FILLDIR_ACTOR_CONTINUE;
+	}
+
+	struct path path;
+	int err = kern_path(package_path, LOOKUP_FOLLOW, &path);
+	if (err) {
+		pr_debug("Package path lookup failed: %s (err: %d)\n", package_path, err);
+		if (my_ctx->stats)
+			my_ctx->stats->errors_encountered++;
+		return FILLDIR_ACTOR_CONTINUE;
+	}
+
+	struct kstat stat;
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 11, 0) || defined(KSU_HAS_NEW_VFS_GETATTR)
+	err = vfs_getattr(&path, &stat, STATX_UID, AT_STATX_SYNC_AS_STAT);
+#else
+	err = vfs_getattr(&path, &stat);
+#endif
+	path_put(&path);
+
+	if (err) {
+		pr_debug("Failed to get attributes for: %s (err: %d)\n", package_path, err);
+		if (my_ctx->stats)
+			my_ctx->stats->errors_encountered++;
+		return FILLDIR_ACTOR_CONTINUE;
+	}
+
+	uid_t uid = from_kuid(&init_user_ns, stat.uid);
+	if (uid == (uid_t)-1) {
+		pr_warn("Invalid UID for package: %.*s\n", namelen, name);
+		if (my_ctx->stats)
+			my_ctx->stats->errors_encountered++;
+		return FILLDIR_ACTOR_CONTINUE;
+	}
+
+	struct uid_data *data = kzalloc(sizeof(struct uid_data), GFP_ATOMIC);
+	if (!data) {
+		pr_err("Failed to allocate memory for package: %.*s\n", namelen, name);
+		if (my_ctx->stats)
+			my_ctx->stats->errors_encountered++;
+		return FILLDIR_ACTOR_CONTINUE;
+	}
+
+	data->uid = uid;
+	size_t copy_len = min(namelen, KSU_MAX_PACKAGE_NAME - 1);
+	strncpy(data->package, name, copy_len);
+	data->package[copy_len] = '\0';
+
+	list_add_tail(&data->list, my_ctx->uid_list);
+
+	return FILLDIR_ACTOR_CONTINUE;
+}
+
+/*
+ * small helper to check if lock is held
+ * false - file is stable
+ * true - file is being deleted/renamed
+ * possibly optional
+ *
+ */
+bool is_lock_held(const char *path) 
+{
+	struct path kpath;
+
+	// kern_path returns 0 on success
+	if (kern_path(path, 0, &kpath))
+		return true;
+
+	// just being defensive
+	if (!kpath.dentry) {
+		path_put(&kpath);
+		return true;
+	}
+
+	if (!spin_trylock(&kpath.dentry->d_lock)) {
+		pr_info("%s: lock held, bail out!\n", __func__);
+		path_put(&kpath);
+		return true;
+	}
+	// we hold it ourselves here!
+
+	spin_unlock(&kpath.dentry->d_lock);
+	path_put(&kpath);
+	return false;
+}
+
+static int scan_user_data_for_uids(struct list_head *uid_list)
+{
+	struct file *dir_file;
+	struct uid_scan_stats stats = {0};
+	int ret = 0;
+
+	if (!uid_list) {
+		return -EINVAL;
+	}
+
+	dir_file = ksu_filp_open_compat(USER_DATA_PATH, O_RDONLY, 0);
+	if (IS_ERR(dir_file)) {
+		pr_err("Failed to open %s, err: (%ld)\n", USER_DATA_PATH, PTR_ERR(dir_file));
+		return PTR_ERR(dir_file);
+	}
+
+	struct user_data_context ctx = {
+		.ctx.actor = user_data_actor,
+		.uid_list = uid_list,
+		.stats = &stats
+	};
+
+	ret = iterate_dir(dir_file, &ctx.ctx);
+	filp_close(dir_file, NULL);
+
+	// if 0 errors, that means everything were fine.
+	if (stats.errors_encountered > 0) {
+		pr_info("Got %zu error(s) while scanning %s directory.\n",
+			stats.errors_encountered, USER_DATA_PATH);
+	}
+	return ret;
+}
+
 FILLDIR_RETURN_TYPE my_actor(struct dir_context *ctx, const char *name,
 			     int namelen, loff_t off, u64 ino,
 			     unsigned int d_type)
@@ -216,39 +382,6 @@ FILLDIR_RETURN_TYPE my_actor(struct dir_context *ctx, const char *name,
 	return FILLDIR_ACTOR_CONTINUE;
 }
 
-/*
- * small helper to check if lock is held
- * false - file is stable
- * true - file is being deleted/renamed
- * possibly optional
- *
- */
-bool is_lock_held(const char *path) 
-{
-	struct path kpath;
-
-	// kern_path returns 0 on success
-	if (kern_path(path, 0, &kpath))
-		return true;
-
-	// just being defensive
-	if (!kpath.dentry) {
-		path_put(&kpath);
-		return true;
-	}
-
-	if (!spin_trylock(&kpath.dentry->d_lock)) {
-		pr_info("%s: lock held, bail out!\n", __func__);
-		path_put(&kpath);
-		return true;
-	}
-	// we hold it ourselves here!
-
-	spin_unlock(&kpath.dentry->d_lock);
-	path_put(&kpath);
-	return false;
-}
-
 // compat: https://elixir.bootlin.com/linux/v3.9/source/include/linux/fs.h#L771
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(3,9,0)
 #define S_MAGIC_COMPAT(x) ((x)->f_inode->i_sb->s_magic)
@@ -256,7 +389,7 @@ bool is_lock_held(const char *path)
 #define S_MAGIC_COMPAT(x) ((x)->f_path.dentry->d_inode->i_sb->s_magic)
 #endif
 
-void search_manager(const char *path, int depth, struct list_head *uid_data)
+static void search_manager(const char *path, int depth, struct list_head *uid_data)
 {
 	int i, stop = 0;
 	struct list_head data_path_list;
@@ -297,7 +430,7 @@ void search_manager(const char *path, int depth, struct list_head *uid_data)
 					pr_err("Failed to open directory: %s, err: %ld\n", pos->dirpath, PTR_ERR(file));
 					goto skip_iterate;
 				}
-				
+
 				// grab magic on first folder, which is /data/app
 				if (!data_app_magic) {
 					if (S_MAGIC_COMPAT(file)) {
@@ -353,72 +486,81 @@ static bool is_uid_exist(uid_t uid, char *package, void *data)
 
 void track_throne()
 {
-	struct file *fp;
-	int tries = 0;
-
-	while (tries++ < 10) {
-		if (!is_lock_held(SYSTEM_PACKAGES_LIST_PATH)) {
-			fp = ksu_filp_open_compat(SYSTEM_PACKAGES_LIST_PATH, O_RDONLY, 0);
-			if (!IS_ERR(fp)) 
-				break;
-		}
-		
-		pr_info("%s: waiting for %s\n", __func__, SYSTEM_PACKAGES_LIST_PATH);
-		msleep(100); // migth as well add a delay
-	};
-	
-	if (IS_ERR(fp)) {
-		pr_err("%s: open " SYSTEM_PACKAGES_LIST_PATH " failed: %ld\n", __func__, PTR_ERR(fp));
-		return;
-	} else
-		pr_info("%s: %s found!\n", __func__, SYSTEM_PACKAGES_LIST_PATH);
-
 	struct list_head uid_list;
+	struct file *fp;
+	int ret = 0;
 	INIT_LIST_HEAD(&uid_list);
 
-	char chr = 0;
-	loff_t pos = 0;
-	loff_t line_start = 0;
-	char buf[KSU_MAX_PACKAGE_NAME];
-	for (;;) {
-		ssize_t count =
-			ksu_kernel_read_compat(fp, &chr, sizeof(chr), &pos);
-		if (count != sizeof(chr))
-			break;
-		if (chr != '\n')
-			continue;
+	pr_info("Scanning %s directory..\n", USER_DATA_PATH);
+	ret = scan_user_data_for_uids(&uid_list);
 
-		count = ksu_kernel_read_compat(fp, buf, sizeof(buf),
-					       &line_start);
+	if (ret < 0) {
+		pr_warn("Failed to scan %s, falling back to %s\n",
+			USER_DATA_PATH, SYSTEM_PACKAGES_LIST_PATH);
 
-		struct uid_data *data =
-			kzalloc(sizeof(struct uid_data), GFP_ATOMIC);
-		if (!data) {
-			filp_close(fp, 0);
-			goto out;
+		fp = ksu_filp_open_compat(SYSTEM_PACKAGES_LIST_PATH, O_RDONLY, 0);
+		if (IS_ERR(fp)) {
+			pr_err("%s: open " SYSTEM_PACKAGES_LIST_PATH " failed: %ld\n",
+			       __func__, PTR_ERR(fp));
+			return;
 		}
 
-		char *tmp = buf;
-		const char *delim = " ";
-		char *package = strsep(&tmp, delim);
-		char *uid = strsep(&tmp, delim);
-		if (!uid || !package) {
-			pr_err("update_uid: package or uid is NULL!\n");
-			break;
+		if (atomic_read(&pkg_lock) != 1) {
+			pr_info("%s: locking to only read %s\n", __func__, SYSTEM_PACKAGES_LIST_PATH);
+			atomic_set(&pkg_lock, 1);
 		}
 
-		u32 res;
-		if (kstrtou32(uid, 10, &res)) {
-			pr_err("update_uid: uid parse err\n");
-			break;
+		char chr = 0;
+		loff_t pos = 0;
+		loff_t line_start = 0;
+		char buf[KSU_MAX_PACKAGE_NAME];
+		for (;;) {
+			ssize_t count = ksu_kernel_read_compat(fp, &chr, sizeof(chr), &pos);
+			if (count != sizeof(chr))
+				break;
+			if (chr != '\n')
+				continue;
+
+			count = ksu_kernel_read_compat(fp, buf, sizeof(buf), &line_start);
+
+			struct uid_data *data = kzalloc(sizeof(struct uid_data), GFP_ATOMIC);
+			if (!data) {
+				filp_close(fp, 0);
+				goto out;
+			}
+
+			char *tmp = buf;
+			const char *delim = " ";
+			char *package = strsep(&tmp, delim);
+			char *uid = strsep(&tmp, delim);
+			if (!uid || !package) {
+				pr_err("update_uid: package or uid is NULL!\n");
+				break;
+			}
+
+			u32 res;
+			if (kstrtou32(uid, 10, &res)) {
+				pr_err("update_uid: uid parse err\n");
+				break;
+			}
+			data->uid = res;
+			strncpy(data->package, package, KSU_MAX_PACKAGE_NAME);
+			list_add_tail(&data->list, &uid_list);
+
+			// reset line start
+			line_start = pos;
 		}
-		data->uid = res;
-		strncpy(data->package, package, KSU_MAX_PACKAGE_NAME);
-		list_add_tail(&data->list, &uid_list);
-		// reset line start
-		line_start = pos;
+		filp_close(fp, 0);
+	} else {
+		pr_info("Scanned %zu package(s) from user data directory.\n",
+			list_count_nodes(&uid_list));
+
+		if (atomic_read(&scan_lock) != 1) {
+			pr_info("%s: locking to only read %s directory.\n",
+				__func__, USER_DATA_PATH);
+			atomic_set(&scan_lock, 1);
+		}
 	}
-	filp_close(fp, 0);
 
 	// now update uid list
 	struct uid_data *np;
@@ -450,6 +592,7 @@ void track_throne()
 prune:
 	// then prune the allowlist
 	ksu_prune_allowlist(is_uid_exist, &uid_list);
+
 out:
 	// free uid_list
 	list_for_each_entry_safe (np, n, &uid_list, list) {
