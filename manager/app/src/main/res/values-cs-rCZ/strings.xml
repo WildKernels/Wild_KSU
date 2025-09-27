@@ -258,7 +258,7 @@
     <string name="info_card_customization">Upravit domovskou obrazovku</string>
     <string name="info_card_customization_summary">Customize home screen appearance, help card, and system information display</string>
     <string name="info_card_always_expanded">Vždy rozbalit</string>
-    <string name="info_card_always_expanded_summary">Keep the info card expanded at all times</string>
+    <string name="info_card_always_expanded_summary">Vždy roztáhnout informační panel</string>
     <!-- Help Card Customization -->
     <string name="help_card_customization">Panel s kontakty</string>
     <string name="help_card_customization_summary">Zobrazit nebo skrýt panel s kontakty ve spodní části domovské obrazovky</string>
