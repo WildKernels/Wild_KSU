@@ -181,13 +181,13 @@
     <string name="select_file_tip">Doporučuje se obraz oddílu %1$s</string>
     <string name="select_kmi">Vybrat KMI</string>
     <string name="shrink_sparse_image">Minimalizovat řídký obraz</string>
-    <string name="shrink_sparse_image_message">Resize the sparse image where the module is located to its actual size. Note that this may cause the module to work abnormally, so please only use when necessary (Such as for backup).</string>
+    <string name="shrink_sparse_image_message">Změnit velikost řídkého obrazu na jeho skutečnou velikost. V tomto obrazu jsou umístěny moduly. Proto tato volba může způsobovat problémy s moduly. Tuto možnost použijte pouze v případě potřeby (např. před zálohováním modulů).</string>
     <string name="settings_uninstall">Odinstalovat</string>
     <string name="settings_uninstall_temporary">Dočasně odinstalovat</string>
     <string name="settings_uninstall_permanent">Trvale odinstalovat</string>
     <string name="settings_restore_stock_image">Obnovit tovární obraz</string>
-    <string name="settings_uninstall_temporary_message">Temporarily uninstall Wild KSU, restore to original state after next reboot.</string>
-    <string name="settings_uninstall_permanent_message">Uninstalling Wild KSU (Root and all modules) completely and permanently.</string>
+    <string name="settings_uninstall_temporary_message">Dočasně odinstalovat Wild KSU, po restartu bude obnoveno původní nastavení. </string>
+    <string name="settings_uninstall_permanent_message">Úplná a trvalá odinstalace Wild KSU (oprávnění root a všechny moduly).</string>
     <string name="settings_restore_stock_image_message">Restore the stock factory image (If a backup exists), usually used before OTA; if you need to uninstall Wild KSU, please use \"Uninstall permanently\".</string>
     <string name="flashing">Instalace</string>
     <string name="flash_success">Instalace kompletní</string>
