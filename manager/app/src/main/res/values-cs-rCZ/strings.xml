@@ -231,12 +231,12 @@
     <string name="background_image_select">Vybrat obrázek na pozadí</string>
     <string name="background_image_remove">Odstranit obrázek z pozadí</string>
     <string name="background_image_fit_mode">Režim přizpůsobení pozadí</string>
-    <string name="background_image_fit_mode_summary">Choose how the background image should be displayed</string>
+    <string name="background_image_fit_mode_summary">Vyberte možnost zobrazení obrázku na pozadí</string>
     <string name="background_fit_edge_to_edge">Roztáhnout od okraje k okraji</string>
     <string name="background_fit_zoom_to_fit">Přizpůsobit obrazovce</string>
     <string name="background_image_edit">Upravit pozici</string>
     <string name="background_image_edit_summary">Upravit pozici a velikost obrázku na pozadí</string>
-    <string name="image_editor_hint">Pinch to zoom, drag to move the image. Use the fullscreen button to reset.</string>
+    <string name="image_editor_hint">Roztažením prstů přiblížíte, přetažením obrázek posunete. Pro obnovení nastavení použijte tlačítko celé obrazovky.</string>
     <string name="reset_to_fullscreen">Obnovit na celou obrazovku</string>
     <string name="crop_background_image">Vlastní oříznutí</string>
     <string name="background_transparency">Ztmavit pozadí</string>
