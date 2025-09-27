@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="issue_report_title">Having trouble?</string>
+    <string name="issue_report_title"></string>
     <string name="issue_report_body">Encountered a bug or have feedback?</string>
     <string name="issue_report_body_2">Report it as soon as possible!</string>
     <string name="issue_report_github">Report on GitHub</string>
