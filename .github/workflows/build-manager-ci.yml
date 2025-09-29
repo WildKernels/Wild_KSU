@@ -110,7 +110,9 @@ jobs:
           key: ${{ needs.check-cache.outputs.cache-key }}
 
   generate-version:
+    needs: [cache-artifacts]
     runs-on: ubuntu-latest
+    if: ${{ always() && (needs.cache-artifacts.result == 'success' || needs.cache-artifacts.result == 'skipped') }}
     outputs:
       version: ${{ steps.version.outputs.version }}
       commit_count: ${{ steps.version.outputs.commit_count }}
@@ -152,8 +154,7 @@ jobs:
           git push origin "$NEW_VERSION"
 
   build-manager:
-    needs: [check-cache, build-ksud, generate-version]
-    if: ${{ always() && needs.check-cache.result == 'success' && ((needs.build-ksud.result == 'success') || (needs.build-ksud.result == 'skipped' && needs.check-cache.outputs.cache-hit == 'true')) && (needs.generate-version.result == 'success' || needs.generate-version.result == 'skipped') }}
+    needs: [check-cache,generate-version]
     runs-on: ubuntu-latest
     strategy:
       matrix:
