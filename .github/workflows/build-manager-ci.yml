@@ -3,8 +3,18 @@ name: Build Manager CI
 on:
   push:
     branches: [ "wild" ]
+    paths:
+      - '.github/workflows/build-manager-ci.yml'
+      - 'manager/**'
+      - 'kernel/**'
+      - 'userspace/ksud_overlayfs**'
+      - 'userspace/ksud_magic/**'
+      - 'userspace/susfsd/**'
   pull_request:
     branches: [ "wild" ]
+    paths:
+      - '.github/workflows/build-manager-ci.yml'
+      - 'manager/**'
   workflow_call:
   workflow_dispatch:
 
@@ -110,9 +120,9 @@ jobs:
           key: ${{ needs.check-cache.outputs.cache-key }}
 
   generate-version:
-    needs: [cache-artifacts]
+    needs: [check-cache, build-ksud]
+    if: (needs.build-ksud.result == 'success' || needs.build-ksud.result == 'skipped')
     runs-on: ubuntu-latest
-    if: ${{ always() && (needs.cache-artifacts.result == 'success' || needs.cache-artifacts.result == 'skipped') }}
     outputs:
       version: ${{ steps.version.outputs.version }}
       commit_count: ${{ steps.version.outputs.commit_count }}
@@ -154,7 +164,7 @@ jobs:
           git push origin "$NEW_VERSION"
 
   build-manager:
-    needs: [check-cache,generate-version]
+    needs: [check-cache, generate-version]
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -316,6 +326,7 @@ jobs:
   create-release:
     needs: [build-manager, generate-version]
     runs-on: ubuntu-latest
+    if: ${{ always() && needs.build-manager.result == 'success' && (needs.generate-version.result == 'success' || needs.generate-version.result == 'skipped') && (github.event_name == 'workflow_dispatch' || github.event_name == 'push') }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -388,6 +399,7 @@ jobs:
   telegram-upload:
     needs: [build-manager, generate-version]
     runs-on: ubuntu-latest
+    if: ${{ always() && needs.build-manager.result == 'success' && (needs.generate-version.result == 'success' || needs.generate-version.result == 'skipped') && (github.event_name == 'workflow_dispatch' || github.event_name == 'push') }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
