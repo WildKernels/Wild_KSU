@@ -81,7 +81,8 @@ fun InstallScreen(navigator: DestinationsNavigator) {
                 }) {
                     Text(stringResource(R.string.cancel))
                 }
-            }
+            },
+            containerColor = MaterialTheme.colorScheme.surface
         )
     }
 
