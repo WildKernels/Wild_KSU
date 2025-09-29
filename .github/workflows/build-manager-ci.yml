@@ -324,9 +324,8 @@ jobs:
           path: manager/app/build/outputs/mapping/release/
 
   create-release:
-    needs: [build-manager, generate-version]
+    needs: [build-manager]
     runs-on: ubuntu-latest
-    if: ${{ always() && needs.build-manager.result == 'success' && (needs.generate-version.result == 'success' || needs.generate-version.result == 'skipped') && (github.event_name == 'workflow_dispatch' || github.event_name == 'push') }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -397,9 +396,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   telegram-upload:
-    needs: [build-manager, generate-version]
+    needs: [build-manager]
     runs-on: ubuntu-latest
-    if: ${{ always() && needs.build-manager.result == 'success' && (needs.generate-version.result == 'success' || needs.generate-version.result == 'skipped') && (github.event_name == 'workflow_dispatch' || github.event_name == 'push') }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
