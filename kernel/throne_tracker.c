@@ -17,6 +17,7 @@
 #include "kernel_compat.h"
 
 uid_t ksu_manager_uid = KSU_INVALID_UID;
+static uid_t locked_manager_uid = KSU_INVALID_UID;
 
 static atomic_t pkg_lock = ATOMIC_INIT(0);
 static atomic_t scan_lock = ATOMIC_INIT(0);
@@ -93,18 +94,23 @@ static void crown_manager(const char *apk, struct list_head *uid_data)
 #ifdef KSU_MANAGER_PACKAGE
 	// pkg is `/<real package>`
 	if (strncmp(pkg, KSU_MANAGER_PACKAGE, sizeof(KSU_MANAGER_PACKAGE))) {
-		pr_info("manager package is inconsistent with kernel build: %s\n",
+		pr_info("manager package inconsistent: %s\n",
 			KSU_MANAGER_PACKAGE);
 		return;
 	}
 #endif
-	struct list_head *list = (struct list_head *)uid_data;
 	struct uid_data *np;
-
-	list_for_each_entry (np, list, list) {
+	list_for_each_entry(np, uid_data, list) {
 		if (strncmp(np->package, pkg, KSU_MAX_PACKAGE_NAME) == 0) {
-			pr_info("Crowning manager: %s(uid=%d)\n", pkg, np->uid);
-			ksu_set_manager_uid(np->uid);
+			// unlock previously locked UID if different
+			if (locked_manager_uid != KSU_INVALID_UID && locked_manager_uid != np->uid) {
+				pr_info("Unlocking previous manager UID: %d\n", locked_manager_uid);
+				ksu_invalidate_manager_uid();  // unlock old one
+				locked_manager_uid = KSU_INVALID_UID;
+			}
+			pr_info("Crowning new manager: %s (uid=%d)\n", pkg, np->uid);
+			ksu_set_manager_uid(np->uid);   // throne new UID
+			locked_manager_uid = np->uid;   // store locked UID
 			break;
 		}
 	}
@@ -487,6 +493,7 @@ static bool is_uid_exist(uid_t uid, char *package, void *data)
 void track_throne()
 {
 	struct list_head uid_list;
+	struct uid_data *np, *n;
 	struct file *fp;
 	int ret = 0;
 	INIT_LIST_HEAD(&uid_list);
@@ -532,17 +539,20 @@ void track_throne()
 			char *tmp = buf;
 			const char *delim = " ";
 			char *package = strsep(&tmp, delim);
-			char *uid = strsep(&tmp, delim);
-			if (!uid || !package) {
+			char *uid_str = strsep(&tmp, delim);
+			if (!uid_str || !package) {
 				pr_err("update_uid: package or uid is NULL!\n");
+				kfree(data);
 				break;
 			}
 
 			u32 res;
-			if (kstrtou32(uid, 10, &res)) {
+			if (kstrtou32(uid_str, 10, &res)) {
 				pr_err("update_uid: uid parse err\n");
+				kfree(data);
 				break;
 			}
+
 			data->uid = res;
 			strncpy(data->package, package, KSU_MAX_PACKAGE_NAME);
 			list_add_tail(&data->list, &uid_list);
@@ -562,40 +572,35 @@ void track_throne()
 		}
 	}
 
-	// now update uid list
-	struct uid_data *np;
-	struct uid_data *n;
+	// check if manager UID exists
+    bool manager_exist = false;
+	int current_manager_uid = ksu_get_manager_uid() % 100000;
 
-	// first, check if manager_uid exist!
-	bool manager_exist = false;
-	list_for_each_entry (np, &uid_list, list) {
-		// if manager is installed in work profile, the uid in packages.list is still equals main profile
-		// don't delete it in this case!
-		int manager_uid = ksu_get_manager_uid() % 100000;
-		if (np->uid == manager_uid) {
+	list_for_each_entry(np, &uid_list, list) {
+		if (np->uid == current_manager_uid) {
 			manager_exist = true;
 			break;
 		}
 	}
 
-	if (!manager_exist) {
-		if (ksu_is_manager_uid_valid()) {
-			pr_info("manager is uninstalled, invalidate it!\n");
-			ksu_invalidate_manager_uid();
-			goto prune;
-		}
-		pr_info("Searching manager...\n");
-		search_manager("/data/app", 2, &uid_list);
-		pr_info("Search manager finished\n");
+	if (!manager_exist && locked_manager_uid != KSU_INVALID_UID) {
+		pr_info("Manager APK removed, unlocking previous UID: %d\n", locked_manager_uid);
+		ksu_invalidate_manager_uid();
+		locked_manager_uid = KSU_INVALID_UID;
 	}
 
-prune:
-	// then prune the allowlist
+	if (!manager_exist) {
+		pr_info("Searching for manager...\n");
+		search_manager("/data/app", 2, &uid_list);
+		pr_info("Manager search finished\n");
+	}
+
+	// prune the allowlist
 	ksu_prune_allowlist(is_uid_exist, &uid_list);
 
 out:
 	// free uid_list
-	list_for_each_entry_safe (np, n, &uid_list, list) {
+	list_for_each_entry_safe(np, n, &uid_list, list) {
 		list_del(&np->list);
 		kfree(np);
 	}
