@@ -121,7 +121,7 @@ jobs:
 
   generate-version:
     needs: [check-cache, build-ksud]
-    if: (needs.build-ksud.result == 'success' || needs.build-ksud.result == 'skipped')
+    if: always() && (needs.build-ksud.result == 'success' || needs.build-ksud.result == 'skipped')
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.version.outputs.version }}
