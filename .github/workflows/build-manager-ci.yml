@@ -120,8 +120,8 @@ jobs:
           key: ${{ needs.check-cache.outputs.cache-key }}
 
   generate-version:
-    needs: [check-cache, build-ksud]
-    if: always() && (needs.build-ksud.result == 'success' || needs.build-ksud.result == 'skipped')
+    needs: build-ksud
+    if: needs.build-ksud.result == 'success' || needs.build-ksud.result == 'skipped'
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.version.outputs.version }}
@@ -165,6 +165,7 @@ jobs:
 
   build-manager:
     needs: [check-cache, generate-version]
+    if: needs.check-cache.result == 'success' && needs.generate-version.result == 'success'
     runs-on: ubuntu-latest
     strategy:
       matrix:
