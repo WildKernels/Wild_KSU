@@ -848,13 +848,17 @@ private fun SuperUserTopBar(superUserViewModel: SuperUserViewModel, navigator: D
                     contentDescription = stringResource(id = R.string.settings)
                 )
                 DropdownMenu(
-                    expanded = showRestartMenu,
-                    onDismissRequest = { showRestartMenu = false },
+                    expanded = showDropdown, 
+                    onDismissRequest = { showDropdown = false },
+                    modifier = Modifier.clip(MaterialTheme.shapes.medium),
+                    shape = MaterialTheme.shapes.medium,
+                    tonalElevation = 0.dp,
+                    shadowElevation = 0.dp,
                     offset = DpOffset(0.dp, 16.dp),
-                    containerColor = MaterialTheme.colorScheme.surface
+                    containerColor = MaterialTheme.colorScheme.surfaceContainer.copy(alpha = 1.0f)
                 ) {
                     DropdownMenuItem(
-                        text = { Text(stringResource(R.string.refresh)) },
+                        text = { Text(stringResource(R.string.refresh)) }, 
                         onClick = {
                             scope.launch { superUserViewModel.fetchAppList() }
                             showDropdown = false
@@ -1130,8 +1134,7 @@ fun RegularTopBar(
                     DropdownMenu(
                         expanded = showRestartMenu,
                         onDismissRequest = { showRestartMenu = false },
-                        offset = DpOffset(0.dp, 16.dp),
-                        containerColor = MaterialTheme.colorScheme.surface
+                        offset = DpOffset(0.dp, 16.dp)
                     ) {
                         // Normal reboot
                         DropdownMenuItem(
