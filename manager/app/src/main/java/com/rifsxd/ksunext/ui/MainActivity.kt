@@ -1134,7 +1134,8 @@ fun RegularTopBar(
                     DropdownMenu(
                         expanded = showRestartMenu,
                         onDismissRequest = { showRestartMenu = false },
-                        offset = DpOffset(0.dp, 16.dp)
+                        offset = DpOffset(0.dp, 16.dp),
+                        containerColor = MaterialTheme.colorScheme.surface
                     ) {
                         // Normal reboot
                         DropdownMenuItem(
