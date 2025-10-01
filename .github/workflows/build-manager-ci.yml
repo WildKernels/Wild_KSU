@@ -127,7 +127,7 @@ jobs:
 
   generate-version:
     needs: build-ksud
-    if: always() && (needs.build-ksud.result == 'success' || needs.build-ksud.result == 'skipped')
+    if: always() && (needs.build-ksud.result == 'success' || needs.build-ksud.result == 'skipped') && github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.version.outputs.version }}
@@ -171,7 +171,7 @@ jobs:
 
   build-manager:
     needs: [check-cache, generate-version]
-    if: always() && (needs.check-cache.result == 'success' && needs.generate-version.result == 'success')
+    if: always() && (needs.check-cache.result == 'success' && (needs.generate-version.result == 'success' || needs.generate-version.result == 'skipped'))
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -332,7 +332,7 @@ jobs:
 
   create-release:
     needs: [generate-version, build-manager]
-    if: always() && (needs.generate-version.result == 'success' && needs.build-manager.result == 'success')
+    if: always() && (needs.generate-version.result == 'success' && needs.build-manager.result == 'success') && github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
@@ -405,7 +405,7 @@ jobs:
 
   telegram-upload:
     needs: [build-manager]
-    if: always() && needs.build-manager.result == 'success'
+    if: always() && needs.build-manager.result == 'success' && github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
