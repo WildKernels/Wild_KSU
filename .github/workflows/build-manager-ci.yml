@@ -324,7 +324,7 @@ jobs:
           path: manager/app/build/outputs/mapping/release/
 
   create-release:
-    needs: [build-manager]
+    needs: [generate-version, build-manager]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
