@@ -326,6 +326,7 @@ jobs:
 
   create-release:
     needs: [generate-version, build-manager]
+    if: always() && (needs.generate-version.result == 'success' && needs.build-manager.result == 'success')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
@@ -398,6 +399,7 @@ jobs:
 
   telegram-upload:
     needs: [build-manager]
+    if: always() && needs.build-manager.result == 'success'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
