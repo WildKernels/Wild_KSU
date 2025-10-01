@@ -69,7 +69,7 @@ fun InstallScreen(navigator: DestinationsNavigator) {
                 fontWeight = FontWeight.SemiBold
             ) },
             text = { Text(stringResource(R.string.lkm_warning_message)) },
-            containerColor = MaterialTheme.colorScheme.surface,
+            containerColor = MaterialTheme.colorScheme.surfaceContainer.copy(alpha = 1.0f),
             confirmButton = {
                 TextButton(onClick = { showLkmWarning = false }) {
                     Text(stringResource(R.string.proceed))
