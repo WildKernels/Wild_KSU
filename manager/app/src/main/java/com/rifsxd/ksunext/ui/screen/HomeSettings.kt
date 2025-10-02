@@ -135,18 +135,7 @@ fun HomeSettingsScreen(
     
 
     
-    // App name customization state
-    var selectedAppName by rememberSaveable {
-        mutableStateOf(prefs.getString("selected_app_name", "wild_ksu") ?: "wild_ksu")
-    }
-    
 
-    
-    val onSelectedAppNameChanged = { newAppName: String ->
-        selectedAppName = newAppName
-        prefs.edit().putString("selected_app_name", newAppName).apply()
-        hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
-    }
     
     val onSelectedLayoutTypeChanged = { newLayoutType: String ->
         selectedLayoutType = newLayoutType

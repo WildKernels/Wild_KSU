@@ -976,13 +976,8 @@ fun RegularTopBar(
     val surfaceContainer = MaterialTheme.colorScheme.surfaceContainer
     val containerColor = remember(surfaceContainer) { surfaceContainer }
     
-    // Get the selected app name from preferences for home screen title
-    val selectedAppName = prefs.getString("selected_app_name", "wild_ksu") ?: "wild_ksu"
-    val homeTitle = when (selectedAppName) {
-        "kernelsu_next" -> stringResource(R.string.app_name_kernelsu_next)
-        "wild_ksu" -> stringResource(R.string.app_name_wild_ksu)
-        else -> stringResource(R.string.app_name_kernelsu_next)
-    }
+    // App name is hardcoded to "Wild KSU"
+    val homeTitle = stringResource(R.string.app_name_wild_ksu)
     
     // Determine if we need a back button and the title based on current destination
     val titleAndBackButton = when (currentDestination?.route) {
