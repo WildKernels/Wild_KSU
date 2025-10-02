@@ -204,7 +204,11 @@ fun FlashScreen(
                         }
                     },
                     modifier = Modifier.defaultMinSize(minWidth = 140.dp, minHeight = 56.dp),
-                    contentPadding = PaddingValues(horizontal = 20.dp, vertical = 16.dp)
+                    contentPadding = PaddingValues(horizontal = 20.dp, vertical = 16.dp),
+                    colors = ButtonDefaults.filledTonalButtonColors(
+                        containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 1.0f),
+                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 1.0f)
+                    )
                 ) {
                     Icon(
                         imageVector = Icons.Filled.Refresh,
@@ -286,7 +290,11 @@ fun FlashScreen(
                                 }
                             },
                             modifier = Modifier.defaultMinSize(minWidth = 140.dp, minHeight = 56.dp),
-                            contentPadding = PaddingValues(horizontal = 20.dp, vertical = 16.dp)
+                            contentPadding = PaddingValues(horizontal = 20.dp, vertical = 16.dp),
+                            colors = ButtonDefaults.filledTonalButtonColors(
+                                containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 1.0f),
+                                contentColor = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 1.0f)
+                            )
                         ) {
                             Icon(
                                 imageVector = Icons.Filled.Refresh,
