@@ -6,8 +6,6 @@
    See https://developer.android.com/about/versions/12/backup-restore
 -->
 <full-backup-content>
-    <!--
-   <include domain="sharedpref" path="."/>
-   <exclude domain="sharedpref" path="device.xml"/>
--->
+    <!-- Exclude settings SharedPreferences from backup -->
+    <exclude domain="sharedpref" path="settings.xml"/>
 </full-backup-content>
