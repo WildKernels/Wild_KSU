@@ -895,7 +895,7 @@ fun ModuleItem(
                                     onClick = { onUpdate(module) },
                                     contentPadding = ButtonDefaults.TextButtonContentPadding,
                                     colors = ButtonDefaults.filledTonalButtonColors(
-                                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                                        containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 1.0f),
                                         contentColor = MaterialTheme.colorScheme.onSecondaryContainer
                                     )
                                 ) {
