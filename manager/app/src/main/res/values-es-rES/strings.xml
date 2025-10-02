@@ -274,16 +274,8 @@
     <!-- Module Settings Customization -->
     <string name="module_card_customization">Configuración del Módulo</string>
     <string name="module_card_customization_summary">Configurar el comportamiento del módulo, ordenar y mostrar opciones</string>
-    <!-- App Name Customization -->
-    <string name="app_name_customization">Nombre de app</string>
-    <string name="app_name_customization_summary">Cambiar el nombre de la aplicación mostrado en la interfaz</string>
-    <string name="app_name_kernelsu_next">Siguiente KernelSU</string>
+    <!-- App Names -->
     <string name="app_name_wild_ksu">Wild KSU</string>
-    <string name="app_name_custom">Personalizado</string>
-    <string name="app_name_custom_hint">Introduce el nombre de la aplicación personalizada</string>
-    <string name="app_name_dialog_title">Seleccionar nombre de aplicación</string>
-    <string name="app_name_custom_dialog_title">Nombres de apps personalizados</string>
-    <string name="app_name_custom_dialog_message">Introduce el nombre de tu aplicación personalizada (máximo 20 caracteres)</string>
     <!-- Home Settings Card Layout -->
     <string name="home_screen_settings">Tarjetas &amp; Home</string>
     <string name="info_card_settings">Ajustes de la tarjeta de información</string>
