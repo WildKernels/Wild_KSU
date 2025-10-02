@@ -274,16 +274,8 @@
     <!-- Module Settings Customization -->
     <string name="module_card_customization">模块设置</string>
     <string name="module_card_customization_summary">配置模块行为、排序和显示选项</string>
-    <!-- App Name Customization -->
-    <string name="app_name_customization">应用名称</string>
-    <string name="app_name_customization_summary">更改界面中显示的应用名称</string>
-    <string name="app_name_kernelsu_next">KernelSU Next</string>
+    <!-- App Names -->
     <string name="app_name_wild_ksu">Wild KSU</string>
-    <string name="app_name_custom">自定义</string>
-    <string name="app_name_custom_hint">输入自定义应用名称</string>
-    <string name="app_name_dialog_title">选择应用名称</string>
-    <string name="app_name_custom_dialog_title">自定义应用名称</string>
-    <string name="app_name_custom_dialog_message">输入您的自定义应用名称（最多20个字）</string>
     <!-- Home Settings Card Layout -->
     <string name="home_screen_settings">主界面&amp;卡片设置</string>
     <string name="info_card_settings">信息卡片设置</string>
