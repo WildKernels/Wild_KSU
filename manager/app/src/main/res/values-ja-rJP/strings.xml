@@ -274,16 +274,8 @@
     <!-- Module Settings Customization -->
     <string name="module_card_customization">モジュール設定</string>
     <string name="module_card_customization_summary">モジュールの動作、並べ替え、表示オプションを設定する</string>
-    <!-- App Name Customization -->
-    <string name="app_name_customization">アプリ名</string>
-    <string name="app_name_customization_summary">インターフェースに表示されるアプリ名を変更する</string>
-    <string name="app_name_kernelsu_next">KernelSU Next</string>
+    <!-- App Names -->
     <string name="app_name_wild_ksu">Wild KSU</string>
-    <string name="app_name_custom">カスタム</string>
-    <string name="app_name_custom_hint">カスタムアプリ名を入力する</string>
-    <string name="app_name_dialog_title">アプリ名を選択</string>
-    <string name="app_name_custom_dialog_title">カスタムアプリ名</string>
-    <string name="app_name_custom_dialog_message">カスタムアプリ名を入力してください（最大 20 文字）</string>
     <!-- Home Settings Card Layout -->
     <string name="home_screen_settings">ホーム &amp; カード</string>
     <string name="info_card_settings">情報カードの設定</string>
