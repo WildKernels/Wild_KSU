@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="issue_report_title">Gặp sự cố?</string>
-    <string name="issue_report_body">Muốn báo lỗi hoặc góp ý?</string>
+    <string name="issue_report_title">Gặp sự cố à?</string>
+    <string name="issue_report_body">Bạn gặp lỗi hay muốn góp ý?</string>
     <string name="issue_report_body_2">Báo lỗi hoặc góp ý nhanh nhất có thể!</string>
     <string name="issue_report_github">Báo lỗi trên Github</string>
     <string name="issue_report_telegram">Liên hệ qua Telegram</string>
