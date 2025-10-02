@@ -895,8 +895,8 @@ fun ModuleItem(
                                     onClick = { onUpdate(module) },
                                     contentPadding = ButtonDefaults.TextButtonContentPadding,
                                     colors = ButtonDefaults.filledTonalButtonColors(
-                                        containerColor = Color.Transparent,
-                                        disabledContainerColor = Color.Transparent
+                                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                                        contentColor = MaterialTheme.colorScheme.onSecondaryContainer
                                     )
                                 ) {
                                     Icon(
