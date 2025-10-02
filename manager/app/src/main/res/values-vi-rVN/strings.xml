@@ -274,16 +274,8 @@
     <!-- Module Settings Customization -->
     <string name="module_card_customization">Cài đặt Mô-đun</string>
     <string name="module_card_customization_summary">Cấu hình hành vi mô-đun, tùy chọn sắp xếp và hiển thị</string>
-    <!-- App Name Customization -->
-    <string name="app_name_customization">Tên ứng dụng</string>
-    <string name="app_name_customization_summary">Thay đổi tên ứng dụng hiển thị trong giao diện</string>
-    <string name="app_name_kernelsu_next">KernelSU Next</string>
+    <!-- App Names -->
     <string name="app_name_wild_ksu">Wild KSU</string>
-    <string name="app_name_custom">Tùy chỉnh</string>
-    <string name="app_name_custom_hint">Nhập tên ứng dụng muốn chỉnh</string>
-    <string name="app_name_dialog_title">Chọn tên ứng dụng</string>
-    <string name="app_name_custom_dialog_title">Tuỳ chỉnh tên ứng dụng</string>
-    <string name="app_name_custom_dialog_message">Nhập tên ứng dụng muốn chỉnh của bạn (tối đa 20 ký tự)</string>
     <!-- Home Settings Card Layout -->
     <string name="home_screen_settings">Trang chủ &amp; Thẻ</string>
     <string name="info_card_settings">Cài đặt thẻ thông tin</string>
