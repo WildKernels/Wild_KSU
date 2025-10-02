@@ -55,13 +55,13 @@ fun SuperUserScreen(navigator: DestinationsNavigator) {
     val prefs = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
     
     // Make useIndividualCards reactive to preference changes
-    var useIndividualCards by remember { mutableStateOf(prefs.getBoolean("use_individual_app_cards", true)) }
+    var useIndividualCards by remember { mutableStateOf(prefs.getBoolean("use_individual_app_cards", false)) }
     
     // Listen for preference changes
     DisposableEffect(Unit) {
         val listener = android.content.SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
             if (key == "use_individual_app_cards") {
-                useIndividualCards = prefs.getBoolean("use_individual_app_cards", true)
+                useIndividualCards = prefs.getBoolean("use_individual_app_cards", false)
             }
         }
         prefs.registerOnSharedPreferenceChangeListener(listener)

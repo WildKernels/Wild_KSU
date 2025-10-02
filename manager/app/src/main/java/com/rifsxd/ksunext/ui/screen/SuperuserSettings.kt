@@ -73,7 +73,7 @@ fun SuperuserSettingsScreen(navigator: DestinationsNavigator) {
                 // Individual App Cards Setting
                 var useIndividualCards by remember {
                     mutableStateOf(
-                        prefs.getBoolean("use_individual_app_cards", true)
+                        prefs.getBoolean("use_individual_app_cards", false)
                     )
                 }
 
@@ -81,7 +81,7 @@ fun SuperuserSettingsScreen(navigator: DestinationsNavigator) {
                 DisposableEffect(Unit) {
                     val listener = android.content.SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
                         if (key == "use_individual_app_cards") {
-                            useIndividualCards = prefs.getBoolean("use_individual_app_cards", true)
+                            useIndividualCards = prefs.getBoolean("use_individual_app_cards", false)
                         }
                     }
                     prefs.registerOnSharedPreferenceChangeListener(listener)
@@ -105,7 +105,7 @@ fun SuperuserSettingsScreen(navigator: DestinationsNavigator) {
                 // Enable Favorite Button
                 var enableFavoriteButton by rememberSaveable {
                     mutableStateOf(
-                        !prefs.getBoolean("disable_favorite_button", false)
+                        !prefs.getBoolean("disable_favorite_button", true)
                     )
                 }
                 
