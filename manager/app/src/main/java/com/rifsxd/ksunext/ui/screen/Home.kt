@@ -957,9 +957,9 @@ private fun IssueReportCardContent(
 ) {
     Column {
         CardRowContent(
-            text = "${stringResource(R.string.issue_report_body)} ${stringResource(R.string.issue_report_body_2)}",
+            text = stringResource(R.string.issue_report_title),
+            subtitle = "${stringResource(R.string.issue_report_body)} ${stringResource(R.string.issue_report_body_2)}",
             icon = Icons.AutoMirrored.Outlined.HelpOutline,
-            title = stringResource(R.string.issue_report_title),
             actions = {
                 Row(horizontalArrangement = Arrangement.spacedBy(CardConstants.ACTION_SPACING)) {
                     IconButton(onClick = { uriHandler.openUri(githubIssueUrl) }) {
