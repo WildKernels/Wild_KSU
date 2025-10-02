@@ -274,16 +274,8 @@
     <!-- Module Settings Customization -->
     <string name="module_card_customization">Налаштування модуля</string>
     <string name="module_card_customization_summary">Налаштування поведінки модуля, сортування та параметрів відображення</string>
-    <!-- App Name Customization -->
-    <string name="app_name_customization">Назва програми</string>
-    <string name="app_name_customization_summary">Зміна назви програми, що відображається в інтерфейсі</string>
-    <string name="app_name_kernelsu_next">KernelSU Next</string>
+    <!-- App Names -->
     <string name="app_name_wild_ksu">Wild KSU</string>
-    <string name="app_name_custom">Власне</string>
-    <string name="app_name_custom_hint">Введіть власну назву програми</string>
-    <string name="app_name_dialog_title">Виберіть назву програми</string>
-    <string name="app_name_custom_dialog_title">Спеціальна назва додатка</string>
-    <string name="app_name_custom_dialog_message">Введіть власну назву додатка (максимум 20 символів)</string>
     <!-- Home Settings Card Layout -->
     <string name="home_screen_settings">Головна &amp; картки</string>
     <string name="info_card_settings">Налаштування інформаційної картки</string>
