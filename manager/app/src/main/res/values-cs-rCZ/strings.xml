@@ -274,16 +274,8 @@
     <!-- Module Settings Customization -->
     <string name="module_card_customization">Upravit obrazovku modulů</string>
     <string name="module_card_customization_summary">Configure module behavior, sorting, and display options</string>
-    <!-- App Name Customization -->
-    <string name="app_name_customization">Název aplikace</string>
-    <string name="app_name_customization_summary">Change the app name displayed in the interface</string>
-    <string name="app_name_kernelsu_next">KernelSU Next</string>
+    <!-- App Names -->
     <string name="app_name_wild_ksu">Wild KSU</string>
-    <string name="app_name_custom">Vlastní</string>
-    <string name="app_name_custom_hint">Zadejte vlastní název aplikace</string>
-    <string name="app_name_dialog_title">Vyberte název aplikace</string>
-    <string name="app_name_custom_dialog_title">Vlastní název aplikace</string>
-    <string name="app_name_custom_dialog_message">Zadejte vlastní název aplikace (maximálně 20 znaků)</string>
     <!-- Home Settings Card Layout -->
     <string name="home_screen_settings">Domovská obrazovka &amp; panely</string>
     <string name="info_card_settings">Nastavení informačního panelu</string>
