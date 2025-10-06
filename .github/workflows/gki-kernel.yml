@@ -72,15 +72,18 @@ jobs:
       CCACHE_NOHASHDIR: "true"
       CCACHE_HARDLINK: "true"
     steps:
-      # - name: Maximize build space
-      #   uses: easimon/maximize-build-space@master
-      #   with:
-      #     root-reserve-mb: 8192
-      #     temp-reserve-mb: 2048
-      #     remove-dotnet: 'true'
-      #     remove-android: 'true'
-      #     remove-haskell: 'true'
-      #     remove-codeql: 'true'
+      - name: Maximize Build Space
+        uses: AdityaGarg8/remove-unwanted-software@v5
+        with:
+          # remove-dotnet: 'true'          # Frees ~2 GB
+          # remove-android: 'true'         # Frees ~9 GB
+          # remove-haskell: 'true'         # Frees ~5.2 GB
+          # remove-codeql: 'true'          # Frees ~5.4 GB
+          # remove-docker-images: 'true'   # Frees ~3.2 GB
+          # remove-large-packages: 'true'  # Frees ~3.1 GB
+          remove-swapfile: 'true'        # Frees ~4 GB
+          # remove-cached-tools: 'false'   # Avoid unless confirmed safe
+          verbose: 'true'                # Enable detailed logging
 
       - uses: actions/checkout@v4
         with:
