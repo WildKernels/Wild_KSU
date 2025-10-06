@@ -127,7 +127,7 @@ jobs:
 
   generate-version:
     needs: build-ksud
-    if: always() && (needs.build-ksud.result == 'success' || needs.build-ksud.result == 'skipped') && github.event_name != 'pull_request'
+    if: (needs.build-ksud.result == 'success' || needs.build-ksud.result == 'skipped') && github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.version.outputs.version }}
@@ -171,7 +171,7 @@ jobs:
 
   build-manager:
     needs: [check-cache, generate-version]
-    if: always() && (needs.check-cache.result == 'success' && (needs.generate-version.result == 'success' || needs.generate-version.result == 'skipped'))
+    if: (needs.check-cache.result == 'success' && (needs.generate-version.result == 'success' || needs.generate-version.result == 'skipped'))
     runs-on: ubuntu-latest
     strategy:
       matrix:
