@@ -268,6 +268,8 @@
     <string name="home_screen_icon_style_summary">Stil des Startbildschirm-Icons ändern oder ausschalten</string>
     <string name="home_screen_icon_current">Aktuell: %s</string>
     <string name="home_screen_icon_select_dialog_title">Stil der Icons auf der Startseite auswählen</string>
+    <string name="home_icon_select_dialog_hint_scroll">Scroll to see more icons</string>
+    <string name="home_icon_select_dialog_current_seasonal">Currently: %s</string>
     <!-- System Info Card Settings -->
     <string name="system_info_card_settings">System-Info-Karten-Einstellungen</string>
     <string name="system_info_card_settings_summary">Passen Sie die Anzeige von Systeminformationen und Elemente des Startbildschirms an</string>
@@ -278,124 +280,28 @@
     <string name="app_name_wild_ksu">Wild KSU</string>
     <!-- Home Settings Card Layout -->
     <string name="home_screen_settings">Startseite &amp; Karten</string>
+    <string name="home_layout_style">Home Layout Style</string>
+    <string name="home_layout_style_summary">Choose between Stock and MIUIX layouts. Current: %s</string>
+    <string name="home_layout_select_dialog_title">Select Home Layout</string>
+    <string name="home_layout_select_dialog_default">Current default layout</string>
+    <string name="home_layout_select_dialog_alt">Alternative layout style</string>
     <string name="info_card_settings">Info-Karten-Einstellungen</string>
     <string name="info_card_order_management">Informationskarten-Bestellverwaltung</string>
     <string name="info_card_order_description">Tippe, um Elemente eine Position nach oben oder unten zu verschieben, oder halte gedrückt, um sie an den Anfang oder das Ende zu bewegen. Verwende den Schalter, um Elemente zu aktivieren oder zu deaktivieren.</string>
     <!-- Individual App Cards Settings -->
     <string name="individual_app_cards">Individuelle App-Karten</string>
     <string name="individual_app_cards_summary">Zeige jede App in ihrer eigenen Karte anstatt in einer Liste</string>
-    <!-- Home Screen Card Customization -->
-    <string name="home_card_info_card">Info Card</string>
-    <string name="home_card_help_card">Help Card</string>
-    <string name="home_card_icon_style">Icon Style</string>
-    <string name="home_card_system_info_card">System Info Card</string>
-    <string name="home_card_module_settings">Module Settings</string>
-    <string name="home_card_individual_app_cards">Individual App Cards</string>
-    <!-- Home Settings Icon Options -->
-    <string name="icon_option_off">Off</string>
-    <string name="icon_option_seasonal">Seasonal (Auto)</string>
-    <string name="icon_option_winter">Winter</string>
-    <string name="icon_option_spring">Spring</string>
-    <string name="icon_option_summer">Summer</string>
-    <string name="icon_option_fall">Fall</string>
-    <string name="icon_option_ksu_next">KSU Next</string>
-    <string name="icon_option_cannabis">Cannabis</string>
-    <string name="icon_option_amogus">Amungus</string>
-    <string name="icon_option_stock">Stock</string>
-    <string name="icon_option_miuix_square">MIUIX Square</string>
-    <string name="icon_option_miuix_rectangle">MIUIX Rectangle</string>
-    <!-- Home Settings Icon Dialog -->
-    <string name="icon_scroll_hint">Scroll to see more icons</string>
-    <string name="icon_currently">Currently:</string>
-    <string name="icon_selected">Selected</string>
-    <string name="icon_done">Done</string>
-    <string name="scroll_to_see_more_icons">Scroll to see more icons</string>
-    <string name="currently_seasonal">Currently: %1$s</string>
-    <string name="done">Done</string>
-    <string name="select_home_layout">Select Home Layout</string>
-    <string name="layout_description_stock">Current default layout</string>
-    <string name="layout_description_alternative">Alternative layout style</string>
-    <string name="home_layout_style">Home Layout Style</string>
-    <string name="home_layout_style_summary">Choose between Stock and MIUIX layouts. Current: %1$s</string>
-    <!-- Layout Options -->
-    <string name="layout_option_stock">Stock</string>
-    <string name="layout_option_miuix_square">MIUIX Square</string>
-    <string name="layout_option_miuix_rectangle">MIUIX Rectangle</string>
-    <!-- Theme Settings -->
-    <string name="theme_system_default">System Default</string>
-    <string name="theme_light_mode">Light Mode</string>
-    <string name="theme_dark_mode">Dark Mode</string>
-    <string name="theme_amoled_dark">AMOLED Dark</string>
-    <string name="theme_mode_title">Theme Mode</string>
-    <string name="theme_navigation_title">Navigation</string>
-    <string name="theme_hide_bottom_bar">Hide Bottom Bar</string>
-    <string name="theme_hide_bottom_bar_summary">Move settings icon to top bar and hide bottom navigation</string>
-    <string name="theme_background_title">Background</string>
-    <string name="theme_background_blur">Background Blur</string>
-    <string name="theme_background_blur_summary">Adjust the blur effect on the background image</string>
-    <string name="theme_interface_title">Interface</string>
-    <string name="theme_ui_transparency">UI Transparency</string>
-    <string name="theme_ui_transparency_summary">Adjust the transparency of UI elements</string>
-    <string name="theme_display_title">Display</string>
-    <string name="theme_set_custom_dpi">Set Custom DPI</string>
-    <string name="theme_enter_dpi_prompt">Enter a DPI value between 100 and 800:</string>
-    <string name="theme_dpi_value">DPI Value</string>
-    <string name="theme_set">Set</string>
-    <string name="theme_dpi_actions">DPI Actions</string>
-    <string name="theme_dpi_actions_summary">Reset, presets, or confirm changes</string>
-    <string name="theme_reset_dpi">Reset DPI</string>
-    <string name="theme_dpi_presets">DPI Presets</string>
-    <string name="theme_custom_dpi">Custom...</string>
-    <string name="theme_confirm_dpi">Confirm DPI</string>
-    <!-- Flashing Status Messages -->
-    <string name="flashing_status_waiting">Waiting for flashing</string>
-    <string name="flashing_status_in_progress">Flashing in progress...</string>
-    <string name="flashing_status_success">Flash successful</string>
-    <string name="flashing_status_failed">Flash failed</string>
-    <!-- Home Layout Settings -->
-    <string name="home_layout_select_title">Select Home Layout</string>
-    <string name="home_layout_current_default">Current default layout</string>
-    <string name="home_layout_alternative">Alternative layout style</string>
-    <string name="home_layout_style_title">Home Layout Style</string>
-    <string name="home_layout_choose_description">Choose between Stock and MIUIX layouts. Current:</string>
-    <string name="home_layout_move_up_hint">Move up (tap) or to top (hold)</string>
-    <string name="home_layout_move_down_hint">Move down (tap) or to bottom (hold)</string>
-    <!-- Theme Settings -->
-    <string name="theme_section_title">Theme</string>
-    <string name="navigation_section_title">Navigation</string>
-    <string name="background_section_title">Background</string>
-    <string name="interface_section_title">Interface</string>
-    <string name="display_section_title">Display</string>
-    <string name="background_blur">Background Blur</string>
-    <string name="background_blur_summary">Adjust the blur effect on the background image</string>
-    <string name="ui_transparency_summary">Adjust the transparency of UI elements</string>
-    <string name="dpi_actions">DPI Actions</string>
-    <string name="dpi_actions_summary">Reset, presets, or confirm changes</string>
-    <string name="reset_dpi">Reset DPI</string>
-    <string name="dpi_presets">DPI Presets</string>
-    <string name="confirm_dpi">Confirm DPI</string>
-    <string name="set_custom_dpi">Set Custom DPI</string>
-    <string name="custom_dpi_prompt">Enter a DPI value between 100 and 800:</string>
-    <string name="dpi_value">DPI Value</string>
-    <string name="set">Set</string>
-    <string name="custom_option">Custom…</string>
-    <string name="theme_mode_dialog_title">Theme Mode</string>
-    <!-- Flash Screen -->
-    <string name="flash_error_message">Error code: %1$d.\n %2$s Please save and check the log.\n</string>
-    <string name="unknown_file">unknown.zip</string>
-    <!-- Missing keys used in ThemeSettings -->
-    <string name="theme_mode">Theme Mode</string>
-    <string name="theme_mode_summary">Current: %1$s</string>
-    <string name="hide_bottom_bar">Hide Bottom Bar</string>
-    <string name="hide_bottom_bar_summary">Move settings icon to top bar and hide bottom navigation</string>
-    <string name="ui_transparency">UI Transparency</string>
-    <!-- Defaults for app name customization to satisfy CI -->
-    <string name="app_name_custom">Custom App Name</string>
-    <string name="app_name_custom_dialog_message">Enter a custom app name to display.</string>
-    <string name="app_name_custom_dialog_title">Custom App Name</string>
-    <string name="app_name_custom_hint">Enter app name</string>
-    <string name="app_name_customization">App Name</string>
-    <string name="app_name_customization_summary">Switch to KernelSU Next</string>
-    <string name="app_name_dialog_title">Select App Name</string>
-    <string name="app_name_kernelsu_next">KernelSU Next</string>
+    <!-- Icon options -->
+    <string name="home_icon_option_off">Off</string>
+    <string name="home_icon_option_seasonal">Seasonal (Auto)</string>
+    <string name="home_icon_option_winter">Winter</string>
+    <string name="home_icon_option_spring">Spring</string>
+    <string name="home_icon_option_summer">Summer</string>
+    <string name="home_icon_option_fall">Fall</string>
+    <string name="home_icon_option_ksu_next">KSU Next</string>
+    <string name="home_icon_option_cannabis">Cannabis</string>
+    <string name="home_icon_option_amogus">Amungus</string>
+    <!-- Common actions/accessibility -->
+    <string name="action_done">Done</string>
+    <string name="accessibility_selected">Selected</string>
 </resources>
