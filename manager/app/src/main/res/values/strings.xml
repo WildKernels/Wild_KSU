@@ -274,6 +274,8 @@
     <string name="home_screen_icon_style_summary">Change the home screen icon style or turn it off</string>
     <string name="home_screen_icon_current">Current: %s</string>
     <string name="home_screen_icon_select_dialog_title">Select Home Screen Icon Style</string>
+    <string name="home_icon_select_dialog_hint_scroll">Scroll to see more icons</string>
+    <string name="home_icon_select_dialog_current_seasonal">Currently: %s</string>
     
     <!-- System Info Card Settings -->
     <string name="system_info_card_settings">System Info Card Settings</string>
@@ -288,6 +290,11 @@
     
     <!-- Home Settings Card Layout -->
     <string name="home_screen_settings">Home &amp; Cards</string>
+    <string name="home_layout_style">Home Layout Style</string>
+    <string name="home_layout_style_summary">Choose between Stock and MIUIX layouts. Current: %s</string>
+    <string name="home_layout_select_dialog_title">Select Home Layout</string>
+    <string name="home_layout_select_dialog_default">Current default layout</string>
+    <string name="home_layout_select_dialog_alt">Alternative layout style</string>
     <string name="info_card_settings">Info Card Settings</string>
     <string name="info_card_order_management">Info Card Order Management</string>
     <string name="info_card_order_description">Tap to move items up/down one position, or long press to move to top/bottom. Use the toggle to enable/disable items.</string>
@@ -295,4 +302,19 @@
     <!-- Individual App Cards Settings -->
     <string name="individual_app_cards">Individual App Cards</string>
     <string name="individual_app_cards_summary">Show each app in its own card instead of a list</string>
+    
+    <!-- Icon options -->
+    <string name="home_icon_option_off">Off</string>
+    <string name="home_icon_option_seasonal">Seasonal (Auto)</string>
+    <string name="home_icon_option_winter">Winter</string>
+    <string name="home_icon_option_spring">Spring</string>
+    <string name="home_icon_option_summer">Summer</string>
+    <string name="home_icon_option_fall">Fall</string>
+    <string name="home_icon_option_ksu_next">KSU Next</string>
+    <string name="home_icon_option_cannabis">Cannabis</string>
+    <string name="home_icon_option_amogus">Amungus</string>
+    
+    <!-- Common actions/accessibility -->
+    <string name="action_done">Done</string>
+    <string name="accessibility_selected">Selected</string>
 </resources>
