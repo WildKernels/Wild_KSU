@@ -383,4 +383,19 @@
     <!-- Flash Screen -->
     <string name="flash_error_message">Error code: %1$d.\n %2$s Please save and check the log.\n</string>
     <string name="unknown_file">unknown.zip</string>
+    <!-- Missing keys used in ThemeSettings -->
+    <string name="theme_mode">Theme Mode</string>
+    <string name="theme_mode_summary">Current: %1$s</string>
+    <string name="hide_bottom_bar">Hide Bottom Bar</string>
+    <string name="hide_bottom_bar_summary">Move settings icon to top bar and hide bottom navigation</string>
+    <string name="ui_transparency">UI Transparency</string>
+    <!-- Defaults for app name customization to satisfy CI -->
+    <string name="app_name_custom">Custom App Name</string>
+    <string name="app_name_custom_dialog_message">Enter a custom app name to display.</string>
+    <string name="app_name_custom_dialog_title">Custom App Name</string>
+    <string name="app_name_custom_hint">Enter app name</string>
+    <string name="app_name_customization">App Name</string>
+    <string name="app_name_customization_summary">Switch to KernelSU Next</string>
+    <string name="app_name_dialog_title">Select App Name</string>
+    <string name="app_name_kernelsu_next">KernelSU Next</string>
 </resources>
