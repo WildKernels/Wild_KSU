@@ -286,15 +286,15 @@ fun HomeSettingsScreen(
 
     // Icon Selection with OFF option
     val iconOptions = listOf(
-        "OFF" to "Off",
-        "SEASONAL" to "Seasonal (Auto)",
-        "WINTER" to "Winter",
-        "SPRING" to "Spring", 
-        "SUMMER" to "Summer",
-        "FALL" to "Fall",
-        "KSU_NEXT" to "KSU Next",
-        "CANNABIS" to "Cannabis",
-        "AMOGUS_SUSFS" to "Amungus"
+        "OFF" to stringResource(R.string.icon_option_off),
+        "SEASONAL" to stringResource(R.string.icon_option_seasonal),
+        "WINTER" to stringResource(R.string.icon_option_winter),
+        "SPRING" to stringResource(R.string.icon_option_spring), 
+        "SUMMER" to stringResource(R.string.icon_option_summer),
+        "FALL" to stringResource(R.string.icon_option_fall),
+        "KSU_NEXT" to stringResource(R.string.icon_option_ksu_next),
+        "CANNABIS" to stringResource(R.string.icon_option_cannabis),
+        "AMOGUS_SUSFS" to stringResource(R.string.icon_option_amogus)
     )
     
     val currentIconDisplay = iconOptions.find { it.first == selectedIconType }?.second ?: "Seasonal (Auto)"
@@ -304,9 +304,9 @@ fun HomeSettingsScreen(
     
     // Layout options for selection
     val layoutOptions = listOf(
-        "STOCK" to "Stock",
-        "MIUIX_SQUARE" to "MIUIX Square",
-        "MIUIX_RECTANGLE" to "MIUIX Rectangle"
+        "STOCK" to stringResource(R.string.layout_option_stock),
+        "MIUIX_SQUARE" to stringResource(R.string.layout_option_miuix_square),
+        "MIUIX_RECTANGLE" to stringResource(R.string.layout_option_miuix_rectangle)
     )
     
     val currentLayoutDisplay = layoutOptions.find { it.first == selectedLayoutType }?.second ?: "Stock"
@@ -325,7 +325,7 @@ fun HomeSettingsScreen(
                         style = MaterialTheme.typography.headlineSmall
                     )
                     Text(
-                        text = "Scroll to see more icons",
+                        text = stringResource(R.string.scroll_to_see_more_icons),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.padding(top = 4.dp)
@@ -369,7 +369,7 @@ fun HomeSettingsScreen(
                                     modifier = Modifier
                                         .size(48.dp)
                                         .background(
-                                            MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
+                                            MaterialTheme.colorScheme.surfaceVariant,
                                             CircleShape
                                         ),
                                     contentAlignment = Alignment.Center
@@ -400,7 +400,7 @@ fun HomeSettingsScreen(
                                     )
                                     if (value == "SEASONAL") {
                                         Text(
-                                            text = "Currently: ${IconUtils.getSeasonalIconName()}",
+                                            text = stringResource(R.string.currently_seasonal, IconUtils.getSeasonalIconName()),
                                             style = MaterialTheme.typography.bodySmall,
                                             color = MaterialTheme.colorScheme.onSurfaceVariant
                                         )
@@ -424,7 +424,7 @@ fun HomeSettingsScreen(
             },
             confirmButton = {
                 TextButton(onClick = { showIconDialog = false }) {
-                    Text("Done")
+                    Text(stringResource(R.string.done))
                 }
             }
         )
@@ -436,7 +436,7 @@ fun HomeSettingsScreen(
             onDismissRequest = { showLayoutDialog = false },
             title = {
                 Text(
-                    text = "Select Home Layout",
+                    text = stringResource(R.string.select_home_layout),
                     style = MaterialTheme.typography.headlineSmall
                 )
             },
@@ -476,7 +476,7 @@ fun HomeSettingsScreen(
                                     modifier = Modifier
                                         .size(48.dp)
                                         .background(
-                                            MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
+                                            MaterialTheme.colorScheme.surfaceVariant,
                                             CircleShape
                                         ),
                                     contentAlignment = Alignment.Center
@@ -497,7 +497,7 @@ fun HomeSettingsScreen(
                                         fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
                                     )
                                     Text(
-                                        text = if (value == "STOCK") "Current default layout" else "Alternative layout style",
+                                        text = if (value == "STOCK") stringResource(R.string.layout_description_stock) else stringResource(R.string.layout_description_alternative),
                                         style = MaterialTheme.typography.bodySmall,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
@@ -518,7 +518,7 @@ fun HomeSettingsScreen(
             },
             confirmButton = {
                 TextButton(onClick = { showLayoutDialog = false }) {
-                    Text("Done")
+                    Text(stringResource(R.string.done))
                 }
             }
         )
@@ -561,8 +561,8 @@ fun HomeSettingsScreen(
                     // Home Layout Selection
                     CardRowContent(
                         icon = Icons.Filled.ViewModule,
-                        text = "Home Layout Style",
-                        subtitle = "Choose between Stock and MIUIX layouts. Current: $currentLayoutDisplay",
+                        text = stringResource(R.string.home_layout_style),
+                        subtitle = stringResource(R.string.home_layout_style_summary, currentLayoutDisplay),
                         modifier = Modifier.clickable {
                             showLayoutDialog = true
                         }

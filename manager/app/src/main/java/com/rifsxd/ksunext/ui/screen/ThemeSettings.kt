@@ -155,30 +155,30 @@ fun ThemeSettingsScreen(
             }
             
             StandardCard {
-                Text(
-                    text = "Theme",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold
-                )
-                
-                CardItemSpacer()
-                
-                CardRowContent(
-                    icon = Icons.Filled.Palette,
-                    text = "Theme Mode",
-                    subtitle = "Current: $currentThemeDisplay",
-                    modifier = Modifier.clickable {
-                        themeDialog.show()
-                    }
-                )
-            }
+                    Text(
+                        text = stringResource(R.string.theme_section_title),
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold
+                    )
+                    
+                    CardItemSpacer()
+                    
+                    CardRowContent(
+                        icon = Icons.Filled.Palette,
+                        text = stringResource(R.string.theme_mode),
+                        subtitle = stringResource(R.string.theme_mode_summary, currentThemeDisplay),
+                        modifier = Modifier.clickable {
+                            themeDialog.show()
+                        }
+                    )
+                }
         }
         
         // Navigation Section
         item {
             StandardCard {
                 Text(
-                    text = "Navigation",
+                    text = stringResource(R.string.navigation_section_title),
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold
                 )
@@ -186,8 +186,8 @@ fun ThemeSettingsScreen(
                 CardItemSpacer()
                 
                 CardSwitchContent(
-                    title = "Hide Bottom Bar",
-                    subtitle = "Move settings icon to top bar and hide bottom navigation",
+                    title = stringResource(R.string.hide_bottom_bar),
+                    subtitle = stringResource(R.string.hide_bottom_bar_summary),
                     icon = Icons.Filled.ViewAgenda,
                     checked = hideBottomBar,
                     onCheckedChange = { enabled ->
@@ -215,7 +215,7 @@ fun ThemeSettingsScreen(
                 
                 StandardCard {
                     Text(
-                        text = "Background",
+                        text = stringResource(R.string.background_section_title),
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold
                     )
@@ -293,8 +293,8 @@ fun ThemeSettingsScreen(
                         
                         // Background Blur Slider
                         CardSliderContent(
-                            title = "Background Blur",
-                            subtitle = "Adjust the blur effect on the background image",
+                            title = stringResource(R.string.background_blur),
+                            subtitle = stringResource(R.string.background_blur_summary),
                             icon = Icons.Filled.Tune,
                             value = backgroundBlur,
                             valueRange = 0.0f..50.0f,
@@ -322,7 +322,7 @@ fun ThemeSettingsScreen(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
-                        text = "Interface",
+                        text = stringResource(R.string.interface_section_title),
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold
                     )
@@ -330,8 +330,8 @@ fun ThemeSettingsScreen(
                     CardItemSpacer()
                     
                     CardSliderContent(
-                        title = "UI Transparency",
-                        subtitle = "Adjust the transparency of UI elements",
+                        title = stringResource(R.string.ui_transparency),
+                        subtitle = stringResource(R.string.ui_transparency_summary),
                         icon = Icons.Filled.Tune,
                         value = uiTransparency,
                         valueRange = 0.0f..1.0f,
@@ -373,7 +373,7 @@ fun ThemeSettingsScreen(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
-                        text = "Display",
+                        text = stringResource(R.string.display_section_title),
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold
                     )
@@ -415,11 +415,11 @@ fun ThemeSettingsScreen(
                     if (showCustomDpiDialog) {
                         AlertDialog(
                             onDismissRequest = { showCustomDpiDialog = false },
-                            title = { Text("Set Custom DPI") },
+                            title = { Text(stringResource(R.string.set_custom_dpi)) },
                             text = {
                                 Column {
                                     Text(
-                                        text = "Enter a DPI value between 100 and 800:",
+                                        text = stringResource(R.string.custom_dpi_prompt),
                                         style = MaterialTheme.typography.bodyMedium,
                                         modifier = Modifier.padding(bottom = 16.dp)
                                     )
@@ -431,7 +431,7 @@ fun ThemeSettingsScreen(
                                                 customDpiText = newValue
                                             }
                                         },
-                                        label = { Text("DPI Value") },
+                                        label = { Text(stringResource(R.string.dpi_value)) },
                                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                                         singleLine = true,
                                         modifier = Modifier.fillMaxWidth()
@@ -455,7 +455,7 @@ fun ThemeSettingsScreen(
                                         dpiValue != null && dpiValue in 100..800
                                     }()
                                 ) {
-                                    Text("Set")
+                                    Text(stringResource(R.string.set))
                                 }
                             },
                             dismissButton = {
@@ -465,15 +465,15 @@ fun ThemeSettingsScreen(
                                         customDpiText = ""
                                     }
                                 ) {
-                                    Text("Cancel")
+                                    Text(stringResource(R.string.cancel))
                                 }
                             }
                         )
                     }
                     
                     CardRowContent(
-                        text = "DPI Actions",
-                        subtitle = "Reset, presets, or confirm changes",
+                        text = stringResource(R.string.dpi_actions),
+                        subtitle = stringResource(R.string.dpi_actions_summary),
                         icon = Icons.Filled.Settings
                     ) {
                         // Reset button with Clear icon
@@ -486,7 +486,7 @@ fun ThemeSettingsScreen(
                         ) {
                             Icon(
                                 imageVector = Icons.Filled.Clear,
-                                contentDescription = "Reset DPI",
+                                contentDescription = stringResource(R.string.reset_dpi),
                                 tint = Color.White
                             )
                         }
@@ -498,7 +498,7 @@ fun ThemeSettingsScreen(
                             ) {
                                 Icon(
                                     imageVector = Icons.Filled.Tune,
-                                    contentDescription = "DPI Presets",
+                                    contentDescription = stringResource(R.string.dpi_presets),
                                     tint = Color.White
                                 )
                             }
@@ -519,7 +519,7 @@ fun ThemeSettingsScreen(
                                     )
                                 }
                                 DropdownMenuItem(
-                                    text = { Text("Custom...") },
+                                    text = { Text(stringResource(R.string.custom_option)) },
                                     onClick = {
                                         customDpiText = tempDpi.toString()
                                         showCustomDpiDialog = true
@@ -539,7 +539,7 @@ fun ThemeSettingsScreen(
                         ) {
                             Icon(
                                 imageVector = Icons.Filled.Check,
-                                contentDescription = "Confirm DPI",
+                                contentDescription = stringResource(R.string.confirm_dpi),
                                 tint = Color.White
                             )
                         }
@@ -561,7 +561,7 @@ fun ThemeSelectionDialog(
         onDismissRequest = onDismiss,
         title = {
             Text(
-                text = "Theme Mode",
+                text = stringResource(R.string.theme_mode_dialog_title),
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.SemiBold
             )
@@ -596,7 +596,7 @@ fun ThemeSelectionDialog(
         confirmButton = {},
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancel")
+                Text(stringResource(R.string.cancel))
             }
         },
         containerColor = MaterialTheme.colorScheme.surfaceContainer,

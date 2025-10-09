@@ -180,7 +180,7 @@ fun FlashScreen(
                 logContent.append(it).append("\n")
             }).apply {
                 if (code != 0) {
-                    text += "Error code: $code.\n $err Please save and check the log.\n"
+                    text += context.getString(R.string.flash_error_message, code, err)
                 }
                 if (showReboot) {
                     text += "\n\n\n"
@@ -343,9 +343,9 @@ fun Uri.getFileName(context: Context): String {
         if (it.moveToFirst() && nameIndex != -1) {
             it.getString(nameIndex)
         } else {
-            this.lastPathSegment ?: "unknown.zip"
+            this.lastPathSegment ?: context.getString(R.string.unknown_file)
         }
-    } ?: (this.lastPathSegment ?: "unknown.zip")
+    } ?: (this.lastPathSegment ?: context.getString(R.string.unknown_file))
 }
 
 @Parcelize
