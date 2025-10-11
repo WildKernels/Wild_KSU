@@ -268,8 +268,8 @@
     <string name="home_screen_icon_style_summary">Změnit nebo vypnout styl ikon na domovské obrazovce</string>
     <string name="home_screen_icon_current">Nyní: %s</string>
     <string name="home_screen_icon_select_dialog_title">Vybrat styl ikon domovské obrazovky</string>
-    <string name="home_icon_select_dialog_hint_scroll">Scroll to see more icons</string>
-    <string name="home_icon_select_dialog_current_seasonal">Currently: %s</string>
+    <string name="home_icon_select_dialog_hint_scroll">Posunutím zobrazíte další ikony</string>
+    <string name="home_icon_select_dialog_current_seasonal">Aktuální: %s</string>
     <!-- System Info Card Settings -->
     <string name="system_info_card_settings">Nastavení panelu se systémovými informacemi</string>
     <string name="system_info_card_settings_summary">Upravit panel se systémovými informacemi a prvky domovské obrazovky</string>
@@ -280,8 +280,9 @@
     <string name="app_name_wild_ksu">Wild KSU</string>
     <!-- Home Settings Card Layout -->
     <string name="home_screen_settings">Domovská obrazovka &amp; panely</string>
-    <string name="home_layout_style">Home Layout Style</string>
-    <string name="home_layout_style_summary">Choose between Stock and MIUIX layouts. Current: %s</string>
+    <string name="home_layout_style">Styl domovské obrazovky</string>
+    <string name="home_layout_style_summary">Vyberte si mezi originálním a MIUIX rozvržením. 
+Aktuální: %s</string>
     <string name="home_layout_select_dialog_title">Select Home Layout</string>
     <string name="home_layout_select_dialog_default">Current default layout</string>
     <string name="home_layout_select_dialog_alt">Alternative layout style</string>
@@ -292,16 +293,16 @@
     <string name="individual_app_cards">Panel pro každou aplikaci</string>
     <string name="individual_app_cards_summary">Zobrazit aplikace v samostatných panelech místo v seznamu</string>
     <!-- Icon options -->
-    <string name="home_icon_option_off">Off</string>
-    <string name="home_icon_option_seasonal">Seasonal (Auto)</string>
-    <string name="home_icon_option_winter">Winter</string>
-    <string name="home_icon_option_spring">Spring</string>
-    <string name="home_icon_option_summer">Summer</string>
-    <string name="home_icon_option_fall">Fall</string>
+    <string name="home_icon_option_off">Vypnuto</string>
+    <string name="home_icon_option_seasonal">Dle období (automaticky)</string>
+    <string name="home_icon_option_winter">Zima</string>
+    <string name="home_icon_option_spring">Jaro</string>
+    <string name="home_icon_option_summer">Léto</string>
+    <string name="home_icon_option_fall">Podzim</string>
     <string name="home_icon_option_ksu_next">KSU Next</string>
-    <string name="home_icon_option_cannabis">Cannabis</string>
+    <string name="home_icon_option_cannabis">Konopí</string>
     <string name="home_icon_option_amogus">Amungus</string>
     <!-- Common actions/accessibility -->
-    <string name="action_done">Done</string>
-    <string name="accessibility_selected">Selected</string>
+    <string name="action_done">Hotovo</string>
+    <string name="accessibility_selected">Vybráno</string>
 </resources>
