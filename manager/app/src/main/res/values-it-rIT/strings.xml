@@ -268,8 +268,8 @@
     <string name="home_screen_icon_style_summary">Cambia lo stile dell\'icona della home o disattivala</string>
     <string name="home_screen_icon_current">Attuale: %s</string>
     <string name="home_screen_icon_select_dialog_title">Seleziona stile icona home</string>
-    <string name="home_icon_select_dialog_hint_scroll">Scroll to see more icons</string>
-    <string name="home_icon_select_dialog_current_seasonal">Currently: %s</string>
+    <string name="home_icon_select_dialog_hint_scroll">Scorri per vedere altre icone</string>
+    <string name="home_icon_select_dialog_current_seasonal">Attualmente: %s</string>
     <!-- System Info Card Settings -->
     <string name="system_info_card_settings">Impostazioni Scheda Info Sistema</string>
     <string name="system_info_card_settings_summary">Personalizza la visualizzazione delle informazioni di sistema e gli elementi della schermata principale</string>
@@ -280,11 +280,11 @@
     <string name="app_name_wild_ksu">Wild KSU</string>
     <!-- Home Settings Card Layout -->
     <string name="home_screen_settings">Home &amp; Schede</string>
-    <string name="home_layout_style">Home Layout Style</string>
-    <string name="home_layout_style_summary">Choose between Stock and MIUIX layouts. Current: %s</string>
-    <string name="home_layout_select_dialog_title">Select Home Layout</string>
-    <string name="home_layout_select_dialog_default">Current default layout</string>
-    <string name="home_layout_select_dialog_alt">Alternative layout style</string>
+    <string name="home_layout_style">Stile Layout Home</string>
+    <string name="home_layout_style_summary">Scegli tra layout Stock e MIUIX. Attuale: %s</string>
+    <string name="home_layout_select_dialog_title">Seleziona Layout Home</string>
+    <string name="home_layout_select_dialog_default">Layout predefinito attuale</string>
+    <string name="home_layout_select_dialog_alt">Stile layout alternativo</string>
     <string name="info_card_settings">Impostazioni Scheda Info</string>
     <string name="info_card_order_management">Gestione Ordine Scheda Info</string>
     <string name="info_card_order_description">Tocca per spostare gli elementi in alto/basso di una posizione, o premi a lungo per spostare in cima/fondo. Usa l\'interruttore per abilitare/disabilitare gli elementi.</string>
@@ -293,15 +293,15 @@
     <string name="individual_app_cards_summary">Mostra ogni app nella propria scheda invece che in un elenco</string>
     <!-- Icon options -->
     <string name="home_icon_option_off">Off</string>
-    <string name="home_icon_option_seasonal">Seasonal (Auto)</string>
-    <string name="home_icon_option_winter">Winter</string>
-    <string name="home_icon_option_spring">Spring</string>
-    <string name="home_icon_option_summer">Summer</string>
-    <string name="home_icon_option_fall">Fall</string>
+    <string name="home_icon_option_seasonal">Stagionale (Auto)</string>
+    <string name="home_icon_option_winter">Inverno</string>
+    <string name="home_icon_option_spring">Primavera</string>
+    <string name="home_icon_option_summer">Estate</string>
+    <string name="home_icon_option_fall">Autunno</string>
     <string name="home_icon_option_ksu_next">KSU Next</string>
     <string name="home_icon_option_cannabis">Cannabis</string>
     <string name="home_icon_option_amogus">Amungus</string>
     <!-- Common actions/accessibility -->
-    <string name="action_done">Done</string>
-    <string name="accessibility_selected">Selected</string>
+    <string name="action_done">Fatto</string>
+    <string name="accessibility_selected">Selezionato</string>
 </resources>
