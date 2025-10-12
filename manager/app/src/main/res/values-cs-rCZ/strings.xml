@@ -167,7 +167,7 @@
     <string name="module_changelog_failed">Načtení protokolu změn se nezdařilo: %s</string>
     <string name="settings_check_update">Zkontrolovat aktualizace</string>
     <string name="settings_check_update_summary">Automaticky kontrolovat aktualizace při otevření aplikace</string>
-    <string name="grant_root_failed">Udělení root se nezdařilo!</string>
+    <string name="grant_root_failed">Udělení root oprávnění se nezdařilo!</string>
     <string name="action">Akce</string>
     <string name="webui">WebUI</string>
     <string name="open">Otevřít</string>
@@ -197,7 +197,7 @@
     <string name="log_saved">Protokoly uloženy</string>
     <string name="send_log">Sdílet protokoly</string>
     <string name="settings_disable_su">Zakázat kompatibilitu su</string>
-    <string name="settings_disable_su_summary">Dočasně zakázat jakékoli aplikaci získat root oprávnění pomocí příkazu ⁠su (spuštěné root procesy nebudou ovlivněny).</string>
+    <string name="settings_disable_su_summary">Dočasně zakázat jakékoli aplikaci získat root oprávnění pomocí příkazu ⁠su (spuštěné procesy, které již root oprávnění mají, nebudou ovlivněny).</string>
     <string name="settings_language">Jazyk</string>
     <string name="system_default">Dle systému (výchozí)</string>
     <string name="settings_legacyui">Použít staré UI</string>
@@ -206,7 +206,7 @@
     <string name="settings_banner_summary">Zobrazit banery na pozadí modulů.</string>
     <string name="use_webuix">Použít WebUI X</string>
     <string name="use_webuix_summary">Místo WebUI použít WebUI X, které podporuje další API.</string>
-    <string name="use_webuix_eruda">Vstřikovat Erudu do WebUI X</string>
+    <string name="use_webuix_eruda">Vložit Erudu do WebUI X</string>
     <string name="use_webuix_eruda_summary">Vložit do WebUI X ladicí konzoli pro snazší ladění. Vyžaduje zapnuté webové ladění.</string>
     <string name="customization">Upravit</string>
     <string name="developer">Vývojář</string>
@@ -214,9 +214,9 @@
     <string name="theme_settings_summary">Přizpůsobit vzhled aplikace a upravit motiv</string>
     <string name="superuser_settings">Upravit obrazovku superuživatelů</string>
     <string name="superuser_settings_summary">Spravovat přístup a oprávnění superuživatele</string>
-    <string name="sucompat_disabled">SUCOMPAT vypnuto</string>
-    <string name="zygisk_required">Vyžaduje se Zygisk</string>
-    <string name="zygisk_status">Vstřikování Zygisku</string>
+    <string name="sucompat_disabled">SUCOMPAT VYPNUTO</string>
+    <string name="zygisk_required">Je vyžadován Zygisk</string>
+    <string name="zygisk_status">Vložení Zygisku</string>
     <string name="home_superuser_count_singular">Superuživatel</string>
     <string name="home_superuser_count_plural">Superuživatelů</string>
     <string name="home_module_count_singular">Modul</string>
@@ -247,7 +247,7 @@
     <string name="icon_theme_none_found">Balíček s ikonami nenalezen</string>
     <string name="app_dpi_title">Rozlišení DPI</string>
     <string name="app_dpi_summary">Změnit rozlišení (DPI) pro tuto aplikaci</string>
-    <string name="dpi_current">Aktuální ADI: %d</string>
+    <string name="dpi_current">Aktuální DPI: %d</string>
     <string name="dpi_system">Systémové DPI: %d</string>
     <string name="dpi_apply_settings">Použít nastavení</string>
     <string name="dpi_scale_settings">Změnit rozlišení</string>
@@ -286,9 +286,9 @@ Aktuální: %s</string>
     <string name="home_layout_select_dialog_title">Vybrat styl domovské obrazovky</string>
     <string name="home_layout_select_dialog_default">Aktuální výchozí styl</string>
     <string name="home_layout_select_dialog_alt">Alternativní styl</string>
-    <string name="info_card_settings">Nastavení informačního panelu</string>
-    <string name="info_card_order_management">Uspořádání informačního panelu</string>
-    <string name="info_card_order_description">Kliknutím přesunete položky nahoru/dolů o jednu pozici. Dlouhým stisknutím je přesunete nahoru/dolů. Pomocí přepínače je zobrazíte/skryjete.</string>
+    <string name="info_card_settings">Nastavení panelu se systémovými informacemi</string>
+    <string name="info_card_order_management">Uspořádání panelu se systémovými informacemi</string>
+    <string name="info_card_order_description">Kliknutím posunete položky nahoru/dolů o jednu pozici. Podržením je přesunete na první/poslední pozici. Pomocí přepínače je zobrazíte/skryjete.</string>
     <!-- Individual App Cards Settings -->
     <string name="individual_app_cards">Panel pro každou aplikaci</string>
     <string name="individual_app_cards_summary">Zobrazit aplikace v samostatných panelech místo v seznamu</string>
