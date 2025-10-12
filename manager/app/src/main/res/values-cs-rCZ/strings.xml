@@ -188,7 +188,7 @@
     <string name="settings_restore_stock_image">Obnovit tovární obraz</string>
     <string name="settings_uninstall_temporary_message">Dočasně odinstalovat Wild KSU, po restartu bude obnoveno původní nastavení. </string>
     <string name="settings_uninstall_permanent_message">Úplná a trvalá odinstalace Wild KSU (oprávnění root a všechny moduly).</string>
-    <string name="settings_restore_stock_image_message">Restore the stock factory image (If a backup exists), usually used before OTA; if you need to uninstall Wild KSU, please use \"Uninstall permanently\".</string>
+    <string name="settings_restore_stock_image_message">Obnovit tovární obraz (pokud záloha existuje), obvykle se používá před OTA; pokud potřebujete odinstalovat Wild KSU, použijte prosím možnost „Trvale odinstalovat“.</string>
     <string name="flashing">Instalace</string>
     <string name="flash_success">Instalace kompletní</string>
     <string name="flash_failed">Instalace se nezdařila</string>
@@ -197,7 +197,7 @@
     <string name="log_saved">Protokoly uloženy</string>
     <string name="send_log">Sdílet protokoly</string>
     <string name="settings_disable_su">Zakázat kompatibilitu su</string>
-    <string name="settings_disable_su_summary">Temporarily disable the ability of any app to gain root privileges via the ⁠su command (Existing root processes won\'t be affected).</string>
+    <string name="settings_disable_su_summary">Dočasně zakázat jakékoli aplikaci získat root oprávnění pomocí příkazu ⁠su (spuštěné root procesy nebudou ovlivněny).</string>
     <string name="settings_language">Jazyk</string>
     <string name="system_default">Dle systému (výchozí)</string>
     <string name="settings_legacyui">Použít staré UI</string>
@@ -207,7 +207,7 @@
     <string name="use_webuix">Použít WebUI X</string>
     <string name="use_webuix_summary">Místo WebUI použít WebUI X, které podporuje další API.</string>
     <string name="use_webuix_eruda">Vstřikovat Erudu do WebUI X</string>
-    <string name="use_webuix_eruda_summary">Inject a debug console into WebUI X to make debugging easier. Requires web debugging to be on.</string>
+    <string name="use_webuix_eruda_summary">Vložit do WebUI X ladicí konzoli pro snazší ladění. Vyžaduje zapnuté webové ladění.</string>
     <string name="customization">Upravit</string>
     <string name="developer">Vývojář</string>
     <string name="theme_settings">Nastavení vzhledu</string>
@@ -253,7 +253,7 @@
     <string name="dpi_scale_settings">Změnit rozlišení</string>
     <string name="dpi_scale_settings_summary">Změnit rozlišení (DPI) pro tuto aplikaci</string>
     <string name="dpi_change_settings">Změnit nastavení DPI</string>
-    <string name="dpi_dialog_description">Adjust the display density to change the size of UI elements. Higher values make elements smaller, lower values make them larger.</string>
+    <string name="dpi_dialog_description">Upravit rozlišení zobrazení pro změnu velikosti prvků uživatelského rozhraní. Vyšší hodnoty prvky zmenšují, nižší hodnoty je zvětšují.</string>
     <!-- InfoCard Customization -->
     <string name="info_card_customization">Upravit domovskou obrazovku</string>
     <string name="info_card_customization_summary">Upravit domovskou obrazovku, panel s kontakty a panel se systémovými informacemi</string>
