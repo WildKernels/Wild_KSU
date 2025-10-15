@@ -291,30 +291,97 @@ fun UpdateCard() {
     val uriHandler = LocalUriHandler.current
     val title = stringResource(id = R.string.module_changelog)
     val updateText = stringResource(id = R.string.module_update)
+    
+    var updateDialog by remember { mutableStateOf(false) }
+    var spoofedWarningDialog by remember { mutableStateOf(false) }
 
     AnimatedVisibility(
         visible = shouldShowUpdate,
         enter = fadeIn() + expandVertically(),
         exit = shrinkVertically() + fadeOut()
     ) {
-        val updateDialog = rememberConfirmDialog(onConfirm = { uriHandler.openUri(newVersionUrl) })
         val message = stringResource(id = R.string.new_version_available).format(newVersionCode)
         
         WarningCard(
             message = message,
             MaterialTheme.colorScheme.outlineVariant
         ) {
-            if (changelog.isEmpty()) {
-                uriHandler.openUri(newVersionUrl)
-            } else {
-                updateDialog.showConfirm(
-                    title = title,
-                    content = changelog,
-                    markdown = true,
-                    confirm = updateText
-                )
-            }
+            updateDialog = true
         }
+    }
+    
+    if (updateDialog) {
+        AlertDialog(
+            onDismissRequest = { updateDialog = false },
+            title = { Text(title) },
+            text = {
+                LazyColumn {
+                    item {
+                        Text(
+                            text = if (changelog.isNotEmpty()) changelog else "New version $newVersionCode is available!",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        updateDialog = false
+                        if (isCurrentSpoofed) {
+                            spoofedWarningDialog = true
+                        } else {
+                            uriHandler.openUri(newVersionUrl)
+                        }
+                    }
+                ) {
+                    Text(updateText)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { updateDialog = false }) {
+                    Text(stringResource(id = R.string.cancel))
+                }
+            }
+        )
+    }
+
+    if (spoofedWarningDialog) {
+        AlertDialog(
+            onDismissRequest = { spoofedWarningDialog = false },
+            title = { Text(stringResource(id = R.string.spoofed_update_warning_title)) },
+            text = { Text(stringResource(id = R.string.spoofed_update_warning_message)) },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        spoofedWarningDialog = false
+                        // Try to redirect to app uninstall
+                        try {
+                            val intent = Intent(Intent.ACTION_DELETE).apply {
+                                data = Uri.parse("package:com.rifsxd.ksunext")
+                            }
+                            context.startActivity(intent)
+                        } catch (e: Exception) {
+                            // If uninstall intent fails, just proceed with download
+                            uriHandler.openUri(newVersionUrl)
+                        }
+                    }
+                ) {
+                    Text(stringResource(id = R.string.spoofed_update_uninstall_button))
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        spoofedWarningDialog = false
+                        // Skip uninstall and go directly to download
+                        uriHandler.openUri(newVersionUrl)
+                    }
+                ) {
+                    Text(stringResource(id = R.string.spoofed_update_download_button))
+                }
+            }
+        )
     }
 }
 

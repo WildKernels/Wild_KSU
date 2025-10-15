@@ -248,6 +248,11 @@
     <string name="icon_theme_summary">Choose an icon pack for superuser app icons</string>
     <string name="icon_theme_default">System default</string>
     <string name="icon_theme_none_found">No icon packs found</string>
+    <string name="spoofed_update_warning_title">Update Required</string>
+    <string name="spoofed_update_warning_message">To update to the new version, please first uninstall the current spoofed version, then download and install the new version.</string>
+    <string name="spoofed_update_uninstall_button">Uninstall Current Version</string>
+    <string name="spoofed_update_download_button">Download New Version</string>
+</resources>
     <string name="app_dpi_title">DPI Scale</string>
     <string name="app_dpi_summary">Adjust the display density (DPI) of the app interface</string>
     <string name="dpi_current">Current DPI: %d</string>
