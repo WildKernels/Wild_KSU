@@ -252,7 +252,7 @@
     <string name="spoofed_update_warning_message">To update to the new version, please first uninstall the current spoofed version, then download and install the new version.</string>
     <string name="spoofed_update_uninstall_button">Uninstall Current Version</string>
     <string name="spoofed_update_download_button">Download New Version</string>
-</resources>
+    
     <string name="app_dpi_title">DPI Scale</string>
     <string name="app_dpi_summary">Adjust the display density (DPI) of the app interface</string>
     <string name="dpi_current">Current DPI: %d</string>
