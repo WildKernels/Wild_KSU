@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="issue_report_title">Gặp sự cố à?</string>
-    <string name="issue_report_body">Bạn gặp lỗi hay muốn góp ý?</string>
+    <string name="issue_report_title">Gặp rắc rối à?</string>
+    <string name="issue_report_body">Gặp lỗi hay muốn phản hồi?</string>
     <string name="issue_report_body_2">Báo lỗi hoặc góp ý nhanh nhất có thể!</string>
     <string name="issue_report_github">Báo lỗi trên Github</string>
     <string name="issue_report_telegram">Liên hệ qua Telegram</string>
@@ -301,6 +301,10 @@
     <string name="home_icon_option_ksu_next">KSU Next</string>
     <string name="home_icon_option_cannabis">Cannabis</string>
     <string name="home_icon_option_amogus">Amungus</string>
+    <!-- Home Layout Options -->
+    <string name="home_layout_option_stock">Stock</string>
+    <string name="home_layout_option_miui_square">MIUI Square</string>
+    <string name="home_layout_option_miui_rectangle">MIUI Rectangle</string>
     <!-- Common actions/accessibility -->
     <string name="action_done">Done</string>
     <string name="accessibility_selected">Selected</string>
