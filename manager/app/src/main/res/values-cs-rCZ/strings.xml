@@ -186,15 +186,15 @@
     <string name="settings_uninstall_temporary">Dočasně odinstalovat</string>
     <string name="settings_uninstall_permanent">Trvale odinstalovat</string>
     <string name="settings_restore_stock_image">Obnovit tovární obraz</string>
-    <string name="settings_uninstall_temporary_message">Dočasně odinstalovat Wild KSU, po restartu bude obnoveno původní nastavení. </string>
+    <string name="settings_uninstall_temporary_message">Dočasně odinstalovat Wild KSU, po restartu bude obnoveno původní nastavení.</string>
     <string name="settings_uninstall_permanent_message">Úplná a trvalá odinstalace Wild KSU (oprávnění root a všechny moduly).</string>
     <string name="settings_restore_stock_image_message">Obnovit tovární obraz (pokud záloha existuje), obvykle se používá před OTA; pokud potřebujete odinstalovat Wild KSU, použijte prosím možnost „Trvale odinstalovat“.</string>
     <string name="flashing">Instalace</string>
-    <string name="flash_success">Instalace kompletní</string>
+    <string name="flash_success">Instalace je kompletní</string>
     <string name="flash_failed">Instalace se nezdařila</string>
     <string name="selected_lkm">Vybráno LKM: %s</string>
     <string name="save_log">Uložit protokoly</string>
-    <string name="log_saved">Protokoly uloženy</string>
+    <string name="log_saved">Protokoly byly uloženy</string>
     <string name="send_log">Sdílet protokoly</string>
     <string name="settings_disable_su">Zakázat kompatibilitu su</string>
     <string name="settings_disable_su_summary">Dočasně zakázat jakékoli aplikaci získat root oprávnění pomocí příkazu ⁠su (spuštěné procesy, které již root oprávnění mají, nebudou ovlivněny).</string>
@@ -202,12 +202,12 @@
     <string name="system_default">Dle systému (výchozí)</string>
     <string name="settings_legacyui">Použít staré UI</string>
     <string name="settings_legacyui_summary">Přepnout na předchozí styl uživatelského rozhraní.</string>
-    <string name="settings_banner">Povolit banery</string>
-    <string name="settings_banner_summary">Zobrazit banery na pozadí modulů.</string>
+    <string name="settings_banner">Povolit plakáty</string>
+    <string name="settings_banner_summary">Zobrazit plakáty na pozadí modulů.</string>
     <string name="use_webuix">Použít WebUI X</string>
     <string name="use_webuix_summary">Místo WebUI použít WebUI X, které podporuje další API.</string>
-    <string name="use_webuix_eruda">Vložit Erudu do WebUI X</string>
-    <string name="use_webuix_eruda_summary">Vložit do WebUI X ladicí konzoli pro snazší ladění. Vyžaduje zapnuté webové ladění.</string>
+    <string name="use_webuix_eruda">Vstříknout Erudu do WebUI X</string>
+    <string name="use_webuix_eruda_summary">Pro snazší ladění vstříknout ladicí konzoli do WebUI X. Je vyžadováno zapnuté webové ladění.</string>
     <string name="customization">Upravit</string>
     <string name="developer">Vývojář</string>
     <string name="theme_settings">Nastavení vzhledu</string>
@@ -216,7 +216,7 @@
     <string name="superuser_settings_summary">Spravovat přístup a oprávnění superuživatele</string>
     <string name="sucompat_disabled">SUCOMPAT VYPNUTO</string>
     <string name="zygisk_required">Je vyžadován Zygisk</string>
-    <string name="zygisk_status">Vložení Zygisku</string>
+    <string name="zygisk_status">Vstřikování Zygisku</string>
     <string name="home_superuser_count_singular">Superuživatel</string>
     <string name="home_superuser_count_plural">Superuživatelů</string>
     <string name="home_module_count_singular">Modul</string>
@@ -302,6 +302,10 @@ Aktuální: %s</string>
     <string name="home_icon_option_ksu_next">KSU Next</string>
     <string name="home_icon_option_cannabis">Konopí</string>
     <string name="home_icon_option_amogus">Amungus</string>
+    <!-- Home Layout Options -->
+    <string name="home_layout_option_stock">Stock</string>
+    <string name="home_layout_option_miui_square">MIUI Square</string>
+    <string name="home_layout_option_miui_rectangle">MIUI Rectangle</string>
     <!-- Common actions/accessibility -->
     <string name="action_done">Hotovo</string>
     <string name="accessibility_selected">Vybráno</string>
