@@ -301,6 +301,10 @@
     <string name="home_icon_option_ksu_next">KSU Next</string>
     <string name="home_icon_option_cannabis">Cannabis</string>
     <string name="home_icon_option_amogus">Amungus</string>
+    <!-- Home Layout Options -->
+    <string name="home_layout_option_stock">Stock</string>
+    <string name="home_layout_option_miui_square">MIUI Square</string>
+    <string name="home_layout_option_miui_rectangle">MIUI Rectangle</string>
     <!-- Common actions/accessibility -->
     <string name="action_done">Fatto</string>
     <string name="accessibility_selected">Selezionato</string>
