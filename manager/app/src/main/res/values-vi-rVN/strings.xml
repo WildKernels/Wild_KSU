@@ -268,8 +268,8 @@
     <string name="home_screen_icon_style_summary">Thay đổi kiểu biểu tượng màn hình chính hoặc tắt nó đi</string>
     <string name="home_screen_icon_current">Hiện tại: %s</string>
     <string name="home_screen_icon_select_dialog_title">Chọn kiểu biểu tượng màn hình chính</string>
-    <string name="home_icon_select_dialog_hint_scroll">Scroll to see more icons</string>
-    <string name="home_icon_select_dialog_current_seasonal">Currently: %s</string>
+    <string name="home_icon_select_dialog_hint_scroll">Cuộn để xem thêm biểu tượng</string>
+    <string name="home_icon_select_dialog_current_seasonal">Hiện tại: %s</string>
     <!-- System Info Card Settings -->
     <string name="system_info_card_settings">Cài đặt thẻ thông tin hệ thống</string>
     <string name="system_info_card_settings_summary">Tùy chỉnh hiển thị thông tin hệ thống và các thành phần màn hình chính</string>
@@ -280,11 +280,11 @@
     <string name="app_name_wild_ksu">Wild KSU</string>
     <!-- Home Settings Card Layout -->
     <string name="home_screen_settings">Trang chủ &amp; Thẻ</string>
-    <string name="home_layout_style">Home Layout Style</string>
-    <string name="home_layout_style_summary">Choose between Stock and MIUIX layouts. Current: %s</string>
-    <string name="home_layout_select_dialog_title">Select Home Layout</string>
-    <string name="home_layout_select_dialog_default">Current default layout</string>
-    <string name="home_layout_select_dialog_alt">Alternative layout style</string>
+    <string name="home_layout_style">Kiểu bố cục trang chủ</string>
+    <string name="home_layout_style_summary">Chọn giữa bố cục Stock và MIUIX. Hiện tại: %s</string>
+    <string name="home_layout_select_dialog_title">Chọn bố cục trang chủ</string>
+    <string name="home_layout_select_dialog_default">Bố cục mặc định hiện tại</string>
+    <string name="home_layout_select_dialog_alt">Kiểu bố cục thay thế</string>
     <string name="info_card_settings">Cài đặt thẻ thông tin</string>
     <string name="info_card_order_management">Quản lý thứ tự thẻ thông tin</string>
     <string name="info_card_order_description">Chạm để di chuyển mục lên/xuống một vị trí, hoặc nhấn giữ để di chuyển lên đầu/xuống cuối. Sử dụng công tắc để bật/tắt mục.</string>
@@ -292,20 +292,20 @@
     <string name="individual_app_cards">Thẻ ứng dụng cá nhân</string>
     <string name="individual_app_cards_summary">Hiện mỗi ứng dụng trong thẻ riêng thay vì danh sách</string>
     <!-- Icon options -->
-    <string name="home_icon_option_off">Off</string>
-    <string name="home_icon_option_seasonal">Seasonal (Auto)</string>
-    <string name="home_icon_option_winter">Winter</string>
-    <string name="home_icon_option_spring">Spring</string>
-    <string name="home_icon_option_summer">Summer</string>
-    <string name="home_icon_option_fall">Fall</string>
+    <string name="home_icon_option_off">Tắt</string>
+    <string name="home_icon_option_seasonal">Theo mùa (Tự động)</string>
+    <string name="home_icon_option_winter">Mùa đông</string>
+    <string name="home_icon_option_spring">Mùa xuân</string>
+    <string name="home_icon_option_summer">Mùa hè</string>
+    <string name="home_icon_option_fall">Mùa thu</string>
     <string name="home_icon_option_ksu_next">KSU Next</string>
-    <string name="home_icon_option_cannabis">Cannabis</string>
+    <string name="home_icon_option_cannabis">Cần sa</string>
     <string name="home_icon_option_amogus">Amungus</string>
     <!-- Home Layout Options -->
-    <string name="home_layout_option_stock">Stock</string>
-    <string name="home_layout_option_miui_square">MIUI Square</string>
-    <string name="home_layout_option_miui_rectangle">MIUI Rectangle</string>
+    <string name="home_layout_option_stock">Gốc</string>
+    <string name="home_layout_option_miui_square">MIUI Hình vuông</string>
+    <string name="home_layout_option_miui_rectangle">MIUI Hình chữ nhật</string>
     <!-- Common actions/accessibility -->
-    <string name="action_done">Done</string>
-    <string name="accessibility_selected">Selected</string>
+    <string name="action_done">Đã xong</string>
+    <string name="accessibility_selected">Đã chọn</string>
 </resources>
