@@ -304,7 +304,7 @@ Aktuální: %s</string>
     <string name="home_icon_option_amogus">Amungus</string>
     <!-- Home Layout Options -->
     <string name="home_layout_option_stock">Originální</string>
-    <string name="home_layout_option_miui_square">Čtverec MIUI</string>
+    <string name="home_layout_option_miui_square">MIUI čtverec</string>
     <string name="home_layout_option_miui_rectangle">Obdélník MIUI</string>
     <!-- Common actions/accessibility -->
     <string name="action_done">Hotovo</string>
