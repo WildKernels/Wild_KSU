@@ -656,7 +656,7 @@ checksum = "7f24254aa9a54b5c858eaee2f5bccdb46aaf0e486a595ed5fd8f86ba55232a70"
 [[package]]
 name = "hole-punch"
 version = "0.0.4-alpha.0"
-source = "git+https://github.com/KernelSU-Next/hole-punch#b010cde4b07ba197988c1525f6bb584e7a9b31de"
+source = "git+https://github.com/WildKernels/hole-punch#b010cde4b07ba197988c1525f6bb584e7a9b31de"
 dependencies = [
  "cfg-if 0.1.10",
  "errno 0.2.8",
@@ -892,7 +892,7 @@ checksum = "13dc2df351e3202783a1fe0d44375f7295ffb4049267b0f3018346dc122a1d94"
 [[package]]
 name = "loopdev"
 version = "0.5.0"
-source = "git+https://github.com/KernelSU-Next/loopdev#4728e97f59739dddbba47ac91d044ddf512c982d"
+source = "git+https://github.com/WildKernels/loopdev#4728e97f59739dddbba47ac91d044ddf512c982d"
 dependencies = [
  "errno 0.2.8",
  "libc",
@@ -1132,7 +1132,7 @@ checksum = "989e6739f80c4ad5b13e0fd7fe89531180375b18520cc8c82080e4dc4035b84f"
 [[package]]
 name = "rustix"
 version = "0.38.34"
-source = "git+https://github.com/KernelSU-Next/rustix.git?branch=main#4a53fbc7cb7a07cabe87125cc21dbc27db316259"
+source = "git+https://github.com/WildKernels/rustix.git?branch=main#4a53fbc7cb7a07cabe87125cc21dbc27db316259"
 dependencies = [
  "bitflags 2.9.1",
  "errno 0.3.12",
@@ -1397,11 +1397,20 @@ dependencies = [
 
 [[package]]
 name = "wasi"
-version = "0.14.2+wasi-0.2.4"
+version = "0.14.7+wasi-0.2.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9683f9a5a998d873c0d21fcbe3c083009670149a8fab228644b8bd36b2c48cb3"
+checksum = "883478de20367e224c0090af9cf5f9fa85bed63a95c1abf3afc5c083ebc06e8c"
 dependencies = [
- "wit-bindgen-rt",
+ "wasip2",
+]
+
+[[package]]
+name = "wasip2"
+version = "1.0.1+wasi-0.2.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0562428422c63773dad2c345a1882263bbf4d65cf3f42e90921f787ef5ad58e7"
+dependencies = [
+ "wit-bindgen",
 ]
 
 [[package]]
@@ -1652,13 +1661,10 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d135d17ab770252ad95e9a872d365cf3090e3be864a34ab46f48555993efc904"
 
 [[package]]
-name = "wit-bindgen-rt"
-version = "0.39.0"
+name = "wit-bindgen"
+version = "0.46.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6f42320e61fe2cfd34354ecb597f86f413484a798ba44a8ca1165c58d42da6c1"
-dependencies = [
- "bitflags 2.9.1",
-]
+checksum = "f17a85883d4e6d00e8a97c586de764dabcc06133f7f1d55dce5cdc070ad7fe59"
 
 [[package]]
 name = "xz2"
