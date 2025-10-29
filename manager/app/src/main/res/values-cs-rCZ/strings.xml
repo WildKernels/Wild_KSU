@@ -60,10 +60,10 @@
     <string name="reboot_edl">Restartovat do: EDL</string>
     <string name="about">O projektu</string>
     <string name="module_uninstall_confirm">Opravdu chcete odinstalovat modul %s?</string>
-    <string name="module_uninstall_success">%s odinstalován</string>
+    <string name="module_uninstall_success">%s byl odinstalován</string>
     <string name="module_uninstall_failed">Chyba při odinstalaci: %s</string>
     <string name="module_restore_confirm">Opravdu chcete obnovit modul %s?</string>
-    <string name="module_restore_success">%s obnoven</string>
+    <string name="module_restore_success">%s byl obnoven</string>
     <string name="module_restore_failed">Chyba při obnovení: %s</string>
     <string name="module_version">Verze</string>
     <string name="module_author">Autor</string>
