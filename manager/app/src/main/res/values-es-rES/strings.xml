@@ -268,28 +268,43 @@
     <string name="home_screen_icon_style_summary">Cambiar el estilo del icono de la pantalla de inicio o apagarlo</string>
     <string name="home_screen_icon_current">Actualmente: %s</string>
     <string name="home_screen_icon_select_dialog_title">Seleccionar estilo de icono de pantalla de inicio</string>
+    <string name="home_icon_select_dialog_hint_scroll">Scroll to see more icons</string>
+    <string name="home_icon_select_dialog_current_seasonal">Currently: %s</string>
     <!-- System Info Card Settings -->
     <string name="system_info_card_settings">Configuración de la tarjeta de información del sistema</string>
     <string name="system_info_card_settings_summary">Personalizar pantalla de información del sistema y elementos de pantalla de inicio</string>
     <!-- Module Settings Customization -->
     <string name="module_card_customization">Configuración del Módulo</string>
     <string name="module_card_customization_summary">Configurar el comportamiento del módulo, ordenar y mostrar opciones</string>
-    <!-- App Name Customization -->
-    <string name="app_name_customization">Nombre de app</string>
-    <string name="app_name_customization_summary">Cambiar el nombre de la aplicación mostrado en la interfaz</string>
-    <string name="app_name_kernelsu_next">Siguiente KernelSU</string>
+    <!-- App Names -->
     <string name="app_name_wild_ksu">Wild KSU</string>
-    <string name="app_name_custom">Personalizado</string>
-    <string name="app_name_custom_hint">Introduce el nombre de la aplicación personalizada</string>
-    <string name="app_name_dialog_title">Seleccionar nombre de aplicación</string>
-    <string name="app_name_custom_dialog_title">Nombres de apps personalizados</string>
-    <string name="app_name_custom_dialog_message">Introduce el nombre de tu aplicación personalizada (máximo 20 caracteres)</string>
     <!-- Home Settings Card Layout -->
     <string name="home_screen_settings">Tarjetas &amp; Home</string>
+    <string name="home_layout_style">Home Layout Style</string>
+    <string name="home_layout_style_summary">Choose between Stock and MIUIX layouts. Current: %s</string>
+    <string name="home_layout_select_dialog_title">Select Home Layout</string>
+    <string name="home_layout_select_dialog_default">Current default layout</string>
+    <string name="home_layout_select_dialog_alt">Alternative layout style</string>
     <string name="info_card_settings">Ajustes de la tarjeta de información</string>
     <string name="info_card_order_management">Gestión de Tarjetas de Información</string>
     <string name="info_card_order_description">Toca para mover los elementos hacia arriba/abajo una posición, o pulsación larga para mover hacia arriba/abajo. Usa el interruptor para activar/desactivar los elementos.</string>
     <!-- Individual App Cards Settings -->
     <string name="individual_app_cards">Tarjetas de aplicación individuales</string>
     <string name="individual_app_cards_summary">Mostrar cada aplicación en su propia tarjeta en lugar de una lista</string>
+    <!-- Icon options -->
+    <string name="home_icon_option_off">Off</string>
+    <string name="home_icon_option_seasonal">Seasonal (Auto)</string>
+    <string name="home_icon_option_winter">Winter</string>
+    <string name="home_icon_option_spring">Spring</string>
+    <string name="home_icon_option_summer">Summer</string>
+    <string name="home_icon_option_fall">Fall</string>
+    <string name="home_icon_option_ksu_next">KSU Next</string>
+    <string name="home_icon_option_cannabis">Cannabis</string>
+    <string name="home_icon_option_amogus">Amungus</string>
+    <!-- Home Layout Options -->
+    <string name="home_layout_option_stock">Stock</string>
+    <string name="home_layout_option_miui_square">Square ✓</string>
+    <!-- Common actions/accessibility -->
+    <string name="action_done">Done</string>
+    <string name="accessibility_selected">Selected</string>
 </resources>
