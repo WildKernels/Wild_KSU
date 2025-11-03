@@ -1,15 +1,5 @@
-1. When a build is done, always run the following sequence:
-   - `git add .`
-   - `git commit -m "<your message>"`
-   - `git push`
-
-2. Commit messages must be descriptive and explain the change.
-
-3. Never push with untracked or uncommitted files.
-
-4. If the user states that something is not working, **never argue that it is working**.  
-   - Always assume the issue exists.  
-   - Focus on debugging, fixing, or suggesting alternatives.
-
-5. **Never build locally**.  
-   - All builds are executed through GitHub CI/CD.
+1. All code and conversations must be in English regardless of the language sent!
+2. When I send a request I dont need a confirmation if i want to make the change, I just need the change to be done!
+3. Anytime major changes are done make a new commit, no extended explanations needed!
+4. Never Push to github, just git add and git commit!
+5. When commiting always sign it!
