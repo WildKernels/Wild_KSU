@@ -270,28 +270,43 @@
     <string name="home_screen_icon_style_summary">Verander de Pictogramstijl van het beginscherm of schakel deze uit</string>
     <string name="home_screen_icon_current">Huidig: %s</string>
     <string name="home_screen_icon_select_dialog_title">Startpagina Icoonstijl selecteren</string>
+    <string name="home_icon_select_dialog_hint_scroll">Scroll to see more icons</string>
+    <string name="home_icon_select_dialog_current_seasonal">Currently: %s</string>
     <!-- System Info Card Settings -->
     <string name="system_info_card_settings">Systeeminformatiekaartinstellingen</string>
     <string name="system_info_card_settings_summary">Pas de Weergave van Systeeminformatie en Startschermelementen aan</string>
     <!-- Module Settings Customization -->
     <string name="module_card_customization">Module-Instellingen</string>
     <string name="module_card_customization_summary">Configureer Modulegedrag, sortering en Weergaveopties</string>
-    <!-- App Name Customization -->
-    <string name="app_name_customization">App-Naam</string>
-    <string name="app_name_customization_summary">Wijzig de App-Naam die wordt Weergegeven in de Interface</string>
-    <string name="app_name_kernelsu_next">KernelSU Next</string>
+    <!-- App Names -->
     <string name="app_name_wild_ksu">Wild KSU</string>
-    <string name="app_name_custom">Aangepast</string>
-    <string name="app_name_custom_hint">Voer aangepaste App-Naam in</string>
-    <string name="app_name_dialog_title">App-Naam selecteren</string>
-    <string name="app_name_custom_dialog_title">Aangepaste App-Naam</string>
-    <string name="app_name_custom_dialog_message">Voer uw aangepaste App-Naam in (maximaal 20 Tekens)</string>
     <!-- Home Settings Card Layout -->
     <string name="home_screen_settings">Thuis &amp; Kaarten</string>
+    <string name="home_layout_style">Home Layout Style</string>
+    <string name="home_layout_style_summary">Choose between Stock and MIUIX layouts. Current: %s</string>
+    <string name="home_layout_select_dialog_title">Select Home Layout</string>
+    <string name="home_layout_select_dialog_default">Current default layout</string>
+    <string name="home_layout_select_dialog_alt">Alternative layout style</string>
     <string name="info_card_settings">Informatiekaartinstellingen</string>
     <string name="info_card_order_management">Informatiekaart Orderbeheer</string>
     <string name="info_card_order_description">Tik om items één positie omhoog/omlaag te verplaatsen, of houd ingedrukt om naar boven/onder te verplaatsen. Gebruik de schakelaar om items in/uit te schakelen.</string>
     <!-- Individual App Cards Settings -->
     <string name="individual_app_cards">Individuele App-Kaarten</string>
     <string name="individual_app_cards_summary">Toon elke App in een eigen Kaart in plaats van een Lijst</string>
+    <!-- Icon options -->
+    <string name="home_icon_option_off">Off</string>
+    <string name="home_icon_option_seasonal">Seasonal (Auto)</string>
+    <string name="home_icon_option_winter">Winter</string>
+    <string name="home_icon_option_spring">Spring</string>
+    <string name="home_icon_option_summer">Summer</string>
+    <string name="home_icon_option_fall">Fall</string>
+    <string name="home_icon_option_ksu_next">KSU Next</string>
+    <string name="home_icon_option_cannabis">Cannabis</string>
+    <string name="home_icon_option_amogus">Amungus</string>
+    <!-- Home Layout Options -->
+    <string name="home_layout_option_stock">Stock</string>
+    <string name="home_layout_option_miui_square">Square ✓</string>
+    <!-- Common actions/accessibility -->
+    <string name="action_done">Done</string>
+    <string name="accessibility_selected">Selected</string>
 </resources>
