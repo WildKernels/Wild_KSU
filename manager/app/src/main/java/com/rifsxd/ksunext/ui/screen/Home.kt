@@ -1167,6 +1167,7 @@ fun SquareStatusCard(
             }
         }
     }
+    } // Close BoxWithConstraints
 }
 
 fun getManagerVersion(context: Context): Pair<String, Long> {
@@ -1177,7 +1178,7 @@ fun getManagerVersion(context: Context): Pair<String, Long> {
 
 @Preview
 @Composable
-private fun StatusCardPreview() {
+fun StatusCardPreview() {
     Column {
         StatusCard(KernelVersion(5, 10, 101), 1, null)
         StatusCard(KernelVersion(5, 10, 101), 20000, true)
@@ -1188,7 +1189,7 @@ private fun StatusCardPreview() {
 
 @Preview
 @Composable
-private fun WarningCardPreview() {
+fun WarningCardPreview() {
     Column {
         WarningCard(message = "Warning message")
         WarningCard(
