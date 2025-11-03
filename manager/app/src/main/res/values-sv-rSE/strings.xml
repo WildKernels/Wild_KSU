@@ -5,31 +5,31 @@
     <string name="issue_report_body_2">Report it as soon as possible!</string>
     <string name="issue_report_github">Report on GitHub</string>
     <string name="issue_report_telegram">Contact via Telegram</string>
-    <string name="issue_report_github_link">https://github.com/WildKernels/Wild_KSU/issues</string>
-    <string name="issue_report_telegram_link">https://t.me/Wild_Kernels/2</string>
+    <string name="issue_report_github_link">https://github.com/KernelSU-Next/KernelSU-Next/issues</string>
+    <string name="issue_report_telegram_link">https://t.me/ksunext</string>
     <string name="confirm">Confirm</string>
     <string name="home">Home</string>
     <string name="home_not_installed">Not installed</string>
     <string name="home_click_to_install">Click to install</string>
     <string name="lkm_mode_deprecated">LKM mode is now deprecated!</string>
-    <string name="lkm_alternative_suggestion">Install GKI kernel or integrate Wild KSU to your device.</string>
+    <string name="lkm_alternative_suggestion">Install GKI kernel or integrate KernelSU Next to your device.</string>
     <string name="home_working">Working</string>
-    <string name="home_working_version">Version: %d</string>
+    <string name="home_working_version">Version: %s (%d)</string>
     <string name="home_module_update_count">Updates: %d</string>
-    <string name="home_failure">Wild KSU v2 signature not found in kernel! [ !KSU_NEXT || != size/hash ]</string>
-    <string name="home_failure_tip">Ask your kernel developer to integrate Wild KSU!</string>
-    <string name="home_kernel">Kernel Version</string>
-    <string name="hook_mode">Hook Mode</string>
+    <string name="home_failure">KernelSU Next v2 signature not found in kernel! [ !KSU_NEXT || != size/hash ]</string>
+    <string name="home_failure_tip">Ask your kernel developer to integrate KernelSU Next!</string>
+    <string name="home_kernel">Kernel version</string>
+    <string name="hook_mode">Hook mode</string>
     <string name="enable">Enable</string>
     <string name="disable">Disable</string>
     <string name="enabled">Enabled</string>
     <string name="disabled">Disabled</string>
     <string name="susfs_supported">Supported</string>
     <string name="home_susfs">SuSFS: %s</string>
-    <string name="home_susfs_version">SuSFS Version</string>
+    <string name="home_susfs_version">SuSFS version</string>
     <string name="home_susfs_sus_su">SuS SU</string>
-    <string name="home_android">Android Version</string>
-    <string name="home_manager_version">Manager Version</string>
+    <string name="home_android">Android version</string>
+    <string name="home_manager_version">Manager version</string>
     <string name="home_abi">ABI</string>
     <string name="home_selinux_status">SELinux status</string>
     <string name="selinux_status_disabled">Disabled</string>
@@ -81,12 +81,12 @@
     <string name="safe_mode">Safe mode</string>
     <string name="reboot_to_apply">Reboot to take effect</string>
     <string name="module_magisk_conflict">Modules are unavailable due to a conflict with Magisk!</string>
-    <string name="home_mount_system">Mount System</string>
+    <string name="home_mount_system">Mount system</string>
     <string name="home_magic_mount">Magic Mount</string>
     <string name="home_overlayfs_mount">OverlayFS</string>
     <string name="unavailable">Unavailable</string>
     <string name="use_overlay_fs">Use OverlayFS</string>
-    <string name="use_overlay_fs_summary">Toggle between using OverlayFS over Magic Mount for Wild KSU\'s mount system.</string>
+    <string name="use_overlay_fs_summary">Toggle between using OverlayFS over Magic Mount for KernelSU Next\'s mount system.</string>
     <string name="reboot_required">Reboot required</string>
     <string name="reboot_message">The changes will take effect after the system restart. Do you want to reboot now?</string>
     <string name="module_restore">Restore module</string>
@@ -118,12 +118,12 @@
     <string name="profile_selinux_context">SELinux context</string>
     <string name="profile_umount_modules">Umount modules</string>
     <string name="failed_to_update_app_profile">Failed to update App Profile for %s</string>
-    <string name="require_kernel_version">The current Wild KSU version %1$d is too low for the manager to work properly. Please upgrade to version %2$d or higher!</string>
+    <string name="require_kernel_version">The current KernelSU Next version %1$d is too low for the manager to work properly. Please upgrade to version %2$d or higher!</string>
     <string name="settings_umount_modules_default">Umount modules</string>
     <string name="settings_umount_modules_default_summary">The global default value for \"Umount modules\" in App Profile. If enabled, it will remove all module modifications to the system for apps that don\'t have a profile set.</string>
     <string name="settings_susfs_toggle">Hide kprobes hook</string>
     <string name="settings_susfs_toggle_summary">This option disables the kprobes hook created by ksu and, instead, activates the embedded non-kprobes hook, implementing the same functionality that would be applied to a non-GKI kernel, which doesn\'t support kprobe.</string>
-    <string name="profile_umount_modules_summary">Enabling this option will allow Wild KSU to restore any modified files by the modules for this app.</string>
+    <string name="profile_umount_modules_summary">Enabling this option will allow KernelSU Next to restore any modified files by the modules for this app.</string>
     <string name="profile_selinux_domain">Domain</string>
     <string name="profile_selinux_rules">Rules</string>
     <string name="module_update">Update</string>
@@ -181,14 +181,14 @@
     <string name="select_file_tip">%1$s partition image is recommended</string>
     <string name="select_kmi">Select KMI</string>
     <string name="shrink_sparse_image">Minimize sparse image</string>
-    <string name="shrink_sparse_image_message">Resize the sparse image where the module is located to its actual size. Note that this may cause the module to work abnormally, so please only use when necessary (Such as for backup).</string>
+    <string name="shrink_sparse_image_message">Resize the sparse image where the module is located to its actual size. Note that this may cause the module to work abnormally, so please only use when necessary (such as for backup).</string>
     <string name="settings_uninstall">Uninstall</string>
     <string name="settings_uninstall_temporary">Uninstall temporarily</string>
     <string name="settings_uninstall_permanent">Uninstall permanently</string>
     <string name="settings_restore_stock_image">Restore stock image</string>
-    <string name="settings_uninstall_temporary_message">Temporarily uninstall Wild KSU, restore to original state after next reboot.</string>
-    <string name="settings_uninstall_permanent_message">Uninstalling Wild KSU (Root and all modules) completely and permanently.</string>
-    <string name="settings_restore_stock_image_message">Restore the stock factory image (If a backup exists), usually used before OTA; if you need to uninstall Wild KSU, please use \"Uninstall permanently\".</string>
+    <string name="settings_uninstall_temporary_message">Temporarily uninstall KernelSU Next, restore to original state after next reboot.</string>
+    <string name="settings_uninstall_permanent_message">Uninstalling KernelSU Next (root and all modules) completely and permanently.</string>
+    <string name="settings_restore_stock_image_message">Restore the stock factory image (if a backup exists), usually used before OTA; if you need to uninstall KernelSU Next, please use \"Uninstall permanently\".</string>
     <string name="flashing">Flashing</string>
     <string name="flash_success">Flash success</string>
     <string name="flash_failed">Flash failed</string>
@@ -197,7 +197,7 @@
     <string name="log_saved">Logs saved</string>
     <string name="send_log">Share logs</string>
     <string name="settings_disable_su">Disable su compatibility</string>
-    <string name="settings_disable_su_summary">Temporarily disable the ability of any app to gain root privileges via the ⁠su command (Existing root processes won\'t be affected).</string>
+    <string name="settings_disable_su_summary">Temporarily disable the ability of any app to gain root privileges via the ⁠su command (existing root processes won\'t be affected).</string>
     <string name="settings_language">Language</string>
     <string name="system_default">System default</string>
     <string name="settings_legacyui">Use legacy UI</string>
@@ -216,7 +216,7 @@
     <string name="superuser_settings_summary">Manage superuser access and permissions</string>
     <string name="sucompat_disabled">SUCOMPAT DISABLED</string>
     <string name="zygisk_required">Zygisk required</string>
-    <string name="zygisk_status">Zygisk Injection</string>
+    <string name="zygisk_status">Zygisk injection</string>
     <string name="home_superuser_count_singular">Superuser</string>
     <string name="home_superuser_count_plural">Superusers</string>
     <string name="home_module_count_singular">Module</string>
@@ -224,7 +224,7 @@
     <string name="module_sort_enabled_first">Sort (Enabled first)</string>
     <string name="module_sort_action_first">Sort (Action first)</string>
     <string name="module_sort_webui_first">Sort (WebUI first)</string>
-    <string name="settings_global_namespace_mode">Global Namespace Mode</string>
+    <string name="settings_global_namespace_mode">Global namespace mode</string>
     <string name="settings_global_namespace_mode_summary">All root sessions use the global mount namespace</string>
     <string name="settings_background_image">Background image</string>
     <string name="settings_background_image_summary">Set a custom background image for the app</string>
@@ -268,28 +268,43 @@
     <string name="home_screen_icon_style_summary">Change the home screen icon style or turn it off</string>
     <string name="home_screen_icon_current">Current: %s</string>
     <string name="home_screen_icon_select_dialog_title">Select Home Screen Icon Style</string>
+    <string name="home_icon_select_dialog_hint_scroll">Scroll to see more icons</string>
+    <string name="home_icon_select_dialog_current_seasonal">Currently: %s</string>
     <!-- System Info Card Settings -->
     <string name="system_info_card_settings">System Info Card Settings</string>
     <string name="system_info_card_settings_summary">Customize system information display and home screen elements</string>
     <!-- Module Settings Customization -->
     <string name="module_card_customization">Module Settings</string>
     <string name="module_card_customization_summary">Configure module behavior, sorting, and display options</string>
-    <!-- App Name Customization -->
-    <string name="app_name_customization">App Name</string>
-    <string name="app_name_customization_summary">Change the app name displayed in the interface</string>
-    <string name="app_name_kernelsu_next">KernelSU Next</string>
+    <!-- App Names -->
     <string name="app_name_wild_ksu">Wild KSU</string>
-    <string name="app_name_custom">Custom</string>
-    <string name="app_name_custom_hint">Enter custom app name</string>
-    <string name="app_name_dialog_title">Select App Name</string>
-    <string name="app_name_custom_dialog_title">Custom App Name</string>
-    <string name="app_name_custom_dialog_message">Enter your custom app name (max 20 characters)</string>
     <!-- Home Settings Card Layout -->
     <string name="home_screen_settings">Home &amp; Cards</string>
+    <string name="home_layout_style">Home Layout Style</string>
+    <string name="home_layout_style_summary">Choose between Stock and MIUIX layouts. Current: %s</string>
+    <string name="home_layout_select_dialog_title">Select Home Layout</string>
+    <string name="home_layout_select_dialog_default">Current default layout</string>
+    <string name="home_layout_select_dialog_alt">Alternative layout style</string>
     <string name="info_card_settings">Info Card Settings</string>
     <string name="info_card_order_management">Info Card Order Management</string>
     <string name="info_card_order_description">Tap to move items up/down one position, or long press to move to top/bottom. Use the toggle to enable/disable items.</string>
     <!-- Individual App Cards Settings -->
     <string name="individual_app_cards">Individual App Cards</string>
     <string name="individual_app_cards_summary">Show each app in its own card instead of a list</string>
+    <!-- Icon options -->
+    <string name="home_icon_option_off">Off</string>
+    <string name="home_icon_option_seasonal">Seasonal (Auto)</string>
+    <string name="home_icon_option_winter">Winter</string>
+    <string name="home_icon_option_spring">Spring</string>
+    <string name="home_icon_option_summer">Summer</string>
+    <string name="home_icon_option_fall">Fall</string>
+    <string name="home_icon_option_ksu_next">KSU Next</string>
+    <string name="home_icon_option_cannabis">Cannabis</string>
+    <string name="home_icon_option_amogus">Amungus</string>
+    <!-- Home Layout Options -->
+    <string name="home_layout_option_stock">Stock</string>
+    <string name="home_layout_option_miui_square">Square ✓</string>
+    <!-- Common actions/accessibility -->
+    <string name="action_done">Done</string>
+    <string name="accessibility_selected">Selected</string>
 </resources>
