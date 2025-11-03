@@ -129,16 +129,15 @@ fun HomeScreen(navigator: DestinationsNavigator) {
             item {
                 CardItemsColumn {
                     if (hasRootContent) {
-                        if (selectedLayoutType == "MIUIX_SQUARE" || selectedLayoutType == "MIUIX_RECTANGLE") {
-                            // MIUIX Layout: Custom StatusCard design
+                        if (selectedLayoutType == "MIUIX_SQUARE") {
+                            // Adaptive Square Layout with checkmark
                             val lkmMode = ksuVersion.let {
                                 if (it >= Natives.MINIMAL_SUPPORTED_KERNEL_LKM && kernelVersion.isGKI()) Natives.isLkmMode else null
                             }
-                            MiuixStatusCard(
+                            SquareStatusCard(
                                 ksuVersion = ksuVersion,
                                 kernelVersion = kernelVersion,
                                 lkmMode = lkmMode,
-                                layoutMode = selectedLayoutType,
 
                                 onClickSuperuser = {
                                     navigator.navigate(SuperUserScreenDestination) {
@@ -224,6 +223,7 @@ fun HomeScreen(navigator: DestinationsNavigator) {
         }
     }
 }
+
 
 @Composable
 private fun SuperuserCard(onClick: () -> Unit = {}) {
@@ -981,11 +981,10 @@ private fun IssueReportCardContent(
 }
 
 @Composable
-fun MiuixStatusCard(
+fun SquareStatusCard(
     ksuVersion: Int,
     kernelVersion: KernelVersion,
     lkmMode: Boolean?,
-    layoutMode: String = "MIUIX_SQUARE",
     onClickSuperuser: () -> Unit = {},
     onClickModule: () -> Unit = {},
 ) {
@@ -1005,26 +1004,26 @@ fun MiuixStatusCard(
     
     val workingText = "${stringResource(id = R.string.home_working)}$safeMode"
     
-    // Calculate available space and make left card square, right cards fill remaining space
-    val density = LocalDensity.current
-    val configuration = LocalConfiguration.current
-    
-    // Calculate total available width minus spacing
-    val totalAvailableWidth = configuration.screenWidthDp.dp - (CardConstants.CARD_SPACING * 3)
-    
-    // Left card should be square - use height as the limiting factor for a perfect square
-    val squareSize = totalAvailableWidth * 0.45f // Reserve 45% for square card
-    val remainingWidth = totalAvailableWidth - squareSize - CardConstants.CARD_SPACING
-    
-    // Calculate heights for right side cards
-    val halfCardHeight = (squareSize - CardConstants.CARD_SPACING) / 2
-    
-    // Horizontal layout: Perfect square card on left, right cards fill remaining space
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(CardConstants.CARD_SPACING),
-        verticalAlignment = Alignment.Top
-    ) {
+    // Use BoxWithConstraints to get actual available space dynamically
+     BoxWithConstraints(
+         modifier = Modifier.fillMaxWidth()
+     ) {
+         val availableWidth = maxWidth
+         val spacing = CardConstants.CARD_SPACING
+         
+         // Simple formula: Square = (screen width / 2) - (spacing / 2)
+         val squareSize = (availableWidth / 2) - (spacing / 2)
+         
+         // Right side: remaining space - spacing, then divide by 2 - spacing
+         val remainingWidth = availableWidth - squareSize - spacing
+         val halfCardHeight = (squareSize - spacing) / 2
+         
+         // Horizontal layout: Perfect square card on left, right cards fill remaining space
+         Row(
+             modifier = Modifier.fillMaxWidth(),
+             horizontalArrangement = Arrangement.spacedBy(spacing),
+             verticalAlignment = Alignment.Top
+         ) {
         // Main status card - perfect square
         Card(
             modifier = Modifier

@@ -3,3 +3,4 @@
 3. Anytime major changes are done make a new commit, no extended explanations needed!
 4. Never Push to github, just git add and git commit!
 5. When commiting always sign it!
+6. Never build locally, all testing is done on github actions!
