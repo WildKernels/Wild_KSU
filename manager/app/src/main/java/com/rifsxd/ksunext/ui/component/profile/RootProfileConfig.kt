@@ -45,20 +45,10 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.text.isDigitsOnly
-import com.maxkeppeler.sheets.core.models.base.Header
-import com.maxkeppeler.sheets.core.models.base.rememberUseCaseState
-import com.maxkeppeler.sheets.input.InputDialog
-import com.maxkeppeler.sheets.input.models.InputHeader
-import com.maxkeppeler.sheets.input.models.InputSelection
-import com.maxkeppeler.sheets.input.models.InputTextField
-import com.maxkeppeler.sheets.input.models.InputTextFieldType
-import com.maxkeppeler.sheets.input.models.ValidationResult
 import com.rifsxd.ksunext.Natives
 import com.rifsxd.ksunext.R
 import com.rifsxd.ksunext.profile.Capabilities
 import com.rifsxd.ksunext.profile.Groups
-import com.rifsxd.ksunext.ui.component.rememberCustomDialog
-import com.rifsxd.ksunext.ui.util.isSepolicyValid
 import com.rifsxd.ksunext.ui.util.isSepolicyValid
 
 
@@ -497,73 +487,80 @@ private fun UidPanel(uid: Int, label: String, onUidChange: (Int) -> Unit) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
+@Composable
 private fun SELinuxPanel(
     profile: Natives.Profile,
     onSELinuxChange: (domain: String, rules: String) -> Unit
 ) {
-    val editSELinuxDialog = rememberCustomDialog { dismiss ->
-        var domain by remember { mutableStateOf(profile.context) }
-        var rules by remember { mutableStateOf(profile.rules) }
+    var showDialog by remember { mutableStateOf(false) }
+    var domain by remember { mutableStateOf(profile.context) }
+    var rules by remember { mutableStateOf(profile.rules) }
 
-        val inputOptions = listOf(
-            InputTextField(
-                text = domain,
-                header = InputHeader(
-                    title = stringResource(id = R.string.profile_selinux_domain),
-                ),
-                type = InputTextFieldType.OUTLINED,
-                required = true,
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Ascii,
-                    imeAction = ImeAction.Next
-                ),
-                resultListener = {
-                    domain = it ?: ""
-                },
-                validationListener = { value ->
-                    // value can be a-zA-Z0-9_
-                    val regex = Regex("^[a-z_]+:[a-z0-9_]+:[a-z0-9_]+(:[a-z0-9_]+)?$")
-                    if (value?.matches(regex) == true) ValidationResult.Valid
-                    else ValidationResult.Invalid("Domain must be in the format of \"user:role:type:level\"")
-                }
-            ),
-            InputTextField(
-                text = rules,
-                header = InputHeader(
-                    title = stringResource(id = R.string.profile_selinux_rules),
-                ),
-                type = InputTextFieldType.OUTLINED,
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Ascii,
-                ),
-                singleLine = false,
-                resultListener = {
-                    rules = it ?: ""
-                },
-                validationListener = { value ->
-                    if (isSepolicyValid(value)) ValidationResult.Valid
-                    else ValidationResult.Invalid("SELinux rules is invalid!")
-                }
-            )
-        )
+    val domainValid = remember(domain) {
+        val regex = Regex("^[a-z_]+:[a-z0-9_]+:[a-z0-9_]+(:[a-z0-9_]+)?$")
+        domain.matches(regex)
+    }
+    val rulesValid = remember(rules) { isSepolicyValid(rules) }
+    val canConfirm = domainValid && rulesValid
 
-        InputDialog(
-            state = rememberUseCaseState(visible = true,
-                onFinishedRequest = {
-                    onSELinuxChange(domain, rules)
-                },
-                onCloseRequest = {
-                    dismiss()
-                }),
-            header = Header.Default(
-                title = stringResource(R.string.profile_selinux_context),
-            ),
-            selection = InputSelection(
-                input = inputOptions,
-                onPositiveClick = { result ->
-                    // Handle selection
-                },
-            )
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = { showDialog = false },
+            title = { Text(text = stringResource(R.string.profile_selinux_context)) },
+            text = {
+                Column {
+                    OutlinedTextField(
+                        label = { Text(stringResource(R.string.profile_selinux_domain)) },
+                        value = domain,
+                        onValueChange = { domain = it },
+                        singleLine = true,
+                        isError = !domainValid,
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Ascii,
+                            imeAction = ImeAction.Next
+                        ),
+                    )
+                    if (!domainValid) {
+                        Text(
+                            text = "Domain must be in the format of \"user:role:type:level\"",
+                            color = MaterialTheme.colorScheme.error,
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    }
+                    Spacer(modifier = Modifier.padding(top = 8.dp))
+                    OutlinedTextField(
+                        label = { Text(stringResource(R.string.profile_selinux_rules)) },
+                        value = rules,
+                        onValueChange = { rules = it },
+                        isError = !rulesValid,
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Ascii,
+                        ),
+                        maxLines = 6
+                    )
+                    if (!rulesValid) {
+                        Text(
+                            text = "SELinux rules is invalid!",
+                            color = MaterialTheme.colorScheme.error,
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        onSELinuxChange(domain, rules)
+                        showDialog = false
+                    },
+                    enabled = canConfirm
+                ) { Text(text = stringResource(android.R.string.ok)) }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDialog = false }) {
+                    Text(text = stringResource(android.R.string.cancel))
+                }
+            }
         )
     }
 
@@ -571,9 +568,7 @@ private fun SELinuxPanel(
         OutlinedTextField(
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable {
-                    editSELinuxDialog.show()
-                },
+                .clickable { showDialog = true },
             enabled = false,
             colors = OutlinedTextFieldDefaults.colors(
                 disabledTextColor = MaterialTheme.colorScheme.onSurface,
