@@ -120,12 +120,12 @@ fun AppProfileTemplateScreen(
             visible = showFab,
             enter = scaleIn(
                 animationSpec = tween(200),
-                initialScale = 0.8f
-            ) + fadeIn(animationSpec = tween(400)),
+                initialScale = 0.95f
+            ),
             exit = scaleOut(
                 animationSpec = tween(200),
-                targetScale = 0.8f
-            ) + fadeOut(animationSpec = tween(400)),
+                targetScale = 0.95f
+            ),
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(16.dp)
@@ -139,7 +139,7 @@ fun AppProfileTemplateScreen(
                         )
                     )
                 },
-                containerColor = MaterialTheme.colorScheme.primary,
+                containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 1f),
                 contentColor = MaterialTheme.colorScheme.onPrimary,
                 icon = { Icon(Icons.Filled.Add, null) },
                 text = { Text(stringResource(id = R.string.app_profile_template_create)) },
