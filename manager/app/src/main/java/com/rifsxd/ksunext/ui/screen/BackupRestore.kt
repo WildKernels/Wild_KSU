@@ -163,7 +163,61 @@ fun BackupRestoreScreen(navigator: DestinationsNavigator) {
                 )
             }
 
-            // Removed allowlist backup to keep only two cards as requested
+            // Module Backup card
+            val moduleBackupText = stringResource(id = R.string.module_backup)
+            val moduleBackupMessage = stringResource(id = R.string.module_backup_message)
+            StandardCard(onClick = {
+                scope.launch {
+                    val result = backupDialog.awaitConfirm(title = moduleBackupText, content = moduleBackupMessage)
+                    if (result == ConfirmResult.Confirmed) {
+                        loadingDialog.withLoading {
+                            moduleBackup()
+                        }
+                    }
+                }
+            }) {
+                ListItem(
+                    leadingContent = {
+                        Icon(
+                            Icons.Filled.Backup,
+                            moduleBackupText
+                        )
+                    },
+                    headlineContent = { Text(
+                        text = moduleBackupText,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold,
+                    ) }
+                )
+            }
+
+            // Allowlist Backup card
+            val allowlistBackupText = stringResource(id = R.string.allowlist_backup)
+            val allowlistBackupMessage = stringResource(id = R.string.allowlist_backup_message)
+            StandardCard(onClick = {
+                scope.launch {
+                    val result = backupDialog.awaitConfirm(title = allowlistBackupText, content = allowlistBackupMessage)
+                    if (result == ConfirmResult.Confirmed) {
+                        loadingDialog.withLoading {
+                            allowlistBackup()
+                        }
+                    }
+                }
+            }) {
+                ListItem(
+                    leadingContent = {
+                        Icon(
+                            Icons.Filled.Backup,
+                            allowlistBackupText
+                        )
+                    },
+                    headlineContent = { Text(
+                        text = allowlistBackupText,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold,
+                    ) }
+                )
+            }
 
             val allowlistRestore = stringResource(id = R.string.allowlist_restore)
             val allowlistrestoreMessage = stringResource(id = R.string.allowlist_restore_message)
