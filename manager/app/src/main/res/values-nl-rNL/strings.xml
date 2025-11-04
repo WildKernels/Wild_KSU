@@ -276,16 +276,6 @@
     <!-- Module Settings Customization -->
     <string name="module_card_customization">Module-Instellingen</string>
     <string name="module_card_customization_summary">Configureer Modulegedrag, sortering en Weergaveopties</string>
-    <!-- App Name Customization -->
-    <string name="app_name_customization">App-Naam</string>
-    <string name="app_name_customization_summary">Wijzig de App-Naam die wordt Weergegeven in de Interface</string>
-    <string name="app_name_kernelsu_next">KernelSU Next</string>
-    <string name="app_name_wild_ksu">Wild KSU</string>
-    <string name="app_name_custom">Aangepast</string>
-    <string name="app_name_custom_hint">Voer aangepaste App-Naam in</string>
-    <string name="app_name_dialog_title">App-Naam selecteren</string>
-    <string name="app_name_custom_dialog_title">Aangepaste App-Naam</string>
-    <string name="app_name_custom_dialog_message">Voer uw aangepaste App-Naam in (maximaal 20 Tekens)</string>
     <!-- Home Settings Card Layout -->
     <string name="home_screen_settings">Thuis &amp; Kaarten</string>
     <string name="info_card_settings">Informatiekaartinstellingen</string>

@@ -587,19 +587,6 @@ fun HomeSettingsScreen(
                     CardItemSpacer()
                     
                     // App Name Toggle - REMOVED
-                    // CardSwitchContent(
-                    //     icon = Icons.Filled.Title,
-                    //     title = stringResource(R.string.app_name_customization),
-                    //     subtitle = "Switch to KernelSU Next",
-                    //     checked = selectedAppName == "kernelsu_next",
-                    //     onCheckedChange = { isChecked ->
-                    //         val newAppName = if (isChecked) "kernelsu_next" else "wild_ksu"
-                    //         onSelectedAppNameChanged(newAppName)
-                    //     }
-                    // )
-                    // 
-                    // CardItemSpacer()
-                    
                     // Help Card Toggle
                     CardSwitchContent(
                         icon = Icons.AutoMirrored.Filled.HelpOutline,

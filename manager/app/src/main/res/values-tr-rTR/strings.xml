@@ -279,16 +279,6 @@ Lütfen %2$d veya daha yüksek bir sürüme yükseltin!</string>
     <!-- Module Settings Customization -->
     <string name="module_card_customization">Modül Ayarları</string>
     <string name="module_card_customization_summary">Modül davranışını, sıralama ve görüntüleme seçeneklerini yapılandırın</string>
-    <!-- App Name Customization -->
-    <string name="app_name_customization">Uygulama İsmi</string>
-    <string name="app_name_customization_summary">Arayüzde görüntülenen uygulama adını değiştirin</string>
-    <string name="app_name_kernelsu_next">KernelSU Next</string>
-    <string name="app_name_wild_ksu">Wild KSU</string>
-    <string name="app_name_custom">Özel</string>
-    <string name="app_name_custom_hint">Özel uygulama adını girin</string>
-    <string name="app_name_dialog_title">Uygulama Adını Seçin</string>
-    <string name="app_name_custom_dialog_title">Özel Uygulama Adı</string>
-    <string name="app_name_custom_dialog_message">Özel uygulama adınızı girin (en fazla 20 karakter)</string>
     <!-- Home Settings Card Layout -->
     <string name="home_screen_settings">Ev &amp; Kartlar</string>
     <string name="info_card_settings">Kart Bilgi Ayarları</string>
