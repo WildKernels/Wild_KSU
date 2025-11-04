@@ -131,7 +131,7 @@
     <string name="module_updated">محدث</string>
     <string name="module_downloading">جاري تنزيل الوحدة: %s</string>
     <string name="module_start_downloading">بدء التنزيل: %s</string>
-    <string name="new_version_available">الإصدار الجديد: %s متاح ، انقر للتحديث.</string>
+    <string name="new_version_available">New version %s is available, click to upgrade.</string>
     <string name="launch_app">تشغيل</string>
     <string name="close">إغلاق</string>
     <string name="force_stop_app">ايقاف اجباري</string>
