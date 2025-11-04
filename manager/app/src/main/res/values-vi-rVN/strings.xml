@@ -6,7 +6,7 @@
     <string name="issue_report_github">Báo lỗi trên Github</string>
     <string name="issue_report_telegram">Liên hệ qua Telegram</string>
     <string name="issue_report_github_link">https://github.com/KernelSU-Next/KernelSU-Next/issues</string>
-    <string name="issue_report_telegram_link">https://t.me/ksunext</string>
+    <string name="issue_report_telegram_link">https://t.me/WildKernels/2</string>
     <string name="confirm">Xác nhận</string>
     <string name="home">Trang chủ</string>
     <string name="home_not_installed">Chưa cài đặt</string>
@@ -131,7 +131,7 @@
     <string name="module_updated">Đã cập nhật</string>
     <string name="module_downloading">Đang tải xuống module: %s</string>
     <string name="module_start_downloading">Bắt đầu tải xuống: %s</string>
-    <string name="new_version_available">App update: %s is available, click to update app!</string>
+    <string name="new_version_available">Phiên bản mới %s đã có sẵn, nhấn để nâng cấp.</string>
     <string name="launch_app">Khởi chạy</string>
     <string name="close">Đóng</string>
     <string name="force_stop_app">Buộc dừng</string>
