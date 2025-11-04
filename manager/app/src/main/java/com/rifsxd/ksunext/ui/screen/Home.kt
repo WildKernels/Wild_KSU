@@ -158,6 +158,35 @@ fun HomeScreen(navigator: DestinationsNavigator) {
                                     }
                                 }
                             )
+                        } else if (selectedLayoutType == "MIUIX_RECTANGLE") {
+                            // Adaptive Rectangle Layout
+                            val lkmMode = ksuVersion.let {
+                                if (it >= Natives.MINIMAL_SUPPORTED_KERNEL_LKM && kernelVersion.isGKI()) Natives.isLkmMode else null
+                            }
+                            RectangleStatusCard(
+                                ksuVersion = ksuVersion,
+                                kernelVersion = kernelVersion,
+                                lkmMode = lkmMode,
+
+                                onClickSuperuser = {
+                                    navigator.navigate(SuperUserScreenDestination) {
+                                        popUpTo(NavGraphs.root) {
+                                            saveState = true
+                                        }
+                                        launchSingleTop = true
+                                        restoreState = true
+                                    }
+                                },
+                                onClickModule = {
+                                    navigator.navigate(ModuleScreenDestination) {
+                                        popUpTo(NavGraphs.root) {
+                                            saveState = true
+                                        }
+                                        launchSingleTop = true
+                                        restoreState = true
+                                    }
+                                }
+                            )
                         } else {
                             // STOCK Layout: Side-by-side arrangement
                             CardRow(
