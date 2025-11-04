@@ -1225,10 +1225,10 @@ fun RectangleStatusCard(
          val availableWidth = maxWidth
          val spacing = CardConstants.CARD_SPACING
          
-         // Rectangle: 2/3 of content width, height = 1/3 of rect width
+         // Rectangle: 2/3 of content width, height = 1/2 of rect width
          val contentWidth = availableWidth - spacing
          val rectWidth = contentWidth * (2f/3f)
-         val rectHeight = rectWidth * (1f/3f)
+         val rectHeight = rectWidth * 0.5f
          
          // Right column gets the remaining 1/3 of content width
          val remainingWidth = contentWidth - rectWidth
