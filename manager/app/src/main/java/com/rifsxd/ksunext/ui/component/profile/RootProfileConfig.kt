@@ -487,7 +487,6 @@ private fun UidPanel(uid: Int, label: String, onUidChange: (Int) -> Unit) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-@Composable
 private fun SELinuxPanel(
     profile: Natives.Profile,
     onSELinuxChange: (domain: String, rules: String) -> Unit
