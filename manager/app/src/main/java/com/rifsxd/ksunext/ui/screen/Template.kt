@@ -120,12 +120,12 @@ fun AppProfileTemplateScreen(
             visible = showFab,
             enter = scaleIn(
                 animationSpec = tween(200),
-                initialScale = 0.95f
-            ),
+                initialScale = 0.8f
+            ) + fadeIn(animationSpec = tween(400)),
             exit = scaleOut(
                 animationSpec = tween(200),
-                targetScale = 0.95f
-            ),
+                targetScale = 0.8f
+            ) + fadeOut(animationSpec = tween(400)),
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(16.dp)
