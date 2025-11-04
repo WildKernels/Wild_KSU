@@ -131,7 +131,7 @@
     <string name="module_updated">Aktualizováno</string>
     <string name="module_downloading">Stahování modulu: %s</string>
     <string name="module_start_downloading">Zahájeno stahování modulu: %s</string>
-    <string name="new_version_available">New version %s is available, click to upgrade.</string>
+    <string name="new_version_available">App update: %s is available, click to update app!</string>
     <string name="launch_app">Spustit</string>
     <string name="close">Zavřít</string>
     <string name="force_stop_app">Vynutit ukončení</string>
