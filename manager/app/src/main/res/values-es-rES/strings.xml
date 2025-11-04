@@ -131,7 +131,7 @@
     <string name="module_updated">Actualizado</string>
     <string name="module_downloading">Descargando módulo %s</string>
     <string name="module_start_downloading">Comenzando la descarga de %s</string>
-    <string name="new_version_available">La nueva versión %s está disponible, haga clic para actualizar.</string>
+    <string name="new_version_available">App update: %s is available, click to update app!</string>
     <string name="launch_app">Iniciar</string>
     <string name="close">Cerrar</string>
     <string name="force_stop_app">Forzar detención</string>
