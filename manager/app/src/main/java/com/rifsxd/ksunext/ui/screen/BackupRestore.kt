@@ -130,6 +130,7 @@ fun BackupRestoreScreen(navigator: DestinationsNavigator) {
             val restoreMessage = stringResource(id = R.string.module_restore_message)
 
             StandardCard(
+                modifier = Modifier.fillMaxWidth(),
                 onClick = if (!useOverlayFs) {
                     {
                         scope.launch {
@@ -163,10 +164,14 @@ fun BackupRestoreScreen(navigator: DestinationsNavigator) {
                 )
             }
 
+            CardItemSpacer()
+
             // Module Backup card
             val moduleBackupText = stringResource(id = R.string.module_backup)
             val moduleBackupMessage = stringResource(id = R.string.module_backup_message)
-            StandardCard(onClick = {
+            StandardCard(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = {
                 scope.launch {
                     val result = backupDialog.awaitConfirm(title = moduleBackupText, content = moduleBackupMessage)
                     if (result == ConfirmResult.Confirmed) {
@@ -191,10 +196,14 @@ fun BackupRestoreScreen(navigator: DestinationsNavigator) {
                 )
             }
 
+            CardItemSpacer()
+
             // Allowlist Backup card
             val allowlistBackupText = stringResource(id = R.string.allowlist_backup)
             val allowlistBackupMessage = stringResource(id = R.string.allowlist_backup_message)
-            StandardCard(onClick = {
+            StandardCard(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = {
                 scope.launch {
                     val result = backupDialog.awaitConfirm(title = allowlistBackupText, content = allowlistBackupMessage)
                     if (result == ConfirmResult.Confirmed) {
@@ -219,9 +228,13 @@ fun BackupRestoreScreen(navigator: DestinationsNavigator) {
                 )
             }
 
+            CardItemSpacer()
+
             val allowlistRestore = stringResource(id = R.string.allowlist_restore)
             val allowlistrestoreMessage = stringResource(id = R.string.allowlist_restore_message)
-            StandardCard(onClick = {
+            StandardCard(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = {
                 scope.launch {
                     val result = restoreDialog.awaitConfirm(title = allowlistRestore, content = allowlistrestoreMessage)
                     if (result == ConfirmResult.Confirmed) {
