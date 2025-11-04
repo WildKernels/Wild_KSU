@@ -51,8 +51,12 @@ fun TemplateConfig(
                 onValueChange = {},
                 trailingIcon = {
                     if (noTemplates) {
-                        IconButton(
-                            onClick = onManageTemplate
+                        FilledIconButton(
+                            onClick = onManageTemplate,
+                            colors = IconButtonDefaults.filledIconButtonColors(
+                                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                                contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                            )
                         ) {
                             Icon(Icons.Filled.Create, null)
                         }

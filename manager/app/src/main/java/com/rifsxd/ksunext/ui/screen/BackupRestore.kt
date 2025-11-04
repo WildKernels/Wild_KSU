@@ -28,6 +28,7 @@ import com.rifsxd.ksunext.Natives
 import com.rifsxd.ksunext.R
 import com.rifsxd.ksunext.ksuApp
 import com.rifsxd.ksunext.ui.component.ConfirmResult
+import com.rifsxd.ksunext.ui.component.StandardCard
 import com.rifsxd.ksunext.ui.component.rememberConfirmDialog
 import com.rifsxd.ksunext.ui.component.rememberLoadingDialog
 import com.rifsxd.ksunext.ui.util.*
@@ -152,25 +153,9 @@ fun BackupRestoreScreen(navigator: DestinationsNavigator) {
             val moduleRestore = stringResource(id = R.string.module_restore)
             val restoreMessage = stringResource(id = R.string.module_restore_message)
 
-            ListItem(
-                leadingContent = {
-                    Icon(
-                        Icons.Filled.Restore,
-                        moduleRestore,
-                        tint = if (useOverlayFs) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f) else MaterialTheme.colorScheme.onSurface
-                    )
-                },
-                headlineContent = { 
-                    Text(
-                        moduleRestore,
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.SemiBold,
-                        color = if (useOverlayFs) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f) else MaterialTheme.colorScheme.onSurface
-                    ) 
-                },
-                modifier = Modifier.clickable(
-                    enabled = !useOverlayFs,
-                    onClick = {
+            StandardCard(
+                onClick = if (!useOverlayFs) {
+                    {
                         scope.launch {
                             val result = restoreDialog.awaitConfirm(title = moduleRestore, content = restoreMessage)
                             if (result == ConfirmResult.Confirmed) {
@@ -181,62 +166,80 @@ fun BackupRestoreScreen(navigator: DestinationsNavigator) {
                             }
                         }
                     }
+                } else null
+            ) {
+                ListItem(
+                    leadingContent = {
+                        Icon(
+                            Icons.Filled.Restore,
+                            moduleRestore,
+                            tint = if (useOverlayFs) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f) else MaterialTheme.colorScheme.onSurface
+                        )
+                    },
+                    headlineContent = { 
+                        Text(
+                            moduleRestore,
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.SemiBold,
+                            color = if (useOverlayFs) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f) else MaterialTheme.colorScheme.onSurface
+                        ) 
+                    }
                 )
-            )
-
-            HorizontalDivider(thickness = Dp.Hairline)
+            }
 
             val allowlistBackup = stringResource(id = R.string.allowlist_backup)
             val allowlistbackupMessage = stringResource(id = R.string.allowlist_backup_message)
-            ListItem(
-                leadingContent = {
-                    Icon(
-                        Icons.Filled.Backup,
-                        allowlistBackup
-                    )
-                },
-                headlineContent = { Text(
-                    text = allowlistBackup,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold,
-                ) },
-                modifier = Modifier.clickable {
-                    scope.launch {
-                        val result = backupDialog.awaitConfirm(title = allowlistBackup, content = allowlistbackupMessage)
-                        if (result == ConfirmResult.Confirmed) {
-                            loadingDialog.withLoading {
-                                allowlistBackup()
-                            }
+            StandardCard(onClick = {
+                scope.launch {
+                    val result = backupDialog.awaitConfirm(title = allowlistBackup, content = allowlistbackupMessage)
+                    if (result == ConfirmResult.Confirmed) {
+                        loadingDialog.withLoading {
+                            allowlistBackup()
                         }
                     }
                 }
-            )
+            }) {
+                ListItem(
+                    leadingContent = {
+                        Icon(
+                            Icons.Filled.Backup,
+                            allowlistBackup
+                        )
+                    },
+                    headlineContent = { Text(
+                        text = allowlistBackup,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold,
+                    ) }
+                )
+            }
 
             val allowlistRestore = stringResource(id = R.string.allowlist_restore)
             val allowlistrestoreMessage = stringResource(id = R.string.allowlist_restore_message)
-            ListItem(
-                leadingContent = {
-                    Icon(
-                        Icons.Filled.Restore,
-                        allowlistRestore
-                    )
-                },
-                headlineContent = { Text(
-                    text = allowlistRestore,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold,
-                ) },
-                modifier = Modifier.clickable {
-                    scope.launch {
-                        val result = restoreDialog.awaitConfirm(title = allowlistRestore, content = allowlistrestoreMessage)
-                        if (result == ConfirmResult.Confirmed) {
-                            loadingDialog.withLoading {
-                                allowlistRestore()
-                            }
+            StandardCard(onClick = {
+                scope.launch {
+                    val result = restoreDialog.awaitConfirm(title = allowlistRestore, content = allowlistrestoreMessage)
+                    if (result == ConfirmResult.Confirmed) {
+                        loadingDialog.withLoading {
+                            allowlistRestore()
                         }
                     }
                 }
-            )
+            }) {
+                ListItem(
+                    leadingContent = {
+                        Icon(
+                            Icons.Filled.Restore,
+                            allowlistRestore
+                        )
+                    },
+                    headlineContent = { Text(
+                        text = allowlistRestore,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold,
+                    ) }
+                )
+            }
         }
     }
 }
