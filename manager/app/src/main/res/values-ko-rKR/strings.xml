@@ -131,7 +131,7 @@
     <string name="module_updated">업데이트됨</string>
     <string name="module_downloading">%s 모듈 다운로드 중</string>
     <string name="module_start_downloading">%s 다운로드 시작</string>
-    <string name="new_version_available">새 버전: %s 사용 가능, 여기를 눌러서 받기</string>
+    <string name="new_version_available">New version %s is available, click to upgrade.</string>
     <string name="launch_app">실행</string>
     <string name="close">닫기</string>
     <string name="force_stop_app">강제 종료</string>
