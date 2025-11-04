@@ -1225,12 +1225,13 @@ fun RectangleStatusCard(
          val availableWidth = maxWidth
          val spacing = CardConstants.CARD_SPACING
          
-         // Rectangle formula: keep half width, reduce height for rectangular aspect
-         val rectWidth = (availableWidth / 2) - (spacing / 2)
-         val rectHeight = rectWidth * 0.6f
+         // Rectangle: 2/3 of content width, height = 1/3 of rect width
+         val contentWidth = availableWidth - spacing
+         val rectWidth = contentWidth * (2f/3f)
+         val rectHeight = rectWidth * (1f/3f)
          
-         // Right side: remaining width; stack two cards with half of rectHeight
-         val remainingWidth = availableWidth - rectWidth - spacing
+         // Right column gets the remaining 1/3 of content width
+         val remainingWidth = contentWidth - rectWidth
          val halfCardHeight = (rectHeight - spacing) / 2
          
          // Horizontal layout: Perfect square card on left, right cards fill remaining space
