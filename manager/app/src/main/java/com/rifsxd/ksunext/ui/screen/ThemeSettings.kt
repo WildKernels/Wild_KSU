@@ -12,6 +12,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Crop
 import androidx.compose.material.icons.filled.Delete
@@ -469,6 +470,8 @@ fun ThemeSettingsScreen(
                                 }
                             },
                             containerColor = MaterialTheme.colorScheme.surfaceContainer
+                                .copy(alpha = 1f)
+                                .compositeOver(MaterialTheme.colorScheme.background)
                         )
                     }
                     
@@ -507,7 +510,11 @@ fun ThemeSettingsScreen(
                             DropdownMenu(
                                 expanded = showDpiDropdown,
                                 onDismissRequest = { showDpiDropdown = false },
-                                modifier = Modifier.background(MaterialTheme.colorScheme.surfaceContainer)
+                                modifier = Modifier.background(
+                                    MaterialTheme.colorScheme.surface
+                                        .copy(alpha = 1f)
+                                        .compositeOver(MaterialTheme.colorScheme.background)
+                                )
                             ) {
                                 dpiPresets.forEach { (dpi, label) ->
                                     DropdownMenuItem(
@@ -601,7 +608,9 @@ fun ThemeSelectionDialog(
                 Text("Cancel")
             }
         },
-        containerColor = MaterialTheme.colorScheme.surfaceContainer,
+        containerColor = MaterialTheme.colorScheme.surfaceContainer
+            .copy(alpha = 1f)
+            .compositeOver(MaterialTheme.colorScheme.background),
         shape = RoundedCornerShape(16.dp)
     )
 }

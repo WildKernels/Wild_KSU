@@ -350,10 +350,12 @@ fun HomeSettingsScreen(
                                     showIconDialog = false
                                 },
                             colors = CardDefaults.cardColors(
-                                containerColor = if (isSelected) 
-                                    MaterialTheme.colorScheme.primaryContainer 
-                                else 
-                                    MaterialTheme.colorScheme.surface
+                                containerColor = (
+                                    if (isSelected)
+                                        MaterialTheme.colorScheme.primaryContainer
+                                    else
+                                        MaterialTheme.colorScheme.surface
+                                ).copy(alpha = 1f).compositeOver(MaterialTheme.colorScheme.background)
                             ),
                             border = if (isSelected) 
                                 BorderStroke(2.dp, MaterialTheme.colorScheme.primary) 
@@ -371,7 +373,9 @@ fun HomeSettingsScreen(
                                     modifier = Modifier
                                         .size(48.dp)
                                         .background(
-                                            MaterialTheme.colorScheme.surfaceVariant,
+                                            MaterialTheme.colorScheme.surfaceVariant
+                                                .copy(alpha = 1f)
+                                                .compositeOver(MaterialTheme.colorScheme.background),
                                             CircleShape
                                         ),
                                     contentAlignment = Alignment.Center
@@ -433,6 +437,8 @@ fun HomeSettingsScreen(
                 }
             },
             containerColor = MaterialTheme.colorScheme.surfaceContainer
+                .copy(alpha = 1f)
+                .compositeOver(MaterialTheme.colorScheme.background)
         )
     }
     
@@ -461,10 +467,12 @@ fun HomeSettingsScreen(
                                     showLayoutDialog = false
                                 },
                             colors = CardDefaults.cardColors(
-                                containerColor = if (isSelected) 
-                                    MaterialTheme.colorScheme.primaryContainer 
-                                else 
-                                    MaterialTheme.colorScheme.surface
+                                containerColor = (
+                                    if (isSelected)
+                                        MaterialTheme.colorScheme.primaryContainer
+                                    else
+                                        MaterialTheme.colorScheme.surface
+                                ).copy(alpha = 1f).compositeOver(MaterialTheme.colorScheme.background)
                             ),
                             border = if (isSelected) 
                                 BorderStroke(2.dp, MaterialTheme.colorScheme.primary) 
@@ -481,10 +489,12 @@ fun HomeSettingsScreen(
                                 Box(
                                     modifier = Modifier
                                         .size(48.dp)
-                                        .background(
-                                            MaterialTheme.colorScheme.surfaceVariant,
-                                            CircleShape
-                                        ),
+                                    .background(
+                                        MaterialTheme.colorScheme.surfaceVariant
+                                            .copy(alpha = 1f)
+                                            .compositeOver(MaterialTheme.colorScheme.background),
+                                        CircleShape
+                                    ),
                                     contentAlignment = Alignment.Center
                                 ) {
                                     Icon(
@@ -532,6 +542,8 @@ fun HomeSettingsScreen(
                 }
             },
             containerColor = MaterialTheme.colorScheme.surfaceContainer
+                .copy(alpha = 1f)
+                .compositeOver(MaterialTheme.colorScheme.background)
         )
     }
 

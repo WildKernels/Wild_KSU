@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -224,6 +225,8 @@ fun IconThemeManagerDialog(
             }
         },
         containerColor = MaterialTheme.colorScheme.surfaceContainer
+            .copy(alpha = 1f)
+            .compositeOver(MaterialTheme.colorScheme.background)
     )
 }
 
@@ -238,10 +241,12 @@ private fun IconThemeItemCard(
         modifier = Modifier
             .fillMaxWidth(),
         colors = CardDefaults.cardColors(
-            containerColor = if (item.isEnabled)
-                MaterialTheme.colorScheme.primaryContainer
-            else
-                MaterialTheme.colorScheme.surface
+            containerColor = (
+                if (item.isEnabled)
+                    MaterialTheme.colorScheme.primaryContainer
+                else
+                    MaterialTheme.colorScheme.surface
+            ).copy(alpha = 1f).compositeOver(MaterialTheme.colorScheme.background)
         )
     ) {
         // Single row with icon, name, controls, and switch
@@ -249,10 +254,12 @@ private fun IconThemeItemCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(
-                    if (item.isEnabled)
-                        MaterialTheme.colorScheme.primaryContainer
-                    else
-                        MaterialTheme.colorScheme.surfaceVariant
+                    (
+                        if (item.isEnabled)
+                            MaterialTheme.colorScheme.primaryContainer
+                        else
+                            MaterialTheme.colorScheme.surfaceVariant
+                    ).copy(alpha = 1f).compositeOver(MaterialTheme.colorScheme.background)
                 )
                 .padding(horizontal = 16.dp, vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically
@@ -262,7 +269,11 @@ private fun IconThemeItemCard(
                 modifier = Modifier
                     .size(32.dp)
                     .clip(RoundedCornerShape(6.dp))
-                    .background(MaterialTheme.colorScheme.surface),
+                    .background(
+                        MaterialTheme.colorScheme.surface
+                            .copy(alpha = 1f)
+                            .compositeOver(MaterialTheme.colorScheme.background)
+                    ),
                 contentAlignment = Alignment.Center
             ) {
                 if (item.icon != null) {
