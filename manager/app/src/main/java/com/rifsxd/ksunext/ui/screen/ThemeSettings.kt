@@ -467,7 +467,8 @@ fun ThemeSettingsScreen(
                                 ) {
                                     Text("Cancel")
                                 }
-                            }
+                            },
+                            containerColor = MaterialTheme.colorScheme.surfaceContainer
                         )
                     }
                     
@@ -505,7 +506,8 @@ fun ThemeSettingsScreen(
                             
                             DropdownMenu(
                                 expanded = showDpiDropdown,
-                                onDismissRequest = { showDpiDropdown = false }
+                                onDismissRequest = { showDpiDropdown = false },
+                                modifier = Modifier.background(MaterialTheme.colorScheme.surfaceContainer)
                             ) {
                                 dpiPresets.forEach { (dpi, label) ->
                                     DropdownMenuItem(

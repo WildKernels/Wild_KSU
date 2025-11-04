@@ -222,7 +222,8 @@ fun IconThemeManagerDialog(
             TextButton(onClick = onDismiss) {
                 Text("Close")
             }
-        }
+        },
+        containerColor = MaterialTheme.colorScheme.surfaceContainer
     )
 }
 
@@ -237,9 +238,9 @@ private fun IconThemeItemCard(
         modifier = Modifier
             .fillMaxWidth(),
         colors = CardDefaults.cardColors(
-            containerColor = if (item.isEnabled) 
-                MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f) 
-            else 
+            containerColor = if (item.isEnabled)
+                MaterialTheme.colorScheme.primaryContainer
+            else
                 MaterialTheme.colorScheme.surface
         )
     ) {
@@ -248,10 +249,10 @@ private fun IconThemeItemCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(
-                    if (item.isEnabled) 
-                        MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f)
-                    else 
-                        MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+                    if (item.isEnabled)
+                        MaterialTheme.colorScheme.primaryContainer
+                    else
+                        MaterialTheme.colorScheme.surfaceVariant
                 )
                 .padding(horizontal = 16.dp, vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically

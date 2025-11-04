@@ -431,7 +431,8 @@ fun HomeSettingsScreen(
                 TextButton(onClick = { showIconDialog = false }) {
                     Text(stringResource(R.string.action_done))
                 }
-            }
+            },
+            containerColor = MaterialTheme.colorScheme.surfaceContainer
         )
     }
     
@@ -529,7 +530,8 @@ fun HomeSettingsScreen(
                 TextButton(onClick = { showLayoutDialog = false }) {
                     Text(stringResource(R.string.action_done))
                 }
-            }
+            },
+            containerColor = MaterialTheme.colorScheme.surfaceContainer
         )
     }
 
