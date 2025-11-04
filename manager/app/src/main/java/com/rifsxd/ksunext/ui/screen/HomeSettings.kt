@@ -512,10 +512,10 @@ fun HomeSettingsScreen(
                                 }
                                 
                         // Selection indicator: show a small check icon on the selected item
-                        if (selectedLayoutType == option) {
+                        if (isSelected) {
                             Icon(
-                                imageVector = Icons.Default.CheckCircle,
-                                contentDescription = null,
+                                imageVector = Icons.Filled.CheckCircle,
+                                contentDescription = stringResource(R.string.accessibility_selected),
                                 tint = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.size(18.dp)
                             )
