@@ -5,6 +5,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Backup
@@ -30,6 +34,7 @@ import com.rifsxd.ksunext.ksuApp
 import com.rifsxd.ksunext.ui.component.ConfirmResult
 import com.rifsxd.ksunext.ui.component.CardItemSpacer
 import com.rifsxd.ksunext.ui.component.CardConstants
+import com.rifsxd.ksunext.ui.component.CardItemsColumn
 import com.rifsxd.ksunext.ui.component.rememberNoRippleInteractionSource
 import com.rifsxd.ksunext.ui.component.StandardCard
 import com.rifsxd.ksunext.ui.component.rememberConfirmDialog
@@ -59,11 +64,13 @@ fun BackupRestoreScreen(navigator: DestinationsNavigator) {
         val restoreDialog = rememberConfirmDialog()
         val backupDialog = rememberConfirmDialog()
 
-        Column(
+        LazyColumn(
             modifier = Modifier
+                .fillMaxSize()
                 .padding(paddingValues)
-                .nestedScroll(scrollBehavior.nestedScrollConnection)
-                .verticalScroll(rememberScrollState())
+                .nestedScroll(scrollBehavior.nestedScrollConnection),
+            contentPadding = PaddingValues(CardConstants.CARD_PADDING_MEDIUM),
+            verticalArrangement = Arrangement.spacedBy(CardConstants.CARD_SPACING)
         ) {
 
             val context = LocalContext.current
@@ -130,10 +137,9 @@ fun BackupRestoreScreen(navigator: DestinationsNavigator) {
             }
 
             // Module card: Restore + Backup in one card
-            StandardCard(modifier = Modifier.fillMaxWidth()) {
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(CardConstants.ITEM_SPACING_MEDIUM)
-                ) {
+            item {
+                StandardCard(modifier = Modifier.fillMaxWidth()) {
+                    CardItemsColumn {
                     val moduleRestore = stringResource(id = R.string.module_restore)
                     val restoreMessage = stringResource(id = R.string.module_restore_message)
                     ListItem(
@@ -171,8 +177,6 @@ fun BackupRestoreScreen(navigator: DestinationsNavigator) {
                         }
                     )
 
-                    CardItemSpacer()
-
                     val moduleBackupText = stringResource(id = R.string.module_backup)
                     val moduleBackupMessage = stringResource(id = R.string.module_backup_message)
                     ListItem(
@@ -204,16 +208,14 @@ fun BackupRestoreScreen(navigator: DestinationsNavigator) {
                             )
                         }
                     )
+                    }
                 }
             }
 
-            CardItemSpacer()
-
             // Allowlist card: Backup + Restore in one card
-            StandardCard(modifier = Modifier.fillMaxWidth()) {
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(CardConstants.ITEM_SPACING_MEDIUM)
-                ) {
+            item {
+                StandardCard(modifier = Modifier.fillMaxWidth()) {
+                    CardItemsColumn {
                     val allowlistBackupText = stringResource(id = R.string.allowlist_backup)
                     val allowlistBackupMessage = stringResource(id = R.string.allowlist_backup_message)
                     ListItem(
@@ -246,8 +248,6 @@ fun BackupRestoreScreen(navigator: DestinationsNavigator) {
                         }
                     )
 
-                    CardItemSpacer()
-
                     val allowlistRestore = stringResource(id = R.string.allowlist_restore)
                     val allowlistrestoreMessage = stringResource(id = R.string.allowlist_restore_message)
                     ListItem(
@@ -279,6 +279,7 @@ fun BackupRestoreScreen(navigator: DestinationsNavigator) {
                             )
                         }
                     )
+                    }
                 }
             }
         }
