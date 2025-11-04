@@ -1047,14 +1047,13 @@ fun SquareStatusCard(
      ) {
          val availableWidth = maxWidth
          val spacing = CardConstants.CARD_SPACING
-         
-         // Rectangle formula: keep half width, reduce height for rectangular aspect
-         val rectWidth = (availableWidth / 2) - (spacing / 2)
-         val rectHeight = rectWidth * 0.6f
-         
-         // Right side: remaining width; stack two cards with half of rectHeight
-         val remainingWidth = availableWidth - rectWidth - spacing
-         val halfCardHeight = (rectHeight - spacing) / 2
+
+         // Square formula: half of width minus spacing
+         val squareSize = (availableWidth / 2) - (spacing / 2)
+
+         // Right side: remaining width; stack two cards with half of square height
+         val remainingWidth = availableWidth - squareSize - spacing
+         val halfCardHeight = (squareSize - spacing) / 2
          
          // Horizontal layout: Perfect square card on left, right cards fill remaining space
          Row(
@@ -1062,11 +1061,10 @@ fun SquareStatusCard(
              horizontalArrangement = Arrangement.spacedBy(spacing),
              verticalAlignment = Alignment.Top
          ) {
-        // Main status card - rectangle
+        // Main status card - perfect square
         Card(
             modifier = Modifier
-                .width(rectWidth)
-                .height(rectHeight),
+                .size(squareSize),
             colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.primaryContainer
             )
@@ -1227,12 +1225,13 @@ fun RectangleStatusCard(
          val availableWidth = maxWidth
          val spacing = CardConstants.CARD_SPACING
          
-         // Simple formula: Square = (screen width / 2) - (spacing / 2)
-         val squareSize = (availableWidth / 2) - (spacing / 2)
+         // Rectangle formula: keep half width, reduce height for rectangular aspect
+         val rectWidth = (availableWidth / 2) - (spacing / 2)
+         val rectHeight = rectWidth * 0.6f
          
-         // Right side: remaining space - spacing, then divide by 2 - spacing
-         val remainingWidth = availableWidth - squareSize - spacing
-         val halfCardHeight = (squareSize - spacing) / 2
+         // Right side: remaining width; stack two cards with half of rectHeight
+         val remainingWidth = availableWidth - rectWidth - spacing
+         val halfCardHeight = (rectHeight - spacing) / 2
          
          // Horizontal layout: Perfect square card on left, right cards fill remaining space
          Row(
@@ -1240,10 +1239,11 @@ fun RectangleStatusCard(
              horizontalArrangement = Arrangement.spacedBy(spacing),
              verticalAlignment = Alignment.Top
          ) {
-        // Main status card - perfect square
+        // Main status card - rectangle
         Card(
             modifier = Modifier
-                .size(squareSize), // Perfect square with fixed size
+                .width(rectWidth)
+                .height(rectHeight),
             colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.primaryContainer
             )

@@ -511,7 +511,15 @@ fun HomeSettingsScreen(
                                     )
                                 }
                                 
-                                // Selection indicator removed to keep a solid, clean look
+                        // Selection indicator: show a small check icon on the selected item
+                        if (selectedLayoutType == option) {
+                            Icon(
+                                imageVector = Icons.Default.CheckCircle,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(18.dp)
+                            )
+                        }
                             }
                         }
                     }
