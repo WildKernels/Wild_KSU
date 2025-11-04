@@ -6,7 +6,7 @@
     <string name="issue_report_github">去 GitHub 报告</string>
     <string name="issue_report_telegram">通过 Telegram 联系</string>
     <string name="issue_report_github_link">https://github.com/WildKernels/Wild_KSU/issues</string>
-    <string name="issue_report_telegram_link">https://t.me/Wild_Kernels/2</string>
+    <string name="issue_report_telegram_link">https://t.me/WildKernels/2</string>
     <string name="confirm">确认</string>
     <string name="home">主页</string>
     <string name="home_not_installed">未安装</string>
@@ -283,3 +283,4 @@
     <string name="individual_app_cards">独立应用卡片</string>
     <string name="individual_app_cards_summary">Show each app in its own card instead of a list</string>
 </resources>
+

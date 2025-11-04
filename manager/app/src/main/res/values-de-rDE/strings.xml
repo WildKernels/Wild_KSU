@@ -6,7 +6,7 @@
     <string name="issue_report_github">Auf GitHub melden</string>
     <string name="issue_report_telegram">Per Telegram kontaktieren</string>
     <string name="issue_report_github_link">https://github.com/WildKernels/Wild_KSU/issues</string>
-    <string name="issue_report_telegram_link">https://t.me/Wild_Kernels/2</string>
+    <string name="issue_report_telegram_link">https://t.me/WildKernels/2</string>
     <string name="confirm">Bestätigen</string>
     <string name="home">Startseite</string>
     <string name="home_not_installed">Nicht installiert</string>
@@ -285,3 +285,4 @@
     <string name="individual_app_cards">Individuelle App-Karten</string>
     <string name="individual_app_cards_summary">Zeige jede App in ihrer eigenen Karte anstatt in einer Liste</string>
 </resources>
+

@@ -6,7 +6,7 @@
     <string name="issue_report_github">Báo cáo trên GitHub</string>
     <string name="issue_report_telegram">Liên hệ qua Telegram</string>
     <string name="issue_report_github_link">https://github.com/WildKernels/Wild_KSU/issues</string>
-    <string name="issue_report_telegram_link">https://t.me/Wild_Kernels/2</string>
+    <string name="issue_report_telegram_link">https://t.me/WildKernels/2</string>
     <string name="confirm">Xác nhận</string>
     <string name="home">Trang chủ</string>
     <string name="home_not_installed">Chưa được cài đặt</string>
@@ -283,3 +283,4 @@
     <string name="individual_app_cards">Thẻ ứng dụng cá nhân</string>
     <string name="individual_app_cards_summary">Hiện mỗi ứng dụng trong thẻ riêng thay vì danh sách</string>
 </resources>
+

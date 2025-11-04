@@ -6,7 +6,7 @@
     <string name="issue_report_github">GitHub da rapor edin</string>
     <string name="issue_report_telegram">Telegram aracılığıyla iletişim kurun</string>
     <string name="issue_report_github_link">https://github.com/WildKernels/Wild_KSU/i ssues</string>
-    <string name="issue_report_telegram_link">https://t.me/Wild_Kernels/2</string>
+    <string name="issue_report_telegram_link">https://t.me/WildKernels/2</string>
     <string name="confirm">Onayla</string>
     <string name="home">Ana Ekran</string>
     <string name="home_not_installed">Kurulu değil</string>
@@ -288,3 +288,4 @@ Lütfen %2$d veya daha yüksek bir sürüme yükseltin!</string>
     <string name="individual_app_cards">Bireysel Uygulama Kartları</string>
     <string name="individual_app_cards_summary">Her uygulamayı bir liste yerine kendi kartında göster</string>
 </resources>
+

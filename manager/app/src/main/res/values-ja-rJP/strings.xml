@@ -6,7 +6,7 @@
     <string name="issue_report_github">GitHubで報告</string>
     <string name="issue_report_telegram">Telegramで連絡</string>
     <string name="issue_report_github_link">https://github.com/WildKernels/Wild_KSU/issues</string>
-    <string name="issue_report_telegram_link">https://t.me/Wild_Kernels/2</string>
+    <string name="issue_report_telegram_link">https://t.me/WildKernels/2</string>
     <string name="confirm">確認</string>
     <string name="home">ホーム</string>
     <string name="home_not_installed">未インストール</string>
