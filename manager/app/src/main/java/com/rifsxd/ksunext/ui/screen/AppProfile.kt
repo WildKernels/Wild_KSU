@@ -205,18 +205,32 @@ private fun AppProfileInner(
                     }
                     Crossfade(targetState = mode, label = "") { currentMode ->
                         if (currentMode == Mode.Template) {
-                            TemplateConfig(
-                                profile = profile,
-                                onViewTemplate = onViewTemplate,
-                                onManageTemplate = onManageTemplate,
-                                onProfileChange = onProfileChange
-                            )
+                            Card(
+                                shape = RoundedCornerShape(12.dp),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = MaterialTheme.colorScheme.surfaceContainer
+                                )
+                            ) {
+                                TemplateConfig(
+                                    profile = profile,
+                                    onViewTemplate = onViewTemplate,
+                                    onManageTemplate = onManageTemplate,
+                                    onProfileChange = onProfileChange
+                                )
+                            }
                         } else if (mode == Mode.Custom) {
-                            RootProfileConfig(
-                                fixedName = true,
-                                profile = profile,
-                                onProfileChange = onProfileChange
-                            )
+                            Card(
+                                shape = RoundedCornerShape(12.dp),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = MaterialTheme.colorScheme.surfaceContainer
+                                )
+                            ) {
+                                RootProfileConfig(
+                                    fixedName = true,
+                                    profile = profile,
+                                    onProfileChange = onProfileChange
+                                )
+                            }
                         }
                     }
                 } else {
@@ -233,12 +247,19 @@ private fun AppProfileInner(
                     }
                     Crossfade(targetState = mode, label = "") { currentMode ->
                         val modifyEnabled = currentMode == Mode.Custom
-                        AppProfileConfig(
-                            fixedName = true,
-                            profile = profile,
-                            enabled = modifyEnabled,
-                            onProfileChange = onProfileChange
-                        )
+                        Card(
+                            shape = RoundedCornerShape(12.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceContainer
+                            )
+                        ) {
+                            AppProfileConfig(
+                                fixedName = true,
+                                profile = profile,
+                                enabled = modifyEnabled,
+                                onProfileChange = onProfileChange
+                            )
+                        }
                     }
                 }
             }
