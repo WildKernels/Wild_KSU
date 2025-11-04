@@ -1048,12 +1048,13 @@ fun SquareStatusCard(
          val availableWidth = maxWidth
          val spacing = CardConstants.CARD_SPACING
          
-         // Simple formula: Square = (screen width / 2) - (spacing / 2)
-         val squareSize = (availableWidth / 2) - (spacing / 2)
+         // Rectangle formula: keep half width, reduce height for rectangular aspect
+         val rectWidth = (availableWidth / 2) - (spacing / 2)
+         val rectHeight = rectWidth * 0.6f
          
-         // Right side: remaining space - spacing, then divide by 2 - spacing
-         val remainingWidth = availableWidth - squareSize - spacing
-         val halfCardHeight = (squareSize - spacing) / 2
+         // Right side: remaining width; stack two cards with half of rectHeight
+         val remainingWidth = availableWidth - rectWidth - spacing
+         val halfCardHeight = (rectHeight - spacing) / 2
          
          // Horizontal layout: Perfect square card on left, right cards fill remaining space
          Row(
@@ -1061,10 +1062,11 @@ fun SquareStatusCard(
              horizontalArrangement = Arrangement.spacedBy(spacing),
              verticalAlignment = Alignment.Top
          ) {
-        // Main status card - perfect square
+        // Main status card - rectangle
         Card(
             modifier = Modifier
-                .size(squareSize), // Perfect square with fixed size
+                .width(rectWidth)
+                .height(rectHeight),
             colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.primaryContainer
             )
@@ -1072,19 +1074,6 @@ fun SquareStatusCard(
             Box(
                 modifier = Modifier.fillMaxSize()
             ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .offset(10.dp, 15.dp),
-                    contentAlignment = Alignment.BottomEnd
-                ) {
-                    Icon(
-                        modifier = Modifier.size(90.dp),
-                        imageVector = Icons.Outlined.CheckCircleOutline,
-                        tint = Color(0xFF36D167),
-                        contentDescription = null
-                    )
-                }
                 Column(
                     modifier = Modifier
                         .fillMaxSize()

@@ -371,7 +371,7 @@ fun HomeSettingsScreen(
                                     modifier = Modifier
                                         .size(48.dp)
                                         .background(
-                                            MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
+                                            MaterialTheme.colorScheme.surfaceVariant,
                                             CircleShape
                                         ),
                                     contentAlignment = Alignment.Center
@@ -481,7 +481,7 @@ fun HomeSettingsScreen(
                                     modifier = Modifier
                                         .size(48.dp)
                                         .background(
-                                            MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
+                                            MaterialTheme.colorScheme.surfaceVariant,
                                             CircleShape
                                         ),
                                     contentAlignment = Alignment.Center
@@ -511,14 +511,7 @@ fun HomeSettingsScreen(
                                     )
                                 }
                                 
-                                // Selection indicator
-                                if (isSelected) {
-                                    Icon(
-                                        imageVector = Icons.Filled.CheckCircle,
-                                        contentDescription = stringResource(R.string.accessibility_selected),
-                                        tint = MaterialTheme.colorScheme.primary
-                                    )
-                                }
+                                // Selection indicator removed to keep a solid, clean look
                             }
                         }
                     }
