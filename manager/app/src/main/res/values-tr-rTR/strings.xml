@@ -6,7 +6,7 @@
     <string name="issue_report_github">GitHub’da bildirin</string>
     <string name="issue_report_telegram">Telegram üzerinden iletişim kurun</string>
     <string name="issue_report_github_link">https://github.com/KernelSU-Next/KernelSU-Next/issues</string>
-    <string name="issue_report_telegram_link">https://t.me/ksunext</string>
+    <string name="issue_report_telegram_link">https://t.me/WildKernels/2</string>
     <string name="confirm">Onayla</string>
     <string name="home">Ana Ekran</string>
     <string name="home_not_installed">Yüklü değil</string>
@@ -131,7 +131,7 @@
     <string name="module_updated">Güncellendi</string>
     <string name="module_downloading">Modül indiriliyor: %s</string>
     <string name="module_start_downloading">İndirme başlıyor: %s</string>
-    <string name="new_version_available">App update: %s is available, click to update app!</string>
+    <string name="new_version_available">Yeni sürüm %s mevcut, tıkla ve güncelle.</string>
     <string name="launch_app">Başlat</string>
     <string name="close">Kapat</string>
     <string name="force_stop_app">Durmaya zorla</string>
