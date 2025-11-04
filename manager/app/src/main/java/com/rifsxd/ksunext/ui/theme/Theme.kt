@@ -78,7 +78,8 @@ fun KernelSUTheme(
                 surfaceContainerHighest = baseSurfaceContainerHighest.copy(alpha = alphaValue),
                 primaryContainer = basePrimaryContainer.copy(alpha = alphaValue),
                 secondaryContainer = baseSecondaryContainer.copy(alpha = alphaValue),
-                tertiaryContainer = baseTertiaryContainer.copy(alpha = alphaValue)
+                tertiaryContainer = baseTertiaryContainer.copy(alpha = alphaValue),
+                outlineVariant = dynamicScheme.outlineVariant.copy(alpha = alphaValue)
             )
         }
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
@@ -95,7 +96,8 @@ fun KernelSUTheme(
                 surfaceContainerHighest = baseScheme.surfaceContainerHighest.copy(alpha = alphaValue),
                 primaryContainer = baseScheme.primaryContainer.copy(alpha = alphaValue),
                 secondaryContainer = baseScheme.secondaryContainer.copy(alpha = alphaValue),
-                tertiaryContainer = baseScheme.tertiaryContainer.copy(alpha = alphaValue)
+                tertiaryContainer = baseScheme.tertiaryContainer.copy(alpha = alphaValue),
+                outlineVariant = baseScheme.outlineVariant.copy(alpha = alphaValue)
             )
         }
         amoledMode && darkTheme -> {
@@ -109,6 +111,7 @@ fun KernelSUTheme(
                 surfaceContainerLowest = baseSurfaceVariant.copy(alpha = alphaValue),
                 surfaceContainerHigh = baseSurfaceVariant.copy(alpha = alphaValue),
                 surfaceContainerHighest = baseSurfaceVariant.copy(alpha = alphaValue),
+                outlineVariant = DarkColorScheme.outlineVariant.copy(alpha = alphaValue)
             )
         }
         darkTheme -> {
@@ -123,7 +126,8 @@ fun KernelSUTheme(
                 surfaceContainerHighest = DarkColorScheme.surfaceContainerHighest.copy(alpha = alphaValue),
                 primaryContainer = DarkColorScheme.primaryContainer.copy(alpha = alphaValue),
                 secondaryContainer = DarkColorScheme.secondaryContainer.copy(alpha = alphaValue),
-                tertiaryContainer = DarkColorScheme.tertiaryContainer.copy(alpha = alphaValue)
+                tertiaryContainer = DarkColorScheme.tertiaryContainer.copy(alpha = alphaValue),
+                outlineVariant = DarkColorScheme.outlineVariant.copy(alpha = alphaValue)
             )
         }
         else -> {
@@ -138,7 +142,8 @@ fun KernelSUTheme(
                 surfaceContainerHighest = LightColorScheme.surfaceContainerHighest.copy(alpha = alphaValue),
                 primaryContainer = LightColorScheme.primaryContainer.copy(alpha = alphaValue),
                 secondaryContainer = LightColorScheme.secondaryContainer.copy(alpha = alphaValue),
-                tertiaryContainer = LightColorScheme.tertiaryContainer.copy(alpha = alphaValue)
+                tertiaryContainer = LightColorScheme.tertiaryContainer.copy(alpha = alphaValue),
+                outlineVariant = LightColorScheme.outlineVariant.copy(alpha = alphaValue)
             )
         }
     }
