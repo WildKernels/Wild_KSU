@@ -7,8 +7,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Backup
@@ -64,6 +62,42 @@ fun BackupRestoreScreen(navigator: DestinationsNavigator) {
         val restoreDialog = rememberConfirmDialog()
         val backupDialog = rememberConfirmDialog()
 
+        val context = LocalContext.current
+        val scope = rememberCoroutineScope()
+
+        var showRebootDialog by remember { mutableStateOf(false) }
+
+        if (showRebootDialog) {
+            AlertDialog(
+                onDismissRequest = { showRebootDialog = false },
+                title = { Text(
+                    text = stringResource(R.string.reboot_required),
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.SemiBold
+                ) },
+                text = { Text(stringResource(R.string.reboot_message)) },
+                confirmButton = {
+                    TextButton(onClick = {
+                        showRebootDialog = false
+                        reboot()
+                    }) {
+                        Text(stringResource(R.string.reboot))
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showRebootDialog = false }) {
+                        Text(stringResource(R.string.later))
+                    }
+                }
+            )
+        }
+
+        val prefs = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
+
+        var useOverlayFs by rememberSaveable {
+            mutableStateOf(readMountSystemFile())
+        }
+
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
@@ -73,68 +107,6 @@ fun BackupRestoreScreen(navigator: DestinationsNavigator) {
             verticalArrangement = Arrangement.spacedBy(CardConstants.CARD_SPACING)
         ) {
 
-            val context = LocalContext.current
-            val scope = rememberCoroutineScope()
-
-            var showRebootDialog by remember { mutableStateOf(false) }
-
-            if (showRebootDialog) {
-                AlertDialog(
-                    onDismissRequest = { showRebootDialog = false },
-                    title = { Text(
-                        text = stringResource(R.string.reboot_required),
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.SemiBold
-                    ) },
-                    text = { Text(stringResource(R.string.reboot_message)) },
-                    confirmButton = {
-                        TextButton(onClick = {
-                            showRebootDialog = false
-                            reboot()
-                        }) {
-                            Text(stringResource(R.string.reboot))
-                        }
-                    },
-                    dismissButton = {
-                        TextButton(onClick = { showRebootDialog = false }) {
-                            Text(stringResource(R.string.later))
-                        }
-                    }
-                )
-            }
-
-            // Keep UI minimal: two cards only
-
-            if (showRebootDialog) {
-                AlertDialog(
-                    onDismissRequest = { showRebootDialog = false },
-                    title = { Text(
-                        text = stringResource(R.string.reboot_required),
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.SemiBold
-                    ) },
-                    text = { Text(stringResource(R.string.reboot_message)) },
-                    confirmButton = {
-                        TextButton(onClick = {
-                            showRebootDialog = false
-                            reboot()
-                        }) {
-                            Text(stringResource(R.string.reboot))
-                        }
-                    },
-                    dismissButton = {
-                        TextButton(onClick = { showRebootDialog = false }) {
-                            Text(stringResource(R.string.later))
-                        }
-                    }
-                )
-            }
-
-            val prefs = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
-
-            var useOverlayFs by rememberSaveable {
-                mutableStateOf(readMountSystemFile())
-            }
 
             // Module card: Restore + Backup in one card
             item {
