@@ -206,6 +206,7 @@ fun GroupsPanel(selected: List<Groups>, closeSelection: (selection: Set<Groups>)
         
         AlertDialog(
             onDismissRequest = { showGroupsDialog = false },
+            containerColor = MaterialTheme.colorScheme.surfaceContainer.copy(alpha = 1.0f),
             title = {
                 Text(
                     text = stringResource(R.string.profile_groups),
@@ -236,9 +237,9 @@ fun GroupsPanel(selected: List<Groups>, closeSelection: (selection: Set<Groups>)
                                 },
                             colors = CardDefaults.cardColors(
                                 containerColor = if (isSelected) 
-                                    MaterialTheme.colorScheme.primaryContainer 
+                                    MaterialTheme.colorScheme.primaryContainer.copy(alpha = 1.0f)
                                 else 
-                                    MaterialTheme.colorScheme.surface
+                                    MaterialTheme.colorScheme.surface.copy(alpha = 1.0f)
                             )
                         ) {
                             Row(
@@ -332,6 +333,7 @@ fun CapsPanel(
         
         AlertDialog(
             onDismissRequest = { showCapabilitiesDialog = false },
+            containerColor = MaterialTheme.colorScheme.surfaceContainer.copy(alpha = 1.0f),
             title = { Text(stringResource(R.string.profile_capabilities)) },
             text = {
                 LazyColumn {
@@ -351,9 +353,9 @@ fun CapsPanel(
                                 },
                             colors = CardDefaults.cardColors(
                                 containerColor = if (selection.value.contains(capability)) 
-                                    MaterialTheme.colorScheme.primaryContainer 
+                                    MaterialTheme.colorScheme.primaryContainer.copy(alpha = 1.0f)
                                 else 
-                                    MaterialTheme.colorScheme.surface
+                                    MaterialTheme.colorScheme.surface.copy(alpha = 1.0f)
                             ),
                             border = if (selection.value.contains(capability)) 
                                 BorderStroke(2.dp, MaterialTheme.colorScheme.primary) 
@@ -505,6 +507,7 @@ private fun SELinuxPanel(
     if (showDialog) {
         AlertDialog(
             onDismissRequest = { showDialog = false },
+            containerColor = MaterialTheme.colorScheme.surfaceContainer.copy(alpha = 1.0f),
             title = { Text(text = stringResource(R.string.profile_selinux_context)) },
             text = {
                 Column {
