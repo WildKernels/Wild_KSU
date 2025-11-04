@@ -1178,6 +1178,196 @@ fun SquareStatusCard(
     } // Close BoxWithConstraints
 }
 
+@Composable
+fun RectangleStatusCard(
+    ksuVersion: Int,
+    kernelVersion: KernelVersion,
+    lkmMode: Boolean?,
+    onClickSuperuser: () -> Unit = {},
+    onClickModule: () -> Unit = {},
+) {
+    val safeMode = when {
+        Natives.isSafeMode -> " [${stringResource(id = R.string.safe_mode)}]"
+        else -> ""
+    }
+    
+    val workingMode = when {
+        lkmMode == true -> "LKM"
+        lkmMode == false || kernelVersion.isGKI() -> "GKI2"
+        lkmMode == null && kernelVersion.isULegacy() -> "U-LEGACY"
+        lkmMode == null && kernelVersion.isLegacy() -> "LEGACY"
+        lkmMode == null && kernelVersion.isGKI1() -> "GKI1"
+        else -> "NON-STANDARD"
+    }
+    
+    val workingText = "${stringResource(id = R.string.home_working)}$safeMode"
+    
+    // Use BoxWithConstraints to get actual available space dynamically
+     BoxWithConstraints(
+         modifier = Modifier.fillMaxWidth()
+     ) {
+         val availableWidth = maxWidth
+         val spacing = CardConstants.CARD_SPACING
+         
+         // Simple formula: Square = (screen width / 2) - (spacing / 2)
+         val squareSize = (availableWidth / 2) - (spacing / 2)
+         
+         // Right side: remaining space - spacing, then divide by 2 - spacing
+         val remainingWidth = availableWidth - squareSize - spacing
+         val halfCardHeight = (squareSize - spacing) / 2
+         
+         // Horizontal layout: Perfect square card on left, right cards fill remaining space
+         Row(
+             modifier = Modifier.fillMaxWidth(),
+             horizontalArrangement = Arrangement.spacedBy(spacing),
+             verticalAlignment = Alignment.Top
+         ) {
+        // Main status card - perfect square
+        Card(
+            modifier = Modifier
+                .size(squareSize), // Perfect square with fixed size
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.primaryContainer
+            )
+        ) {
+            Box(
+                modifier = Modifier.fillMaxSize()
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .offset(10.dp, 15.dp),
+                    contentAlignment = Alignment.BottomEnd
+                ) {
+                    Icon(
+                        modifier = Modifier.size(90.dp),
+                        imageVector = Icons.Outlined.CheckCircleOutline,
+                        tint = Color(0xFF36D167),
+                        contentDescription = null
+                    )
+                }
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(all = 16.dp)
+                ) {
+                    val labelStyle = LabelItemDefaults.style
+                    TextRow(
+                        trailingContent = {
+                            LabelItem(
+                                icon = if (Natives.isSafeMode) {
+                                    {
+                                        Icon(
+                                            tint = labelStyle.contentColor,
+                                            imageVector = Icons.Filled.Security,
+                                            contentDescription = null
+                                        )
+                                    }
+                                } else {
+                                    null
+                                },
+                                text = {
+                                    Text(
+                                        text = workingMode,
+                                        style = labelStyle.textStyle.copy(color = labelStyle.contentColor),
+                                    )
+                                }
+                            )
+                        }
+                    ) {
+                        Text(
+                            text = workingText,
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    }
+                    Spacer(Modifier.height(4.dp))
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = stringResource(R.string.home_working_version, ksuVersion),
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Medium,
+                    )
+                }
+            }
+        }
+        
+        // Right side: Two cards stacked vertically that fill remaining space
+        Column(
+            modifier = Modifier.width(remainingWidth),
+            verticalArrangement = Arrangement.spacedBy(CardConstants.CARD_SPACING)
+        ) {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(CardConstants.CARD_SPACING),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(halfCardHeight), // Half the height of the square card
+                    onClick = onClickSuperuser
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(8.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = stringResource(R.string.superuser),
+                            fontWeight = FontWeight.Medium,
+                            fontSize = 11.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                        Spacer(Modifier.height(2.dp))
+                        Text(
+                            text = getSuperuserCount().toString(),
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = MaterialTheme.colorScheme.onSurface,
+                        )
+                    }
+                }
+                
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(halfCardHeight), // Half the height of the square card
+                    onClick = onClickModule
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(8.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = stringResource(R.string.module),
+                            fontWeight = FontWeight.Medium,
+                            fontSize = 11.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                        Spacer(Modifier.height(2.dp))
+                        Text(
+                            text = getModuleCount().toString(),
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = MaterialTheme.colorScheme.onSurface,
+                        )
+                    }
+                }
+            }
+        }
+    }
+    } // Close BoxWithConstraints
+}
+
 fun getManagerVersion(context: Context): Pair<String, Long> {
     val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)!!
     val versionCode = PackageInfoCompat.getLongVersionCode(packageInfo)
