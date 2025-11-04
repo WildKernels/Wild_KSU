@@ -93,31 +93,7 @@ fun BackupRestoreScreen(navigator: DestinationsNavigator) {
                 )
             }
 
-            val moduleBackup = stringResource(id = R.string.module_backup)
-            val backupMessage = stringResource(id = R.string.module_backup_message)
-            ListItem(
-                leadingContent = {
-                    Icon(
-                        Icons.Filled.Backup,
-                        moduleBackup
-                    )
-                },
-                headlineContent = { Text(
-                    text = moduleBackup,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold,
-                ) },
-                modifier = Modifier.clickable {
-                    scope.launch {
-                        val result = backupDialog.awaitConfirm(title = moduleBackup, content = backupMessage)
-                        if (result == ConfirmResult.Confirmed) {
-                            loadingDialog.withLoading {
-                                moduleBackup()
-                            }
-                        }
-                    }
-                }
-            )
+            // Keep UI minimal: two cards only
 
             if (showRebootDialog) {
                 AlertDialog(
@@ -187,32 +163,7 @@ fun BackupRestoreScreen(navigator: DestinationsNavigator) {
                 )
             }
 
-            val allowlistBackup = stringResource(id = R.string.allowlist_backup)
-            val allowlistbackupMessage = stringResource(id = R.string.allowlist_backup_message)
-            StandardCard(onClick = {
-                scope.launch {
-                    val result = backupDialog.awaitConfirm(title = allowlistBackup, content = allowlistbackupMessage)
-                    if (result == ConfirmResult.Confirmed) {
-                        loadingDialog.withLoading {
-                            allowlistBackup()
-                        }
-                    }
-                }
-            }) {
-                ListItem(
-                    leadingContent = {
-                        Icon(
-                            Icons.Filled.Backup,
-                            allowlistBackup
-                        )
-                    },
-                    headlineContent = { Text(
-                        text = allowlistBackup,
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.SemiBold,
-                    ) }
-                )
-            }
+            // Removed allowlist backup to keep only two cards as requested
 
             val allowlistRestore = stringResource(id = R.string.allowlist_restore)
             val allowlistrestoreMessage = stringResource(id = R.string.allowlist_restore_message)
