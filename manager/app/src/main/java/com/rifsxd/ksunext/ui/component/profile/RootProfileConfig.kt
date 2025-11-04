@@ -1,31 +1,64 @@
 package com.rifsxd.ksunext.ui.component.profile
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.AssistChip
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedCard
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.text.isDigitsOnly
-import com.maxkeppeker.sheets.core.models.base.Header
-import com.maxkeppeker.sheets.core.models.base.rememberUseCaseState
+import com.maxkeppeler.sheets.core.models.base.Header
+import com.maxkeppeler.sheets.core.models.base.rememberUseCaseState
 import com.maxkeppeler.sheets.input.InputDialog
-import com.maxkeppeler.sheets.input.models.*
-import com.maxkeppeler.sheets.list.ListDialog
-import com.maxkeppeler.sheets.list.models.ListOption
-import com.maxkeppeler.sheets.list.models.ListSelection
+import com.maxkeppeler.sheets.input.models.InputHeader
+import com.maxkeppeler.sheets.input.models.InputSelection
+import com.maxkeppeler.sheets.input.models.InputTextField
+import com.maxkeppeler.sheets.input.models.InputTextFieldType
+import com.maxkeppeler.sheets.input.models.ValidationResult
 import com.rifsxd.ksunext.Natives
 import com.rifsxd.ksunext.R
 import com.rifsxd.ksunext.profile.Capabilities
 import com.rifsxd.ksunext.profile.Groups
 import com.rifsxd.ksunext.ui.component.rememberCustomDialog
+import com.rifsxd.ksunext.ui.util.isSepolicyValid
 import com.rifsxd.ksunext.ui.util.isSepolicyValid
 
 
@@ -163,7 +196,9 @@ fun RootProfileConfig(
 @OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun GroupsPanel(selected: List<Groups>, closeSelection: (selection: Set<Groups>) -> Unit) {
-    val selectGroupsDialog = rememberCustomDialog { dismiss: () -> Unit ->
+    var showGroupsDialog by remember { mutableStateOf(false) }
+    
+    if (showGroupsDialog) {
         val groups = Groups.entries.toTypedArray().sortedWith(
             compareBy<Groups> { if (selected.contains(it)) 0 else 1 }
                 .then(compareBy {
@@ -175,36 +210,90 @@ fun GroupsPanel(selected: List<Groups>, closeSelection: (selection: Set<Groups>)
                     }
                 })
                 .then(compareBy { it.name })
-
         )
-        val options = groups.map { value ->
-            ListOption(
-                titleText = value.display,
-                subtitleText = value.desc,
-                selected = selected.contains(value),
-            )
-        }
-
-        val selection = HashSet(selected)
-        ListDialog(
-            state = rememberUseCaseState(visible = true, onFinishedRequest = {
-                closeSelection(selection)
-            }, onCloseRequest = {
-                dismiss()
-            }),
-            header = Header.Default(
-                title = stringResource(R.string.profile_groups),
-            ),
-            selection = ListSelection.Multiple(
-                showCheckBoxes = true,
-                options = options,
-                maxChoices = 32, // Kernel only supports 32 groups at most
-            ) { indecies, _ ->
-                // Handle selection
-                selection.clear()
-                indecies.forEach { index ->
-                    val group = groups[index]
-                    selection.add(group)
+        
+        var selection by remember { mutableStateOf(selected.toSet()) }
+        
+        AlertDialog(
+            onDismissRequest = { showGroupsDialog = false },
+            title = {
+                Text(
+                    text = stringResource(R.string.profile_groups),
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Bold
+                )
+            },
+            text = {
+                LazyColumn(
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    items(groups) { group ->
+                        val isSelected = selection.contains(group)
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    selection = if (isSelected) {
+                                        selection - group
+                                    } else {
+                                        if (selection.size < 32) { // Kernel only supports 32 groups at most
+                                            selection + group
+                                        } else {
+                                            selection
+                                        }
+                                    }
+                                },
+                            colors = CardDefaults.cardColors(
+                                containerColor = if (isSelected) 
+                                    MaterialTheme.colorScheme.primaryContainer 
+                                else 
+                                    MaterialTheme.colorScheme.surface
+                            )
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                            ) {
+                                Checkbox(
+                                    checked = isSelected,
+                                    onCheckedChange = null
+                                )
+                                Column(
+                                    modifier = Modifier.weight(1f)
+                                ) {
+                                    Text(
+                                        text = group.display,
+                                        style = MaterialTheme.typography.bodyLarge,
+                                        fontWeight = FontWeight.Medium
+                                    )
+                                    Text(
+                                        text = group.desc,
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        closeSelection(selection)
+                        showGroupsDialog = false
+                    }
+                ) {
+                    Text(stringResource(android.R.string.ok))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showGroupsDialog = false }) {
+                    Text(stringResource(android.R.string.cancel))
                 }
             }
         )
@@ -215,12 +304,11 @@ fun GroupsPanel(selected: List<Groups>, closeSelection: (selection: Set<Groups>)
             .fillMaxWidth()
             .padding(16.dp)
     ) {
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .clickable {
-                    selectGroupsDialog.show()
+                    showGroupsDialog = true
                 }
                 .padding(16.dp)
         ) {
@@ -234,7 +322,6 @@ fun GroupsPanel(selected: List<Groups>, closeSelection: (selection: Set<Groups>)
                 }
             }
         }
-
     }
 }
 
@@ -244,38 +331,95 @@ fun CapsPanel(
     selected: Collection<Capabilities>,
     closeSelection: (selection: Set<Capabilities>) -> Unit
 ) {
-    val selectCapabilitiesDialog = rememberCustomDialog { dismiss ->
+    var showCapabilitiesDialog by remember { mutableStateOf(false) }
+    
+    if (showCapabilitiesDialog) {
         val caps = Capabilities.entries.toTypedArray().sortedWith(
             compareBy<Capabilities> { if (selected.contains(it)) 0 else 1 }
                 .then(compareBy { it.name })
         )
-        val options = caps.map { value ->
-            ListOption(
-                titleText = value.display,
-                subtitleText = value.desc,
-                selected = selected.contains(value),
-            )
-        }
-
-        val selection = HashSet(selected)
-        ListDialog(
-            state = rememberUseCaseState(visible = true, onFinishedRequest = {
-                closeSelection(selection)
-            }, onCloseRequest = {
-                dismiss()
-            }),
-            header = Header.Default(
-                title = stringResource(R.string.profile_capabilities),
-            ),
-            selection = ListSelection.Multiple(
-                showCheckBoxes = true,
-                options = options
-            ) { indecies, _ ->
-                // Handle selection
-                selection.clear()
-                indecies.forEach { index ->
-                    val group = caps[index]
-                    selection.add(group)
+        val selection = remember { mutableStateOf(HashSet(selected)) }
+        
+        AlertDialog(
+            onDismissRequest = { showCapabilitiesDialog = false },
+            title = { Text(stringResource(R.string.profile_capabilities)) },
+            text = {
+                LazyColumn {
+                    items(caps) { capability ->
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 2.dp)
+                                .clickable {
+                                    val newSelection = HashSet(selection.value)
+                                    if (newSelection.contains(capability)) {
+                                        newSelection.remove(capability)
+                                    } else {
+                                        newSelection.add(capability)
+                                    }
+                                    selection.value = newSelection
+                                },
+                            colors = CardDefaults.cardColors(
+                                containerColor = if (selection.value.contains(capability)) 
+                                    MaterialTheme.colorScheme.primaryContainer 
+                                else 
+                                    MaterialTheme.colorScheme.surface
+                            ),
+                            border = if (selection.value.contains(capability)) 
+                                BorderStroke(2.dp, MaterialTheme.colorScheme.primary) 
+                            else null
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Checkbox(
+                                    checked = selection.value.contains(capability),
+                                    onCheckedChange = { checked ->
+                                        val newSelection = HashSet(selection.value)
+                                        if (checked) {
+                                            newSelection.add(capability)
+                                        } else {
+                                            newSelection.remove(capability)
+                                        }
+                                        selection.value = newSelection
+                                    }
+                                )
+                                Spacer(modifier = Modifier.width(12.dp))
+                                Column {
+                                    Text(
+                                        text = capability.display,
+                                        style = MaterialTheme.typography.bodyLarge,
+                                        fontWeight = FontWeight.Medium
+                                    )
+                                    Text(
+                                        text = capability.desc,
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        closeSelection(selection.value)
+                        showCapabilitiesDialog = false
+                    }
+                ) {
+                    Text(stringResource(android.R.string.ok))
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = { showCapabilitiesDialog = false }
+                ) {
+                    Text(stringResource(android.R.string.cancel))
                 }
             }
         )
@@ -286,12 +430,11 @@ fun CapsPanel(
             .fillMaxWidth()
             .padding(16.dp)
     ) {
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .clickable {
-                    selectCapabilitiesDialog.show()
+                    showCapabilitiesDialog = true
                 }
                 .padding(16.dp)
         ) {
@@ -305,7 +448,6 @@ fun CapsPanel(
                 }
             }
         }
-
     }
 }
 
