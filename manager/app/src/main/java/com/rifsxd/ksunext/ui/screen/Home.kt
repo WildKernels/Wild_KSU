@@ -1243,8 +1243,8 @@ fun RectangleStatusCard(
         // Main status card - rectangle
         Card(
             modifier = Modifier
-                .width(rectWidth)
-                .height(rectHeight),
+                .weight(2f)
+                .aspectRatio(2f/1f),
             colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.primaryContainer
             )
@@ -1311,75 +1311,69 @@ fun RectangleStatusCard(
             }
         }
         
-        // Right side: Two cards stacked vertically that fill remaining space
+        // Right side: Two cards stacked vertically that auto-size
         Column(
-            modifier = Modifier.width(remainingWidth),
+            modifier = Modifier.weight(1f),
             verticalArrangement = Arrangement.spacedBy(CardConstants.CARD_SPACING)
         ) {
-            Column(
-                verticalArrangement = Arrangement.spacedBy(CardConstants.CARD_SPACING),
-                horizontalAlignment = Alignment.CenterHorizontally
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
+                onClick = onClickSuperuser
             ) {
-                Card(
+                Column(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(halfCardHeight), // Half the height of the square card
-                    onClick = onClickSuperuser
+                        .fillMaxSize()
+                        .padding(8.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
                 ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(8.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        Text(
-                            text = stringResource(R.string.superuser),
-                            fontWeight = FontWeight.Medium,
-                            fontSize = 11.sp,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                        Spacer(Modifier.height(2.dp))
-                        Text(
-                            text = getSuperuserCount().toString(),
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            color = MaterialTheme.colorScheme.onSurface,
-                        )
-                    }
+                    Text(
+                        text = stringResource(R.string.superuser),
+                        fontWeight = FontWeight.Medium,
+                        fontSize = 11.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    Spacer(Modifier.height(2.dp))
+                    Text(
+                        text = getSuperuserCount().toString(),
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.onSurface,
+                    )
                 }
-                
-                Card(
+            }
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
+                onClick = onClickModule
+            ) {
+                Column(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(halfCardHeight), // Half the height of the square card
-                    onClick = onClickModule
+                        .fillMaxSize()
+                        .padding(8.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
                 ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(8.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        Text(
-                            text = stringResource(R.string.module),
-                            fontWeight = FontWeight.Medium,
-                            fontSize = 11.sp,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                        Spacer(Modifier.height(2.dp))
-                        Text(
-                            text = getModuleCount().toString(),
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            color = MaterialTheme.colorScheme.onSurface,
-                        )
-                    }
+                    Text(
+                        text = stringResource(R.string.module),
+                        fontWeight = FontWeight.Medium,
+                        fontSize = 11.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    Spacer(Modifier.height(2.dp))
+                    Text(
+                        text = getModuleCount().toString(),
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.onSurface,
+                    )
                 }
             }
         }
