@@ -6,7 +6,7 @@
     <string name="issue_report_github">Reportar no GitHub</string>
     <string name="issue_report_telegram">Contactar via Telegram</string>
     <string name="issue_report_github_link">https://github.com/WildKernels/Wild_KSU/issues</string>
-    <string name="issue_report_telegram_link">https://t.me/WildKernels/2</string>
+    <string name="issue_report_telegram_link"></string>
     <string name="confirm">Confirmar</string>
     <string name="home">Início</string>
     <string name="home_not_installed">Não instalado</string>
