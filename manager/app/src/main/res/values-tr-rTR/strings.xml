@@ -268,8 +268,8 @@
     <string name="home_screen_icon_style_summary">Ana ekran simgesi stilini değiştirin veya kapatın</string>
     <string name="home_screen_icon_current">Geçerli: %s</string>
     <string name="home_screen_icon_select_dialog_title">Ana Ekran Simge Stilini Seçin</string>
-    <string name="home_icon_select_dialog_hint_scroll">Scroll to see more icons</string>
-    <string name="home_icon_select_dialog_current_seasonal">Currently: %s</string>
+    <string name="home_icon_select_dialog_hint_scroll">Daha fazla simge görmek için aşağı kaydırın</string>
+    <string name="home_icon_select_dialog_current_seasonal">Mevcut: %s</string>
     <!-- System Info Card Settings -->
     <string name="system_info_card_settings">Sistem Bilgi Kartı Ayarları</string>
     <string name="system_info_card_settings_summary">Sistem bilgi ekranını ve ana ekran öğelerini özelleştirin</string>
@@ -280,11 +280,11 @@
     <string name="app_name_wild_ksu">Wild KSU</string>
     <!-- Home Settings Card Layout -->
     <string name="home_screen_settings">Ev &amp; Kartlar</string>
-    <string name="home_layout_style">Home Layout Style</string>
-    <string name="home_layout_style_summary">Choose between Stock and MIUIX layouts. Current: %s</string>
-    <string name="home_layout_select_dialog_title">Select Home Layout</string>
-    <string name="home_layout_select_dialog_default">Current default layout</string>
-    <string name="home_layout_select_dialog_alt">Alternative layout style</string>
+    <string name="home_layout_style">Ev Yerleşim Planı</string>
+    <string name="home_layout_style_summary">Varsayılan ve MIUIX düzenleri arasında seçim yapın. Mevcut: %s</string>
+    <string name="home_layout_select_dialog_title">Ev düzenini Seçin</string>
+    <string name="home_layout_select_dialog_default">Mevcut varsayılan düzen</string>
+    <string name="home_layout_select_dialog_alt">Alternatif düzen stili</string>
     <string name="info_card_settings">Kart Bilgi Ayarları</string>
     <string name="info_card_order_management">Bilgi Kartı Sipariş Yönetimi</string>
     <string name="info_card_order_description">Öğeleri bir konum yukarı/aşağı taşımak için dokunun veya üste/alt konuma taşımak için uzun basın. Öğeleri etkinleştirmek/devre dışı bırakmak için geçişi kullanın.</string>
@@ -292,12 +292,12 @@
     <string name="individual_app_cards">Bireysel Uygulama Kartları</string>
     <string name="individual_app_cards_summary">Her uygulamayı bir liste yerine kendi kartında göster</string>
     <!-- Icon options -->
-    <string name="home_icon_option_off">Off</string>
-    <string name="home_icon_option_seasonal">Seasonal (Auto)</string>
-    <string name="home_icon_option_winter">Winter</string>
-    <string name="home_icon_option_spring">Spring</string>
-    <string name="home_icon_option_summer">Summer</string>
-    <string name="home_icon_option_fall">Fall</string>
+    <string name="home_icon_option_off">Kapalı</string>
+    <string name="home_icon_option_seasonal">Mevsimsel (Otomatik)</string>
+    <string name="home_icon_option_winter">Kış</string>
+    <string name="home_icon_option_spring">İlkbahar</string>
+    <string name="home_icon_option_summer">Yaz</string>
+    <string name="home_icon_option_fall">Sonbahar</string>
     <string name="home_icon_option_ksu_next">KSU Next</string>
     <string name="home_icon_option_cannabis">Cannabis</string>
     <string name="home_icon_option_amogus">Amungus</string>
