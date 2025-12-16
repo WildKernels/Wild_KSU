@@ -3,7 +3,7 @@
     <string name="issue_report_title">Sorun mu yaşıyorsunuz?</string>
     <string name="issue_report_body">Bir hatayla mı karşılaştınız veya geri bildiriminiz mi var?</string>
     <string name="issue_report_body_2">Mümkün olan en kısa sürede bildirin!</string>
-    <string name="issue_report_github">GitHub’da bildirin</string>
+    <string name="issue_report_github">GitHub’ da bildirin</string>
     <string name="issue_report_telegram">Telegram üzerinden iletişim kurun</string>
     <string name="issue_report_github_link">https://github.com/KernelSU-Next/KernelSU-Next/issues</string>
     <string name="issue_report_telegram_link">https://t.me/WildKernels/2</string>
@@ -299,13 +299,13 @@
     <string name="home_icon_option_summer">Yaz</string>
     <string name="home_icon_option_fall">Sonbahar</string>
     <string name="home_icon_option_ksu_next">KSU Next</string>
-    <string name="home_icon_option_cannabis">Cannabis</string>
-    <string name="home_icon_option_amogus">Amungus</string>
+    <string name="home_icon_option_cannabis">Bitki</string>
+    <string name="home_icon_option_amogus">Amogus</string>
     <!-- Home Layout Options -->
-    <string name="home_layout_option_stock">Stock</string>
-    <string name="home_layout_option_miui_square">Square</string>
-    <string name="home_layout_option_miui_rectangle">Rectangle</string>
+    <string name="home_layout_option_stock">Stok</string>
+    <string name="home_layout_option_miui_square">Kare</string>
+    <string name="home_layout_option_miui_rectangle">Dikdörtgen</string>
     <!-- Common actions/accessibility -->
-    <string name="action_done">Done</string>
-    <string name="accessibility_selected">Selected</string>
+    <string name="action_done">Tamamla</string>
+    <string name="accessibility_selected">Seçili</string>
 </resources>
