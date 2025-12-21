@@ -88,7 +88,7 @@
     <string name="use_overlay_fs">OverlayFS を使用</string>
     <string name="use_overlay_fs_summary">KernelSU Next のマウントシステムで、Magic Mount の代わりに OverlayFS の使用に切り替えます。</string>
     <string name="reboot_required">再起動が必要です</string>
-    <string name="reboot_message">変更はシステムの再起動後に有効化されます。今すぐに再起動しますか？</string>
+    <string name="reboot_message">変更はシステムの再起動後に適用されます。今すぐ再起動しますか？</string>
     <string name="module_restore">モジュールを復元</string>
     <string name="module_restore_message">最近のバックアップからモジュールを復元します。</string>
     <string name="backup_restore">バックアップ&amp;復元</string>
@@ -283,8 +283,8 @@
     <string name="home_layout_style">ホーム画面のレイアウト</string>
     <string name="home_layout_style_summary">Choose between Stock and MIUIX layouts. Current: %s</string>
     <string name="home_layout_select_dialog_title">ホーム画面のレイアウトを選択</string>
-    <string name="home_layout_select_dialog_default">Current default layout</string>
-    <string name="home_layout_select_dialog_alt">Alternative layout style</string>
+    <string name="home_layout_select_dialog_default">デフォルトのレイアウト</string>
+    <string name="home_layout_select_dialog_alt">その他のレイアウト</string>
     <string name="info_card_settings">情報カードの設定</string>
     <string name="info_card_order_management">情報カードの順序管理</string>
     <string name="info_card_order_description">タップすると項目を 1 つ上/下に移動し、長押しすると最上部/最下部に移動します。トグルで項目の表示/非表示を切り替えます。</string>
@@ -293,7 +293,7 @@
     <string name="individual_app_cards_summary">各アプリをリストではなく個別のカードに表示する</string>
     <!-- Icon options -->
     <string name="home_icon_option_off">Off</string>
-    <string name="home_icon_option_seasonal">Seasonal (Auto)</string>
+    <string name="home_icon_option_seasonal">現在の季節 (自動)</string>
     <string name="home_icon_option_winter">冬</string>
     <string name="home_icon_option_spring">春</string>
     <string name="home_icon_option_summer">夏</string>
