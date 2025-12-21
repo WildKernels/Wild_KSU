@@ -268,8 +268,8 @@
     <string name="home_screen_icon_style_summary">ホーム画面のアイコンスタイルを変更するか、オフにします</string>
     <string name="home_screen_icon_current">現在： %s</string>
     <string name="home_screen_icon_select_dialog_title">ホーム画面のアイコンスタイルを選択する</string>
-    <string name="home_icon_select_dialog_hint_scroll">Scroll to see more icons</string>
-    <string name="home_icon_select_dialog_current_seasonal">Currently: %s</string>
+    <string name="home_icon_select_dialog_hint_scroll">スクロールしてアイコンをもっと見る</string>
+    <string name="home_icon_select_dialog_current_seasonal">現在の設定: %s</string>
     <!-- System Info Card Settings -->
     <string name="system_info_card_settings">システム情報カードの設定</string>
     <string name="system_info_card_settings_summary">システム情報の表示とホーム画面の要素をカスタマイズする</string>
@@ -280,9 +280,9 @@
     <string name="app_name_wild_ksu">Wild KSU</string>
     <!-- Home Settings Card Layout -->
     <string name="home_screen_settings">ホーム &amp; カード</string>
-    <string name="home_layout_style">Home Layout Style</string>
+    <string name="home_layout_style">ホーム画面のレイアウト</string>
     <string name="home_layout_style_summary">Choose between Stock and MIUIX layouts. Current: %s</string>
-    <string name="home_layout_select_dialog_title">Select Home Layout</string>
+    <string name="home_layout_select_dialog_title">ホーム画面のレイアウトを選択</string>
     <string name="home_layout_select_dialog_default">Current default layout</string>
     <string name="home_layout_select_dialog_alt">Alternative layout style</string>
     <string name="info_card_settings">情報カードの設定</string>
@@ -294,18 +294,18 @@
     <!-- Icon options -->
     <string name="home_icon_option_off">Off</string>
     <string name="home_icon_option_seasonal">Seasonal (Auto)</string>
-    <string name="home_icon_option_winter">Winter</string>
-    <string name="home_icon_option_spring">Spring</string>
-    <string name="home_icon_option_summer">Summer</string>
-    <string name="home_icon_option_fall">Fall</string>
+    <string name="home_icon_option_winter">冬</string>
+    <string name="home_icon_option_spring">春</string>
+    <string name="home_icon_option_summer">夏</string>
+    <string name="home_icon_option_fall">秋</string>
     <string name="home_icon_option_ksu_next">KSU Next</string>
-    <string name="home_icon_option_cannabis">Cannabis</string>
+    <string name="home_icon_option_cannabis">大麻</string>
     <string name="home_icon_option_amogus">Amungus</string>
     <!-- Home Layout Options -->
-    <string name="home_layout_option_stock">Stock</string>
-    <string name="home_layout_option_miui_square">Square</string>
-    <string name="home_layout_option_miui_rectangle">Rectangle</string>
+    <string name="home_layout_option_stock">デフォルト</string>
+    <string name="home_layout_option_miui_square">四角形</string>
+    <string name="home_layout_option_miui_rectangle">長方形</string>
     <!-- Common actions/accessibility -->
-    <string name="action_done">Done</string>
-    <string name="accessibility_selected">Selected</string>
+    <string name="action_done">完了</string>
+    <string name="accessibility_selected">選択済み</string>
 </resources>
