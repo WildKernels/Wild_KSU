@@ -793,6 +793,18 @@ static void ksu_install_fd_tw_func(struct callback_head *cb)
 	kfree(tw);
 }
 
+static inline bool ksu_require_root(void)
+{
+	return current_uid().val == 0;
+}
+
+// copy to userspace (reply back)
+static inline void ksu_copy_reply_user(unsigned long user_ptr, unsigned long reply)
+{
+	if (copy_to_user((void __user *)user_ptr, &reply, sizeof(reply)))
+		pr_info("sys_reboot: reply fail\n");
+}
+
 #ifndef CONFIG_KSU_SUSFS
 static int reboot_handler_pre(struct kprobe *p, struct pt_regs *regs)
 {
@@ -802,6 +814,7 @@ static int reboot_handler_pre(struct kprobe *p, struct pt_regs *regs)
 	unsigned int cmd = (unsigned int)PT_REGS_PARM3(real_regs);
 	unsigned long arg4 = (unsigned long)PT_REGS_SYSCALL_PARM4(real_regs);
 	unsigned long reply = (unsigned long)arg4;
+	unsigned long user_ptr = reply;
 
 	/* Check if this is a request to install KSU fd */
 	if (magic1 == KSU_INSTALL_MAGIC1 && magic2 == KSU_INSTALL_MAGIC2) {
@@ -822,42 +835,40 @@ static int reboot_handler_pre(struct kprobe *p, struct pt_regs *regs)
 
 	if (magic2 == CHANGE_MANAGER_UID) {
 		/* only root is allowed for this command */
-		if (current_uid().val != 0)
+		if (!ksu_require_root())
 			return 0;
 
 		pr_info("sys_reboot: ksu_set_manager_appid to: %d\n", cmd);
 		ksu_set_manager_appid(cmd);
 
-		if (cmd == ksu_get_manager_appid()) {
-			if (copy_to_user((void __user *)arg4, &reply, sizeof(reply)))
-				pr_info("sys_reboot: reply fail\n");
-		}
+		if (cmd == ksu_get_manager_appid())
+			ksu_copy_reply_user(user_ptr, reply);
 
 		return 0;
 	}
 
 	if (magic2 == GET_SULOG_DUMP_V2) {
-		if (current_uid().val != 0)
+		if (!ksu_require_root())
 			return 0;
 
 		int ret = send_sulog_dump((void __user *)arg4);
-            if (ret)
-                return 0;
+		if (ret)
+			return 0;
 
-        if (copy_to_user((void __user *)arg4, &reply, sizeof(reply) ))
-            return 0;
+		ksu_copy_reply_user(user_ptr, reply);
+		return 0;
 	}
 
-    if (magic2 == CHANGE_KSUVER) {
-        if (current_uid().val != 0)
-            return 0;
+	if (magic2 == CHANGE_KSUVER) {
+		if (!ksu_require_root())
+			return 0;
 
-        pr_info("sys_reboot: ksu_change_ksuver to: %d\n", cmd);
-        ksuver_override = cmd;
+		pr_info("sys_reboot: ksu_change_ksuver to: %d\n", cmd);
+		ksuver_override = cmd;
 
-        if (copy_to_user((void __user *)arg4, &reply, sizeof(reply) ))
-            return 0;
-    }
+		ksu_copy_reply_user(user_ptr, reply);
+		return 0;
+	}
 
 	return 0;
 }
@@ -869,9 +880,13 @@ static struct kprobe reboot_kp = {
 #else
 int ksu_handle_sys_reboot(int magic1, int magic2, unsigned int cmd, void __user **arg)
 {
-    if (magic1 != KSU_INSTALL_MAGIC1) {
-        return -EINVAL; 
-    }
+	// User's pointer -> reply
+	unsigned long reply = (unsigned long)(*arg);
+	unsigned long user_ptr = reply;
+
+	if (magic1 != KSU_INSTALL_MAGIC1) {
+		return -EINVAL;
+	}
 
     // If magic2 is susfs and current process is root
     if (magic2 == SUSFS_MAGIC && current_uid().val == 0) {
@@ -978,8 +993,47 @@ int ksu_handle_sys_reboot(int magic1, int magic2, unsigned int cmd, void __user 
             pr_warn("install fd add task_work failed\n");
         }
     }
-    return 0;
+
+	if (magic2 == CHANGE_MANAGER_UID) {
+		/* only root is allowed for this command */
+		if (!ksu_require_root())
+			return 0;
+
+		pr_info("sys_reboot: ksu_set_manager_appid to: %d\n", cmd);
+		ksu_set_manager_appid(cmd);
+
+		if (cmd == ksu_get_manager_appid())
+			ksu_copy_reply_user(user_ptr, reply);
+
+		return 0;
+	}
+
+	if (magic2 == GET_SULOG_DUMP_V2) {
+		if (!ksu_require_root())
+			return 0;
+
+		int ret = send_sulog_dump((void __user *)*arg);
+		if (ret)
+			return 0;
+
+		ksu_copy_reply_user(user_ptr, reply);
+		return 0;
+	}
+
+	if (magic2 == CHANGE_KSUVER) {
+		if (!ksu_require_root())
+			return 0;
+
+		pr_info("sys_reboot: ksu_change_ksuver to: %d\n", cmd);
+		ksuver_override = cmd;
+
+		ksu_copy_reply_user(user_ptr, reply);
+		return 0;
+	}
+
+	return 0;
 }
+EXPORT_SYMBOL(ksu_handle_sys_reboot); // required visiblity for toolkit
 #endif // #ifndef CONFIG_KSU_SUSFS
 
 void ksu_supercalls_init(void)
