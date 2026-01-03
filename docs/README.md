@@ -1,7 +1,7 @@
 <div align="center">
   <img src="../assets/wksu.png" width="120" alt="Wild KSU Logo">
   
-  # Wild KSU
+  # Wild KSU OLD
   
   **🔥 A customization and root hiding focused fork 🔥**
   
