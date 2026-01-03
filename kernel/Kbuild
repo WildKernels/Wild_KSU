@@ -3,6 +3,9 @@ kernelsu-objs += allowlist.o
 kernelsu-objs += app_profile.o
 kernelsu-objs += apk_sign.o
 kernelsu-objs += sucompat.o
+ifndef CONFIG_KSU_SUSFS
+kernelsu-objs += syscall_hook_manager.o
+endif
 kernelsu-objs += throne_tracker.o
 kernelsu-objs += pkg_observer.o
 kernelsu-objs += setuid_hook.o
