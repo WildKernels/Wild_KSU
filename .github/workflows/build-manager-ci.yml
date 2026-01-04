@@ -157,16 +157,58 @@ jobs:
           name: ${{ matrix.spoofed && 'mappings-spoofed' || 'mappings' }}
           path: "manager/app/build/outputs/mapping/release/"
 
-      - name: Send Telegram Notification
-        if: github.event_name != 'pull_request' && steps.need_upload.outputs.UPLOAD == 'true'
+  upload-telegram-manager:
+    needs: build-manager
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Normal Manager
+        uses: actions/download-artifact@v6
+        with:
+          name: manager
+
+      - name: Download Spoofed Manager
+        uses: actions/download-artifact@v6
+        with:
+          name: mappings-spoofed
+
+      - name: Send Notification
+        if: ${{ secrets.TELEGRAM_BOT_TOKEN != '' }}
+        env:
+          COMMIT_MESSAGE: ${{ github.event.workflow_run.head_commit.message }}
+          COMMIT_SHA: ${{ github.event.workflow_run.head_sha }}
+          RUN_ID: ${{ github.event.workflow_run.id }}
+          REPO: ${{ github.repository }}
         run: |
+          # 1. Send Info Message
           curl -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
-            -F chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
-            -F message_thread_id="${{ secrets.TELEGRAM_TOPIC_ID_WKSU }}" \
-            -F text="
-            🌱 *New Wild KSU CI Build Finished*
-            📦 *Repository:* \`https://github.com/${{ github.repository }}\`
-            ✏️ *Commit:* \`https://github.com/${{ github.repository }}/commit/${{ github.sha }}\`
-            📝 *Message:* ${{ github.event.head_commit.message }}
-            \`https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}\` " \
-            -F parse_mode="Markdown"
+             -F chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
+             -F message_thread_id="${{ secrets.TELEGRAM_TOPIC_ID_WKSU }}" \
+             -F text="
+             🌽 *New Wild KSU CI Build Finished*
+             📦 *Repository:* \`https://github.com/${REPO}\`
+             ✏️ *Commit:* \`https://github.com/${REPO}/commit/${COMMIT_SHA}\`
+             📝 *Message:* ${COMMIT_MESSAGE}
+             \`https://github.com/${REPO}/actions/runs/${RUN_ID}\` " \
+             -F parse_mode="Markdown"
+
+          # 2. Upload Normal APK
+          find ./manager -name "*.apk" -print0 | while IFS= read -r -d '' apk; do
+             echo "Uploading Normal APK: $apk..."
+             curl -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" \
+               -F chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
+               -F message_thread_id="${{ secrets.TELEGRAM_TOPIC_ID_WKSU }}" \
+               -F document=@"$apk"
+          done
+
+          # 3. Upload Spoofed APK
+          find ./manager-spoofed -name "*.apk" -print0 | while IFS= read -r -d '' apk; do
+             echo "Uploading Spoofed APK: $apk..."
+             curl -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" \
+               -F chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
+               -F message_thread_id="${{ secrets.TELEGRAM_TOPIC_ID_WKSU }}" \
+               -F document=@"$apk" \
+               -F caption="Spoofed"
+          done
+
+
+
