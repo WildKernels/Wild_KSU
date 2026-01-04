@@ -158,6 +158,7 @@ jobs:
           path: "manager/app/build/outputs/mapping/release/"
 
   upload-telegram-manager:
+    if: ${{ ( github.event_name != 'pull_request' && (github.ref == 'refs/heads/wild' )) || github.ref_type == 'tag' }}
     needs: build-manager
     runs-on: ubuntu-latest
     steps:
@@ -186,10 +187,10 @@ jobs:
              -F message_thread_id="${{ secrets.TELEGRAM_TOPIC_ID_WKSU }}" \
              -F text="
              🌽 *New Wild KSU CI Build Finished*
-             📦 *Repository:* \`https://github.com/${REPO}\`
-             ✏️ *Commit:* \`https://github.com/${REPO}/commit/${COMMIT_SHA}\`
+             📦 *Repository:* https://github.com/${REPO}
+             ✏️ *Commit:* https://github.com/${REPO}/commit/${COMMIT_SHA}
              📝 *Message:* ${COMMIT_MESSAGE}
-             \`https://github.com/${REPO}/actions/runs/${RUN_ID}\` " \
+             https://github.com/${REPO}/actions/runs/${RUN_ID} " \
              -F parse_mode="Markdown"
 
           # 2. Upload Normal APK
@@ -208,7 +209,6 @@ jobs:
                -F chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
                -F message_thread_id="${{ secrets.TELEGRAM_TOPIC_ID_WKSU }}" \
                -F document=@"$apk" \
-               -F caption="Spoofed"
           done
 
 
