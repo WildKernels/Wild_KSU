@@ -17,6 +17,7 @@ import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -254,8 +255,8 @@ class MainActivity : ComponentActivity() {
 @Composable
 private fun AppBackground(modifier: Modifier = Modifier) {
     val backgroundSettings = LocalBackgroundSettings.current
-    val uri = backgroundSettings.uri ?: return
     val context = androidx.compose.ui.platform.LocalContext.current
+    val baseColor = MaterialTheme.colorScheme.background
 
     val contentScale = if (backgroundSettings.fillScreen) {
         ContentScale.Crop
@@ -263,12 +264,30 @@ private fun AppBackground(modifier: Modifier = Modifier) {
         ContentScale.Fit
     }
 
-    AsyncImage(
-        model = ImageRequest.Builder(context)
-            .data(android.net.Uri.parse(uri))
-            .build(),
-        contentDescription = null,
-        modifier = modifier,
-        contentScale = contentScale,
-    )
+    Box(modifier = modifier) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(baseColor)
+        )
+
+        val uri = backgroundSettings.uri
+        if (uri != null) {
+            AsyncImage(
+                model = ImageRequest.Builder(context)
+                    .data(android.net.Uri.parse(uri))
+                    .build(),
+                contentDescription = null,
+                modifier = Modifier.fillMaxSize(),
+                contentScale = contentScale,
+                alpha = 0.55f,
+            )
+
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(baseColor.copy(alpha = 0.82f))
+            )
+        }
+    }
 }

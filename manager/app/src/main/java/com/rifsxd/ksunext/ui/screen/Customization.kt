@@ -1,7 +1,7 @@
 package com.rifsxd.ksunext.ui.screen
 
 import android.content.Context
-import android.content.Intent
+import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
@@ -13,6 +13,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Contrast
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Flip
 import androidx.compose.material.icons.filled.Wallpaper
 import androidx.compose.material.icons.filled.Translate
 import androidx.compose.material.icons.filled.ViewCarousel
@@ -47,6 +48,8 @@ import com.rifsxd.ksunext.ui.component.rememberCustomDialog
 import com.rifsxd.ksunext.ui.util.restartActivity
 import com.rifsxd.ksunext.ui.util.LocalSnackbarHost
 import com.rifsxd.ksunext.ui.util.LocaleHelper
+import java.io.File
+import java.io.FileOutputStream
 
 /**
  * @author rifsxd
@@ -256,20 +259,15 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
             }
 
             val backgroundPickerLauncher = rememberLauncherForActivityResult(
-                contract = ActivityResultContracts.OpenDocument()
+                contract = ActivityResultContracts.GetContent()
             ) { uri ->
                 if (uri == null) return@rememberLauncherForActivityResult
-                try {
-                    context.contentResolver.takePersistableUriPermission(
-                        uri,
-                        Intent.FLAG_GRANT_READ_URI_PERMISSION
-                    )
-                } catch (_: Exception) {
-                }
+                val storedUri = copyBackgroundToAppStorage(context, uri) ?: return@rememberLauncherForActivityResult
+                backgroundUri?.let { deleteOwnedBackgroundFile(context, it) }
                 prefs.edit {
-                    putString("background_uri", uri.toString())
+                    putString("background_uri", storedUri)
                 }
-                backgroundUri = uri.toString()
+                backgroundUri = storedUri
             }
 
             ListItem(
@@ -296,56 +294,47 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                     }
                     Text(subtitle)
                 },
+                trailingContent = {
+                    if (backgroundUri != null) {
+                        Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                            IconButton(
+                                onClick = {
+                                    val next = !backgroundFillScreen
+                                    prefs.edit {
+                                        putBoolean("background_fill_screen", next)
+                                    }
+                                    backgroundFillScreen = next
+                                }
+                            ) {
+                                Icon(
+                                    Icons.Filled.Flip,
+                                    contentDescription = stringResource(R.string.settings_background_scale_photo)
+                                )
+                            }
+                            IconButton(
+                                onClick = {
+                                    val uriString = backgroundUri
+                                    if (uriString != null) {
+                                        deleteOwnedBackgroundFile(context, uriString)
+                                    }
+                                    prefs.edit {
+                                        remove("background_uri")
+                                    }
+                                    backgroundUri = null
+                                }
+                            ) {
+                                Icon(
+                                    Icons.Filled.Delete,
+                                    contentDescription = stringResource(R.string.settings_background_clear)
+                                )
+                            }
+                        }
+                    }
+                },
                 modifier = Modifier.clickable {
-                    backgroundPickerLauncher.launch(arrayOf("image/*"))
+                    backgroundPickerLauncher.launch("image/*")
                 }
             )
-
-            if (backgroundUri != null) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(10.dp)
-                ) {
-                    FilledTonalButton(
-                        onClick = {
-                            val uriString = backgroundUri
-                            if (uriString != null) {
-                                try {
-                                    context.contentResolver.releasePersistableUriPermission(
-                                        android.net.Uri.parse(uriString),
-                                        Intent.FLAG_GRANT_READ_URI_PERMISSION
-                                    )
-                                } catch (_: Exception) {
-                                }
-                            }
-                            prefs.edit {
-                                remove("background_uri")
-                            }
-                            backgroundUri = null
-                        },
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        Icon(Icons.Filled.Delete, contentDescription = null)
-                        Spacer(Modifier.width(8.dp))
-                        Text(stringResource(R.string.settings_background_clear))
-                    }
-
-                    FilledTonalButton(
-                        onClick = {
-                            val next = !backgroundFillScreen
-                            prefs.edit {
-                                putBoolean("background_fill_screen", next)
-                            }
-                            backgroundFillScreen = next
-                        },
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        Text(stringResource(R.string.settings_background_scale_photo))
-                    }
-                }
-            }
 
             var useBanner by rememberSaveable {
                 mutableStateOf(
@@ -383,6 +372,32 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
             }
         }
     }
+}
+
+private fun copyBackgroundToAppStorage(context: Context, uri: Uri): String? {
+    val backgroundsDir = File(context.filesDir, "backgrounds")
+    if (!backgroundsDir.exists()) {
+        backgroundsDir.mkdirs()
+    }
+
+    val dstFile = File(backgroundsDir, "background_${System.currentTimeMillis()}.jpg")
+    val resolver = context.contentResolver
+    resolver.openInputStream(uri)?.use { input ->
+        FileOutputStream(dstFile).use { output ->
+            input.copyTo(output)
+        }
+    } ?: return null
+
+    return Uri.fromFile(dstFile).toString()
+}
+
+private fun deleteOwnedBackgroundFile(context: Context, uriString: String) {
+    val uri = runCatching { Uri.parse(uriString) }.getOrNull() ?: return
+    if (uri.scheme != "file") return
+    val path = uri.path ?: return
+    val ownedDir = File(context.filesDir, "backgrounds").absolutePath + File.separator
+    if (!path.startsWith(ownedDir)) return
+    runCatching { File(path).delete() }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
