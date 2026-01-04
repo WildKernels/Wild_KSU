@@ -74,12 +74,12 @@ $(info -- KernelSU-Next tag fallback: $(KSU_VERSION_TAG_FALLBACK))
 ccflags-y += -DKSU_VERSION_TAG=\"$(KSU_VERSION_TAG_FALLBACK)\"
 endif
 
-ifndef KSU_NEXT_MANAGER_SIZE
-KSU_NEXT_MANAGER_SIZE := 0x381
+ifndef KSU_MANAGER_SIZE
+KSU_MANAGER_SIZE := 0x381
 endif
 
-ifndef KSU_NEXT_MANAGER_HASH
-KSU_NEXT_MANAGER_HASH := 52d52d8c8bfbe53dc2b6ff1c613184e2c03013e090fe8905d8e3d5dc2658c2e4
+ifndef KSU_MANAGER_HASH
+KSU_MANAGER_HASH := 52d52d8c8bfbe53dc2b6ff1c613184e2c03013e090fe8905d8e3d5dc2658c2e4
 endif
 
 ifdef KSU_MANAGER_PACKAGE
@@ -87,16 +87,17 @@ ccflags-y += -DKSU_MANAGER_PACKAGE=\"$(KSU_MANAGER_PACKAGE)\"
 $(info -- Wild KSU Manager package name: $(KSU_MANAGER_PACKAGE))
 endif
 
-$(info -- Wild KSU Manager signature size: $(KSU_NEXT_MANAGER_SIZE))
-$(info -- Wild KSU Manager signature hash: $(KSU_NEXT_MANAGER_HASH))
+$(info -- Wild KSU Manager signature size: $(KSU_MANAGER_SIZE))
+$(info -- Wild KSU Manager signature hash: $(KSU_MANAGER_HASH))
 
-ccflags-y += -DEXPECTED_MANAGER_SIZE=$(KSU_NEXT_MANAGER_SIZE)
-ccflags-y += -DEXPECTED_MANAGER_HASH=\"$(KSU_NEXT_MANAGER_HASH)\"
+ccflags-y += -DEXPECTED_MANAGER_SIZE=$(KSU_MANAGER_SIZE)
+ccflags-y += -DEXPECTED_MANAGER_HASH=\"$(KSU_MANAGER_HASH)\"
 
 ccflags-y += -Wno-strict-prototypes -Wno-int-conversion -Wno-gcc-compat -Wno-missing-prototypes
 ccflags-y += -Wno-declaration-after-statement -Wno-unused-function -Wno-unused-variable
 
 ## For susfs stuff ##
+ifdef CONFIG_KSU_SUSFS
 ifeq ($(shell test -e $(srctree)/fs/susfs.c; echo $$?),0)
 $(eval SUSFS_VERSION=$(shell cat $(srctree)/include/linux/susfs.h | grep -E '^#define SUSFS_VERSION' | cut -d' ' -f3 | sed 's/"//g'))
 $(info )
@@ -104,5 +105,6 @@ $(info -- SUSFS_VERSION: $(SUSFS_VERSION))
 else
 $(info -- You have not integrated susfs in your kernel yet.)
 $(info -- Read: https://gitlab.com/simonpunk/susfs4ksu)
+endif
 endif
 # Keep a new line here!! Because someone may append config
