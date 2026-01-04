@@ -162,20 +162,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download Normal Manager
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v4
         with:
           name: manager
+          path: manager
 
       - name: Download Spoofed Manager
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v4
         with:
-          name: mappings-spoofed
+          name: manager-spoofed
+          path: manager-spoofed
 
       - name: Send Notification
         env:
-          COMMIT_MESSAGE: ${{ github.event.workflow_run.head_commit.message }}
-          COMMIT_SHA: ${{ github.event.workflow_run.head_sha }}
-          RUN_ID: ${{ github.event.workflow_run.id }}
+          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+          COMMIT_SHA: ${{ github.sha }}
+          RUN_ID: ${{ github.run_id }}
           REPO: ${{ github.repository }}
         run: |
           # 1. Send Info Message
