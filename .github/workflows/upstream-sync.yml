@@ -1,0 +1,73 @@
+name: Upstream Sync
+
+on:
+  push:
+    branches:
+      - wild
+  schedule:
+    - cron: '0 0 * * *' # Check daily at midnight
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  sync-upstream:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: wild
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Add Upstream Remote
+        run: |
+          git remote add upstream https://github.com/KernelSU-Next/KernelSU-Next.git
+          git fetch upstream
+
+      - name: Check for updates
+        id: check
+        run: |
+          # Check if we are behind upstream/dev
+          BEHIND=$(git rev-list --count wild..upstream/dev)
+          echo "Behind by $BEHIND commits"
+          if [ "$BEHIND" -gt "0" ]; then
+            echo "updates_available=true" >> $GITHUB_OUTPUT
+          else
+            echo "updates_available=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create Sync PR
+        if: steps.check.outputs.updates_available == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Create/Reset the sync branch to match upstream/dev
+          git checkout -B upstream-sync upstream/dev
+          
+          # Push the sync branch to origin (force to update if exists)
+          git push -f origin upstream-sync
+          
+          # Check if a PR already exists
+          EXISTING_PR=$(gh pr list --state open --head upstream-sync --base wild --json number --jq '.[0].number')
+          
+          if [ -z "$EXISTING_PR" ]; then
+            echo "Creating new PR..."
+            gh pr create \
+              --title "Sync: Merge upstream changes" \
+              --body "This PR automatically merges the latest changes from upstream/dev into wild." \
+              --base wild \
+              --head upstream-sync
+          else
+            echo "Updating existing PR #$EXISTING_PR..."
+            gh pr edit "$EXISTING_PR" \
+              --title "Sync: Merge upstream changes [Updated $(date +'%Y-%m-%d')]" \
+              --body "This PR automatically merges the latest changes from upstream/dev into wild. Updated on $(date +'%Y-%m-%d')."
+          fi
