@@ -26,7 +26,6 @@
   <string name="enabled">Aktywny</string>
   <string name="disabled">Nieaktywny</string>
   <string name="susfs_supported">Obsługiwany</string>
-  <string name="home_susfs">SuSFS: %s</string>
   <string name="home_susfs_version">Wersja SuSFS</string>
   <string name="home_android">Wersja Androida</string>
   <string name="home_manager_version">Wersja managera</string>

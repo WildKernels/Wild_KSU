@@ -26,7 +26,6 @@
   <string name="enabled">সক্রিয় করা হয়েছে</string>
   <string name="disabled">নিষ্ক্রিয় করা হয়েছে</string>
   <string name="susfs_supported">সমর্থিত</string>
-  <string name="home_susfs">SuSFS: %s</string>
   <string name="home_susfs_version">SuSFS ভার্সন</string>
   <string name="home_android">এন্ড্রয়েড ভার্সন</string>
   <string name="home_manager_version">ম্যানেজার ভার্সন</string>

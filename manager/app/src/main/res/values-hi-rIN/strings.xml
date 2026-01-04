@@ -27,7 +27,6 @@
   <string name="enabled">सक्षम है</string>
   <string name="disabled">निष्क्रिय है</string>
   <string name="susfs_supported">समर्थित</string>
-  <string name="home_susfs">SuSFS: %s</string>
   <string name="home_susfs_version">SuSFS वर्जन</string>
   <string name="home_android">एंड्रॉयड वर्जन</string>
   <string name="home_manager_version">मैनेजर वर्जन</string>

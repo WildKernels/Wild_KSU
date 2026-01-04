@@ -26,7 +26,6 @@
   <string name="enabled">已启用</string>
   <string name="disabled">已禁用</string>
   <string name="susfs_supported">支持</string>
-  <string name="home_susfs">SuSFS: %s</string>
   <string name="home_susfs_version">SuSFS 版本</string>
   <string name="home_android">Android 版本</string>
   <string name="home_manager_version">管理器版本</string>

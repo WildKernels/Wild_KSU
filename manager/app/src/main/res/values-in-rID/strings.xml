@@ -26,7 +26,6 @@
   <string name="enabled">Diaktifkan</string>
   <string name="disabled">Nonaktif</string>
   <string name="susfs_supported">Didukung</string>
-  <string name="home_susfs">SuSFS: %s</string>
   <string name="home_susfs_version">Versi SuSFS</string>
   <string name="home_android">Versi android</string>
   <string name="home_manager_version">Versi manajer</string>

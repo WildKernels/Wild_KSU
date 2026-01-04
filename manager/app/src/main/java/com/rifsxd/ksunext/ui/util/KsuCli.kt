@@ -617,24 +617,14 @@ fun moduleMigration(): Boolean {
     return ShellUtils.fastCmdResult(command)
 }
 
-private val suSFSDaemonPath by lazy {
-    "${ksuApp.applicationInfo.nativeLibraryDir}${File.separator}libsusfsd.so"
-}
-
-fun getSuSFS(): String {
-    return ShellUtils.fastCmd("$suSFSDaemonPath support")
-}
-
-fun getSuSFSVersion(): String {
-    return ShellUtils.fastCmd("$suSFSDaemonPath version")
-}
-
-fun getSuSFSVariant(): String {
-    return ShellUtils.fastCmd("$suSFSDaemonPath variant")
-}
-
-fun getSuSFSFeatures(): String {
-    return ShellUtils.fastCmd("$suSFSDaemonPath features")
+fun getSuSFSVersion(): String? {
+    val result = ShellUtils.fastCmd("ksu_susfs show version").trim()
+    val versionRegex = Regex("v\\d+\\.\\d+\\.\\d+")
+    return if (result.isNotBlank() && versionRegex.containsMatchIn(result)) {
+        result
+    } else {
+        null
+    }
 }
 
 fun currentMountSystem(): String {

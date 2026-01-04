@@ -26,7 +26,6 @@
   <string name="enabled">Đã kích hoạt</string>
   <string name="disabled">Đã vô hiệu hoá</string>
   <string name="susfs_supported">Được hỗ trợ</string>
-  <string name="home_susfs">SuSFS: %s</string>
   <string name="home_susfs_version">Phiên bản SuSFS</string>
   <string name="home_android">Phiên bản Android</string>
   <string name="home_manager_version">Phiên bản Trình quản lý</string>

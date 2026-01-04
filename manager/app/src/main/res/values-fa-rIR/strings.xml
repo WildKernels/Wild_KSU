@@ -27,7 +27,6 @@
   <string name="enabled">فعال شده</string>
   <string name="disabled">غیرفعال شده</string>
   <string name="susfs_supported">پشتیبانی شده</string>
-  <string name="home_susfs">SuSFS: %s</string>
   <string name="home_susfs_version">نسخه SuSFS</string>
   <string name="home_android">نسخه اندروید</string>
   <string name="home_manager_version">نسخه مدیریت</string>

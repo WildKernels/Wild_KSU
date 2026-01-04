@@ -26,7 +26,6 @@
   <string name="enabled">활성화됨</string>
   <string name="disabled">비활성화됨</string>
   <string name="susfs_supported">지원됨</string>
-  <string name="home_susfs">SuSFS: %s</string>
   <string name="home_susfs_version">SuSFS version</string>
   <string name="home_android">Android version</string>
   <string name="home_manager_version">Manager version</string>

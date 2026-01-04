@@ -26,7 +26,6 @@
   <string name="enabled">Увімкнено</string>
   <string name="disabled">Вимкнено</string>
   <string name="susfs_supported">Доступно</string>
-  <string name="home_susfs">SuSFS: %s</string>
   <string name="home_susfs_version">Версія SuSFS</string>
   <string name="home_android">Версія Android</string>
   <string name="home_manager_version">Версія менеджера</string>

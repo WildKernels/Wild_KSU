@@ -26,7 +26,6 @@
   <string name="enabled">有効</string>
   <string name="disabled">無効</string>
   <string name="susfs_supported">対応済み</string>
-  <string name="home_susfs">SuSFS: %s</string>
   <string name="home_susfs_version">SuSFS バージョン</string>
   <string name="home_android">Android バージョン</string>
   <string name="home_manager_version">マネージャーバージョン</string>

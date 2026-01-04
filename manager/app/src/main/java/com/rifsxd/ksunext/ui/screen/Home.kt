@@ -694,6 +694,7 @@ private fun InfoCard(autoExpand: Boolean = false) {
 
     val isManager = Natives.isManager
     val ksuVersion = if (isManager) Natives.version else null
+    val susfsVersion = if (isManager) getSuSFSVersion() else null
 
     var expanded by rememberSaveable { mutableStateOf(false) }
 
@@ -797,12 +798,11 @@ private fun InfoCard(autoExpand: Boolean = false) {
                         icon = Icons.Filled.SettingsSuggest
                     )
 
-                    val suSFS = getSuSFS()
-                    if (suSFS == "Supported") {
+                    if (susfsVersion != null) {
                         Spacer(Modifier.height(16.dp))
                         InfoCardItem(
                             label = stringResource(R.string.home_susfs_version),
-                            content = "${stringResource(R.string.susfs_supported)} | ${getSuSFSVersion()} (Inline | ${getSuSFSVariant()})",
+                            content = "${stringResource(R.string.susfs_supported)} | $susfsVersion",
                             icon = painterResource(R.drawable.ic_sus),
                         )
                     }
