@@ -648,7 +648,7 @@ fun getBBGVersion(): String? {
     val result = ShellUtils.fastCmd("grep 'baseband_guard version:' /data/adb/ksu/log/dmesg.log | tail -n 1").trim()
     
     return if (result.isNotBlank()) {
-        val version = result.substringAfter("baseband_guard version: ").trim().replace("\"", "")
+        val version = result.substringAfter("baseband_guard version: ").trim()
         // 3. Update cache
         prefs.edit()
             .putString("boot_id", currentBootId)

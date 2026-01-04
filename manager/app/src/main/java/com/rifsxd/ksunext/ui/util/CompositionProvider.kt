@@ -12,10 +12,11 @@ val LocalSnackbarHost = compositionLocalOf<SnackbarHostState> {
 data class BackgroundSettings(
     val uri: String?,
     val fillScreen: Boolean,
+    val isVideo: Boolean,
 )
 
 val LocalBackgroundSettings = compositionLocalOf {
-    BackgroundSettings(uri = null, fillScreen = false)
+    BackgroundSettings(uri = null, fillScreen = false, isVideo = false)
 }
 
 @Immutable

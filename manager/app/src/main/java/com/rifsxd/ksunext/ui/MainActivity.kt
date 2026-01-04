@@ -24,9 +24,15 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.compose.rememberNavController
+import androidx.media3.common.MediaItem
+import androidx.media3.common.Player
+import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.ui.AspectRatioFrameLayout
+import androidx.media3.ui.PlayerView
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.ramcosta.composedestinations.DestinationsNavHost
@@ -93,6 +99,7 @@ class MainActivity : ComponentActivity() {
                         BackgroundSettings(
                             uri = prefs.getString("background_uri", null),
                             fillScreen = prefs.getBoolean("background_fill_screen", false),
+                            isVideo = prefs.getBoolean("background_is_video", false),
                         )
                     )
                 }
@@ -120,6 +127,14 @@ class MainActivity : ComponentActivity() {
                                 backgroundSettings = BackgroundSettings(
                                     uri = prefs.getString("background_uri", null),
                                     fillScreen = prefs.getBoolean("background_fill_screen", false),
+                                    isVideo = prefs.getBoolean("background_is_video", false),
+                                )
+                            }
+                            if (key == "background_is_video") {
+                                backgroundSettings = BackgroundSettings(
+                                    uri = prefs.getString("background_uri", null),
+                                    fillScreen = prefs.getBoolean("background_fill_screen", false),
+                                    isVideo = prefs.getBoolean("background_is_video", false),
                                 )
                             }
                             if (key == "ui_card_alpha" || key == "ui_card_transparency" || key == "background_dim") {
@@ -322,16 +337,24 @@ private fun AppBackground(modifier: Modifier = Modifier) {
                 .background(baseColor)
         )
 
-        val uri = backgroundSettings.uri
-        if (uri != null) {
-            AsyncImage(
-                model = ImageRequest.Builder(context)
-                    .data(android.net.Uri.parse(uri))
-                    .build(),
-                contentDescription = null,
-                modifier = Modifier.fillMaxSize(),
-                contentScale = contentScale,
-            )
+    val uri = backgroundSettings.uri
+    if (uri != null) {
+            if (backgroundSettings.isVideo) {
+                VideoBackground(
+                    uri = uri,
+                    fillScreen = backgroundSettings.fillScreen,
+                    modifier = Modifier.fillMaxSize()
+                )
+            } else {
+                AsyncImage(
+                    model = ImageRequest.Builder(context)
+                        .data(android.net.Uri.parse(uri))
+                        .build(),
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = contentScale,
+                )
+            }
 
             val dimAlpha = uiOverlaySettings.dimAlpha.coerceIn(0f, 1f)
             if (dimAlpha > 0f) {
@@ -343,4 +366,52 @@ private fun AppBackground(modifier: Modifier = Modifier) {
             }
         }
     }
+}
+
+@Composable
+private fun VideoBackground(
+    uri: String,
+    fillScreen: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val exoPlayer = remember(uri) {
+        ExoPlayer.Builder(context)
+            .build()
+            .apply {
+                repeatMode = Player.REPEAT_MODE_ONE
+                volume = 0f
+                playWhenReady = true
+                setMediaItem(MediaItem.fromUri(android.net.Uri.parse(uri)))
+                prepare()
+            }
+    }
+
+    DisposableEffect(exoPlayer) {
+        onDispose {
+            exoPlayer.release()
+        }
+    }
+
+    AndroidView(
+        modifier = modifier,
+        factory = { ctx ->
+            PlayerView(ctx).apply {
+                useController = false
+                player = exoPlayer
+                resizeMode = if (fillScreen) {
+                    AspectRatioFrameLayout.RESIZE_MODE_ZOOM
+                } else {
+                    AspectRatioFrameLayout.RESIZE_MODE_FIT
+                }
+            }
+        },
+        update = { view ->
+            view.resizeMode = if (fillScreen) {
+                AspectRatioFrameLayout.RESIZE_MODE_ZOOM
+            } else {
+                AspectRatioFrameLayout.RESIZE_MODE_FIT
+            }
+        }
+    )
 }

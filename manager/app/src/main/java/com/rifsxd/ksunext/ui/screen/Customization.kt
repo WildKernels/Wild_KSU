@@ -3,6 +3,7 @@ package com.rifsxd.ksunext.ui.screen
 import android.content.Context
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -50,6 +51,7 @@ import com.rifsxd.ksunext.ui.util.LocalSnackbarHost
 import com.rifsxd.ksunext.ui.util.LocaleHelper
 import java.io.File
 import java.io.FileOutputStream
+import android.webkit.MimeTypeMap
 import kotlin.math.roundToInt
 
 /**
@@ -258,17 +260,24 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
             var backgroundFillScreen by rememberSaveable {
                 mutableStateOf(prefs.getBoolean("background_fill_screen", false))
             }
+            var backgroundIsVideo by rememberSaveable {
+                mutableStateOf(prefs.getBoolean("background_is_video", false))
+            }
 
             val backgroundPickerLauncher = rememberLauncherForActivityResult(
-                contract = ActivityResultContracts.GetContent()
+                contract = ActivityResultContracts.PickVisualMedia()
             ) { uri ->
                 if (uri == null) return@rememberLauncherForActivityResult
-                val storedUri = copyBackgroundToAppStorage(context, uri) ?: return@rememberLauncherForActivityResult
+                val mime = context.contentResolver.getType(uri)
+                val isVideo = mime?.startsWith("video/") == true
+                val storedUri = copyBackgroundToAppStorage(context, uri, mime) ?: return@rememberLauncherForActivityResult
                 backgroundUri?.let { deleteOwnedBackgroundFile(context, it) }
                 prefs.edit {
                     putString("background_uri", storedUri)
+                    putBoolean("background_is_video", isVideo)
                 }
                 backgroundUri = storedUri
+                backgroundIsVideo = isVideo
             }
 
             ListItem(
@@ -284,7 +293,7 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                 },
                 supportingContent = {
                     val subtitle = if (backgroundUri == null) {
-                        stringResource(R.string.settings_background_choose)
+                        stringResource(R.string.settings_background_choose_media)
                     } else {
                         val mode = if (backgroundFillScreen) {
                             stringResource(R.string.settings_background_scale_zoom)
@@ -320,8 +329,10 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                                     }
                                     prefs.edit {
                                         remove("background_uri")
+                                        remove("background_is_video")
                                     }
                                     backgroundUri = null
+                                    backgroundIsVideo = false
                                 }
                             ) {
                                 Icon(
@@ -333,7 +344,9 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                     }
                 },
                 modifier = Modifier.clickable {
-                    backgroundPickerLauncher.launch("image/*")
+                    backgroundPickerLauncher.launch(
+                        PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageAndVideo)
+                    )
                 }
             )
 
@@ -440,13 +453,18 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
     }
 }
 
-private fun copyBackgroundToAppStorage(context: Context, uri: Uri): String? {
+private fun copyBackgroundToAppStorage(context: Context, uri: Uri, mimeType: String?): String? {
     val backgroundsDir = File(context.filesDir, "backgrounds")
     if (!backgroundsDir.exists()) {
         backgroundsDir.mkdirs()
     }
 
-    val dstFile = File(backgroundsDir, "background_${System.currentTimeMillis()}.jpg")
+    val ext = mimeType?.let { MimeTypeMap.getSingleton().getExtensionFromMimeType(it) }
+    val dstFile = if (!ext.isNullOrBlank()) {
+        File(backgroundsDir, "background_${System.currentTimeMillis()}.$ext")
+    } else {
+        File(backgroundsDir, "background_${System.currentTimeMillis()}")
+    }
     val resolver = context.contentResolver
     resolver.openInputStream(uri)?.use { input ->
         FileOutputStream(dstFile).use { output ->
