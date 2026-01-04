@@ -25,6 +25,10 @@ apksign {
 android {
     namespace = "com.rifsxd.ksunext"
 
+    defaultConfig {
+        applicationId = "com.twj.wksu"
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = true
