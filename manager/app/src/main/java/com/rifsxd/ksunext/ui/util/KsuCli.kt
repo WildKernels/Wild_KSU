@@ -645,7 +645,7 @@ fun getBBGVersion(): String? {
     }
 
     // 2. Scan dmesg if cache miss or invalid
-    val result = ShellUtils.fastCmd("dmesg | grep 'baseband_guard version:' | tail -n 1").trim()
+    val result = ShellUtils.fastCmd("grep 'baseband_guard version:' /data/adb/ksu/log/dmesg.log | tail -n 1").trim()
     
     return if (result.isNotBlank()) {
         val version = result.substringAfter("baseband_guard version: ").trim()
