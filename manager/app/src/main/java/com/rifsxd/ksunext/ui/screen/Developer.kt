@@ -28,7 +28,9 @@ import com.rifsxd.ksunext.R
 import com.rifsxd.ksunext.ksuApp
 import androidx.compose.material.icons.filled.Update
 import com.rifsxd.ksunext.ui.component.ListItem
+import com.rifsxd.ksunext.ui.component.SwitchItem
 import com.rifsxd.ksunext.ui.component.rememberLoadingDialog
+import com.rifsxd.ksunext.ui.util.LocalSnackbarHost
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -133,10 +135,10 @@ fun DeveloperScreen(navigator: DestinationsNavigator) {
                                         } else {
                                             throw Exception("No APK found in ZIP")
                                         }
-                                    }.onFailure {
-                                        withContext(Dispatchers.Main) {
-                                            snackBarHost.showSnackbar("Update failed: ${it.message}")
-                                        }
+                                    }
+                                }.onFailure {
+                                    withContext(Dispatchers.Main) {
+                                        snackBarHost.showSnackbar("Update failed: ${it.message}")
                                     }
                                 }
                             }
