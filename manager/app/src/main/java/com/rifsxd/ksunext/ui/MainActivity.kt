@@ -203,11 +203,14 @@ class MainActivity : ComponentActivity() {
                         )
                     }
 
-                    MaterialTheme(
+                    CompositionLocalProvider(
+                        LocalBaseColorScheme provides baseScheme,
+                    ) {
+                        MaterialTheme(
                         colorScheme = scheme,
                         typography = MaterialTheme.typography,
                         shapes = MaterialTheme.shapes,
-                    ) {
+                        ) {
                         Box(modifier = Modifier.fillMaxSize()) {
                             AppBackground(modifier = Modifier.fillMaxSize())
 
@@ -276,6 +279,7 @@ class MainActivity : ComponentActivity() {
                                     }
                                 )
                             }
+                        }
                         }
                     }
                 }

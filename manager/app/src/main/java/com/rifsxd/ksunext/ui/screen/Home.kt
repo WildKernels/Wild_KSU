@@ -497,21 +497,34 @@ private fun TopBar(
                         contentDescription = stringResource(id = R.string.reboot)
                     )
 
-                    DropdownMenu(expanded = showDropdown, onDismissRequest = {
-                        showDropdown = false
-                    }) {
-                        RebootDropdownItem(id = R.string.reboot)
+                    val baseScheme = LocalBaseColorScheme.current
+                    val cardAlpha = LocalUiOverlaySettings.current.cardAlpha
+                    MaterialTheme(
+                        colorScheme = baseScheme,
+                        typography = MaterialTheme.typography,
+                        shapes = MaterialTheme.shapes,
+                    ) {
+                        DropdownMenu(
+                            expanded = showDropdown,
+                            onDismissRequest = { showDropdown = false },
+                            containerColor = baseScheme.surfaceContainer,
+                            tonalElevation = 0.dp,
+                            shadowElevation = if (cardAlpha < 1f) 0.dp else 8.dp,
+                            border = null,
+                        ) {
+                            RebootDropdownItem(id = R.string.reboot)
 
-                        val pm =
-                            LocalContext.current.getSystemService(Context.POWER_SERVICE) as PowerManager?
-                        @Suppress("DEPRECATION")
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && pm?.isRebootingUserspaceSupported == true) {
-                            RebootDropdownItem(id = R.string.reboot_userspace, reason = "userspace")
+                            val pm =
+                                LocalContext.current.getSystemService(Context.POWER_SERVICE) as PowerManager?
+                            @Suppress("DEPRECATION")
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && pm?.isRebootingUserspaceSupported == true) {
+                                RebootDropdownItem(id = R.string.reboot_userspace, reason = "userspace")
+                            }
+                            RebootDropdownItem(id = R.string.reboot_recovery, reason = "recovery")
+                            RebootDropdownItem(id = R.string.reboot_bootloader, reason = "bootloader")
+                            RebootDropdownItem(id = R.string.reboot_download, reason = "download")
+                            RebootDropdownItem(id = R.string.reboot_edl, reason = "edl")
                         }
-                        RebootDropdownItem(id = R.string.reboot_recovery, reason = "recovery")
-                        RebootDropdownItem(id = R.string.reboot_bootloader, reason = "bootloader")
-                        RebootDropdownItem(id = R.string.reboot_download, reason = "download")
-                        RebootDropdownItem(id = R.string.reboot_edl, reason = "edl")
                     }
                 }
             }
