@@ -104,7 +104,8 @@ fun HomeScreen(navigator: DestinationsNavigator) {
                 .padding(innerPadding)
                 .nestedScroll(scrollBehavior.nestedScrollConnection)
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = 16.dp),
+                .padding(horizontal = 16.dp)
+                .padding(top = 16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             val lkmMode = ksuVersion?.let {
@@ -165,9 +166,10 @@ fun HomeScreen(navigator: DestinationsNavigator) {
 @Composable
 private fun SuperuserCard(onClick: (() -> Unit)? = null) {
     val count = getSuperuserCount()
+    val cardAlpha = LocalUiOverlaySettings.current.cardAlpha
     ElevatedCard(
         colors = CardDefaults.elevatedCardColors(
-            containerColor = MaterialTheme.colorScheme.secondaryContainer
+            containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = cardAlpha)
         ),
         modifier = Modifier
             .height(IntrinsicSize.Min)
@@ -205,6 +207,7 @@ private fun SuperuserCard(onClick: (() -> Unit)? = null) {
 private fun ModuleCard(onClick: (() -> Unit)? = null) {
     val count = getModuleCount()
     val moduleViewModel: ModuleViewModel = viewModel()
+    val cardAlpha = LocalUiOverlaySettings.current.cardAlpha
 
     val moduleUpdateCount = moduleViewModel.moduleList.count {
         moduleViewModel.checkUpdate(it).first.isNotEmpty()
@@ -225,7 +228,7 @@ private fun ModuleCard(onClick: (() -> Unit)? = null) {
 
     ElevatedCard(
         colors = CardDefaults.elevatedCardColors(
-            containerColor = MaterialTheme.colorScheme.secondaryContainer
+            containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = cardAlpha)
         ),
         modifier = Modifier
             .height(IntrinsicSize.Min)
@@ -310,6 +313,7 @@ private fun ModuleCard(onClick: (() -> Unit)? = null) {
 fun UpdateCard() {
     val context = LocalContext.current
     val latestVersionInfo = LatestVersionInfo()
+    val cardAlpha = LocalUiOverlaySettings.current.cardAlpha
     val newVersion by produceState(initialValue = latestVersionInfo) {
         value = withContext(Dispatchers.IO) {
             checkNewVersion()
@@ -334,7 +338,7 @@ fun UpdateCard() {
         val updateDialog = rememberConfirmDialog(onConfirm = { uriHandler.openUri(newVersionUrl) })
         ElevatedCard(
             colors = CardDefaults.elevatedCardColors(
-                containerColor = MaterialTheme.colorScheme.primary
+                containerColor = MaterialTheme.colorScheme.primary.copy(alpha = cardAlpha)
             )
         ) {
             Row(
@@ -514,11 +518,14 @@ private fun StatusCard(
 ) {
     val context = LocalContext.current
     var tapCount by remember { mutableStateOf(0) }
+    val cardAlpha = LocalUiOverlaySettings.current.cardAlpha
 
     ElevatedCard(
         colors = CardDefaults.elevatedCardColors(containerColor = run {
-            if (ksuVersion != null) MaterialTheme.colorScheme.primaryContainer
-            else MaterialTheme.colorScheme.errorContainer
+            val base =
+                if (ksuVersion != null) MaterialTheme.colorScheme.primaryContainer
+                else MaterialTheme.colorScheme.errorContainer
+            base.copy(alpha = cardAlpha)
         })
     ) {
         Row(
@@ -663,9 +670,10 @@ private fun StatusCard(
 fun WarningCard(
     message: String, color: Color = MaterialTheme.colorScheme.error, onClick: (() -> Unit)? = null
 ) {
+    val cardAlpha = LocalUiOverlaySettings.current.cardAlpha
     ElevatedCard(
         colors = CardDefaults.elevatedCardColors(
-            containerColor = color
+            containerColor = color.copy(alpha = cardAlpha)
         )
     ) {
         Row(
