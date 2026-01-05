@@ -21,6 +21,10 @@ KernelSU is a kernel-based root solution for Android with a kernel module, Rust 
 /scripts/                     # Build automation scripts (Python)
 ```
 
+## Building the Project
+
+- Never build locally, all build will happen on github after push!
+
 ## Git Commit
 
 - Mirror existing history style: `<scope>: <summary>` with a short lowercase scope tied to the touched area (e.g., `kernel`, `ksud`, `manager`, `docs`, `scripts`). Keep the summary concise, sentence case, and avoid trailing period.

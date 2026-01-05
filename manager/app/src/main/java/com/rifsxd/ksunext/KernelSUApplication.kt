@@ -1,12 +1,15 @@
 package com.rifsxd.ksunext
 
 import android.app.Application
+import android.os.Build
 import android.system.Os
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 import coil.Coil
 import coil.ImageLoader
+import coil.decode.GifDecoder
+import coil.decode.ImageDecoderDecoder
 import com.rifsxd.ksunext.ui.util.createRootShellBuilder
 import com.rifsxd.ksunext.ui.viewmodel.ModuleViewModel
 import com.rifsxd.ksunext.ui.viewmodel.SuperUserViewModel
@@ -52,6 +55,11 @@ class KernelSUApplication : Application(), ViewModelStoreOwner {
                 .components {
                     add(AppIconKeyer())
                     add(AppIconFetcher.Factory(iconSize, false, context))
+                    if (Build.VERSION.SDK_INT >= 28) {
+                        add(ImageDecoderDecoder.Factory())
+                    } else {
+                        add(GifDecoder.Factory())
+                    }
                 }
                 .build()
         )
