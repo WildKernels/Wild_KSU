@@ -285,6 +285,12 @@ jobs:
       - name: Download all artifacts
         uses: actions/download-artifact@v4
 
+      - name: Rename Spoofed APKs
+        run: |
+          for file in manager-spoofed/*.apk; do
+            mv "$file" "manager-spoofed/spoofed-$(basename "$file")"
+          done
+
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:

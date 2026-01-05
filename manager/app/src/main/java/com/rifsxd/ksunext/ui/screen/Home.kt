@@ -528,7 +528,9 @@ private fun TopBar(
                         imageVector = Icons.Filled.PowerSettingsNew,
                         contentDescription = stringResource(id = R.string.reboot)
                     )
+                }
 
+                if (showDropdown) {
                     val baseScheme = LocalBaseColorScheme.current
                     val cardAlpha = LocalUiOverlaySettings.current.cardAlpha
                     MaterialTheme(
@@ -536,15 +538,8 @@ private fun TopBar(
                         typography = MaterialTheme.typography,
                         shapes = MaterialTheme.shapes,
                     ) {
-                        DropdownMenu(
-                            expanded = showDropdown,
-                            onDismissRequest = { 
-                                showDropdown = false
-                            },
-                            containerColor = baseScheme.surfaceContainer.copy(alpha = cardAlpha),
-                            tonalElevation = 0.dp,
-                            shadowElevation = if (cardAlpha < 1f) 0.dp else 8.dp,
-                            border = null,
+                        Dialog(
+                            onDismissRequest = { showDropdown = false }
                         ) {
                             // Apply blur behind the popup window if transparency is active and supported
                             if (cardAlpha < 1f && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -563,18 +558,30 @@ private fun TopBar(
                                 }
                             }
 
-                            RebootDropdownItem(id = R.string.reboot)
+                            ElevatedCard(
+                                modifier = Modifier.fillMaxWidth(0.8f),
+                                colors = CardDefaults.elevatedCardColors(
+                                    containerColor = baseScheme.surfaceContainer.copy(alpha = cardAlpha),
+                                ),
+                                elevation = CardDefaults.elevatedCardElevation(
+                                    defaultElevation = if (cardAlpha < 1f) 0.dp else 6.dp
+                                )
+                            ) {
+                                Column(modifier = Modifier.padding(vertical = 8.dp)) {
+                                    RebootDropdownItem(id = R.string.reboot)
 
-                            val pm =
-                                LocalContext.current.getSystemService(Context.POWER_SERVICE) as PowerManager?
-                            @Suppress("DEPRECATION")
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && pm?.isRebootingUserspaceSupported == true) {
-                                RebootDropdownItem(id = R.string.reboot_userspace, reason = "userspace")
+                                    val pm =
+                                        LocalContext.current.getSystemService(Context.POWER_SERVICE) as PowerManager?
+                                    @Suppress("DEPRECATION")
+                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && pm?.isRebootingUserspaceSupported == true) {
+                                        RebootDropdownItem(id = R.string.reboot_userspace, reason = "userspace")
+                                    }
+                                    RebootDropdownItem(id = R.string.reboot_recovery, reason = "recovery")
+                                    RebootDropdownItem(id = R.string.reboot_bootloader, reason = "bootloader")
+                                    RebootDropdownItem(id = R.string.reboot_download, reason = "download")
+                                    RebootDropdownItem(id = R.string.reboot_edl, reason = "edl")
+                                }
                             }
-                            RebootDropdownItem(id = R.string.reboot_recovery, reason = "recovery")
-                            RebootDropdownItem(id = R.string.reboot_bootloader, reason = "bootloader")
-                            RebootDropdownItem(id = R.string.reboot_download, reason = "download")
-                            RebootDropdownItem(id = R.string.reboot_edl, reason = "edl")
                         }
                     }
                 }
