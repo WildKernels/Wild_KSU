@@ -794,8 +794,15 @@ fun ModuleItem(
     onExpandToggle: () -> Unit,
 ) {
     val viewModel = viewModel<ModuleViewModel>()
+    val cardAlpha = LocalUiOverlaySettings.current.cardAlpha
+    val cardElevation = if (cardAlpha < 1f) {
+        CardDefaults.elevatedCardElevation(defaultElevation = 0.dp)
+    } else {
+        CardDefaults.elevatedCardElevation()
+    }
 
     ElevatedCard(
+        elevation = cardElevation,
         modifier = Modifier
             .fillMaxWidth()
             .clip(MaterialTheme.shapes.medium)
