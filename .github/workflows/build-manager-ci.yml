@@ -45,7 +45,6 @@ jobs:
       os: ${{ matrix.os }}
 
   build-ksud-extra:
-    if: false
     needs: [build-lkm, build-ksuinit]
     strategy:
       matrix:
