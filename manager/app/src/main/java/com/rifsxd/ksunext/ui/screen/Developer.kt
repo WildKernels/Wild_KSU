@@ -27,7 +27,6 @@ import com.rifsxd.ksunext.Natives
 import com.rifsxd.ksunext.R
 import com.rifsxd.ksunext.ksuApp
 import androidx.compose.material.icons.filled.Update
-import com.rifsxd.ksunext.ui.component.ListItem
 import com.rifsxd.ksunext.ui.component.SwitchItem
 import com.rifsxd.ksunext.ui.component.rememberLoadingDialog
 import com.rifsxd.ksunext.ui.util.LocalSnackbarHost
@@ -81,10 +80,23 @@ fun DeveloperScreen(navigator: DestinationsNavigator) {
 
             // --- Force Update ---
             ListItem(
-                icon = Icons.Filled.Update,
-                title = "Force update manager to latest CI",
-                summary = "Download and install latest manager from nightly.link (Normal Manager Only)",
-                onClick = {
+                headlineContent = {
+                    Text(
+                        text = "Force update manager to latest CI",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                },
+                supportingContent = {
+                    Text("Download and install latest manager from nightly.link (Normal Manager Only)")
+                },
+                leadingContent = {
+                    Icon(
+                        imageVector = Icons.Filled.Update,
+                        contentDescription = "Force Update"
+                    )
+                },
+                modifier = Modifier.clickable {
                     scope.launch {
                         loadingDialog.withLoading {
                             withContext(Dispatchers.IO) {

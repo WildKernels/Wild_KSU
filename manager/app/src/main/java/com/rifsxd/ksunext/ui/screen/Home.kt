@@ -1,6 +1,8 @@
 package com.rifsxd.ksunext.ui.screen
 
 import android.content.Context
+import android.content.Intent
+import android.widget.Toast
 import android.os.Build
 import android.os.PowerManager
 import android.system.Os
