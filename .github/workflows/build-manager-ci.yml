@@ -23,11 +23,45 @@ on:
   workflow_dispatch:
 
 jobs:
+  prepare-tag:
+    if: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/wild' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    outputs:
+      tag_name: ${{ steps.create_tag.outputs.tag_name }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Create Tag
+        id: create_tag
+        run: |
+          BASE_VERSION="v4.2.0"
+          TAGS=$(git tag -l "${BASE_VERSION}-r*")
+          if [ -z "$TAGS" ]; then
+            NEW_TAG="${BASE_VERSION}-r1"
+          else
+            LAST_NUM=$(echo "$TAGS" | sed "s/${BASE_VERSION}-r//" | sort -n | tail -1)
+            NEXT_NUM=$((LAST_NUM + 1))
+            NEW_TAG="${BASE_VERSION}-r${NEXT_NUM}"
+          fi
+          echo "Generated tag: $NEW_TAG"
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git tag "$NEW_TAG"
+          git push origin "$NEW_TAG"
+          echo "tag_name=$NEW_TAG" >> $GITHUB_OUTPUT
+
   build-lkm:
+    needs: [prepare-tag]
+    if: always() && (needs.prepare-tag.result == 'success' || needs.prepare-tag.result == 'skipped')
     uses: ./.github/workflows/build-lkm.yml
     secrets: inherit
 
   build-ksuinit:
+    needs: [prepare-tag]
+    if: always() && (needs.prepare-tag.result == 'success' || needs.prepare-tag.result == 'skipped')
     uses: ./.github/workflows/ksuinit.yml
 
   build-ksud:
@@ -241,6 +275,22 @@ jobs:
                   -F parse_mode="Markdown"
             fi
           done
+
+  cleanup-tag:
+    if: failure() && needs.prepare-tag.result == 'success' && needs.build-lkm.result == 'failure'
+    needs: [prepare-tag, build-lkm]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Delete Tag
+        run: |
+          TAG_NAME="${{ needs.prepare-tag.outputs.tag_name }}"
+          if [ ! -z "$TAG_NAME" ]; then
+             echo "Deleting tag $TAG_NAME due to kernel build failure"
+             git push --delete origin "$TAG_NAME"
+          fi
 
 
 
