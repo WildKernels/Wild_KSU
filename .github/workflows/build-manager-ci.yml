@@ -289,6 +289,19 @@ jobs:
       - name: DM Artifacts
         if: always()
         run: |
+          set -euo pipefail
+
+          MESSAGE=$(cat <<EOF
+          New Wild KSU CI Build Finished
+
+          Repository: https://github.com/${REPO}
+          Workflow: https://github.com/${REPO}/actions/runs/${RUN_ID}
+          Commit: https://github.com/${REPO}/commit/${COMMIT_SHA}
+
+          Commit message:
+          ${COMMIT_MESSAGE}
+          EOF
+              )
           # Check for Normal artifacts
           for apk in ./manager/*.apk; do
             if [ -f "$apk" ]; then
