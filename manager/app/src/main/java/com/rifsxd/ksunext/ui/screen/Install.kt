@@ -395,6 +395,7 @@ private fun TopBar(
                 }
             }
         },
+        colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
         windowInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal),
         scrollBehavior = scrollBehavior
     )

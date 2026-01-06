@@ -15,6 +15,8 @@ import androidx.compose.animation.*
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.background
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -409,7 +411,11 @@ fun UpdateCard() {
 @Composable
 fun RebootDropdownItem(@StringRes id: Int, reason: String = "") {
     DropdownMenuItem(text = {
-        Text(stringResource(id))
+        Text(
+            text = stringResource(id),
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold
+        )
     }, onClick = {
         reboot(reason)
     })
@@ -561,7 +567,7 @@ private fun TopBar(
                             }
 
                             ElevatedCard(
-                                modifier = Modifier.fillMaxWidth(0.8f),
+                                modifier = Modifier.fillMaxWidth(0.95f),
                                 colors = CardDefaults.elevatedCardColors(
                                     containerColor = baseScheme.surfaceContainer.copy(alpha = cardAlpha),
                                 ),
@@ -569,19 +575,52 @@ private fun TopBar(
                                     defaultElevation = if (cardAlpha < 1f) 0.dp else 6.dp
                                 )
                             ) {
-                                Column(modifier = Modifier.padding(vertical = 8.dp)) {
-                                    RebootDropdownItem(id = R.string.reboot)
+                                Box {
+                                    Column(modifier = Modifier.padding(vertical = 16.dp)) {
+                                        Spacer(modifier = Modifier.height(24.dp))
+                                        RebootDropdownItem(id = R.string.reboot)
 
-                                    val pm =
-                                        LocalContext.current.getSystemService(Context.POWER_SERVICE) as PowerManager?
-                                    @Suppress("DEPRECATION")
-                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && pm?.isRebootingUserspaceSupported == true) {
-                                        RebootDropdownItem(id = R.string.reboot_userspace, reason = "userspace")
+                                        val pm =
+                                            LocalContext.current.getSystemService(Context.POWER_SERVICE) as PowerManager?
+                                        @Suppress("DEPRECATION")
+                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && pm?.isRebootingUserspaceSupported == true) {
+                                            RebootDropdownItem(id = R.string.reboot_userspace, reason = "userspace")
+                                        }
+                                        RebootDropdownItem(id = R.string.reboot_recovery, reason = "recovery")
+                                        RebootDropdownItem(id = R.string.reboot_bootloader, reason = "bootloader")
+                                        RebootDropdownItem(id = R.string.reboot_download, reason = "download")
+                                        RebootDropdownItem(id = R.string.reboot_edl, reason = "edl")
+
+                                        HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+
+                                        DropdownMenuItem(
+                                            text = {
+                                                Text(
+                                                    text = stringResource(android.R.string.cancel),
+                                                    style = MaterialTheme.typography.titleMedium,
+                                                    fontWeight = FontWeight.Bold,
+                                                    color = MaterialTheme.colorScheme.error
+                                                )
+                                            },
+                                            onClick = { showDropdown = false }
+                                        )
                                     }
-                                    RebootDropdownItem(id = R.string.reboot_recovery, reason = "recovery")
-                                    RebootDropdownItem(id = R.string.reboot_bootloader, reason = "bootloader")
-                                    RebootDropdownItem(id = R.string.reboot_download, reason = "download")
-                                    RebootDropdownItem(id = R.string.reboot_edl, reason = "edl")
+
+                                    IconButton(
+                                        onClick = { showDropdown = false },
+                                        modifier = Modifier
+                                            .align(Alignment.TopEnd)
+                                            .padding(8.dp)
+                                            .background(Color.Red, CircleShape)
+                                            .size(32.dp)
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Filled.Close,
+                                            contentDescription = "Close",
+                                            tint = Color.White,
+                                            modifier = Modifier.size(20.dp)
+                                        )
+                                    }
                                 }
                             }
                         }
