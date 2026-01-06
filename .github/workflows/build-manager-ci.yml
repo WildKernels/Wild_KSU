@@ -288,6 +288,11 @@ jobs:
 
       - name: DM Artifacts
         if: always()
+        env:
+          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+          COMMIT_SHA: ${{ github.sha }}
+          RUN_ID: ${{ github.run_id }}
+          REPO: ${{ github.repository }}
         run: |
           set -euo pipefail
 
@@ -307,7 +312,7 @@ jobs:
             if [ -f "$apk" ]; then
               echo "Sending Telegram message..."
               curl -sS -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
-                -F chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
+                -F chat_id="${{ secrets.TELEGRAM_USER_ID }}" \
                 -F text="$MESSAGE"
 
               echo "Sending $apk to Telegram DM..."
