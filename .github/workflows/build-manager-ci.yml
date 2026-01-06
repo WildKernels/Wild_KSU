@@ -190,7 +190,32 @@ jobs:
           name: ${{ matrix.spoofed && 'mappings-spoofed' || 'mappings' }}
           path: "manager/app/build/outputs/mapping/release/"
 
-  upload-telegram-manager:
+  create-release:
+    if: needs.prepare-tag.result == 'success'
+    needs: [prepare-tag, build-manager, build-lkm]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+
+      - name: Rename Spoofed APKs
+        run: |
+          for file in manager-spoofed/*.apk; do
+            mv "$file" "manager-spoofed/$(basename "$file" | sed 's/Wild_KSU/Wild_KSU_Spoofed/')"
+          done
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ needs.prepare-tag.outputs.tag_name }}
+          body: ${{ github.event.head_commit.message }}
+          files: |
+            manager/*.apk
+            manager-spoofed/*.apk
+
+upload-telegram-manager:
     if: ${{ ( github.event_name != 'pull_request' && (github.ref == 'refs/heads/wild' )) || github.ref_type == 'tag' }}
     needs: build-manager
     runs-on: ubuntu-latest
@@ -267,39 +292,18 @@ jobs:
           # Check for Normal artifacts
           for apk in ./manager/*.apk; do
             if [ -f "$apk" ]; then
+              echo "Sending Telegram message..."
+              RESPONSE=$(curl -sS -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
+                -F chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
+                -F message_thread_id="${{ secrets.TELEGRAM_TOPIC_ID_WKSU }}" \
+                -F text="$MESSAGE")
               echo "Sending $apk to Telegram DM..."
               curl -sS -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" \
                   -F chat_id="${{ secrets.TELEGRAM_USER_ID }}" \
                   -F document=@"$apk" \
-                  -F caption="$MESSAGE"
             fi
           done
-
-  create-release:
-    if: needs.prepare-tag.result == 'success'
-    needs: [prepare-tag, build-manager, build-lkm]
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - name: Download all artifacts
-        uses: actions/download-artifact@v4
-
-      - name: Rename Spoofed APKs
-        run: |
-          for file in manager-spoofed/*.apk; do
-            mv "$file" "manager-spoofed/$(basename "$file" | sed 's/Wild_KSU/Wild_KSU_Spoofed/')"
-          done
-
-      - name: Create Release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ needs.prepare-tag.outputs.tag_name }}
-          body: ${{ github.event.head_commit.message }}
-          files: |
-            manager/*.apk
-            manager-spoofed/*.apk
-
+          
   cleanup-tag:
     if: failure() && needs.prepare-tag.result == 'success'
     needs: [prepare-tag, build-lkm, build-manager, create-release]
