@@ -18,6 +18,7 @@ import androidx.compose.material.icons.filled.Flip
 import androidx.compose.material.icons.filled.Wallpaper
 import androidx.compose.material.icons.filled.Translate
 import androidx.compose.material.icons.filled.ViewCarousel
+import androidx.compose.material.icons.filled.ViewStream
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -430,6 +431,21 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                     prefs.edit { putBoolean("use_banner", it) }
                     useBanner = it
                 }
+            }
+
+            var enableBottomBar by rememberSaveable {
+                mutableStateOf(
+                    prefs.getBoolean("enable_bottom_bar", false)
+                )
+            }
+            SwitchItem(
+                icon = Icons.Filled.ViewStream,
+                title = stringResource(id = R.string.settings_enable_bottom_bar),
+                summary = stringResource(id = R.string.settings_enable_bottom_bar_summary),
+                checked = enableBottomBar
+            ) {
+                prefs.edit { putBoolean("enable_bottom_bar", it) }
+                enableBottomBar = it
             }
 
             var enableAmoled by rememberSaveable {

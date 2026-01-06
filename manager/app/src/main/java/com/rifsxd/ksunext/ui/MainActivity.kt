@@ -28,6 +28,9 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.compose.ui.res.stringResource
+import com.rifsxd.ksunext.ui.screen.BottomBarDestination
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
@@ -120,6 +123,10 @@ class MainActivity : ComponentActivity() {
                     )
                 }
 
+                var enableBottomBar by remember {
+                    mutableStateOf(prefs.getBoolean("enable_bottom_bar", false))
+                }
+
                 DisposableEffect(prefs) {
                     val listener =
                         android.content.SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
@@ -149,6 +156,9 @@ class MainActivity : ComponentActivity() {
                                     },
                                     dimAlpha = prefs.getInt("background_dim", 0) / 100f,
                                 )
+                            }
+                            if (key == "enable_bottom_bar") {
+                                enableBottomBar = prefs.getBoolean("enable_bottom_bar", false)
                             }
                         }
                     prefs.registerOnSharedPreferenceChangeListener(listener)
@@ -188,6 +198,7 @@ class MainActivity : ComponentActivity() {
                     LocalSnackbarHost provides snackBarHostState,
                     LocalBackgroundSettings provides backgroundSettings,
                     LocalUiOverlaySettings provides uiOverlaySettings,
+                    LocalEnableBottomBar provides enableBottomBar,
                 ) {
                     val baseScheme = MaterialTheme.colorScheme
                     val cardAlpha = uiOverlaySettings.cardAlpha.coerceIn(0f, 1f)
@@ -216,7 +227,41 @@ class MainActivity : ComponentActivity() {
 
                             Scaffold(
                                 containerColor = Color.Transparent,
-                                contentWindowInsets = WindowInsets(0, 0, 0, 0)
+                                contentWindowInsets = WindowInsets(0, 0, 0, 0),
+                                bottomBar = {
+                                    if (enableBottomBar) {
+                                        val navBackStackEntry by navController.currentBackStackEntryAsState()
+                                        val currentDestination = navBackStackEntry?.destination
+
+                                        NavigationBar {
+                                            BottomBarDestination.values().forEach { destination ->
+                                                val isSelected = currentDestination?.route == destination.direction.route
+                                                if (destination.rootRequired && !Natives.isManager) return@forEach
+
+                                                NavigationBarItem(
+                                                    selected = isSelected,
+                                                    onClick = {
+                                                        if (isSelected) return@NavigationBarItem
+                                                        navigator.navigate(destination.direction) {
+                                                            launchSingleTop = true
+                                                            restoreState = true
+                                                            popUpTo(NavGraphs.root) {
+                                                                saveState = true
+                                                            }
+                                                        }
+                                                    },
+                                                    icon = {
+                                                        Icon(
+                                                            if (isSelected) destination.iconSelected else destination.iconNotSelected,
+                                                            contentDescription = stringResource(destination.label)
+                                                        )
+                                                    },
+                                                    label = { Text(stringResource(destination.label)) }
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
                             ) { innerPadding ->
                                 DestinationsNavHost(
                                     modifier = Modifier

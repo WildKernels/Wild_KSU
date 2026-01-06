@@ -243,4 +243,6 @@
     <string name="settings_disable_avc_spoof_summary">Disable fixing selinux context leak caused by avc denial in audit log.</string>
     <string name="meta_module">Meta</string>
     <string name="donate">Donate</string>
+    <string name="settings_enable_bottom_bar">Enable Bottom Bar</string>
+    <string name="settings_enable_bottom_bar_summary">Show bottom navigation bar</string>
 </resources>
