@@ -233,10 +233,8 @@ class MainActivity : ComponentActivity() {
                                         val navBackStackEntry by navController.currentBackStackEntryAsState()
                                         val currentDestination = navBackStackEntry?.destination
 
-                                        NavigationBar(
-                                            containerColor = baseScheme.surfaceContainer,
-                                        ) {
-                                            BottomBarDestination.values().forEach { destination ->
+                                        NavigationBar {
+                            BottomBarDestination.values().forEach { destination ->
                                                 val isSelected = currentDestination?.route == destination.direction.route
                                                 if (destination.rootRequired && !Natives.isManager) return@forEach
 

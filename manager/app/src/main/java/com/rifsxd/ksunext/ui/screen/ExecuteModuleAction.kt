@@ -128,7 +128,7 @@ fun ExecuteModuleActionScreen(navigator: DestinationsNavigator, moduleId: String
                 )
             }
         },
-        contentWindowInsets = WindowInsets.safeDrawing,
+        contentWindowInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top),
         snackbarHost = { SnackbarHost(snackBarHost) }
     ) { innerPadding ->
         KeyEventBlocker {
