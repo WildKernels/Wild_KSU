@@ -11,6 +11,8 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.runtime.remember
+import com.rifsxd.ksunext.ui.util.NavigationUtils
 
 private val DarkColorScheme = darkColorScheme(
     primary = PRIMARY,
@@ -81,7 +83,8 @@ fun KernelSUTheme(
     }
 
     SystemBarStyle(
-        darkMode = darkTheme
+        darkMode = darkTheme,
+        navigationBarColor = colorScheme.surfaceContainer
     )
 
     MaterialTheme(
@@ -96,9 +99,23 @@ private fun SystemBarStyle(
     darkMode: Boolean,
     statusBarScrim: Color = Color.Transparent,
     navigationBarScrim: Color = Color.Transparent,
+    navigationBarColor: Color? = null,
 ) {
     val context = LocalContext.current
     val activity = context as ComponentActivity
+    val isThreeButtonNav = remember { NavigationUtils.isThreeButtonNavigation(context) }
+
+    val actualNavigationBarScrim = if (isThreeButtonNav && navigationBarColor != null) {
+        navigationBarColor
+    } else if (isThreeButtonNav) {
+        if (darkMode) {
+            Color.Black.copy(alpha = 0.5f)
+        } else {
+            Color.Black.copy(alpha = 0.1f)
+        }
+    } else {
+        navigationBarScrim
+    }
 
     SideEffect {
         activity.enableEdgeToEdge(
@@ -108,12 +125,12 @@ private fun SystemBarStyle(
             ) { darkMode },
             navigationBarStyle = when {
                 darkMode -> SystemBarStyle.dark(
-                    navigationBarScrim.toArgb()
+                    actualNavigationBarScrim.toArgb()
                 )
 
                 else -> SystemBarStyle.light(
-                    navigationBarScrim.toArgb(),
-                    navigationBarScrim.toArgb(),
+                    actualNavigationBarScrim.toArgb(),
+                    actualNavigationBarScrim.toArgb(),
                 )
             }
         )
