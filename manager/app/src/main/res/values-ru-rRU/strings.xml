@@ -134,7 +134,7 @@
   <string name="module_updated">Обновлено</string>
   <string name="module_downloading">Загружается модуль: %s</string>
   <string name="module_start_downloading">Начало загрузки: %s</string>
-  <string name="new_version_available">Доступна новая версия %1$s (%2$d), нажмите для обновления.</string>
+  <string name="new_version_available">New APK version %1$s (%2$d) is available, click to upgrade.</string>
   <string name="launch_app">Запустить</string>
   <string name="close">Закрыть</string>
   <string name="force_stop_app">Принудительно остановить</string>

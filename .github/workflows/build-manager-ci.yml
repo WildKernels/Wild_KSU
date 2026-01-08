@@ -305,9 +305,9 @@ jobs:
 
           Commit: https://github.com/${REPO}/commit/${COMMIT_SHA}
 
-          ```
+          \`\`\`
           ${COMMIT_MESSAGE}
-          ```
+          \`\`\`
           EOF
               )
           # Check for Normal artifacts

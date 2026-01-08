@@ -74,6 +74,17 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import java.util.*
+import androidx.core.content.FileProvider
+import com.rifsxd.ksunext.BuildConfig
+import java.io.File
+import java.io.FileOutputStream
+import com.rifsxd.ksunext.ui.component.rememberLoadingDialog
+import com.rifsxd.ksunext.ui.component.LoadingDialogHandle
+import com.rifsxd.ksunext.ksuApp
+import com.rifsxd.ksunext.ui.util.LocalSnackbarHost
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Destination<RootGraph>(start = true)
@@ -91,6 +102,8 @@ fun HomeScreen(navigator: DestinationsNavigator) {
     val prefs = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
     val developerOptionsEnabled = prefs.getBoolean("enable_developer_options", false)
 
+    val snackBarHost = LocalSnackbarHost.current
+    val loadingDialog = rememberLoadingDialog()
 
     Scaffold(
         containerColor = Color.Transparent,
@@ -107,6 +120,7 @@ fun HomeScreen(navigator: DestinationsNavigator) {
                 scrollBehavior = scrollBehavior
             )
         },
+        snackbarHost = { SnackbarHost(snackBarHost) },
         contentWindowInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal)
     ) { innerPadding ->
         Column(
@@ -163,7 +177,7 @@ fun HomeScreen(navigator: DestinationsNavigator) {
                 LocalContext.current.getSharedPreferences("settings", Context.MODE_PRIVATE)
                     .getBoolean("check_update", true)
             if (checkUpdate) {
-                UpdateCard()
+                UpdateCard(snackBarHost, loadingDialog)
             }
 
             InfoCard(autoExpand = developerOptionsEnabled)
@@ -334,8 +348,9 @@ private fun ModuleCard(onClick: (() -> Unit)? = null) {
 }
 
 @Composable
-fun UpdateCard() {
+fun UpdateCard(snackBarHost: SnackbarHostState, loadingDialog: LoadingDialogHandle) {
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     val latestVersionInfo = LatestVersionInfo()
     val cardAlpha = LocalUiOverlaySettings.current.cardAlpha
     val cardElevation = if (cardAlpha < 1f) {
@@ -359,12 +374,122 @@ fun UpdateCard() {
     val title = stringResource(id = R.string.module_changelog)
     val updateText = stringResource(id = R.string.module_update)
 
+    var showChangelog by remember { mutableStateOf(false) }
+
+    val performUpdate = {
+        scope.launch {
+            loadingDialog.withLoading {
+                withContext(Dispatchers.IO) {
+                    runCatching {
+                        val request = okhttp3.Request.Builder().url(newVersionUrl).build()
+                        ksuApp.okhttpClient.newCall(request).execute().use { response ->
+                            if (!response.isSuccessful) throw Exception("Download failed: ${response.code}")
+
+                            val apkFile = File(context.cacheDir, "update.apk")
+                            response.body?.byteStream()?.use { input ->
+                                FileOutputStream(apkFile).use { output ->
+                                    input.copyTo(output)
+                                }
+                            }
+
+                            val uri = FileProvider.getUriForFile(
+                                context,
+                                "${BuildConfig.APPLICATION_ID}.fileprovider",
+                                apkFile
+                            )
+                            val intent = Intent(Intent.ACTION_VIEW).apply {
+                                setDataAndType(uri, "application/vnd.android.package-archive")
+                                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                            }
+                            context.startActivity(intent)
+                        }
+                    }.onFailure {
+                        withContext(Dispatchers.Main) {
+                            snackBarHost.showSnackbar("Update failed: ${it.message}")
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    if (showChangelog) {
+        val baseScheme = LocalBaseColorScheme.current
+        MaterialTheme(
+            colorScheme = baseScheme,
+            typography = MaterialTheme.typography,
+            shapes = MaterialTheme.shapes,
+        ) {
+            Dialog(
+                onDismissRequest = { showChangelog = false }
+            ) {
+                // Apply blur behind the popup window if transparency is active and supported
+                if (cardAlpha < 1f && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    val view = LocalView.current
+                    val context = LocalContext.current
+                    DisposableEffect(view) {
+                        val root = view.rootView
+                        val params = root.layoutParams as? WindowManager.LayoutParams
+                        if (params != null) {
+                            params.flags = params.flags or WindowManager.LayoutParams.FLAG_BLUR_BEHIND
+                            params.blurBehindRadius = 60 // Blur radius in pixels
+                            val wm = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+                            wm.updateViewLayout(root, params)
+                        }
+                        onDispose {}
+                    }
+                }
+
+                ElevatedCard(
+                    modifier = Modifier.fillMaxWidth(0.95f),
+                    colors = CardDefaults.elevatedCardColors(
+                        containerColor = baseScheme.surfaceContainer.copy(alpha = cardAlpha),
+                    ),
+                    elevation = CardDefaults.elevatedCardElevation(
+                        defaultElevation = if (cardAlpha < 1f) 0.dp else 6.dp
+                    )
+                ) {
+                    Column(modifier = Modifier.padding(24.dp)) {
+                        Text(
+                            text = title,
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        Column(modifier = Modifier.verticalScroll(rememberScrollState()).weight(1f, fill = false)) {
+                            Text(
+                                text = changelog,
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(24.dp))
+
+                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+                            TextButton(onClick = { showChangelog = false }) {
+                                Text(stringResource(android.R.string.cancel))
+                            }
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Button(onClick = {
+                                performUpdate()
+                                showChangelog = false
+                            }) {
+                                Text(updateText)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     AnimatedVisibility(
         visible = newVersionCode > currentVersionCode,
         enter = fadeIn() + expandVertically(),
         exit = shrinkVertically() + fadeOut()
     ) {
-        val updateDialog = rememberConfirmDialog(onConfirm = { uriHandler.openUri(newVersionUrl) })
         ElevatedCard(
             colors = CardDefaults.elevatedCardColors(
                 containerColor = MaterialTheme.colorScheme.primary.copy(alpha = cardAlpha),
@@ -377,14 +502,9 @@ fun UpdateCard() {
                     .fillMaxWidth()
                     .clickable {
                         if (changelog.isEmpty()) {
-                            uriHandler.openUri(newVersionUrl)
+                            performUpdate()
                         } else {
-                            updateDialog.showConfirm(
-                                title = title,
-                                content = changelog,
-                                markdown = true,
-                                confirm = updateText
-                            )
+                            showChangelog = true
                         }
                     }
                     .padding(24.dp),

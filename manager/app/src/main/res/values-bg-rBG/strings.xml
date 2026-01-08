@@ -134,7 +134,7 @@
   <string name="module_updated">Актуализиран</string>
   <string name="module_downloading">Изтегляне на модул: %s</string>
   <string name="module_start_downloading">Започнете изтеглянето: %s</string>
-  <string name="new_version_available">Налична е нова версия %1$s (%2$d), кликнете за актуализация.</string>
+  <string name="new_version_available">New APK version %1$s (%2$d) is available, click to upgrade.</string>
   <string name="launch_app">Стартиране</string>
   <string name="close">Затвори</string>
   <string name="force_stop_app">Принудително спиране</string>

@@ -134,7 +134,7 @@
   <string name="module_updated">Mise à jour</string>
   <string name="module_downloading">Téléchargement du module : %s</string>
   <string name="module_start_downloading">Démarrage du téléchargement de %s</string>
-  <string name="new_version_available">La nouvelle version %1$s (%2$d) est disponible, appuyez ici pour mettre à jour.</string>
+  <string name="new_version_available">New APK version %1$s (%2$d) is available, click to upgrade.</string>
   <string name="launch_app">Lancer</string>
   <string name="close">Fermer</string>
   <string name="force_stop_app">Forcer l\'arrêt</string>
