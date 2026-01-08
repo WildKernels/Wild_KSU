@@ -10,9 +10,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.systemGestures
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.runtime.remember
-import com.rifsxd.ksunext.ui.util.NavigationUtils
 
 private val DarkColorScheme = darkColorScheme(
     primary = PRIMARY,
@@ -103,7 +106,17 @@ private fun SystemBarStyle(
 ) {
     val context = LocalContext.current
     val activity = context as ComponentActivity
-    val isThreeButtonNav = remember { NavigationUtils.isThreeButtonNavigation(context) }
+    val density = LocalDensity.current
+    val insets = WindowInsets.systemGestures
+    
+    // Check for 3-button navigation by inspecting system gesture insets.
+    // Gesture navigation usually has non-zero left/right system gesture insets.
+    // 3-button navigation has zero left/right system gesture insets.
+    val isThreeButtonNav = remember(insets, density) {
+        val left = insets.getLeft(density, LayoutDirection.Ltr)
+        val right = insets.getRight(density, LayoutDirection.Ltr)
+        left == 0 && right == 0
+    }
 
     val actualNavigationBarScrim = if (isThreeButtonNav && navigationBarColor != null) {
         navigationBarColor
