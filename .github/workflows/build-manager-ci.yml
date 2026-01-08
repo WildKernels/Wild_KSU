@@ -297,18 +297,18 @@ jobs:
           set -euo pipefail
 
           MESSAGE=$(cat <<EOF
-New Wild KSU CI Build Finished
+          New Wild KSU CI Build Finished
 
-Repository: \`https://github.com/${REPO}\`
+          Repository: \`https://github.com/${REPO}\`
 
-Workflow: \`https://github.com/${REPO}/actions/runs/${RUN_ID}\`
+          Workflow: \`https://github.com/${REPO}/actions/runs/${RUN_ID}\`
 
-Commit: \`https://github.com/${REPO}/commit/${COMMIT_SHA}\`
+          Commit: \`https://github.com/${REPO}/commit/${COMMIT_SHA}\`
 
-\`\`\`
-${COMMIT_MESSAGE}
-\`\`\`
-EOF
+          \`\`\`
+          ${COMMIT_MESSAGE}
+          \`\`\`
+          EOF
               )
           # Check for Normal artifacts
           for apk in ./manager/*.apk; do
