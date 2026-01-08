@@ -21,9 +21,9 @@ find . -depth -type d -name 'ksunext' -execdir mv {} "$word3" \;
 
 # Replace inside files
 find . -type f -exec sed -i \
-    -e "s/com\.rifsxd\.ksunext/$word1.$word2.$word3/g" \
-    -e "s/com\/rifsxd\/ksunext/$word1\/$word2\/$word3/g" \
-    -e "s/com_rifsxd_ksunext/${word1}_${word2}_${word3}/g" {} +
+    -e "s/com\.twj\.wksu/$word1.$word2.$word3/g" \
+    -e "s/com\/twj\/wksu/$word1\/$word2\/$word3/g" \
+    -e "s/com_twj_wksu/${word1}_${word2}_${word3}/g" {} +
 
 # Append '-spoofed' to managerVersionName in build.gradle.kts
 if [ -f "./build.gradle.kts" ]; then
