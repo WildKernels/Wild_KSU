@@ -78,7 +78,11 @@ fun SettingScreen(navigator: DestinationsNavigator) {
         containerColor = Color.Transparent,
         topBar = {
             TopBar(
-                onBack = dropUnlessResumed { navigator.popBackStack() },
+                onBack = dropUnlessResumed {
+                    if (!navigator.popBackStack()) {
+                        navigator.navigate(HomeScreenDestination)
+                    }
+                },
                 scrollBehavior = scrollBehavior
             )
         },
