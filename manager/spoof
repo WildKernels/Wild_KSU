@@ -7,8 +7,8 @@ word3=$(tr -dc 'a-z' </dev/urandom | head -c6)
 
 echo "Generated words:"
 echo "com     -> $word1"
-echo "rifsxd  -> $word2"
-echo "ksunext -> $word3"
+echo "twj  -> $word2"
+echo "wksu -> $word3"
 echo ""
 
 # Export variables for use in find -exec
@@ -16,8 +16,8 @@ export word1 word2 word3
 
 # Rename directories
 find . -depth -type d -name 'com' -execdir mv {} "$word1" \;
-find . -depth -type d -name 'rifsxd' -execdir mv {} "$word2" \;
-find . -depth -type d -name 'ksunext' -execdir mv {} "$word3" \;
+find . -depth -type d -name 'twj' -execdir mv {} "$word2" \;
+find . -depth -type d -name 'wksu' -execdir mv {} "$word3" \;
 
 # Replace inside files
 find . -type f -exec sed -i \
