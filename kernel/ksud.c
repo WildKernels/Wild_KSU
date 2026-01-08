@@ -119,7 +119,9 @@ void on_boot_completed(void)
     ksu_boot_completed = true;
     pr_info("on_boot_completed!\n");
     track_throne(true);
+#ifndef CONFIG_KSU_SUSFS
     ksu_avc_spoof_late_init();
+#endif // CONFIG_KSU_SUSFS
 }
 
 #ifndef CONFIG_KSU_SUSFS
