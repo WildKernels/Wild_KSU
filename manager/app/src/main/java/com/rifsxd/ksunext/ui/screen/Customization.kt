@@ -562,7 +562,7 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                             // Also sync legacy amoled pref for other parts of the app that might read it directly
                             prefs.edit { putBoolean("enable_amoled", selectedTheme == AppTheme.AMOLED) }
                         },
-                        header = com.maxkeppeler.sheets.list.models.ListHeader(title = "Select Theme")
+                        header = Header.Default(title = "Select Theme")
                     )
                 }
             }

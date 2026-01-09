@@ -348,8 +348,11 @@ class MainActivity : ComponentActivity() {
         try {
             val prefs = getSharedPreferences("settings", MODE_PRIVATE)
             prefs.edit().putBoolean("enable_amoled", enabled).apply()
+            
+            val newTheme = if (enabled) AppTheme.AMOLED else AppTheme.AUTO
+            prefs.edit().putInt("app_theme", newTheme.value).apply()
+            appThemeState.value = newTheme
         } catch (_: Exception) {}
-        amoledModeState.value = enabled
     }
 
     override fun onNewIntent(intent: Intent) {
