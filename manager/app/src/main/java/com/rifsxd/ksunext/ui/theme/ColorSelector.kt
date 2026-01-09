@@ -4,9 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
@@ -42,19 +39,20 @@ val PrimaryColors = listOf(
     Color(0xFF607D8B), // Blue Grey 500
 )
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun ColorSelector(
     selectedColor: Color,
     onColorSelected: (Color) -> Unit
 ) {
-    LazyVerticalGrid(
-        columns = GridCells.Adaptive(minSize = 48.dp),
-        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
+    FlowRow(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp),
         horizontalArrangement = Arrangement.spacedBy(12.dp),
-        modifier = Modifier.heightIn(max = 240.dp)
+        verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        items(PrimaryColors) { color ->
+        PrimaryColors.forEach { color ->
             ColorItem(
                 color = color,
                 isSelected = color.toArgb() == selectedColor.toArgb(),
