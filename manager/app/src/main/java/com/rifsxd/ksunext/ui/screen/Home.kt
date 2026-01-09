@@ -425,7 +425,7 @@ fun UpdateCard(snackBarHost: SnackbarHostState, loadingDialog: LoadingDialogHand
                 onDismissRequest = { showChangelog = false }
             ) {
                 // Apply blur behind the popup window if transparency is active and supported
-                if (cardAlpha < 1f && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                     val view = LocalView.current
                     val context = LocalContext.current
                     DisposableEffect(view) {
@@ -689,7 +689,7 @@ private fun TopBar(
                             onDismissRequest = { showDropdown = false }
                         ) {
                             // Apply blur behind the popup window if transparency is active and supported
-                            if (cardAlpha < 1f && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                                 val view = LocalView.current
                                 val context = LocalContext.current
                                 DisposableEffect(view) {
