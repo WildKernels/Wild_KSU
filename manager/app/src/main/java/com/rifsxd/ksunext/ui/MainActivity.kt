@@ -48,6 +48,7 @@ import com.ramcosta.composedestinations.generated.destinations.SettingScreenDest
 import com.ramcosta.composedestinations.utils.rememberDestinationsNavigator
 import com.rifsxd.ksunext.Natives
 import com.rifsxd.ksunext.ui.screen.FlashIt
+import com.rifsxd.ksunext.ui.theme.AppTheme
 import com.rifsxd.ksunext.ui.theme.KernelSUTheme
 import com.rifsxd.ksunext.ui.util.*
 
@@ -55,7 +56,7 @@ class MainActivity : ComponentActivity() {
 
     var zipUri by mutableStateOf<ArrayList<Uri>?>(null)
     var navigateLoc by mutableStateOf("")
-    var amoledModeState = mutableStateOf(false)
+    var appThemeState = mutableStateOf(AppTheme.AUTO)
     private val handler = Handler(Looper.getMainLooper())
 
     override fun attachBaseContext(newBase: Context?) {
@@ -73,7 +74,8 @@ class MainActivity : ComponentActivity() {
 
         try {
             val prefsInit = getSharedPreferences("settings", MODE_PRIVATE)
-            amoledModeState.value = prefsInit.getBoolean("enable_amoled", false)
+            val themeValue = prefsInit.getInt("app_theme", 0)
+            appThemeState.value = AppTheme.fromValue(themeValue)
         } catch (_: Exception) {}
 
         val isManager = Natives.isManager
@@ -88,7 +90,7 @@ class MainActivity : ComponentActivity() {
             handleIntent(intent)
 
         setContent {
-            KernelSUTheme(amoledMode = amoledModeState.value) {
+            KernelSUTheme(appTheme = appThemeState.value) {
                 val navController = rememberNavController()
                 val snackBarHostState = remember { SnackbarHostState() }
                 val navigator = navController.rememberDestinationsNavigator()
@@ -130,6 +132,10 @@ class MainActivity : ComponentActivity() {
                 DisposableEffect(prefs) {
                     val listener =
                         android.content.SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
+                            if (key == "app_theme") {
+                                val themeValue = prefs.getInt("app_theme", 0)
+                                appThemeState.value = AppTheme.fromValue(themeValue)
+                            }
                             if (key == "background_uri" || key == "background_fill_screen") {
                                 backgroundSettings = BackgroundSettings(
                                     uri = prefs.getString("background_uri", null),

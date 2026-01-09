@@ -49,6 +49,9 @@ import com.rifsxd.ksunext.Natives
 import com.rifsxd.ksunext.R
 import com.rifsxd.ksunext.ui.component.*
 import com.rifsxd.ksunext.ui.util.*
+import com.rifsxd.ksunext.ui.theme.AppTheme
+import com.rifsxd.ksunext.ui.theme.KernelSUTheme
+import java.util.Locale
 import java.io.File
 import java.io.FileOutputStream
 import android.webkit.MimeTypeMap
@@ -518,21 +521,49 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                     )
 
                     if (isSystemInDarkTheme()) {
-                        val activity = LocalContext.current as? MainActivity
-                        SwitchItem(
-                            icon = Icons.Filled.Contrast,
-                            title = stringResource(id = R.string.settings_amoled_mode),
-                            summary = stringResource(id = R.string.settings_amoled_mode_summary),
-                            checked = enableAmoled,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clip(RoundedCornerShape(8.dp)),
-                            colors = ListItemDefaults.colors(containerColor = Color.Transparent)
-                        ) { checked ->
-                            activity?.setAmoledMode(checked)
-                            enableAmoled = checked
-                        }
+                        // Keep this block for layout consistency if needed, but removing old AMOLED switch logic from here
                     }
+
+                    // --- Theme Selector ---
+                    val currentThemeValue = prefs.getInt("app_theme", AppTheme.AUTO.value)
+                    val currentTheme = AppTheme.fromValue(currentThemeValue)
+                    val themeOptions = listOf(
+                        AppTheme.AUTO to "Auto",
+                        AppTheme.DARK_DYNAMIC to "Dark Dynamic",
+                        AppTheme.LIGHT_DYNAMIC to "Light Dynamic",
+                        AppTheme.LIGHT to "Light",
+                        AppTheme.DARK to "Dark",
+                        AppTheme.AMOLED to "AMOLED",
+                        AppTheme.CUSTOM to "Custom"
+                    )
+                    
+                    val themeDialogState = rememberUseCaseState()
+                    
+                    ListItem(
+                        headlineContent = { Text(text = "App Theme") },
+                        supportingContent = { Text(text = themeOptions.find { it.first == currentTheme }?.second ?: "Auto") },
+                        leadingContent = { Icon(Icons.Filled.Contrast, contentDescription = null) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(8.dp))
+                            .clickable {
+                                themeDialogState.show()
+                            },
+                        colors = ListItemDefaults.colors(containerColor = Color.Transparent)
+                    )
+                    
+                    ListDialog(
+                        state = themeDialogState,
+                        selection = ListSelection.Single(
+                            options = themeOptions.map { ListOption(titleText = it.second, selected = it.first == currentTheme) }
+                        ) { index, _ ->
+                            val selectedTheme = themeOptions[index].first
+                            prefs.edit { putInt("app_theme", selectedTheme.value) }
+                            // Also sync legacy amoled pref for other parts of the app that might read it directly
+                            prefs.edit { putBoolean("enable_amoled", selectedTheme == AppTheme.AMOLED) }
+                        },
+                        header = com.maxkeppeler.sheets.list.models.ListHeader(title = "Select Theme")
+                    )
                 }
             }
         }
