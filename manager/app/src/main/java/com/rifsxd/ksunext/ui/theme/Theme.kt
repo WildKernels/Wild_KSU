@@ -91,16 +91,36 @@ fun KernelSUTheme(
             val colorToUse = customColor ?: Color(prefs.getInt("theme_custom_color", PRIMARY.toArgb()))
             
             val scheme = if (systemDark) {
+                // Generate dark scheme
                 darkColorScheme(
                     primary = colorToUse,
+                    onPrimary = Color.Black, // Assuming vibrant colors, black text is usually safer
+                    primaryContainer = colorToUse.blend(Color.Black, 0.7f),
+                    onPrimaryContainer = colorToUse.blend(Color.White, 0.2f),
                     secondary = colorToUse,
-                    tertiary = colorToUse
+                    onSecondary = Color.Black,
+                    secondaryContainer = colorToUse.blend(Color.Black, 0.7f),
+                    onSecondaryContainer = colorToUse.blend(Color.White, 0.2f),
+                    tertiary = colorToUse,
+                    onTertiary = Color.Black,
+                    tertiaryContainer = colorToUse.blend(Color.Black, 0.7f),
+                    onTertiaryContainer = colorToUse.blend(Color.White, 0.2f),
                 )
             } else {
+                // Generate light scheme
                 lightColorScheme(
                     primary = colorToUse,
+                    onPrimary = Color.White,
+                    primaryContainer = colorToUse.blend(Color.White, 0.7f),
+                    onPrimaryContainer = colorToUse.blend(Color.Black, 0.2f),
                     secondary = colorToUse,
-                    tertiary = colorToUse
+                    onSecondary = Color.White,
+                    secondaryContainer = colorToUse.blend(Color.White, 0.7f),
+                    onSecondaryContainer = colorToUse.blend(Color.Black, 0.2f),
+                    tertiary = colorToUse,
+                    onTertiary = Color.White,
+                    tertiaryContainer = colorToUse.blend(Color.White, 0.7f),
+                    onTertiaryContainer = colorToUse.blend(Color.Black, 0.2f),
                 )
             }
             scheme to systemDark
