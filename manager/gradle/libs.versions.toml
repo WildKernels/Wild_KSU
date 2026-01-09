@@ -22,7 +22,7 @@ cmaker = "1.2"
 haze = "1.7.1"
 capsule = "2.1.1"
 mmrl = "v33953"
-material-color-utilities = "1.7.0"
+google-material = "1.12.0"
 
 [plugins]
 agp-app = { id = "com.android.application", version.ref = "agp" }
@@ -84,4 +84,5 @@ markdown = { group = "io.noties.markwon", name = "core", version.ref = "markdown
 lsposed-cxx = { module = "org.lsposed.libcxx:libcxx", version = "28.1.13356709" }
 
 mmrl-ui = { group = "com.github.MMRLApp.MMRL", name = "ui", version.ref = "mmrl" }
-material-color-utilities = { group = "com.google.android.material", name = "material-color-utilities", version.ref = "material-color-utilities" }
+google-material = { group = "com.google.android.material", name = "material", version.ref = "google-material" }
+material-color-utilities = { group = "com.google.android.material", name = "material", version.ref = "material-color-utilities" }
