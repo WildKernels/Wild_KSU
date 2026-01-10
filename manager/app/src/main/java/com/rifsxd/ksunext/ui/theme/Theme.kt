@@ -18,6 +18,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.runtime.remember
+import com.google.android.material.color.utilities.CorePalette
 import com.google.android.material.color.utilities.Scheme
 import com.google.android.material.color.utilities.Hct
 import com.google.android.material.color.utilities.TonalPalette
@@ -98,6 +99,8 @@ fun KernelSUTheme(
 
             val scheme = if (systemDark) Scheme.dark(argb) else Scheme.light(argb)
             val corePalette = CorePalette.of(argb)
+            val hct = Hct.fromInt(colorToUse.toArgb().toInt())
+            val neutralPalette = TonalPalette.fromHueAndChroma(hct.hue, 4.0)
 
             val m3Scheme = ColorScheme(
                 primary = Color(scheme.primary),
