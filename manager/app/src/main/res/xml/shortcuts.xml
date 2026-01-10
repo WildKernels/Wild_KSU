@@ -8,8 +8,8 @@
         android:shortcutShortLabel="@string/settings"
         android:shortcutLongLabel="@string/settings">
         <intent
-            android:action="com.rifsxd.ksunext.ACTION_SETTINGS"
-            android:targetPackage="com.rifsxd.ksunext"
+            android:action="ACTION_SETTINGS"
+            android:targetPackage="com.twj.wksu"
             android:targetClass="com.rifsxd.ksunext.ui.MainActivity" />
         <categories android:name="android.shortcut.conversation" />
     </shortcut>
@@ -22,8 +22,8 @@
         android:shortcutShortLabel="@string/home_superuser_count_singular"
         android:shortcutLongLabel="@string/home_superuser_count_singular">
         <intent
-            android:action="com.rifsxd.ksunext.ACTION_SUPERUSER"
-            android:targetPackage="com.rifsxd.ksunext"
+            android:action="ACTION_SUPERUSER"
+            android:targetPackage="com.twj.wksu"
             android:targetClass="com.rifsxd.ksunext.ui.MainActivity" />
         <categories android:name="android.shortcut.conversation" />
     </shortcut>
@@ -36,8 +36,8 @@
         android:shortcutShortLabel="@string/home_module_count_plural"
         android:shortcutLongLabel="@string/home_module_count_plural">
         <intent
-            android:action="com.rifsxd.ksunext.ACTION_MODULES"
-            android:targetPackage="com.rifsxd.ksunext"
+            android:action="ACTION_MODULES"
+            android:targetPackage="com.twj.wksu"
             android:targetClass="com.rifsxd.ksunext.ui.MainActivity" />
         <categories android:name="android.shortcut.conversation" />
     </shortcut>
