@@ -52,8 +52,12 @@ import com.rifsxd.ksunext.BuildConfig
 import com.rifsxd.ksunext.Natives
 import com.rifsxd.ksunext.R
 import com.rifsxd.ksunext.ksuApp
-import com.rifsxd.ksunext.ui.component.*
 import com.rifsxd.ksunext.ui.util.*
+import com.rifsxd.ksunext.ui.component.*
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.platform.LocalView
+import android.os.Build
+import android.view.WindowManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -397,110 +401,140 @@ fun SettingScreen(navigator: DestinationsNavigator) {
                     )
 
                     if (showBottomsheet) {
-                        ModalBottomSheet(
-                            onDismissRequest = { showBottomsheet = false },
-                            content = {
-                                Row(
-                                    modifier = Modifier
-                                        .padding(10.dp)
-                                        .align(Alignment.CenterHorizontally)
+                        val baseScheme = LocalBaseColorScheme.current
+                        val cardAlpha = LocalUiOverlaySettings.current.cardAlpha
+                        MaterialTheme(
+                            colorScheme = baseScheme,
+                            typography = MaterialTheme.typography,
+                            shapes = MaterialTheme.shapes,
+                        ) {
+                            Dialog(
+                                onDismissRequest = { showBottomsheet = false }
+                            ) {
+                                // Apply blur behind the popup window if transparency is active and supported
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                                    val view = LocalView.current
+                                    val context = LocalContext.current
+                                    DisposableEffect(view) {
+                                        val root = view.rootView
+                                        val params = root.layoutParams as? WindowManager.LayoutParams
+                                        if (params != null) {
+                                            params.flags = params.flags or WindowManager.LayoutParams.FLAG_BLUR_BEHIND
+                                            params.blurBehindRadius = 60 // Blur radius in pixels
+                                            val wm = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+                                            wm.updateViewLayout(root, params)
+                                        }
+                                        onDispose {}
+                                    }
+                                }
 
+                                Card(
+                                    modifier = Modifier.fillMaxWidth(0.95f),
+                                    colors = CardDefaults.cardColors(
+                                        containerColor = baseScheme.surfaceContainer.copy(alpha = cardAlpha),
+                                    ),
                                 ) {
-                                    Box {
-                                        Column(
-                                            modifier = Modifier
-                                                .padding(16.dp),
-                                            horizontalAlignment = Alignment.CenterHorizontally
-                                        ) {
-                                            IconButton(
-                                                onClick = {
-                                                    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH_mm")
-                                                    val current = LocalDateTime.now().format(formatter)
-                                                    exportBugreportLauncher.launch("KernelSU_Next_bugreport_${current}.tar.gz")
-                                                    showBottomsheet = false
-                                                },
+                                    Row(
+                                        modifier = Modifier
+                                            .padding(10.dp)
+                                            .align(Alignment.CenterHorizontally)
+                                    ) {
+                                        Box {
+                                            Column(
                                                 modifier = Modifier
-                                                    .size(56.dp)
-                                                    .clip(CircleShape)
+                                                    .padding(16.dp),
+                                                horizontalAlignment = Alignment.CenterHorizontally
                                             ) {
-                                                Icon(
-                                                    Icons.Filled.Save,
-                                                    contentDescription = null
-                                                )
-                                            }
-                                            Text(
-                                                text = stringResource(id = R.string.save_log),
-                                                modifier = Modifier.padding(top = 16.dp),
-                                                textAlign = TextAlign.Center.also {
-                                                    LineHeightStyle(
-                                                        alignment = LineHeightStyle.Alignment.Center,
-                                                        trim = LineHeightStyle.Trim.None
+                                                IconButton(
+                                                    onClick = {
+                                                        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH_mm")
+                                                        val current = LocalDateTime.now().format(formatter)
+                                                        exportBugreportLauncher.launch("KernelSU_Next_bugreport_${current}.tar.gz")
+                                                        showBottomsheet = false
+                                                    },
+                                                    modifier = Modifier
+                                                        .size(56.dp)
+                                                        .clip(CircleShape)
+                                                ) {
+                                                    Icon(
+                                                        Icons.Filled.Save,
+                                                        contentDescription = null
                                                     )
                                                 }
-
-                                            )
-                                        }
-                                    }
-                                    Box {
-                                        Column(
-                                            modifier = Modifier
-                                                .padding(16.dp),
-                                            horizontalAlignment = Alignment.CenterHorizontally
-                                        ) {
-                                            IconButton(
-                                                onClick = {
-                                                    scope.launch {
-                                                        val bugreport = loadingDialog.withLoading {
-                                                            withContext(Dispatchers.IO) {
-                                                                getBugreportFile(context)
-                                                            }
-                                                        }
-
-                                                        val uri: Uri =
-                                                            FileProvider.getUriForFile(
-                                                                context,
-                                                                "${BuildConfig.APPLICATION_ID}.fileprovider",
-                                                                bugreport
-                                                            )
-
-                                                        val shareIntent = Intent(Intent.ACTION_SEND).apply {
-                                                            putExtra(Intent.EXTRA_STREAM, uri)
-                                                            setDataAndType(uri, "application/gzip")
-                                                            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                                                        }
-
-                                                        context.startActivity(
-                                                            Intent.createChooser(
-                                                                shareIntent,
-                                                                context.getString(R.string.send_log)
-                                                            )
+                                                Text(
+                                                    text = stringResource(id = R.string.save_log),
+                                                    modifier = Modifier.padding(top = 16.dp),
+                                                    textAlign = TextAlign.Center.also {
+                                                        LineHeightStyle(
+                                                            alignment = LineHeightStyle.Alignment.Center,
+                                                            trim = LineHeightStyle.Trim.None
                                                         )
                                                     }
-                                                },
-                                                modifier = Modifier
-                                                    .size(56.dp)
-                                                    .clip(CircleShape)
-                                            ) {
-                                                Icon(
-                                                    Icons.Filled.Share,
-                                                    contentDescription = null
+
                                                 )
                                             }
-                                            Text(
-                                                text = stringResource(id = R.string.send_log),
-                                                modifier = Modifier.padding(top = 16.dp),
-                                                textAlign = TextAlign.Center.also {
-                                                    LineHeightStyle(
-                                                        alignment = LineHeightStyle.Alignment.Center,
-                                                        trim = LineHeightStyle.Trim.None
+                                        }
+                                        Box {
+                                            Column(
+                                                modifier = Modifier
+                                                    .padding(16.dp),
+                                                horizontalAlignment = Alignment.CenterHorizontally
+                                            ) {
+                                                IconButton(
+                                                    onClick = {
+                                                        scope.launch {
+                                                            val bugreport = loadingDialog.withLoading {
+                                                                withContext(Dispatchers.IO) {
+                                                                    getBugreportFile(context)
+                                                                }
+                                                            }
+
+                                                            val uri: Uri =
+                                                                FileProvider.getUriForFile(
+                                                                    context,
+                                                                    "${BuildConfig.APPLICATION_ID}.fileprovider",
+                                                                    bugreport
+                                                                )
+
+                                                            val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                                                                putExtra(Intent.EXTRA_STREAM, uri)
+                                                                setDataAndType(uri, "application/gzip")
+                                                                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                                            }
+
+                                                            context.startActivity(
+                                                                Intent.createChooser(
+                                                                    shareIntent,
+                                                                    context.getString(R.string.send_log)
+                                                                )
+                                                            )
+                                                        }
+                                                    },
+                                                    modifier = Modifier
+                                                        .size(56.dp)
+                                                        .clip(CircleShape)
+                                                ) {
+                                                    Icon(
+                                                        Icons.Filled.Share,
+                                                        contentDescription = null
                                                     )
                                                 }
-                                            )
+                                                Text(
+                                                    text = stringResource(id = R.string.send_log),
+                                                    modifier = Modifier.padding(top = 16.dp),
+                                                    textAlign = TextAlign.Center.also {
+                                                        LineHeightStyle(
+                                                            alignment = LineHeightStyle.Alignment.Center,
+                                                            trim = LineHeightStyle.Trim.None
+                                                        )
+                                                    }
+                                                )
+                                            }
                                         }
                                     }
                                 }
                             }
-                        )
+                        }
                     }
 
                     ListItem(
