@@ -5,20 +5,19 @@
   <string name="issue_report_body_2">Mümkün olan en kısa sürede bildirin!</string>
   <string name="issue_report_github">GitHub’da bildirin</string>
   <string name="issue_report_telegram">Telegram üzerinden iletişim kurun</string>
-  <string name="issue_report_github_link">https://github.com/KernelSU-Next/KernelSU-Next/issues</string>
+  <string name="issue_report_github_link">https://github.com/Wild KSU/Wild KSU/issues</string>
   <string name="issue_report_telegram_link">https://t.me/ksunext</string>
   <string name="confirm">Onayla</string>
-  <string name="app_name">KernelSU Next</string>
   <string name="home">Ana Ekran</string>
   <string name="home_not_installed">Yüklü değil</string>
   <string name="home_click_to_install">Yüklemek için tıklayın</string>
   <string name="lkm_mode_deprecated">LKM modu artık kullanımdan kaldırıldı!</string>
-  <string name="lkm_alternative_suggestion">GKI çekirdeğini yükleyin veya KernelSU Next\'i cihazınıza entegre edin.</string>
+  <string name="lkm_alternative_suggestion">GKI çekirdeğini yükleyin veya Wild KSU\'i cihazınıza entegre edin.</string>
   <string name="home_working">Çalışıyor</string>
   <string name="home_working_version">Sürüm: %1$s (%2$d)</string>
   <string name="home_module_update_count">Güncellemeler: %d</string>
-  <string name="home_failure">KernelSU Next v2 imzası çekirdekte bulunamadı! [ !KSU_NEXT || != size/hash ]</string>
-  <string name="home_failure_tip">Kernel geliştiricinizden KernelSU Next\'i entegre etmelerini isteyin!</string>
+  <string name="home_failure">Wild KSU v2 imzası çekirdekte bulunamadı! [ !KSU_NEXT || != size/hash ]</string>
+  <string name="home_failure_tip">Kernel geliştiricinizden Wild KSU\'i entegre etmelerini isteyin!</string>
   <string name="home_kernel">Çekirdek sürümü</string>
   <string name="hook_mode">Kanca modu</string>
   <string name="enable">Etkinleştir</string>
@@ -100,11 +99,11 @@
   <string name="cancel">İptal et</string>
   <string name="later">Sonra</string>
   <string name="home_next_kernelsu">🔥 Next Yapımı</string>
-  <string name="home_next_kernelsu_repo">https://github.com/KernelSU-Next/KernelSU-Next</string>
+  <string name="home_next_kernelsu_repo">https://github.com/Wild KSU/Wild KSU</string>
   <string name="home_next_kernelsu_body">Next deneysel dalı. GitHub\'da göz atın!</string>
   <string name="home_experimental_kernelsu">⚠️ Deneysel geliştirme uyarısı!</string>
   <string name="home_experimental_kernelsu_repo">127.0.0.1</string>
-  <string name="home_experimental_kernelsu_body">KernelSU Next, sürekli geliştirme aşamasında olan resmi olmayan bir sürümdür. Kararlılık, performans veya güvenilirlik garantisi olmadan olduğu gibi sunulur.</string>
+  <string name="home_experimental_kernelsu_body">Wild KSU, sürekli geliştirme aşamasında olan resmi olmayan bir sürümdür. Kararlılık, performans veya güvenilirlik garantisi olmadan olduğu gibi sunulur.</string>
   <string name="home_experimental_kernelsu_body_point_1"> • Risk size aittir: çökmeler, beklenmedik davranışlar veya sistem sorunları meydana gelebilir.</string>
   <string name="home_experimental_kernelsu_body_point_2"> • Garanti yok: geliştiriciler herhangi bir veri kaybından, sistem hasarından veya kullanımından kaynaklanan diğer sonuçlardan sorumlu değildir.</string>
   <string name="home_experimental_kernelsu_body_point_3"> • Sadece test amaçlı: riskleri anlayan ve sorun giderme konusunda uzman olan kullanıcılar içindir.</string>
@@ -123,10 +122,10 @@
   <string name="profile_selinux_context">SELinux bağlamı</string>
   <string name="profile_umount_modules">Modüllerin bağlantısını kes</string>
   <string name="failed_to_update_app_profile">%s için Uygulama Profili güncellenemedi</string>
-  <string name="require_kernel_version">Geçerli KernelSU Next sürümü %1$d, yöneticinin düzgün çalışması için çok düşük. Lütfen %2$d veya daha yüksek bir sürüme yükseltin!</string>
+  <string name="require_kernel_version">Geçerli Wild KSU sürümü %1$d, yöneticinin düzgün çalışması için çok düşük. Lütfen %2$d veya daha yüksek bir sürüme yükseltin!</string>
   <string name="settings_umount_modules_default">Modüllerin bağlantısını kes</string>
   <string name="settings_umount_modules_default_summary">Uygulama profilinde \"Modüllerin bağlantısını kes\" ayarı için genel varsayılan değer. Etkinleştirilirse, profili ayarlanmamış tüm uygulamalar için sistemdeki tüm modül değişikliklerini kaldırır.</string>
-  <string name="profile_umount_modules_summary">Bu seçeneğin etkinleştirilmesi, KernelSU Next\'in bu uygulama için modüller tarafından değiştirilen tüm dosyaları geri yüklemesine izin verecektir.</string>
+  <string name="profile_umount_modules_summary">Bu seçeneğin etkinleştirilmesi, Wild KSU\'in bu uygulama için modüller tarafından değiştirilen tüm dosyaları geri yüklemesine izin verecektir.</string>
   <string name="profile_selinux_domain">Alan adı</string>
   <string name="profile_selinux_rules">Kurallar</string>
   <string name="module_update">Güncelle</string>
@@ -220,7 +219,7 @@
   <string name="module_sort_action_first">Sırala (Önce eylem)</string>
   <string name="module_sort_webui_first">Sırala (Önce WebUI)</string>
   <string name="settings_global_namespace_mode_summary">Tüm root oturumları genel bağlama ad alanını kullanır</string>
-  <string name="settings_uninstall_permanent_message">KernelSU Next\'i (root ve tüm modülleri) tamamen ve kalıcı olarak kaldır.</string>
+  <string name="settings_uninstall_permanent_message">Wild KSU\'i (root ve tüm modülleri) tamamen ve kalıcı olarak kaldır.</string>
   <string name="settings_restore_stock_image_message">Stok fabrika imajını geri yükleyin (yedekleme varsa), genellikle OTA\'dan önce kullanılır; KernelSU\'yu kaldırmanız gerekirse, lütfen \"Kalıcı olarak kaldır\"ı kullanın.</string>
   <string name="settings_disable_su_summary">Herhangi bir uygulamanın ⁠su komutu aracılığıyla root ayrıcalıkları elde etme yeteneğini geçici olarak devre dışı bırakın (mevcut root işlemleri etkilenmeyecektir).</string>
   <string name="settings_global_namespace_mode">Küresel ad alanı modu</string>

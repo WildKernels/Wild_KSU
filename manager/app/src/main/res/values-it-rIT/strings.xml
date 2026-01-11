@@ -5,20 +5,19 @@
   <string name="issue_report_body_2">Segnalacelo il prima possibile!</string>
   <string name="issue_report_github">Segnala su GitHub</string>
   <string name="issue_report_telegram">Contatto tramite Telegram</string>
-  <string name="issue_report_github_link">https://github.com/KernelSU-Next/KernelSU-Next/issues</string>
+  <string name="issue_report_github_link">https://github.com/Wild KSU/Wild KSU/issues</string>
   <string name="issue_report_telegram_link">https://t.me/ksunext</string>
   <string name="confirm">Conferma</string>
-  <string name="app_name">KernelSU Next</string>
   <string name="home">Home</string>
   <string name="home_not_installed">Non installato</string>
   <string name="home_click_to_install">Clicca per installare</string>
   <string name="lkm_mode_deprecated">La modalità LKM è ora obsoleta!</string>
-  <string name="lkm_alternative_suggestion">Installa il kernel GKI o integra KernelSU Next sul tuo dispositivo.</string>
+  <string name="lkm_alternative_suggestion">Installa il kernel GKI o integra Wild KSU sul tuo dispositivo.</string>
   <string name="home_working">In esecuzione</string>
   <string name="home_working_version">Versione: %1$s (%2$d)</string>
   <string name="home_module_update_count">Aggiornamenti: %d</string>
-  <string name="home_failure">Firma v2 di KernelSU Next non trovata nel kernel! [ !KSU_NEXT || != size/hash ]</string>
-  <string name="home_failure_tip">Chiedi allo sviluppatore del kernel d\'integrare KernelSU Next!</string>
+  <string name="home_failure">Firma v2 di Wild KSU non trovata nel kernel! [ !KSU_NEXT || != size/hash ]</string>
+  <string name="home_failure_tip">Chiedi allo sviluppatore del kernel d\'integrare Wild KSU!</string>
   <string name="home_kernel">Versione kernel</string>
   <string name="hook_mode">Modalità hook</string>
   <string name="enable">Abilita</string>
@@ -100,11 +99,11 @@
   <string name="cancel">Annulla</string>
   <string name="later">Più tardi</string>
   <string name="home_next_kernelsu">🔥 Prossima build</string>
-  <string name="home_next_kernelsu_repo">https://github.com/KernelSU-Next/KernelSU-Next</string>
+  <string name="home_next_kernelsu_repo">https://github.com/Wild KSU/Wild KSU</string>
   <string name="home_next_kernelsu_body">Prossimo branch sperimentale. Provalo su GitHub!</string>
   <string name="home_experimental_kernelsu">⚠️ Avviso di sviluppo sperimentale!</string>
   <string name="home_experimental_kernelsu_repo">127.0.0.1</string>
-  <string name="home_experimental_kernelsu_body">KernelSU Next è una versione non ufficiale che è sempre sotto sviluppo sperimentale. È proposto allo stato attuale, con nessuna garanzia di stabilità, prestazioni, o affidabilità.</string>
+  <string name="home_experimental_kernelsu_body">Wild KSU è una versione non ufficiale che è sempre sotto sviluppo sperimentale. È proposto allo stato attuale, con nessuna garanzia di stabilità, prestazioni, o affidabilità.</string>
   <string name="home_experimental_kernelsu_body_point_1"> • Utilizzalo al tuo rischio: potrebbero verificarsi arresti anomali, comportamenti imprevisti o problemi al sistema.</string>
   <string name="home_experimental_kernelsu_body_point_2"> • Nessuna garanzia: gli sviluppatori non sono responsabili per eventuali perdite di dati, danni al sistema o altre conseguenze derivanti dall\'utilizzo.</string>
   <string name="home_experimental_kernelsu_body_point_3"> • Solo a scopo di test: destinato a utenti che comprendono i rischi e sono in grado di risolvere eventuali problemi.</string>
@@ -123,10 +122,10 @@
   <string name="profile_selinux_context">Contesto SELinux</string>
   <string name="profile_umount_modules">Smonta moduli</string>
   <string name="failed_to_update_app_profile">Aggiornamento App Profile fallito per %s</string>
-  <string name="require_kernel_version">La versione attualmente installata di KernelSU Next %1$d è troppo vecchia ed il manager non può funzionare correttamente. Si prega di aggiornare alla versione %2$d o successiva!</string>
+  <string name="require_kernel_version">La versione attualmente installata di Wild KSU %1$d è troppo vecchia ed il manager non può funzionare correttamente. Si prega di aggiornare alla versione %2$d o successiva!</string>
   <string name="settings_umount_modules_default">Smonta moduli</string>
   <string name="settings_umount_modules_default_summary">Il valore predefinito globale per \"Smonta moduli\" nel Profilo App. Se abilitato, rimuoverà tutte le modifiche ai moduli nel sistema per le app che non hanno un profilo impostato.</string>
-  <string name="profile_umount_modules_summary">Abilitando questa opzione, KernelSU Next potrà ripristinare tutti i file modificati dai moduli per questa app.</string>
+  <string name="profile_umount_modules_summary">Abilitando questa opzione, Wild KSU potrà ripristinare tutti i file modificati dai moduli per questa app.</string>
   <string name="profile_selinux_domain">Dominio</string>
   <string name="profile_selinux_rules">Regole</string>
   <string name="module_update">Aggiorna</string>
@@ -187,7 +186,7 @@
   <string name="settings_uninstall_temporary">Disinstalla temporaneamente</string>
   <string name="settings_uninstall_permanent">Disinstalla permanentemente</string>
   <string name="settings_restore_stock_image">Ripristina l\'immagine originale</string>
-  <string name="settings_uninstall_temporary_message">Disinstalla temporaneamente KernelSU Next e recupera il suo stato originale dopo il prossimo riavvio.</string>
+  <string name="settings_uninstall_temporary_message">Disinstalla temporaneamente Wild KSU e recupera il suo stato originale dopo il prossimo riavvio.</string>
   <string name="flashing">Installazione in corso</string>
   <string name="flash_success">Installazione completata</string>
   <string name="flash_failed">Installazione fallita</string>
@@ -220,8 +219,8 @@
   <string name="module_sort_action_first">Ordina (prima Azione)</string>
   <string name="module_sort_webui_first">Ordina (prima WebUI)</string>
   <string name="settings_global_namespace_mode_summary">Tutte le sessioni root usano lo spazio di montaggio globale</string>
-  <string name="settings_uninstall_permanent_message">Disinstallazione completa e permanente di KernelSU Next (root e tutti i moduli).</string>
-  <string name="settings_restore_stock_image_message">Ripristinare l\'immagine di fabbrica (se esiste un backup), solitamente utilizzata prima dell\'OTA; se è necessario disinstallare KernelSU Next, utilizzare \"Disinstalla definitivamente\".</string>
+  <string name="settings_uninstall_permanent_message">Disinstallazione completa e permanente di Wild KSU (root e tutti i moduli).</string>
+  <string name="settings_restore_stock_image_message">Ripristinare l\'immagine di fabbrica (se esiste un backup), solitamente utilizzata prima dell\'OTA; se è necessario disinstallare Wild KSU, utilizzare \"Disinstalla definitivamente\".</string>
   <string name="settings_disable_su_summary">Disattiva temporaneamente la possibilità per qualsiasi app di ottenere privilegi di root tramite il comando ⁠su (i processi di root esistenti non saranno interessati).</string>
   <string name="settings_global_namespace_mode">Modalità namespace globale</string>
   <string name="settings_background">Background</string>

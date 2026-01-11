@@ -5,20 +5,19 @@
   <string name="issue_report_body_2">바로 알려주세요!</string>
   <string name="issue_report_github">Github에 신고</string>
   <string name="issue_report_telegram">Telegram으로 문의</string>
-  <string name="issue_report_github_link">https://github.com/KernelSU-Next/KernelSU-Next/issues</string>
+  <string name="issue_report_github_link">https://github.com/Wild KSU/Wild KSU/issues</string>
   <string name="issue_report_telegram_link">https://t.me/ksunext</string>
   <string name="confirm">확인</string>
-  <string name="app_name">KernelSU Next</string>
   <string name="home">홈</string>
   <string name="home_not_installed">설치되지 않음</string>
   <string name="home_click_to_install">눌러서 설치하기</string>
   <string name="lkm_mode_deprecated">이제 LKM 모드는 지원되지 않습니다!</string>
-  <string name="lkm_alternative_suggestion">GKI Kernel 혹은 KernelSU Next를 설치하세요.</string>
+  <string name="lkm_alternative_suggestion">GKI Kernel 혹은 Wild KSU를 설치하세요.</string>
   <string name="home_working">처리 중</string>
   <string name="home_working_version">Version: %1$s (%2$d)</string>
   <string name="home_module_update_count">Updates: %d</string>
-  <string name="home_failure">Kernel에 KernelSU Next v2 signature가 없습니다! !KSU_NEXT || != size/hash ]</string>
-  <string name="home_failure_tip">Kernel 개발자에게 KernelSU Next를 지원하도록 요청하세요!</string>
+  <string name="home_failure">Kernel에 Wild KSU v2 signature가 없습니다! !KSU_NEXT || != size/hash ]</string>
+  <string name="home_failure_tip">Kernel 개발자에게 Wild KSU를 지원하도록 요청하세요!</string>
   <string name="home_kernel">Kernel version</string>
   <string name="hook_mode">Hook mode</string>
   <string name="enable">활성화</string>
@@ -100,11 +99,11 @@
   <string name="cancel">취소</string>
   <string name="later">다음에</string>
   <string name="home_next_kernelsu">🔥 Next build</string>
-  <string name="home_next_kernelsu_repo">https://github.com/KernelSU-Next/KernelSU-Next</string>
+  <string name="home_next_kernelsu_repo">https://github.com/Wild KSU/Wild KSU</string>
   <string name="home_next_kernelsu_body">다음 실험적인 Branch. Github에서 확인해보세요!</string>
   <string name="home_experimental_kernelsu">⚠️ Experimental development 주의!</string>
   <string name="home_experimental_kernelsu_repo">127.0.0.1</string>
-  <string name="home_experimental_kernelsu_body">KernelSU Next는 공식 버전이 아니며, 항상 활발하고 실험적인 개발을 지향합니다. 안정성, 성능, 신뢰성 보장을 제공하지않습니다.</string>
+  <string name="home_experimental_kernelsu_body">Wild KSU는 공식 버전이 아니며, 항상 활발하고 실험적인 개발을 지향합니다. 안정성, 성능, 신뢰성 보장을 제공하지않습니다.</string>
   <string name="home_experimental_kernelsu_body_point_1"> • 얘기치 못한 문제나 크래쉬, 시스템 문제가 일어날 수 있습니다. 사용자의 책임하에 사용하세요.</string>
   <string name="home_experimental_kernelsu_body_point_2"> • No warranty: 개발자는 데이터, 시스템을 포함한 어떠한 문제도 책임지지 않습니다.</string>
   <string name="home_experimental_kernelsu_body_point_3"> • 테스트용: 문제해결에 익숙하고 잠재적 위험을 이해하는 사용자를 위한 기능입니다.</string>
@@ -123,7 +122,7 @@
   <string name="profile_selinux_context">SELinux context</string>
   <string name="profile_umount_modules">모듈 언마운트</string>
   <string name="failed_to_update_app_profile">%s에 대한 앱 프로필 업데이트 실패</string>
-  <string name="require_kernel_version">KernelSU Next 버전 %1$d이 너무 낮아서 Manager가 작동하지 않습니다. %2$d 이상의 버전을 사용하세요!</string>
+  <string name="require_kernel_version">Wild KSU 버전 %1$d이 너무 낮아서 Manager가 작동하지 않습니다. %2$d 이상의 버전을 사용하세요!</string>
   <string name="settings_umount_modules_default">모듈 언마운트</string>
   <string name="settings_umount_modules_default_summary">앱 프로필 메뉴의 \"모듈 언마운트\" 설정에 대한 전역 기본값을 설정합니다. 활성화 시, 개별 프로필이 설정되지 않은 앱은 모든 모듈의 시스템 수정 사항을 제거합니다.</string>
   <string name="profile_umount_modules_summary">이 옵션이 활성화되면, KernelSU는 이 앱에 대한 모듈의 모든 수정사항을 복구합니다.</string>
@@ -220,8 +219,8 @@
   <string name="module_sort_action_first">정렬 (동작 우선)</string>
   <string name="module_sort_webui_first">정렬 (WebUI 우선)</string>
   <string name="settings_global_namespace_mode_summary">All root sessions use the global mount namespace</string>
-  <string name="settings_uninstall_permanent_message">Uninstalling KernelSU Next (root and all modules) completely and permanently.</string>
-  <string name="settings_restore_stock_image_message">Restore the stock factory image (if a backup exists), usually used before OTA; if you need to uninstall KernelSU Next, please use \"Uninstall permanently\".</string>
+  <string name="settings_uninstall_permanent_message">Uninstalling Wild KSU (root and all modules) completely and permanently.</string>
+  <string name="settings_restore_stock_image_message">Restore the stock factory image (if a backup exists), usually used before OTA; if you need to uninstall Wild KSU, please use \"Uninstall permanently\".</string>
   <string name="settings_disable_su_summary">Temporarily disable the ability of any app to gain root privileges via the ⁠su command (existing root processes won\'t be affected).</string>
   <string name="settings_global_namespace_mode">Global namespace mode</string>
   <string name="settings_background">Background</string>

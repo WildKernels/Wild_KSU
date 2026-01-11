@@ -334,7 +334,7 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                         supportingContent = { Text(currentLanguageDisplay) },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clip(RoundedCornerShape(8.dp))
+                            .clip(MaterialTheme.shapes.small)
                             .clickable {
                                 languageDialog.show()
                             },
@@ -349,7 +349,7 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                             checked = useBanner,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .clip(RoundedCornerShape(8.dp)),
+                                .clip(MaterialTheme.shapes.small),
                             colors = ListItemDefaults.colors(containerColor = Color.Transparent)
                         ) {
                             prefs.edit { putBoolean("use_banner", it) }
@@ -364,7 +364,7 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                         checked = enableBottomBar,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clip(RoundedCornerShape(8.dp)),
+                            .clip(MaterialTheme.shapes.small),
                         colors = ListItemDefaults.colors(containerColor = Color.Transparent)
                     ) {
                         prefs.edit { putBoolean("enable_bottom_bar", it) }
@@ -449,7 +449,7 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                         },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clip(RoundedCornerShape(8.dp))
+                            .clip(MaterialTheme.shapes.small)
                             .clickable {
                                 backgroundPickerLauncher.launch(
                                     PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageAndVideo)
@@ -514,7 +514,7 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                         },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clip(RoundedCornerShape(8.dp)),
+                            .clip(MaterialTheme.shapes.small),
                         colors = ListItemDefaults.colors(containerColor = Color.Transparent)
                     )
 
@@ -543,7 +543,7 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                         leadingContent = { Icon(Icons.Filled.Contrast, contentDescription = null) },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clip(RoundedCornerShape(8.dp))
+                            .clip(MaterialTheme.shapes.small)
                             .clickable {
                                 themeDialogState.show()
                             },

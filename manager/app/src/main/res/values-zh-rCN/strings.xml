@@ -5,10 +5,9 @@
   <string name="issue_report_body_2">快向我们报告吧！</string>
   <string name="issue_report_github">去 GitHub 报告</string>
   <string name="issue_report_telegram">在 Telegram 获得最新消息</string>
-  <string name="issue_report_github_link">https://github.com/KernelSU-Next/KernelSU-Next/issues</string>
+  <string name="issue_report_github_link">https://github.com/Wild KSU/Wild KSU/issues</string>
   <string name="issue_report_telegram_link">https://t.me/ksunext</string>
   <string name="confirm">确认</string>
-  <string name="app_name">KernelSU Next</string>
   <string name="home">首页</string>
   <string name="home_not_installed">未安装</string>
   <string name="home_click_to_install">点击安装</string>
@@ -17,8 +16,8 @@
   <string name="home_working">工作中</string>
   <string name="home_working_version">版本: %1$s (%2$d)</string>
   <string name="home_module_update_count">%d 个模块可更新！</string>
-  <string name="home_failure">无法在内核中找到 KernelSU Next v2 签名！[ !KSU_NEXT || != size/hash ]</string>
-  <string name="home_failure_tip">请让你的内核开发人员集成 KernelSU Next！</string>
+  <string name="home_failure">无法在内核中找到 Wild KSU v2 签名！[ !KSU_NEXT || != size/hash ]</string>
+  <string name="home_failure_tip">请让你的内核开发人员集成 Wild KSU！</string>
   <string name="home_kernel">内核版本</string>
   <string name="hook_mode">Hook 模式</string>
   <string name="enable">启用</string>
@@ -100,11 +99,11 @@
   <string name="cancel">取消</string>
   <string name="later">稍后</string>
   <string name="home_next_kernelsu">🔥 下一个版本</string>
-  <string name="home_next_kernelsu_repo">https://github.com/KernelSU-Next/KernelSU-Next</string>
+  <string name="home_next_kernelsu_repo">https://github.com/Wild KSU/Wild KSU</string>
   <string name="home_next_kernelsu_body">下一个实验性分支。请在 GitHub 上查看！</string>
   <string name="home_experimental_kernelsu">⚠️ 实验性开发警告！</string>
   <string name="home_experimental_kernelsu_repo">127.0.0.1</string>
-  <string name="home_experimental_kernelsu_body">KernelSU Next 是一个非官方版本，一直处于积极的实验开发阶段。它按原样提供，不保证稳定性、性能或可靠性。</string>
+  <string name="home_experimental_kernelsu_body">Wild KSU 是一个非官方版本，一直处于积极的实验开发阶段。它按原样提供，不保证稳定性、性能或可靠性。</string>
   <string name="home_experimental_kernelsu_body_point_1"> • 风险自担：可能会出现崩溃、意外行为或导致系统故障。</string>
   <string name="home_experimental_kernelsu_body_point_2"> • 不做保证：开发者不对数据丢失、系统损坏等问题负责。</string>
   <string name="home_experimental_kernelsu_body_point_3"> • 仅供测试：此版适合了解风险并能轻松解决问题的用户。</string>
@@ -123,7 +122,7 @@
   <string name="profile_selinux_context">SELinux</string>
   <string name="profile_umount_modules">卸载模块</string>
   <string name="failed_to_update_app_profile">为 %s 更新应用配置失败</string>
-  <string name="require_kernel_version">当前 KernelSU Next 版本 %1$d 过低，管理器无法正常工作，请升级内核 KernelSU Next 版本至 %2$d 或以上！</string>
+  <string name="require_kernel_version">当前 Wild KSU 版本 %1$d 过低，管理器无法正常工作，请升级内核 Wild KSU 版本至 %2$d 或以上！</string>
   <string name="settings_umount_modules_default">默认卸载模块</string>
   <string name="settings_umount_modules_default_summary">应用配置中“卸载模块”的全局默认值。如果启用，将会为没有设置应用配置的应用移除所有模块针对系统的修改。</string>
   <string name="profile_umount_modules_summary">启用该选项后将允许 KernelSU 为本应用还原被模块修改过的文件。</string>
@@ -187,7 +186,7 @@
   <string name="settings_uninstall_temporary">临时卸载</string>
   <string name="settings_uninstall_permanent">永久卸载</string>
   <string name="settings_restore_stock_image">恢复原厂镜像</string>
-  <string name="settings_uninstall_temporary_message">临时卸载 KernelSU Next，下次重启后恢复。</string>
+  <string name="settings_uninstall_temporary_message">临时卸载 Wild KSU，下次重启后恢复。</string>
   <string name="flashing">刷写中</string>
   <string name="flash_success">刷写成功</string>
   <string name="flash_failed">刷写失败</string>
@@ -220,7 +219,7 @@
   <string name="module_sort_action_first">排序 (可执行优先)</string>
   <string name="module_sort_webui_first">排序 (支持 WebUI 优先)</string>
   <string name="settings_global_namespace_mode_summary">所有 Root 会话均使用全局挂载命名空间。</string>
-  <string name="settings_uninstall_permanent_message">彻底移除 KernelSU Next，将丢失 Root 权限及所有已安装的模块。</string>
+  <string name="settings_uninstall_permanent_message">彻底移除 Wild KSU，将丢失 Root 权限及所有已安装的模块。</string>
   <string name="settings_restore_stock_image_message">恢复原厂镜像（若存在备份），一般在 OTA 前使用；如需卸载请使用“完全卸载”。</string>
   <string name="settings_disable_su_summary">临时禁止任何应用通过 su 命令获得 root 权限（正在运行的 root 进程不受影响）。</string>
   <string name="settings_global_namespace_mode">全局命名空间模式</string>

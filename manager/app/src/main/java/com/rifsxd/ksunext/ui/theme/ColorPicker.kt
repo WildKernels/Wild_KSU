@@ -98,7 +98,7 @@ fun HueSlider(
         modifier = Modifier
             .fillMaxWidth()
             .height(32.dp)
-            .clip(RoundedCornerShape(4.dp))
+            .clip(MaterialTheme.shapes.extraSmall)
             .pointerInput(Unit) {
                 detectDragGestures { change, _ ->
                     change.consume()
@@ -148,7 +148,7 @@ fun SatValBox(
         modifier = Modifier
             .fillMaxWidth()
             .height(200.dp)
-            .clip(RoundedCornerShape(4.dp))
+            .clip(MaterialTheme.shapes.extraSmall)
             .pointerInput(Unit) {
                 detectDragGestures { change, _ ->
                     change.consume()

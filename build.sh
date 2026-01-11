@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# This script builds the KernelSU Next manager APK.
+# This script builds the Wild KSU manager APK.
 
 # Ensure you have the setup Android SDK & NDK installed and necessary environment variables set and sourced.
 

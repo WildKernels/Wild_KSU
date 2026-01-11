@@ -1,18 +1,18 @@
 name: Contribute to Unofficially Supported Devices
-description: Add your device kernel source to KernelSU Next's Unofficially Supported Device List
+description: Add your device kernel source to Wild KSU's Unofficially Supported Device List
 title: "[Add Device]: "
 labels: ["add-device"]
 body:
   - type: markdown
     attributes:
       value: |
-        Thanks for supporting KernelSU Next!
+        Thanks for supporting Wild KSU!
   - type: input
     id: repo-url
     attributes:
       label: Repository URL
       description: Your repository URL
-      placeholder: https://github.com/rifsxd/KernelSU-Next
+      placeholder: https://github.com/WildKernels/Wild_KSU
     validations:
       required: true
   - type: input

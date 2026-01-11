@@ -5,20 +5,19 @@
   <string name="issue_report_body_2">Báo lỗi hoặc góp ý nhanh nhất có thể!</string>
   <string name="issue_report_github">Báo lỗi trên Github</string>
   <string name="issue_report_telegram">Liên hệ qua Telegram</string>
-  <string name="issue_report_github_link">https://github.com/KernelSU-Next/KernelSU-Next/issues</string>
+  <string name="issue_report_github_link">https://github.com/Wild KSU/Wild KSU/issues</string>
   <string name="issue_report_telegram_link">https://t.me/ksunext</string>
   <string name="confirm">Xác nhận</string>
-  <string name="app_name">KernelSU Next</string>
   <string name="home">Trang chủ</string>
   <string name="home_not_installed">Chưa cài đặt</string>
   <string name="home_click_to_install">Nhấn để cài đặt</string>
   <string name="lkm_mode_deprecated">Chế độ LKM không còn được hỗ trợ!</string>
-  <string name="lkm_alternative_suggestion">Cài đặt Kernel GKI hoặc tự nhúng KernelSU Next vào thiết bị của bạn</string>
+  <string name="lkm_alternative_suggestion">Cài đặt Kernel GKI hoặc tự nhúng Wild KSU vào thiết bị của bạn</string>
   <string name="home_working">Đang hoạt động</string>
   <string name="home_working_version">Phiên bản: %1$s (%2$d)</string>
   <string name="home_module_update_count">Cập nhật: %d</string>
-  <string name="home_failure">Không tìm thấy chữ ký KernelSU Next v2 trong Kernel! [ !KSU_NEXT || != size/hash ]</string>
-  <string name="home_failure_tip">Yêu cầu nhà phát triển Kernel của bạn tích hợp KernelSU Next!</string>
+  <string name="home_failure">Không tìm thấy chữ ký Wild KSU v2 trong Kernel! [ !KSU_NEXT || != size/hash ]</string>
+  <string name="home_failure_tip">Yêu cầu nhà phát triển Kernel của bạn tích hợp Wild KSU!</string>
   <string name="home_kernel">Phiên bản Kernel</string>
   <string name="hook_mode">Chế độ Hook</string>
   <string name="enable">Kích hoạt</string>
@@ -100,13 +99,13 @@
   <string name="cancel">Hủy bỏ</string>
   <string name="later">Để sau</string>
   <string name="home_next_kernelsu">🔥 Bản dựng Next</string>
-  <string name="home_next_kernelsu_repo">https://github.com/KernelSU-Next/KernelSU-Next</string>
+  <string name="home_next_kernelsu_repo">https://github.com/Wild KSU/Wild KSU</string>
   <string name="home_next_kernelsu_body">Nhánh thử nghiệm của Next. Hãy xem trên GitHub!</string>
   <string name="home_experimental_kernelsu">⚠️ Cảnh báo nhánh thử nghiệm cho nhà phát triển!</string>
   <string name="home_experimental_kernelsu_repo">127.0.0.1</string>
-  <string name="home_experimental_kernelsu_body">KernelSU Next là một phiên bản không chính thức dựa trên KernelSU, luôn có những thử nghiệm và cập nhật hàng ngày, nó có thể không ổn định</string>
+  <string name="home_experimental_kernelsu_body">Wild KSU là một phiên bản không chính thức dựa trên KernelSU, luôn có những thử nghiệm và cập nhật hàng ngày, nó có thể không ổn định</string>
   <string name="home_experimental_kernelsu_body_point_1"> • Tự chịu trách nghiệm: crashes, những thứ kì lạ, không vào được một vài ứng dụng (ngân hàng),... có thể xảy ra</string>
-  <string name="home_experimental_kernelsu_body_point_2"> • Không bảo hành: Các nhà phát triển KernelSU Next và bên thứ ba sẽ không chịu trách nghiệm cho hardbrick, bootloop, mất dữ liệu,...</string>
+  <string name="home_experimental_kernelsu_body_point_2"> • Không bảo hành: Các nhà phát triển Wild KSU và bên thứ ba sẽ không chịu trách nghiệm cho hardbrick, bootloop, mất dữ liệu,...</string>
   <string name="home_experimental_kernelsu_body_point_3"> • Dùng để thử nghiệm là chính: Chỉ dành cho những người có kỹ năng, kinh nghiệm và trải nghiệm</string>
   <string name="about_source_code">Xem mã nguồn tại %1$s</string>
   <string name="profile">Hồ sơ ứng dụng</string>
@@ -123,10 +122,10 @@
   <string name="profile_selinux_context">Bối cảnh SELinux</string>
   <string name="profile_umount_modules">Umount modules</string>
   <string name="failed_to_update_app_profile">Cập nhật Hồ sơ ứng dụng cho %s thất bại</string>
-  <string name="require_kernel_version">Phiên bản KernelSU Next hiện tại %1$d quá thấp để trình quản lý hoạt động bình thường. Vui lòng cập nhật lên phiên bản %2$d hoặc cao hơn!</string>
+  <string name="require_kernel_version">Phiên bản Wild KSU hiện tại %1$d quá thấp để trình quản lý hoạt động bình thường. Vui lòng cập nhật lên phiên bản %2$d hoặc cao hơn!</string>
   <string name="settings_umount_modules_default">Umount modules</string>
   <string name="settings_umount_modules_default_summary">Giá trị mặc định chung cho \"Umount modules\" trong Hồ sơ ứng dụng. Nếu được bật, mọi thay đổi hệ thống do các module gây ra sẽ bị gỡ bỏ khỏi hệ thống và các ứng dụng chưa thiết lập hồ sơ</string>
-  <string name="profile_umount_modules_summary">Bật tùy chọn này sẽ cho phép KernelSU Next khôi phục mọi file đã được các module sửa đổi trong ứng dụng này</string>
+  <string name="profile_umount_modules_summary">Bật tùy chọn này sẽ cho phép Wild KSU khôi phục mọi file đã được các module sửa đổi trong ứng dụng này</string>
   <string name="profile_selinux_domain">Tên miền</string>
   <string name="profile_selinux_rules">Quy tắc</string>
   <string name="module_update">Cập nhật</string>
@@ -187,7 +186,7 @@
   <string name="settings_uninstall_temporary">Gỡ cài đặt tạm thời</string>
   <string name="settings_uninstall_permanent">Gỡ cài đặt vĩnh viễn</string>
   <string name="settings_restore_stock_image">Khôi phục image gốc</string>
-  <string name="settings_uninstall_temporary_message">Gỡ cài đặt tạm thời KernelSU Next, khôi phục lại trạng thái ban đầu sau lần khởi động lại tiếp theo</string>
+  <string name="settings_uninstall_temporary_message">Gỡ cài đặt tạm thời Wild KSU, khôi phục lại trạng thái ban đầu sau lần khởi động lại tiếp theo</string>
   <string name="flashing">Đang Flash...</string>
   <string name="flash_success">Flash thành công</string>
   <string name="flash_failed">Flash thất bại</string>
@@ -220,8 +219,8 @@
   <string name="module_sort_action_first">Sắp xếp (Khởi chạy trước)</string>
   <string name="module_sort_webui_first">Sắp xếp (WebUI trước)</string>
   <string name="settings_global_namespace_mode_summary">Tất cả các phiên root đều sử dụng một không gian tên duy nhất</string>
-  <string name="settings_uninstall_permanent_message">Gỡ cài đặt KernelSU Next (root và tất cả các module) sạch hoàn toàn, trả về trạng thái ban đầu</string>
-  <string name="settings_restore_stock_image_message">Khôi phục lại image gốc (nếu có bản sao lưu), thường được sử dụng trước OTA; nếu bạn cần gỡ hẳn KernelSU Next, hãy sử dụng \"Gỡ cài đặt vĩnh viễn\"</string>
+  <string name="settings_uninstall_permanent_message">Gỡ cài đặt Wild KSU (root và tất cả các module) sạch hoàn toàn, trả về trạng thái ban đầu</string>
+  <string name="settings_restore_stock_image_message">Khôi phục lại image gốc (nếu có bản sao lưu), thường được sử dụng trước OTA; nếu bạn cần gỡ hẳn Wild KSU, hãy sử dụng \"Gỡ cài đặt vĩnh viễn\"</string>
   <string name="settings_disable_su_summary">Vô hiệu hoá khả năng thực thi lệnh SU để lấy quyền root (những app đã cấp trước đó không bị ảnh hưởng)</string>
   <string name="settings_global_namespace_mode">Không gian tên toàn cục</string>
   <string name="settings_background">Background</string>

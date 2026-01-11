@@ -5,20 +5,19 @@
   <string name="issue_report_body_2">Laporkan secepatnya!</string>
   <string name="issue_report_github">Laporkan di GitHub</string>
   <string name="issue_report_telegram">Hubungi melalui Telegram</string>
-  <string name="issue_report_github_link">https://github.com/KernelSU-Next/KernelSU-Next/issues</string>
+  <string name="issue_report_github_link">https://github.com/Wild KSU/Wild KSU/issues</string>
   <string name="issue_report_telegram_link">https://t.me/ksunext</string>
   <string name="confirm">Ya</string>
-  <string name="app_name">KernelSU Next</string>
   <string name="home">Beranda</string>
   <string name="home_not_installed">Tidak terinstal</string>
   <string name="home_click_to_install">Klik untuk menginstal</string>
   <string name="lkm_mode_deprecated">Mode LKM sekarang sudah tidak digunakan lagi!</string>
-  <string name="lkm_alternative_suggestion">Pasang kernel GKI atau integrasikan KernelSU Next ke perangkat anda.</string>
+  <string name="lkm_alternative_suggestion">Pasang kernel GKI atau integrasikan Wild KSU ke perangkat anda.</string>
   <string name="home_working">Berfungsi</string>
   <string name="home_working_version">Versi: %1$s (%2$d)</string>
   <string name="home_module_update_count">Pembaruan: %d</string>
-  <string name="home_failure">Tandatangan KernelSU Next v2 tidak ditemukan pada kernel! [ !KSU_NEXT || != size/hash ]</string>
-  <string name="home_failure_tip">Minta pengembang kernel Anda untuk mengintegrasikan KernelSU Next!</string>
+  <string name="home_failure">Tandatangan Wild KSU v2 tidak ditemukan pada kernel! [ !KSU_NEXT || != size/hash ]</string>
+  <string name="home_failure_tip">Minta pengembang kernel Anda untuk mengintegrasikan Wild KSU!</string>
   <string name="home_kernel">Versi kernel</string>
   <string name="hook_mode">Mode hook</string>
   <string name="enable">Aktifkan</string>
@@ -100,11 +99,11 @@
   <string name="cancel">Batalkan</string>
   <string name="later">Nanti</string>
   <string name="home_next_kernelsu">🔥 Build Next</string>
-  <string name="home_next_kernelsu_repo">https://github.com/KernelSU-Next/KernelSU-Next</string>
+  <string name="home_next_kernelsu_repo">https://github.com/Wild KSU/Wild KSU</string>
   <string name="home_next_kernelsu_body">Next cabang eksperimental. Lihat di GitHub!</string>
   <string name="home_experimental_kernelsu">⚠️ Peringatan pengembangan eksperimental!</string>
   <string name="home_experimental_kernelsu_repo">127.0.0.1</string>
-  <string name="home_experimental_kernelsu_body">KernelSU Next adalah versi non-resmi yang selalu dalam tahap pengembangan eksperimental aktif. Versi ini disediakan apa adanya, tanpa jaminan stabilitas, kinerja, atau keandalan.</string>
+  <string name="home_experimental_kernelsu_body">Wild KSU adalah versi non-resmi yang selalu dalam tahap pengembangan eksperimental aktif. Versi ini disediakan apa adanya, tanpa jaminan stabilitas, kinerja, atau keandalan.</string>
   <string name="home_experimental_kernelsu_body_point_1"> • Gunakan dengan risiko anda sendiri: kerusakan, perilaku aneh, atau kesalahan sistem dapat terjadi.</string>
   <string name="home_experimental_kernelsu_body_point_2"> • Tidak bergaransi: pengembang tidak bertanggung jawab atas segala kehilangan data, kerusakan sistem, atau lainnya dalam penggunaan.</string>
   <string name="home_experimental_kernelsu_body_point_3"> • Hanya untuk pengujian: ditujukan bagi pengguna yang memahami risiko dan siap untuk memecahkan masalah.</string>
@@ -123,10 +122,10 @@
   <string name="profile_selinux_context">Konteks SELinux</string>
   <string name="profile_umount_modules">Umount modul</string>
   <string name="failed_to_update_app_profile">Gagal memperbarui Profil Aplikasi untuk %s</string>
-  <string name="require_kernel_version">Versi KernelSU Next saat ini %1$d sangat rendah untuk manager agar bekerja dengan baik. Mohon perbarui ke versi %2$d atau lebih tinggi!</string>
+  <string name="require_kernel_version">Versi Wild KSU saat ini %1$d sangat rendah untuk manager agar bekerja dengan baik. Mohon perbarui ke versi %2$d atau lebih tinggi!</string>
   <string name="settings_umount_modules_default">Umount modul</string>
   <string name="settings_umount_modules_default_summary">Menggunakan \"Umount modul\" secara universal pada Profil Aplikasi. Jika diaktifkan, ini akan menghapus semua modifikasi modul pada sistem untuk aplikasi yang tidak memiliki set profil.</string>
-  <string name="profile_umount_modules_summary">Mengaktifkan opsi ini akan memungkinkan KernelSU Next untuk memulihkan berkas yang termodifikasi oleh modul untuk aplikasi ini.</string>
+  <string name="profile_umount_modules_summary">Mengaktifkan opsi ini akan memungkinkan Wild KSU untuk memulihkan berkas yang termodifikasi oleh modul untuk aplikasi ini.</string>
   <string name="profile_selinux_domain">Domain</string>
   <string name="profile_selinux_rules">Peraturan</string>
   <string name="module_update">Perbarui</string>
@@ -188,7 +187,7 @@
   <string name="settings_uninstall_temporary">Hapus sementara</string>
   <string name="settings_uninstall_permanent">Hapus permanen</string>
   <string name="settings_restore_stock_image">Pulihkan image bawaan</string>
-  <string name="settings_uninstall_temporary_message">Hapus sementara KernelSU Next, mengembalikan ke kondisi asal setelah reboot berikutnya.</string>
+  <string name="settings_uninstall_temporary_message">Hapus sementara Wild KSU, mengembalikan ke kondisi asal setelah reboot berikutnya.</string>
   <string name="flashing">Pasang</string>
   <string name="flash_success">Pemasangan Berhasil</string>
   <string name="flash_failed">Pemasangan gagal</string>
@@ -221,8 +220,8 @@
   <string name="module_sort_action_first">Urutkan (Aksi lebih dulu)</string>
   <string name="module_sort_webui_first">Urutkan (WebUI lebih dulu)</string>
   <string name="settings_global_namespace_mode_summary">Semua sesi root menggunakan mount namespace universal</string>
-  <string name="settings_uninstall_permanent_message">Copot pemasangan KernelSU Next (root dan semua modul) sepenuhnya dan permanen.</string>
-  <string name="settings_restore_stock_image_message">Pulihkan image bawaan (jika ada cadangan), biasanya digunakan sebelum OTA; Jika anda perlu menghapus KernelSU Next, silakan gunakan \"Copot pemasangan secara permanen\".</string>
+  <string name="settings_uninstall_permanent_message">Copot pemasangan Wild KSU (root dan semua modul) sepenuhnya dan permanen.</string>
+  <string name="settings_restore_stock_image_message">Pulihkan image bawaan (jika ada cadangan), biasanya digunakan sebelum OTA; Jika anda perlu menghapus Wild KSU, silakan gunakan \"Copot pemasangan secara permanen\".</string>
   <string name="settings_disable_su_summary">Nonaktifkan sementara kemampuan aplikasi untuk mendapatkan hak akses root melalui perintah su (proses root yang sudah berjalan tidak akan terpengaruh).</string>
   <string name="settings_global_namespace_mode">Mode namespace universal</string>
   <string name="settings_background">Background</string>

@@ -29,7 +29,7 @@ import com.rifsxd.ksunext.R
 fun AboutCard() {
     ElevatedCard(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(8.dp)
+        shape = MaterialTheme.shapes.medium
     ) {
         Row(
             modifier = Modifier
@@ -89,7 +89,7 @@ private fun AboutCardContent() {
                 val annotatedString = AnnotatedString.fromHtml(
                     htmlString = stringResource(
                         id = R.string.about_source_code,
-                        "<b><a href=\"https://github.com/KernelSU-Next/KernelSU-Next\">GitHub</a></b>"
+                        "<b><a href=\"https://github.com/WildKernels/Wild_KSU\">GitHub</a></b>"
                     ),
                     linkStyles = TextLinkStyles(
                         style = SpanStyle(

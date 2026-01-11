@@ -5,20 +5,19 @@
   <string name="issue_report_body_2">Сообщите об этом как можно скорее!</string>
   <string name="issue_report_github">Сообщить на GitHub</string>
   <string name="issue_report_telegram">Связаться через Telegram</string>
-  <string name="issue_report_github_link">https://github.com/KernelSU-Next/KernelSU-Next/issues</string>
+  <string name="issue_report_github_link">https://github.com/Wild KSU/Wild KSU/issues</string>
   <string name="issue_report_telegram_link">https://t.me/ksunext</string>
   <string name="confirm">Подтвердить</string>
-  <string name="app_name">KernelSU Next</string>
   <string name="home">Главная</string>
   <string name="home_not_installed">Не установлен</string>
   <string name="home_click_to_install">Нажмите, чтобы установить</string>
   <string name="lkm_mode_deprecated">LKM режим устарел!</string>
-  <string name="lkm_alternative_suggestion">Установите GKI ядро или интегрируйте KernelSU Next с вашим устройством.</string>
+  <string name="lkm_alternative_suggestion">Установите GKI ядро или интегрируйте Wild KSU с вашим устройством.</string>
   <string name="home_working">Работает</string>
   <string name="home_working_version">Версия драйвера: %1$s (%2$d)</string>
   <string name="home_module_update_count">Обновлений: %d</string>
-  <string name="home_failure">Подпись KernelSU Next v2 не найдена в ядре! [ !KSU_NEXT || != size/hash ]</string>
-  <string name="home_failure_tip">Напишите разработчику своего ядра, для интеграции KernelSU Next!</string>
+  <string name="home_failure">Подпись Wild KSU v2 не найдена в ядре! [ !KSU_NEXT || != size/hash ]</string>
+  <string name="home_failure_tip">Напишите разработчику своего ядра, для интеграции Wild KSU!</string>
   <string name="home_kernel">Версия ядра</string>
   <string name="hook_mode">Режим хуков</string>
   <string name="enable">Включить</string>
@@ -100,11 +99,11 @@
   <string name="cancel">Отмена</string>
   <string name="later">Позже</string>
   <string name="home_next_kernelsu">🔥 Новая версия</string>
-  <string name="home_next_kernelsu_repo">https://github.com/KernelSU-Next/KernelSU-Next</string>
+  <string name="home_next_kernelsu_repo">https://github.com/Wild KSU/Wild KSU</string>
   <string name="home_next_kernelsu_body">Next - экспериментальная версия. Проверь её версию на GitHub!</string>
   <string name="home_experimental_kernelsu">⚠️ Предупреждение об экспериментальной разработке!</string>
   <string name="home_experimental_kernelsu_repo">127.0.0.1</string>
-  <string name="home_experimental_kernelsu_body">KernelSU Next — это неофициальная версия, которая всегда находится в стадии активной экспериментальной разработки. Она предоставляется как есть, без гарантий стабильности, производительности или надёжности.</string>
+  <string name="home_experimental_kernelsu_body">Wild KSU — это неофициальная версия, которая всегда находится в стадии активной экспериментальной разработки. Она предоставляется как есть, без гарантий стабильности, производительности или надёжности.</string>
   <string name="home_experimental_kernelsu_body_point_1"> • Используйте на свой страх и риск: могут возникнуть сбои, непредвиденное поведение или проблемы с системой.</string>
   <string name="home_experimental_kernelsu_body_point_2"> • Предупреждение: разработчики не несут ответственности за потерю данных, повреждение системы или другие последствия, вызванные использованием.</string>
   <string name="home_experimental_kernelsu_body_point_3"> • Только для тестирования: предназначено для пользователей, которые понимают риски и готовы решать возникающие проблемы.</string>
@@ -123,7 +122,7 @@
   <string name="profile_selinux_context">Контекст SELinux</string>
   <string name="profile_umount_modules">Размонтировать модули</string>
   <string name="failed_to_update_app_profile">Не удалось обновить Профиль Приложения для %s</string>
-  <string name="require_kernel_version">Текущая версия KernelSU Next %1$d слишком низкая для корректной работы менеджера. Пожалуйста, обновитесь до версии %2$d или выше!</string>
+  <string name="require_kernel_version">Текущая версия Wild KSU %1$d слишком низкая для корректной работы менеджера. Пожалуйста, обновитесь до версии %2$d или выше!</string>
   <string name="settings_umount_modules_default">Размонтировать модули</string>
   <string name="settings_umount_modules_default_summary">Глобальное значение по умолчанию для параметра \"Размонтировать модули\" в Профиле Приложения. Если этот параметр включён, то все изменения, внесённые модулями, будут скрыты для приложений без установленного профиля.</string>
   <string name="profile_umount_modules_summary">Если этот параметр включен, то все модификации, внесённые модулями, будут скрыты для данного приложения.</string>
@@ -187,7 +186,7 @@
   <string name="settings_uninstall_temporary">Временное удаление</string>
   <string name="settings_uninstall_permanent">Полное удаление</string>
   <string name="settings_restore_stock_image">Восстановить исходный образ</string>
-  <string name="settings_uninstall_temporary_message">Временно удаляет KernelSU Next, восстановив исходное состояние после следующей перезагрузки.</string>
+  <string name="settings_uninstall_temporary_message">Временно удаляет Wild KSU, восстановив исходное состояние после следующей перезагрузки.</string>
   <string name="flashing">Прошивка</string>
   <string name="flash_success">Прошивка выполнена успешно</string>
   <string name="flash_failed">Ошибка прошивки</string>
@@ -220,8 +219,8 @@
   <string name="module_sort_action_first">По статусу (Сначала со скриптом)</string>
   <string name="module_sort_webui_first">По статусу (Сначала с WebUI)</string>
   <string name="settings_global_namespace_mode_summary">Все сессии root используют единое пространство имён.</string>
-  <string name="settings_uninstall_permanent_message">Полностью и навсегда удаляет KernelSU Next, включая все модули.</string>
-  <string name="settings_restore_stock_image_message">Восстанавливает исходный образ, если резервная копия доступна. Обычно используется перед OTA-обновлением. Если Вы хотите удалить KernelSU Next, пожалуйста, воспользуйтесь опцией \"Полное удаление\".</string>
+  <string name="settings_uninstall_permanent_message">Полностью и навсегда удаляет Wild KSU, включая все модули.</string>
+  <string name="settings_restore_stock_image_message">Восстанавливает исходный образ, если резервная копия доступна. Обычно используется перед OTA-обновлением. Если Вы хотите удалить Wild KSU, пожалуйста, воспользуйтесь опцией \"Полное удаление\".</string>
   <string name="settings_disable_su_summary">Временно отключить возможность приложениям получать root доступ через команду su (запущенные процессы не будут затронуты).</string>
   <string name="settings_global_namespace_mode">Общее пространство имён</string>
   <string name="settings_background">Background</string>

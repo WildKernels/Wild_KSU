@@ -223,7 +223,7 @@ pub fn uninstall(magiskboot_path: Option<PathBuf>) -> Result<()> {
         magiskboot: magiskboot_path,
         out_name: None,
     })?;
-    println!("- Uninstall KernelSU Next manager..");
+    println!("- Uninstall Wild KSU manager..");
     Command::new("pm")
         .args(["uninstall", "com.rifsxd.ksunext"])
         .spawn()?;

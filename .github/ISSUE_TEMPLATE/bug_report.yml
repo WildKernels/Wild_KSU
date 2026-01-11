@@ -1,5 +1,5 @@
 name: Bug report
-description: Create a report to help us improve KernelSU Next
+description: Create a report to help us improve Wild KSU
 labels: [Bug]
 
 body:
@@ -10,7 +10,7 @@ body:
           - label: I have searched the issues and haven't found anything relevant
             required: true
             
-          - label: I will upload bugreport file in KernelSU Manager - Settings - Report log
+          - label: I will upload bugreport file in Wild KSU Manager - Settings - Report log
             required: true
             
           - label: I know how to reproduce the issue which may not be specific to my device
@@ -61,8 +61,8 @@ body:
           - Device:
           - OS Version:
           - Kernel Version:
-          - KSUN Driver Version:
-          - KSUN Manager Version:
+          - Wild KSU Driver Version:
+          - Wild KSU Manager Version:
     validations:
         required: true
 

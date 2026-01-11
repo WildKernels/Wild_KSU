@@ -164,7 +164,7 @@ fun SettingScreen(navigator: DestinationsNavigator) {
                             checked = umountChecked,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .clip(RoundedCornerShape(8.dp)),
+                                .clip(MaterialTheme.shapes.small),
                             colors = ListItemDefaults.colors(containerColor = Color.Transparent)
                         ) {
                             if (Natives.setDefaultUmountModules(it)) {
@@ -184,7 +184,7 @@ fun SettingScreen(navigator: DestinationsNavigator) {
                                 checked = isSuDisabled,
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .clip(RoundedCornerShape(8.dp)),
+                                    .clip(MaterialTheme.shapes.small),
                                 colors = ListItemDefaults.colors(containerColor = Color.Transparent)
                             ) { checked ->
                                 val shouldEnable = !checked
@@ -205,7 +205,7 @@ fun SettingScreen(navigator: DestinationsNavigator) {
                                 checked = isKernelUmountDisabled,
                                 modifier = Modifier
                                         .fillMaxWidth()
-                                        .clip(RoundedCornerShape(8.dp)),
+                                        .clip(MaterialTheme.shapes.small),
                                 colors = ListItemDefaults.colors(containerColor = Color.Transparent)
                             ) { checked ->
                                 val shouldEnable = !checked
@@ -227,7 +227,7 @@ fun SettingScreen(navigator: DestinationsNavigator) {
                                 checked = isAvcSpoofDisabled,
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .clip(RoundedCornerShape(8.dp)),
+                                    .clip(MaterialTheme.shapes.small),
                                 colors = ListItemDefaults.colors(containerColor = Color.Transparent)
                             ) { checked ->
                                 val shouldEnable = !checked
@@ -252,7 +252,7 @@ fun SettingScreen(navigator: DestinationsNavigator) {
                         ListItem(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .clip(RoundedCornerShape(8.dp))
+                                .clip(MaterialTheme.shapes.small)
                                 .clickable {
                                     navigator.navigate(AppProfileTemplateScreenDestination)
                                 },
@@ -275,7 +275,7 @@ fun SettingScreen(navigator: DestinationsNavigator) {
                         ListItem(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .clip(RoundedCornerShape(8.dp))
+                                .clip(MaterialTheme.shapes.small)
                                 .clickable {
                                     navigator.navigate(BackupRestoreScreenDestination)
                                 },
@@ -295,7 +295,7 @@ fun SettingScreen(navigator: DestinationsNavigator) {
                         ListItem(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .clip(RoundedCornerShape(8.dp))
+                                .clip(MaterialTheme.shapes.small)
                                 .clickable {
                                     navigator.navigate(DeveloperScreenDestination)
                                 },
@@ -318,7 +318,7 @@ fun SettingScreen(navigator: DestinationsNavigator) {
                                 withLoading = { loadingDialog.withLoading(it) },
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .clip(RoundedCornerShape(8.dp))
+                                    .clip(MaterialTheme.shapes.small)
                             )
                         }
                     }
@@ -351,7 +351,7 @@ fun SettingScreen(navigator: DestinationsNavigator) {
                         checked = checkUpdate,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clip(RoundedCornerShape(8.dp)),
+                            .clip(MaterialTheme.shapes.small),
                         colors = ListItemDefaults.colors(containerColor = Color.Transparent)
                     ) {
                         prefs.edit { putBoolean("check_update", it) }
@@ -361,7 +361,7 @@ fun SettingScreen(navigator: DestinationsNavigator) {
                     ListItem(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clip(RoundedCornerShape(8.dp))
+                            .clip(MaterialTheme.shapes.small)
                             .clickable {
                                 navigator.navigate(CustomizationScreenDestination)
                             },
@@ -383,7 +383,7 @@ fun SettingScreen(navigator: DestinationsNavigator) {
                     ListItem(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clip(RoundedCornerShape(8.dp))
+                            .clip(MaterialTheme.shapes.small)
                             .clickable {
                                 showBottomsheet = true
                             },
@@ -449,7 +449,7 @@ fun SettingScreen(navigator: DestinationsNavigator) {
                                                     onClick = {
                                                         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH_mm")
                                                         val current = LocalDateTime.now().format(formatter)
-                                                        exportBugreportLauncher.launch("KernelSU_Next_bugreport_${current}.tar.gz")
+                                                        exportBugreportLauncher.launch("Wild_KSU_bugreport_${current}.tar.gz")
                                                         showBottomsheet = false
                                                     },
                                                     modifier = Modifier
@@ -540,7 +540,7 @@ fun SettingScreen(navigator: DestinationsNavigator) {
                     ListItem(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clip(RoundedCornerShape(8.dp))
+                            .clip(MaterialTheme.shapes.small)
                             .clickable {
                                 aboutDialog.show()
                             },

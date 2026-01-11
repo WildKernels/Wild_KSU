@@ -244,7 +244,7 @@ fun LabelText(label: String) {
             .padding(top = 4.dp, end = 4.dp)
             .background(
                 Color.Black,
-                shape = RoundedCornerShape(4.dp)
+                shape = MaterialTheme.shapes.extraSmall
             )
     ) {
         Text(

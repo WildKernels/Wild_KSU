@@ -8,7 +8,7 @@ use log::LevelFilter;
 use crate::boot_patch::{BootPatchArgs, BootRestoreArgs};
 use crate::{apk_sign, assets, debug, defs, init_event, ksucalls, module, module_config, utils};
 
-/// KernelSU Next userspace cli
+/// Wild KSU userspace cli
 #[derive(Parser, Debug)]
 #[command(author, version = defs::VERSION_NAME, about, long_about = None)]
 struct Args {
@@ -18,7 +18,7 @@ struct Args {
 
 #[derive(clap::Subcommand, Debug)]
 enum Commands {
-    /// Manage KernelSU Next modules
+    /// Manage Wild KSU modules
     Module {
         #[command(subcommand)]
         command: Module,
@@ -33,13 +33,13 @@ enum Commands {
     /// Trigger `boot-complete` event
     BootCompleted,
 
-    /// Install KernelSU Next userspace component to system
+    /// Install Wild KSU userspace component to system
     Install {
         #[arg(long, default_value = None)]
         magiskboot: Option<PathBuf>,
     },
 
-    /// Uninstall KernelSU Next modules and itself(LKM Only)
+    /// Uninstall Wild KSU modules and itself(LKM Only)
     Uninstall {
         /// magiskboot path, if not specified, will search from $PATH
         #[arg(long, default_value = None)]
@@ -64,7 +64,7 @@ enum Commands {
         command: Feature,
     },
 
-    /// Patch boot or init_boot images to apply KernelSU Next
+    /// Patch boot or init_boot images to apply Wild KSU
     BootPatch(BootPatchArgs),
 
     /// Restore boot or init_boot images patched by KernelSU
@@ -402,7 +402,7 @@ pub fn run() -> Result<()> {
     android_logger::init_once(
         Config::default()
             .with_max_level(crate::debug_select!(LevelFilter::Trace, LevelFilter::Info))
-            .with_tag("KernelSU Next"),
+            .with_tag("Wild KSU"),
     );
 
     // the kernel executes su with argv[0] = "su" and replace it with us

@@ -5,20 +5,19 @@
   <string name="issue_report_body_2">أبلغ عن ذلك في أقرب وقت ممكن!</string>
   <string name="issue_report_github">ابلغ عنه في github</string>
   <string name="issue_report_telegram">التواصل عبر تليجرام</string>
-  <string name="issue_report_github_link">https://github.com/KernelSU-Next/KernelSU-Next/issues</string>
+  <string name="issue_report_github_link">https://github.com/Wild KSU/Wild KSU/issues</string>
   <string name="issue_report_telegram_link">https://t.me/ksunext</string>
   <string name="confirm">تأكيد</string>
-  <string name="app_name">KernelSU Next</string>
   <string name="home">الصفحة الرئيسية</string>
   <string name="home_not_installed">غير مثبت</string>
   <string name="home_click_to_install">إضغط للتثبيت</string>
   <string name="lkm_mode_deprecated">وضع LKM قد تم إهماله!</string>
-  <string name="lkm_alternative_suggestion">قم بتثبيت نواة GKI أو دمج KernelSU Next في جهازك.</string>
+  <string name="lkm_alternative_suggestion">قم بتثبيت نواة GKI أو دمج Wild KSU في جهازك.</string>
   <string name="home_working">جارِ العمل</string>
   <string name="home_working_version">الإصدار: %1$s (%2$d)</string>
   <string name="home_module_update_count">تحديثات: %d</string>
-  <string name="home_failure">لم يتم العثور على توقيع KernelSU Next v2 في النواة ! [ !KSU_NEXT &lt;unk&gt; != الحجم/الهاش ]</string>
-  <string name="home_failure_tip">اطلب من مطور kernel الخاص بك دمج KernelSU Next!</string>
+  <string name="home_failure">لم يتم العثور على توقيع Wild KSU v2 في النواة ! [ !KSU_NEXT &lt;unk&gt; != الحجم/الهاش ]</string>
+  <string name="home_failure_tip">اطلب من مطور kernel الخاص بك دمج Wild KSU!</string>
   <string name="home_kernel">اصدار النواة</string>
   <string name="hook_mode">وضع الخطاف </string>
   <string name="enable">تمكين</string>
@@ -100,11 +99,11 @@
   <string name="cancel">إلغاء</string>
   <string name="later">لاحقاً</string>
   <string name="home_next_kernelsu">🔥 الاصدار التالي</string>
-  <string name="home_next_kernelsu_repo">https://github.com/KernelSU-Next/KernelSU-Next</string>
+  <string name="home_next_kernelsu_repo">https://github.com/Wild KSU/Wild KSU</string>
   <string name="home_next_kernelsu_body">الفرع التجريبي التالي. تحقق من ذلك على GitHub!</string>
   <string name="home_experimental_kernelsu">⚠️ تحذير التطوير التجريبي!</string>
   <string name="home_experimental_kernelsu_repo">127.0.0.1</string>
-  <string name="home_experimental_kernelsu_body">KernelSU Next هي نسخة غير رسمية تخضع دائماً للتطوير التجريبي النشط. وهي تقدم كما هي، بدون ضمانات للاستقرار، أو الأداء، أو الموثوقية.</string>
+  <string name="home_experimental_kernelsu_body">Wild KSU هي نسخة غير رسمية تخضع دائماً للتطوير التجريبي النشط. وهي تقدم كما هي، بدون ضمانات للاستقرار، أو الأداء، أو الموثوقية.</string>
   <string name="home_experimental_kernelsu_body_point_1"> • استخدمه على مسؤوليتك الخاصة: قد تحدث أعطال، أو سلوك غير متوقع، أو مشاكل في النظام.</string>
   <string name="home_experimental_kernelsu_body_point_2"> • لا ضمان: المطورون غير مسؤولين عن أي خسارة في البيانات أو تلف للنظام، أو أي عواقب أخرى ناجمة عن استخدامها.</string>
   <string name="home_experimental_kernelsu_body_point_3"> • لأغراض الاختبار فقط: موجهة للمستعملين الذين يفهمون المخاطر ويواجهون مشاكل مريحة في استكشاف الأخطاء وإصلاحها.</string>
@@ -123,10 +122,10 @@
   <string name="profile_selinux_context">سياق SELinux</string>
   <string name="profile_umount_modules">الغاء تحميل الوحدات</string>
   <string name="failed_to_update_app_profile">فشل تحديث ملف تعريف التطبيق لـ %s</string>
-  <string name="require_kernel_version">الإصدار KernelSU Next الحالي %1$d منخفض جدا لكي يعمل المدير بشكل صحيح. الرجاء الترقية إلى الإصدار %2$d أو أعلى!</string>
+  <string name="require_kernel_version">الإصدار Wild KSU الحالي %1$d منخفض جدا لكي يعمل المدير بشكل صحيح. الرجاء الترقية إلى الإصدار %2$d أو أعلى!</string>
   <string name="settings_umount_modules_default">الغاء تحميل الإضافات</string>
   <string name="settings_umount_modules_default_summary">القيمة الافتراضية العامة لـ\"إلغاء تحميل الإضافات\" في ملفات تعريف التطبيقات. إذا تم تمكينه، إزالة جميع تعديلات الإضافات على النظام للتطبيقات التي لا تحتوي على مجموعة ملف تعريف.</string>
-  <string name="profile_umount_modules_summary">تمكين هذا الخيار سيسمح KernelSU Next لاستعادة أي ملفات معدلة بواسطة وحدات هذا التطبيق.</string>
+  <string name="profile_umount_modules_summary">تمكين هذا الخيار سيسمح Wild KSU لاستعادة أي ملفات معدلة بواسطة وحدات هذا التطبيق.</string>
   <string name="profile_selinux_domain">النطاق</string>
   <string name="profile_selinux_rules">القواعد</string>
   <string name="module_update">تحديث</string>
@@ -189,7 +188,7 @@
   <string name="settings_uninstall_temporary">إلغاء تثبيت مؤقت</string>
   <string name="settings_uninstall_permanent">إلغاء التثبيت نهائياً</string>
   <string name="settings_restore_stock_image">استعادة الصورة الأصلية</string>
-  <string name="settings_uninstall_temporary_message">الغاء تثبيت KernelSU Next مؤقتا، استعادة الحالة الاصلية بعد اعادة التشغيل.</string>
+  <string name="settings_uninstall_temporary_message">الغاء تثبيت Wild KSU مؤقتا، استعادة الحالة الاصلية بعد اعادة التشغيل.</string>
   <string name="flashing">جاري الحرق.</string>
   <string name="flash_success">تم الحرق بنجاح</string>
   <string name="flash_failed">فشل التركيب</string>
@@ -222,8 +221,8 @@
   <string name="module_sort_action_first">Sort (Action first)</string>
   <string name="module_sort_webui_first">Sort (WebUI first)</string>
   <string name="settings_global_namespace_mode_summary">All root sessions use the global mount namespace</string>
-  <string name="settings_uninstall_permanent_message">Uninstalling KernelSU Next (root and all modules) completely and permanently.</string>
-  <string name="settings_restore_stock_image_message">Restore the stock factory image (if a backup exists), usually used before OTA; if you need to uninstall KernelSU Next, please use \"Uninstall permanently\".</string>
+  <string name="settings_uninstall_permanent_message">Uninstalling Wild KSU (root and all modules) completely and permanently.</string>
+  <string name="settings_restore_stock_image_message">Restore the stock factory image (if a backup exists), usually used before OTA; if you need to uninstall Wild KSU, please use \"Uninstall permanently\".</string>
   <string name="settings_disable_su_summary">Temporarily disable the ability of any app to gain root privileges via the ⁠su command (existing root processes won\'t be affected).</string>
   <string name="settings_global_namespace_mode">Global namespace mode</string>
   <string name="settings_background">Background</string>
