@@ -710,7 +710,7 @@ private fun ModuleList(
                     }
                 }
                 else -> {
-                    items(viewModel.moduleList) { module ->
+                    items(items = viewModel.moduleList, key = { it.id }) { module ->
                         val scope = rememberCoroutineScope()
                         val updatedModule by produceState(key1 = module.id, initialValue = Triple("", "", "")) {
                             value = withContext(Dispatchers.IO) {
@@ -729,15 +729,13 @@ private fun ModuleList(
                                 scope.launch { onModuleRestore(module) }
                             },
                             onCheckChanged = {
+                                val newEnabledState = !module.enabled
+                                viewModel.setModuleEnabled(module.id, newEnabledState)
                                 scope.launch {
-                                    val success = loadingDialog.withLoading {
-                                        withContext(Dispatchers.IO) {
-                                            toggleModule(module.id, !module.enabled)
-                                        }
+                                    val success = withContext(Dispatchers.IO) {
+                                        toggleModule(module.id, newEnabledState)
                                     }
                                     if (success) {
-                                        viewModel.fetchModuleList()
-
                                         val result = snackBarHost.showSnackbar(
                                             message = rebootToApply,
                                             actionLabel = reboot,
@@ -747,8 +745,9 @@ private fun ModuleList(
                                             reboot()
                                         }
                                     } else {
+                                        viewModel.setModuleEnabled(module.id, !newEnabledState)
                                         val message =
-                                            if (module.enabled) failedDisable else failedEnable
+                                            if (newEnabledState) failedEnable else failedDisable
                                         snackBarHost.showSnackbar(message.format(module.name))
                                     }
                                 }

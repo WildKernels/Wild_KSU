@@ -30,7 +30,7 @@ class ModuleViewModel : ViewModel() {
         private var modules by mutableStateOf<List<ModuleInfo>>(emptyList())
     }
 
-    class ModuleInfo(
+    data class ModuleInfo(
         val id: String,
         val name: String,
         val author: String,
@@ -107,6 +107,16 @@ class ModuleViewModel : ViewModel() {
 
     fun clearZipUris() {
         zipUris = emptyList()
+    }
+
+    fun setModuleEnabled(id: String, enabled: Boolean) {
+        modules = modules.map {
+            if (it.id == id) {
+                it.copy(enabled = enabled)
+            } else {
+                it
+            }
+        }
     }
 
     fun fetchModuleList() {
