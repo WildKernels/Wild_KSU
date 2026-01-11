@@ -93,7 +93,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun HomeScreen(navigator: DestinationsNavigator) {
     val kernelVersion = getKernelVersion()
-    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
 
     val isManager = Natives.isManager
     val fullFeatured = isManager && !Natives.requireNewKernel() && rootAvailable()
@@ -593,7 +593,7 @@ private fun TopBar(
         rotationTarget += 360f * 6
     }
 
-    TopAppBar(
+    LargeTopAppBar(
         title = {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
