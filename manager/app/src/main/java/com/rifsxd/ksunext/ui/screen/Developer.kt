@@ -79,84 +79,112 @@ fun DeveloperScreen(navigator: DestinationsNavigator) {
             val scope = rememberCoroutineScope()
             val prefs = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
 
-            // --- Force Update ---
+            // --- Update Manager Helper ---
+            val installUpdate: (String) -> Unit = { branch ->
+                scope.launch {
+                    loadingDialog.withLoading {
+                        withContext(Dispatchers.IO) {
+                            runCatching {
+                                val url = "https://nightly.link/WildKernels/Wild_KSU/workflows/build-manager-ci/$branch/manager.zip"
+                                val request = okhttp3.Request.Builder().url(url).build()
+
+                                ksuApp.okhttpClient.newCall(request).execute().use { response ->
+                                    if (!response.isSuccessful) throw Exception("Download failed: ${response.code}")
+
+                                    val zipFile = File(context.cacheDir, "manager_ci.zip")
+                                    response.body?.byteStream()?.use { input ->
+                                        FileOutputStream(zipFile).use { output ->
+                                            input.copyTo(output)
+                                        }
+                                    }
+
+                                    // Unzip to find apk
+                                    var apkFile: File? = null
+                                    ZipInputStream(zipFile.inputStream()).use { zipInput ->
+                                        var entry = zipInput.nextEntry
+                                        while (entry != null) {
+                                            if (entry.name.endsWith(".apk")) {
+                                                apkFile = File(context.cacheDir, "manager_ci.apk")
+                                                FileOutputStream(apkFile!!).use { output ->
+                                                    zipInput.copyTo(output)
+                                                }
+                                                break
+                                            }
+                                            entry = zipInput.nextEntry
+                                        }
+                                    }
+
+                                    zipFile.delete()
+
+                                    if (apkFile != null) {
+                                        val uri = FileProvider.getUriForFile(
+                                            context,
+                                            "${BuildConfig.APPLICATION_ID}.fileprovider",
+                                            apkFile!!
+                                        )
+                                        val intent = Intent(Intent.ACTION_VIEW).apply {
+                                            setDataAndType(uri, "application/vnd.android.package-archive")
+                                            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                        }
+                                        context.startActivity(intent)
+                                    } else {
+                                        throw Exception("No APK found in ZIP")
+                                    }
+                                }
+                            }.onFailure {
+                                withContext(Dispatchers.Main) {
+                                    snackBarHost.showSnackbar("Update failed: ${it.message}")
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // --- Force Update (Wild) ---
             ListItem(
                 headlineContent = {
                     Text(
-                        text = "Force update manager to latest CI",
+                        text = "Update Manager (Wild)",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.SemiBold
                     )
                 },
                 supportingContent = {
-                    Text("Download and install latest manager from nightly.link (Normal Manager Only)")
+                    Text("Download and install latest manager from Wild branch")
                 },
                 leadingContent = {
                     Icon(
                         imageVector = Icons.Filled.Update,
-                        contentDescription = "Force Update"
+                        contentDescription = "Update Wild"
                     )
                 },
                 modifier = Modifier.clickable {
-                    scope.launch {
-                        loadingDialog.withLoading {
-                            withContext(Dispatchers.IO) {
-                                runCatching {
-                                    val url = "https://nightly.link/WildKernels/Wild_KSU/workflows/build-manager-ci/wild-dev/manager.zip"
-                                    val request = okhttp3.Request.Builder().url(url).build()
-                                    
-                                    ksuApp.okhttpClient.newCall(request).execute().use { response ->
-                                        if (!response.isSuccessful) throw Exception("Download failed: ${response.code}")
-                                        
-                                        val zipFile = File(context.cacheDir, "manager_ci.zip")
-                                        response.body?.byteStream()?.use { input ->
-                                            FileOutputStream(zipFile).use { output ->
-                                                input.copyTo(output)
-                                            }
-                                        }
+                    installUpdate("wild")
+                }
+            )
 
-                                        // Unzip to find apk
-                                        var apkFile: File? = null
-                                        ZipInputStream(zipFile.inputStream()).use { zipInput ->
-                                            var entry = zipInput.nextEntry
-                                            while (entry != null) {
-                                                if (entry.name.endsWith(".apk")) {
-                                                    apkFile = File(context.cacheDir, "manager_ci.apk")
-                                                    FileOutputStream(apkFile!!).use { output ->
-                                                        zipInput.copyTo(output)
-                                                    }
-                                                    break
-                                                }
-                                                entry = zipInput.nextEntry
-                                            }
-                                        }
-                                        
-                                        zipFile.delete()
-
-                                        if (apkFile != null) {
-                                            val uri = FileProvider.getUriForFile(
-                                                context,
-                                                "${BuildConfig.APPLICATION_ID}.fileprovider",
-                                                apkFile!!
-                                            )
-                                            val intent = Intent(Intent.ACTION_VIEW).apply {
-                                                setDataAndType(uri, "application/vnd.android.package-archive")
-                                                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                                                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                            }
-                                            context.startActivity(intent)
-                                        } else {
-                                            throw Exception("No APK found in ZIP")
-                                        }
-                                    }
-                                }.onFailure {
-                                    withContext(Dispatchers.Main) {
-                                        snackBarHost.showSnackbar("Update failed: ${it.message}")
-                                    }
-                                }
-                            }
-                        }
-                    }
+            // --- Force Update (Wild Dev) ---
+            ListItem(
+                headlineContent = {
+                    Text(
+                        text = "Update Manager (Wild Dev)",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                },
+                supportingContent = {
+                    Text("Download and install latest manager from Wild Dev branch")
+                },
+                leadingContent = {
+                    Icon(
+                        imageVector = Icons.Filled.Update,
+                        contentDescription = "Update Wild Dev"
+                    )
+                },
+                modifier = Modifier.clickable {
+                    installUpdate("wild-dev")
                 }
             )
 
