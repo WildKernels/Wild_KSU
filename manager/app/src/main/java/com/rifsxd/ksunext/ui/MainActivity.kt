@@ -261,7 +261,7 @@ class MainActivity : ComponentActivity() {
                                                         if (isSelected) return@NavigationBarItem
                                                         navigator.navigate(destination.direction) {
                                                         launchSingleTop = true
-                                                        restoreState = true
+                                                        restoreState = destination != BottomBarDestination.Settings
                                                         popUpTo(HomeScreenDestination) {
                                                             saveState = true
                                                         }

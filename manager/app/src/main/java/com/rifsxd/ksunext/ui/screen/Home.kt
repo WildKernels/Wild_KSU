@@ -116,7 +116,6 @@ fun HomeScreen(navigator: DestinationsNavigator) {
                 onSettingsClick = {
                     navigator.navigate(SettingScreenDestination) {
                         launchSingleTop = true
-                        restoreState = true
                         popUpTo(HomeScreenDestination) {
                             saveState = true
                         }

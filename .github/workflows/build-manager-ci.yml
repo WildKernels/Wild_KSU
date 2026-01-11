@@ -2,23 +2,23 @@ name: Build Manager CI
 
 on:
   push:
-    branches: [ "wild" ]
-    #paths:
-    #  - '.github/workflows/build-manager.yml'
-    #  - '.github/workflows/build-lkm.yml'
-    #  - '.github/workflows/ksud.yml'
-    #  - 'manager/**'
-    # - 'kernel/**'
-    # - 'userspace/**'
-  pull_request:
     branches: [ "wild", "wild-dev" ]
     paths:
       - '.github/workflows/build-manager.yml'
-    #  - '.github/workflows/build-lkm.yml'
-    #  - '.github/workflows/ksud.yml'
-    #  - 'manager/**'
-    # - 'kernel/**'
-    # - 'userspace/**'
+      - '.github/workflows/build-lkm.yml'
+      - '.github/workflows/ksud.yml'
+      - 'manager/**'
+      - 'kernel/**'
+      - 'userspace/**'
+  pull_request:
+    branches: [ "wild" ]
+    paths:
+      - '.github/workflows/build-manager.yml'
+      - '.github/workflows/build-lkm.yml'
+      - '.github/workflows/ksud.yml'
+      - 'manager/**'
+      - 'kernel/**'
+      - 'userspace/**'
   workflow_call:
   workflow_dispatch:
 
@@ -159,39 +159,44 @@ jobs:
 
 
   upload-telegram-manager:
-    if: ${{ ( github.event_name != 'pull_request' && (github.ref == 'refs/heads/wild' || github.ref == 'refs/heads/wild-dev')) || github.ref_type == 'tag' }}
+    if: ${{ always() && (( github.event_name != 'pull_request' && (github.ref == 'refs/heads/wild' || github.ref == 'refs/heads/wild-dev')) || github.ref_type == 'tag') }}
     needs: build-manager
     runs-on: ubuntu-latest
     steps:
       - name: Download Normal Manager
+        if: needs.build-manager.result == 'success'
         uses: actions/download-artifact@v6
         with:
           name: manager
           path: manager
 
       - name: Download Spoofed Manager
+        if: needs.build-manager.result == 'success'
         uses: actions/download-artifact@v6
         with:
           name: manager-spoofed
           path: manager-spoofed
 
       - name: Send Telegram notification and APKs
+        if: needs.build-manager.result == 'success'
         env:
           COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
           COMMIT_SHA: ${{ github.sha }}
           RUN_ID: ${{ github.run_id }}
           REPO: ${{ github.repository }}
+          BRANCH: ${{ github.ref_name }}
         run: |
           set -euo pipefail
 
           MESSAGE=$(cat <<EOF
-          New Wild KSU CI Build Finished
+          <b>Wild KSU Build Success</b> 🟢
 
-          Repository: https://github.com/${REPO}
-          Workflow: https://github.com/${REPO}/actions/runs/${RUN_ID}
-          Commit: https://github.com/${REPO}/commit/${COMMIT_SHA}
+          <b>Repository:</b> ${REPO}
+          <b>Branch:</b> ${BRANCH}
+          <b>Commit:</b> <a href="https://github.com/${REPO}/commit/${COMMIT_SHA}">${COMMIT_SHA:0:7}</a>
+          <b>Workflow:</b> <a href="https://github.com/${REPO}/actions/runs/${RUN_ID}">View Run</a>
 
-          Commit message:
+          <b>Commit Message:</b>
           ${COMMIT_MESSAGE}
           EOF
               )
@@ -200,6 +205,7 @@ jobs:
               RESPONSE=$(curl -sS -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
                 -F chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
                 -F message_thread_id="${{ secrets.TELEGRAM_TOPIC_ID_WKSU }}" \
+                -F parse_mode="HTML" \
                 -F text="$MESSAGE")
 
               echo "$RESPONSE" | grep -q '"ok":true'
@@ -230,27 +236,26 @@ jobs:
               echo "All uploads completed successfully."
 
       - name: DM Artifacts
-        if: always()
+        if: needs.build-manager.result == 'success'
         env:
           COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
           COMMIT_SHA: ${{ github.sha }}
           RUN_ID: ${{ github.run_id }}
           REPO: ${{ github.repository }}
+          BRANCH: ${{ github.ref_name }}
         run: |
           set -euo pipefail
 
           MESSAGE=$(cat <<EOF
-          New Wild KSU CI Build Finished
+          <b>Wild KSU Build Success</b> 🟢
 
-          Repository: \`https://github.com/${REPO}\`
+          <b>Repository:</b> ${REPO}
+          <b>Branch:</b> ${BRANCH}
+          <b>Commit:</b> <a href="https://github.com/${REPO}/commit/${COMMIT_SHA}">${COMMIT_SHA:0:7}</a>
+          <b>Workflow:</b> <a href="https://github.com/${REPO}/actions/runs/${RUN_ID}">View Run</a>
 
-          Workflow: \`https://github.com/${REPO}/actions/runs/${RUN_ID}\`
-
-          Commit: \`https://github.com/${REPO}/commit/${COMMIT_SHA}\`
-
-          \`\`\`
+          <b>Commit Message:</b>
           ${COMMIT_MESSAGE}
-          \`\`\`
           EOF
               )
           # Check for Normal artifacts
@@ -259,7 +264,7 @@ jobs:
               echo "Sending Telegram message..."
               curl -sS -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
                 -F chat_id="${{ secrets.TELEGRAM_USER_ID }}" \
-                -F parse_mode="Markdown" \
+                -F parse_mode="HTML" \
                 -F text="$MESSAGE"
 
               echo "Sending $apk to Telegram DM..."
@@ -269,6 +274,36 @@ jobs:
                   -F caption="📦 Build: $(basename "$apk")"
             fi
           done
+
+      - name: DM Failure Notification
+        if: needs.build-manager.result == 'failure'
+        env:
+          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+          COMMIT_SHA: ${{ github.sha }}
+          RUN_ID: ${{ github.run_id }}
+          REPO: ${{ github.repository }}
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+
+          MESSAGE=$(cat <<EOF
+          <b>Wild KSU Build Failed</b> 🔴
+
+          <b>Repository:</b> ${REPO}
+          <b>Branch:</b> ${BRANCH}
+          <b>Commit:</b> <a href="https://github.com/${REPO}/commit/${COMMIT_SHA}">${COMMIT_SHA:0:7}</a>
+          <b>Workflow:</b> <a href="https://github.com/${REPO}/actions/runs/${RUN_ID}">View Run</a>
+
+          <b>Commit Message:</b>
+          ${COMMIT_MESSAGE}
+          EOF
+              )
+
+          echo "Sending Failure Notification..."
+          curl -sS -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
+            -F chat_id="${{ secrets.TELEGRAM_USER_ID }}" \
+            -F parse_mode="HTML" \
+            -F text="$MESSAGE"
 
 
 
