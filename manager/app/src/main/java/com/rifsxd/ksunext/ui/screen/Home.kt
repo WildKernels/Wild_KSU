@@ -113,7 +113,13 @@ fun HomeScreen(navigator: DestinationsNavigator) {
                 kernelVersion,
                 ksuVersion,
                 onSettingsClick = {
-                    navigator.navigate(SettingScreenDestination)
+                    navigator.navigate(SettingScreenDestination) {
+                        launchSingleTop = true
+                        restoreState = true
+                        popUpTo(HomeScreenDestination) {
+                            saveState = true
+                        }
+                    }
                 },
                 onInstallClick = {
                     navigator.navigate(InstallScreenDestination)
@@ -149,10 +155,26 @@ fun HomeScreen(navigator: DestinationsNavigator) {
                     horizontalArrangement = Arrangement.spacedBy(14.dp)
                 ) {
                     Box(modifier = Modifier.weight(1f)) {
-                        SuperuserCard(onClick = { navigator.navigate(SuperUserScreenDestination) })
+                        SuperuserCard(onClick = {
+                            navigator.navigate(SuperUserScreenDestination) {
+                                launchSingleTop = true
+                                restoreState = true
+                                popUpTo(HomeScreenDestination) {
+                                    saveState = true
+                                }
+                            }
+                        })
                     }
                     Box(modifier = Modifier.weight(1f)) {
-                        ModuleCard(onClick = { navigator.navigate(ModuleScreenDestination) })
+                        ModuleCard(onClick = {
+                            navigator.navigate(ModuleScreenDestination) {
+                                launchSingleTop = true
+                                restoreState = true
+                                popUpTo(HomeScreenDestination) {
+                                    saveState = true
+                                }
+                            }
+                        })
                     }
                 }
             }
