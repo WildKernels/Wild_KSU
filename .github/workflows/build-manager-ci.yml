@@ -3,22 +3,22 @@ name: Build Manager CI
 on:
   push:
     branches: [ "wild" ]
-    #paths:
-    #  - '.github/workflows/build-manager.yml'
-    #  - '.github/workflows/build-lkm.yml'
-    #  - '.github/workflows/ksud.yml'
-    #  - 'manager/**'
-    # - 'kernel/**'
-    # - 'userspace/**'
+    paths:
+      - '.github/workflows/build-manager.yml'
+      - '.github/workflows/build-lkm.yml'
+      - '.github/workflows/ksud.yml'
+      - 'manager/**'
+      - 'kernel/**'
+      - 'userspace/**'
   pull_request:
     branches: [ "wild" ]
-    #paths:
-    #  - '.github/workflows/build-manager.yml'
-    #  - '.github/workflows/build-lkm.yml'
-    #  - '.github/workflows/ksud.yml'
-    #  - 'manager/**'
-    # - 'kernel/**'
-    # - 'userspace/**'
+    paths:
+      - '.github/workflows/build-manager.yml'
+      - '.github/workflows/build-lkm.yml'
+      - '.github/workflows/ksud.yml'
+      - 'manager/**'
+      - 'kernel/**'
+      - 'userspace/**'
   workflow_call:
   workflow_dispatch:
 
