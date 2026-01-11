@@ -3,6 +3,7 @@
         android:height="22dp"
         android:viewportWidth="24"
         android:viewportHeight="24">
+
     <path
         android:fillColor="#000000"
         android:pathData="M 13.75 6.75 C 13.75 7.71875 12.96875 8.5 12 8.5 C 11.03125 8.5 10.25 7.71875 10.25 6.75 C 10.25 5.78125 11.03125 5 12 5 C 12.96875 5 13.75 5.78125 13.75 6.75 Z M 13.75 6.75 "/>

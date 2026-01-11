@@ -1,5 +1,6 @@
 package com.rifsxd.ksunext.ui.screen
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.widget.Toast
@@ -86,6 +87,9 @@ import com.rifsxd.ksunext.ksuApp
 import com.rifsxd.ksunext.ui.util.LocalSnackbarHost
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.core.content.pm.ShortcutInfoCompat
+import androidx.core.content.pm.ShortcutManagerCompat
+import androidx.core.graphics.drawable.IconCompat
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -580,7 +584,9 @@ private fun TopBar(
     
     val kpatchNext = moduleViewModel.moduleList.find { it.id == "KPatch-Next" }
     val toolkitModule = moduleViewModel.moduleList.find { it.id == "ksu_toolkit" }
-    
+    val zygiskId = getZygiskImplementation("id")
+    val zygiskModule = moduleViewModel.moduleList.find { it.id == zygiskId }
+
     val webUILauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
     ) { }
@@ -590,6 +596,29 @@ private fun TopBar(
     LaunchedEffect(Unit) {
         isSpinning = true
         rotationTarget += 360f * 6
+    }
+
+    val shortcutKey = remember(kpatchNext, toolkitModule, zygiskModule) {
+        listOfNotNull(
+            kpatchNext?.takeIf { it.hasWebUi }?.id,
+            toolkitModule?.takeIf { it.hasWebUi }?.id,
+            zygiskModule?.takeIf { it.hasWebUi }?.id
+        ).joinToString(",")
+    }
+
+    LaunchedEffect(shortcutKey) {
+        if (shortcutKey.isEmpty()) {
+            ShortcutManagerCompat.removeAllDynamicShortcuts(context)
+            return@LaunchedEffect
+        }
+
+        val moduleConfigs = listOfNotNull(
+            kpatchNext?.takeIf { it.hasWebUi }?.let { it to R.drawable.ic_kpatch_next },
+            toolkitModule?.takeIf { it.hasWebUi }?.let { it to R.drawable.ic_toolkit },
+            zygiskModule?.takeIf { it.hasWebUi }?.let { it to R.drawable.ic_zygisk }
+        )
+
+        handleDynamicShortcuts(context, moduleConfigs)
     }
 
     TopAppBar(
@@ -1259,7 +1288,28 @@ fun EXperimentalCard() {
     }
 }
 
+@SuppressLint("RestrictedApi")
+fun handleDynamicShortcuts(context: Context, moduleConfigs: List <Pair<ModuleViewModel.ModuleInfo, Int>>) {
+    ShortcutManagerCompat.removeAllDynamicShortcuts(context)
 
+    moduleConfigs.forEach { (module, iconRes) ->
+        val shortcut = ShortcutInfoCompat.Builder(context, module.id)
+            .setShortLabel(module.name)
+            .setLongLabel(module.name)
+            .setIcon(IconCompat.createWithResource(context, iconRes))
+            .setIntent(
+                Intent(context, WebUIActivity::class.java).apply {
+                    action = Intent.ACTION_VIEW
+                    data = "kernelsu://webui/${module.id}".toUri()
+                    putExtra("id", module.id)
+                    putExtra("name", module.name)
+                }
+            )
+            .build()
+
+        ShortcutManagerCompat.pushDynamicShortcut(context, shortcut)
+    }
+}
 
 fun getManagerVersion(context: Context): Pair<String, Long> {
     val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)!!
