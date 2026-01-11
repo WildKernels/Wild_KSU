@@ -208,10 +208,10 @@ jobs:
 
               echo "Sending Telegram message..."
               RESPONSE=$(curl -sS -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
-                -F chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
-                -F message_thread_id="${{ secrets.TELEGRAM_TOPIC_ID_WKSU }}" \
-                -F parse_mode="HTML" \
-                -F text="$MESSAGE")
+                -d chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
+                -d message_thread_id="${{ secrets.TELEGRAM_TOPIC_ID_WKSU }}" \
+                -d parse_mode="HTML" \
+                --data-urlencode "text=$MESSAGE")
 
               echo "$RESPONSE" | grep -q '"ok":true'
               echo "Message sent."
@@ -268,9 +268,9 @@ jobs:
             if [ -f "$apk" ]; then
               echo "Sending Telegram message..."
               curl -sS -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
-                -F chat_id="${{ secrets.TELEGRAM_USER_ID }}" \
-                -F parse_mode="HTML" \
-                -F text="$MESSAGE"
+                -d chat_id="${{ secrets.TELEGRAM_USER_ID }}" \
+                -d parse_mode="HTML" \
+                --data-urlencode "text=$MESSAGE"
 
               echo "Sending $apk to Telegram DM..."
               curl -sS -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" \
@@ -306,9 +306,9 @@ jobs:
 
           echo "Sending Failure Notification..."
           curl -sS -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
-            -F chat_id="${{ secrets.TELEGRAM_USER_ID }}" \
-            -F parse_mode="HTML" \
-            -F text="$MESSAGE"
+            -d chat_id="${{ secrets.TELEGRAM_USER_ID }}" \
+            -d parse_mode="HTML" \
+            --data-urlencode "text=$MESSAGE"
 
 
 
