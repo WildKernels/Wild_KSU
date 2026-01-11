@@ -144,14 +144,15 @@ jobs:
 
       - name: Prepare Artifact
         run: |
-          mv manager/app/build/outputs/apk/release/*.apk manager.apk
+          mkdir -p artifact_upload
+          cp app/build/outputs/apk/release/*.apk artifact_upload/
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v5
         if: ${{ ( github.event_name != 'pull_request' && (github.ref == 'refs/heads/wild' || github.ref == 'refs/heads/wild-dev')) || github.ref_type == 'tag' }}
         with:
           name: ${{ matrix.spoofed && 'manager-spoofed' || 'manager' }}
-          path: manager.apk
+          path: manager/artifact_upload/
 
       - name: Upload mappings
         uses: actions/upload-artifact@v5
