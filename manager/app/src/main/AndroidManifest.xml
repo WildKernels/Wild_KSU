@@ -90,6 +90,42 @@
                 android:name="android.appwidget.provider"
                 android:resource="@xml/widget_info_settings" />
         </receiver>
+
+        <!-- KsuTool Widget -->
+        <receiver
+            android:name=".ui.widget.KsuToolWidget"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_info_ksutool" />
+        </receiver>
+
+        <!-- KPatch Widget -->
+        <receiver
+            android:name=".ui.widget.KPatchWidget"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_info_kpatch" />
+        </receiver>
+
+        <!-- Zygisk Widget -->
+        <receiver
+            android:name=".ui.widget.ZygiskWidget"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_info_zygisk" />
+        </receiver>
     </application>
 
 </manifest>
