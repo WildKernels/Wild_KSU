@@ -54,6 +54,42 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/filepaths" />
         </provider>
+
+        <!-- Superuser Widget -->
+        <receiver
+            android:name=".ui.widget.SuperuserWidget"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_info_superuser" />
+        </receiver>
+
+        <!-- Modules Widget -->
+        <receiver
+            android:name=".ui.widget.ModulesWidget"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_info_modules" />
+        </receiver>
+
+        <!-- Settings Widget -->
+        <receiver
+            android:name=".ui.widget.SettingsWidget"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_info_settings" />
+        </receiver>
     </application>
 
 </manifest>
