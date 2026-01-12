@@ -50,6 +50,12 @@ import com.rifsxd.ksunext.ui.theme.AppTheme
 import com.rifsxd.ksunext.ui.theme.KernelSUTheme
 import com.rifsxd.ksunext.ui.theme.PRIMARY
 import com.rifsxd.ksunext.ui.util.*
+import androidx.lifecycle.lifecycleScope
+import androidx.core.net.toUri
+import com.rifsxd.ksunext.ui.webui.WebUIActivity
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainActivity : ComponentActivity() {
 
