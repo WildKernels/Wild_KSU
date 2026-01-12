@@ -41,4 +41,46 @@
             android:targetClass="com.rifsxd.ksunext.ui.MainActivity" />
         <categories android:name="android.shortcut.conversation" />
     </shortcut>
+
+    <!-- Shortcut 4: KsuTool Kit -->
+    <shortcut
+        android:shortcutId="ksutool_shortcut"
+        android:enabled="true"
+        android:icon="@drawable/ic_toolkit"
+        android:shortcutShortLabel="@string/shortcut_ksutool"
+        android:shortcutLongLabel="@string/shortcut_ksutool">
+        <intent
+            android:action="ACTION_KSUTOOL"
+            android:targetPackage="com.twj.wksu"
+            android:targetClass="com.rifsxd.ksunext.ui.MainActivity" />
+        <categories android:name="android.shortcut.conversation" />
+    </shortcut>
+
+    <!-- Shortcut 5: KPatch Next -->
+    <shortcut
+        android:shortcutId="kpatch_shortcut"
+        android:enabled="true"
+        android:icon="@drawable/ic_kpatch_next"
+        android:shortcutShortLabel="@string/shortcut_kpatch"
+        android:shortcutLongLabel="@string/shortcut_kpatch">
+        <intent
+            android:action="ACTION_KPATCH"
+            android:targetPackage="com.twj.wksu"
+            android:targetClass="com.rifsxd.ksunext.ui.MainActivity" />
+        <categories android:name="android.shortcut.conversation" />
+    </shortcut>
+
+    <!-- Shortcut 6: Zygisk -->
+    <shortcut
+        android:shortcutId="zygisk_shortcut"
+        android:enabled="true"
+        android:icon="@drawable/ic_zygisk"
+        android:shortcutShortLabel="@string/shortcut_zygisk"
+        android:shortcutLongLabel="@string/shortcut_zygisk">
+        <intent
+            android:action="ACTION_ZYGISK"
+            android:targetPackage="com.twj.wksu"
+            android:targetClass="com.rifsxd.ksunext.ui.MainActivity" />
+        <categories android:name="android.shortcut.conversation" />
+    </shortcut>
 </shortcuts>

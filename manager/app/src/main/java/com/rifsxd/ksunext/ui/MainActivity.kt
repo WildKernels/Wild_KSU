@@ -368,6 +368,40 @@ class MainActivity : ComponentActivity() {
             "ACTION_SETTINGS" -> navigateLoc = "settings"
             "ACTION_SUPERUSER" -> navigateLoc = "superuser"
             "ACTION_MODULES" -> navigateLoc = "modules"
+            "ACTION_KSUTOOL" -> {
+                val intent = Intent(this, WebUIActivity::class.java).apply {
+                    data = "kernelsu://webui/ksu_toolkit".toUri()
+                    putExtra("id", "ksu_toolkit")
+                    putExtra("name", "KsuTool Kit")
+                }
+                startActivity(intent)
+            }
+            "ACTION_KPATCH" -> {
+                val intent = Intent(this, WebUIActivity::class.java).apply {
+                    data = "kernelsu://webui/KPatch-Next".toUri()
+                    putExtra("id", "KPatch-Next")
+                    putExtra("name", "KPatch Next")
+                }
+                startActivity(intent)
+            }
+            "ACTION_ZYGISK" -> {
+                lifecycleScope.launch(Dispatchers.IO) {
+                    val id = getZygiskImplementation("id")
+                    val name = getZygiskImplementation("name")
+                    withContext(Dispatchers.Main) {
+                        if (id != "None") {
+                            val intent = Intent(this@MainActivity, WebUIActivity::class.java).apply {
+                                data = "kernelsu://webui/$id".toUri()
+                                putExtra("id", id)
+                                putExtra("name", if (name != "None") name else "Zygisk")
+                            }
+                            startActivity(intent)
+                        } else {
+                            Toast.makeText(this@MainActivity, "Zygisk module not found", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
+            }
         }
     }
 }
