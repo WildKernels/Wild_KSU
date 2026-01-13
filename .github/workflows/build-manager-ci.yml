@@ -4,6 +4,7 @@ on:
   push:
     branches: [ "wild", "wild-dev" ]
     paths:
+      - '.github/workflows/build-manager-ci.yml'
       - '.github/workflows/build-manager.yml'
       - '.github/workflows/build-lkm.yml'
       - '.github/workflows/ksud.yml'
@@ -11,8 +12,9 @@ on:
       - 'kernel/**'
       - 'userspace/**'
   pull_request:
-    branches: [ "wild" ]
+    branches: [ "wild", "wild-dev" ]
     paths:
+      - '.github/workflows/build-manager-ci.yml'
       - '.github/workflows/build-manager.yml'
       - '.github/workflows/build-lkm.yml'
       - '.github/workflows/ksud.yml'
