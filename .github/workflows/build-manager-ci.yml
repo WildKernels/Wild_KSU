@@ -206,52 +206,74 @@ jobs:
           EOF
               )
 
-              echo "Sending Telegram message..."
-              RESPONSE=$(curl -sS -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
-                -d chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
-                -d message_thread_id="${{ secrets.TELEGRAM_TOPIC_ID_WKSU }}" \
-                -d parse_mode="HTML" \
-                --data-urlencode "text=$MESSAGE")
-
-              echo "$RESPONSE" | grep -q '"ok":true'
-              echo "Message sent."
-
-              # Collect APKs
-              FILES=()
-              # Enable nullglob to handle empty directories
+              # Collect APKs and Upload
               shopt -s nullglob
-              for apk in ./manager/*.apk ./manager-spoofed/*.apk; do
-                FILES+=("$apk")
-              done
+              FILES_NORMAL=(./manager/*.apk)
+              FILES_SPOOFED=(./manager-spoofed/*.apk)
+              ALL_FILES=("${FILES_NORMAL[@]}" "${FILES_SPOOFED[@]}")
               shopt -u nullglob
 
-              if [ ${#FILES[@]} -eq 0 ]; then
+              if [ ${#ALL_FILES[@]} -eq 0 ]; then
                 echo "No APKs to upload."
                 exit 0
               fi
 
-              echo "Found ${#FILES[@]} APKs to upload."
+              echo "Found ${#ALL_FILES[@]} APKs to upload."
 
-              if [ ${#FILES[@]} -eq 1 ]; then
-                echo "Uploading single APK: ${FILES[0]}"
+              if [ ${#ALL_FILES[@]} -eq 1 ]; then
+                FILE="${ALL_FILES[0]}"
+                if [[ "$FILE" == *"manager-spoofed"* ]]; then
+                  TYPE="Spoofed Manager"
+                else
+                  TYPE="Normal Manager"
+                fi
+                
+                CAPTION="<b>$TYPE</b>"$'\n\n'"$MESSAGE"
+                
+                echo "Uploading single APK: $FILE"
                 curl -sS -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" \
                   -F chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
                   -F message_thread_id="${{ secrets.TELEGRAM_TOPIC_ID_WKSU }}" \
-                  -F document=@"${FILES[0]}"
+                  -F parse_mode="HTML" \
+                  -F caption="$CAPTION" \
+                  -F document=@"$FILE"
               else
                 echo "Uploading APKs as album..."
                 MEDIA_GROUP="["
                 CURL_ARGS=()
-                for i in "${!FILES[@]}"; do
-                   FILE="${FILES[$i]}"
+                
+                for i in "${!ALL_FILES[@]}"; do
+                   FILE="${ALL_FILES[$i]}"
                    NAME="file$i"
-                   # Add comma if not first
+                   
+                   if [[ "$FILE" == *"manager-spoofed"* ]]; then
+                      TYPE="Spoofed Manager"
+                   else
+                      TYPE="Normal Manager"
+                   fi
+                   
+                   # Attach Info Message to the first file
+                   if [ $i -eq 0 ]; then
+                       CAPTION="<b>$TYPE</b>"$'\n\n'"$MESSAGE"
+                   else
+                       CAPTION="<b>$TYPE</b>"
+                   fi
+                   
+                   # Construct JSON object using jq
+                   ENTRY=$(jq -n -c \
+                            --arg type "document" \
+                            --arg media "attach://$NAME" \
+                            --arg caption "$CAPTION" \
+                            --arg parse_mode "HTML" \
+                            '{type: $type, media: $media, caption: $caption, parse_mode: $parse_mode}')
+                   
                    if [ $i -gt 0 ]; then MEDIA_GROUP="$MEDIA_GROUP,"; fi
-                   MEDIA_GROUP="$MEDIA_GROUP{\"type\":\"document\",\"media\":\"attach://$NAME\"}"
+                   MEDIA_GROUP="$MEDIA_GROUP$ENTRY"
+                   
                    CURL_ARGS+=("-F" "$NAME=@$FILE")
                 done
                 MEDIA_GROUP="$MEDIA_GROUP]"
-
+                
                 curl -sS -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMediaGroup" \
                   -F chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
                   -F message_thread_id="${{ secrets.TELEGRAM_TOPIC_ID_WKSU }}" \
