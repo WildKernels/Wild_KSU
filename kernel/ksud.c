@@ -63,7 +63,7 @@ static struct work_struct stop_init_rc_hook_work;
 static struct work_struct stop_execve_hook_work;
 static struct work_struct stop_input_hook_work;
 #else
-bool ksu_vfs_read_hook __read_mostly = true;
+bool ksu_init_rc_hook __read_mostly = true;
 bool ksu_execveat_hook __read_mostly = true;
 bool ksu_input_hook __read_mostly = true;
 #endif // #ifndef CONFIG_KSU_SUSFS
@@ -402,7 +402,11 @@ static bool is_init_rc(struct file *fp)
 	return true;
 }
 
+#ifndef CONFIG_KSU_SUSFS
 static void ksu_handle_sys_read(unsigned int fd)
+#else
+void ksu_handle_sys_read(unsigned int fd)
+#endif // #ifndef CONFIG_KSU_SUSFS
 {
 	struct file *file = fget(fd);
 	if (!file) {
@@ -457,6 +461,12 @@ static bool is_volumedown_enough(unsigned int count)
 int ksu_handle_input_handle_event(unsigned int *type, unsigned int *code,
 					int *value)
 {
+#ifdef CONFIG_KSU_SUSFS
+    if (!ksu_input_hook) {
+        return 0;
+    }
+#endif // #ifdef CONFIG_KSU_SUSFS
+
 	if (*type == EV_KEY && *code == KEY_VOLUMEDOWN) {
 		int val = *value;
 		pr_info("KEY_VOLUMEDOWN val: %d\n", val);
@@ -631,10 +641,34 @@ static void do_stop_input_hook(struct work_struct *work)
 }
 #endif // #ifndef CONFIG_KSU_SUSFS
 
+#ifdef CONFIG_KSU_SUSFS
+void ksu_handle_sys_newfstatat(int fd, loff_t *kstat_size_ptr) {
+    loff_t new_size = *kstat_size_ptr + ksu_rc_len;
+    struct file *file = fget(fd);
+
+    if (!file)
+        return;
+
+    if (is_init_rc(file)) {
+        pr_info("stat init.rc");
+        pr_info("adding ksu_rc_len: %lld -> %lld", *kstat_size_ptr, new_size);
+        *kstat_size_ptr = new_size;
+    }
+    fput(file);
+}
+#endif // #ifdef CONFIG_KSU_SUSFS
+
+
 static void stop_init_rc_hook()
 {
+#ifndef CONFIG_KSU_SUSFS
 	bool ret = schedule_work(&stop_init_rc_hook_work);
 	pr_info("unregister init_rc_hook kprobe: %d!\n", ret);
+#else
+    ksu_init_rc_hook = false;
+    pr_info("stop init_rc_hook\n");
+#endif // #ifndef CONFIG_KSU_SUSFS
+
 }
 
 static void stop_execve_hook()
