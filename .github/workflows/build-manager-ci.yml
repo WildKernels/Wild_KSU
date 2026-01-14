@@ -204,17 +204,15 @@ jobs:
           }
 
           COMMIT_MESSAGE_ESCAPED="$(escape_html "${COMMIT_MESSAGE}")"
-
-          MESSAGE=$(cat <<EOF
-          <b>Repository:</b> <a href="https://github.com/${REPO}">${REPO}</a>
-          <b>Branch:</b> <a href="https://github.com/${REPO}/tree/${BRANCH}">${BRANCH}</a>
-          <b>Commit:</b> <a href="https://github.com/${REPO}/commit/${COMMIT_SHA}">${COMMIT_SHA:0:7}</a>
-          <b>Workflow:</b> <a href="https://github.com/${REPO}/actions/runs/${RUN_ID}">View Run</a>
-
-          <b>Commit Message:</b>
-          <pre><code>${COMMIT_MESSAGE_ESCAPED}</code></pre>
-          EOF
-              )
+          MESSAGE=$(
+            printf '%s\n%s\n%s\n%s\n\n%s\n%s\n' \
+            "<b>Repository:</b> <a href=\"https://github.com/${REPO}\">${REPO}</a>" \
+            "<b>Branch:</b> <a href=\"https://github.com/${REPO}/tree/${BRANCH}\">${BRANCH}</a>" \
+            "<b>Commit:</b> <a href=\"https://github.com/${REPO}/commit/${COMMIT_SHA}\">${COMMIT_SHA:0:7}</a>" \
+            "<b>Workflow:</b> <a href=\"https://github.com/${REPO}/actions/runs/${RUN_ID}\">View Run</a>" \
+            "<b>Commit Message:</b>" \
+            "<pre><code>${COMMIT_MESSAGE_ESCAPED}</code></pre>"
+          )
 
               # Collect APKs
               FILES=()
