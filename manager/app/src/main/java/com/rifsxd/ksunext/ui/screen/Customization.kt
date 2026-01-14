@@ -564,7 +564,7 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                     )
 
                     if (currentTheme == AppTheme.CUSTOM) {
-                        val currentCustomColor = prefs.getInt("theme_custom_color", PRIMARY.toArgb())
+                        var currentCustomColor by remember { mutableIntStateOf(prefs.getInt("theme_custom_color", PRIMARY.toArgb())) }
                         var showColorPicker by remember { mutableStateOf(false) }
 
                         if (showColorPicker) {
@@ -572,7 +572,9 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                                 initialColor = Color(currentCustomColor),
                                 onDismissRequest = { showColorPicker = false },
                                 onColorSelected = { color ->
-                                    prefs.edit { putInt("theme_custom_color", color.toArgb()) }
+                                    val colorInt = color.toArgb()
+                                    prefs.edit { putInt("theme_custom_color", colorInt) }
+                                    currentCustomColor = colorInt
                                     showColorPicker = false
                                 }
                             )
@@ -599,9 +601,8 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                         )
 
                         // Custom Theme Base Mode (Light/Dark/AMOLED)
-                        val currentBaseMode = prefs.getString("theme_custom_base_mode", "system") ?: "system"
+                        var currentBaseMode by remember { mutableStateOf(prefs.getString("theme_custom_base_mode", "light") ?: "light") }
                         val baseModeOptions = listOf(
-                            "system" to "System",
                             "light" to "Light",
                             "dark" to "Dark",
                             "amoled" to "AMOLED"
@@ -610,7 +611,7 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
 
                         ListItem(
                             headlineContent = { Text("Base Mode") },
-                            supportingContent = { Text(baseModeOptions.find { it.first == currentBaseMode }?.second ?: "System") },
+                            supportingContent = { Text(baseModeOptions.find { it.first == currentBaseMode }?.second ?: "Light") },
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clickable { baseModeDialogState.show() },
@@ -622,13 +623,15 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                             selection = ListSelection.Single(
                                 options = baseModeOptions.map { ListOption(titleText = it.second, selected = it.first == currentBaseMode) }
                             ) { index, _ ->
-                                prefs.edit { putString("theme_custom_base_mode", baseModeOptions[index].first) }
+                                val selectedMode = baseModeOptions[index].first
+                                prefs.edit { putString("theme_custom_base_mode", selectedMode) }
+                                currentBaseMode = selectedMode
                             },
                             header = Header.Default(title = "Select Base Mode")
                         )
 
                         // Custom Text Color
-                        val customTextColor = prefs.getInt("theme_custom_text_color", 0) // 0 means default/not set
+                        var customTextColor by remember { mutableIntStateOf(prefs.getInt("theme_custom_text_color", 0)) } // 0 means default/not set
                         var showTextColorPicker by remember { mutableStateOf(false) }
 
                         if (showTextColorPicker) {
@@ -636,7 +639,9 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                                 initialColor = if (customTextColor != 0) Color(customTextColor) else MaterialTheme.colorScheme.onSurface,
                                 onDismissRequest = { showTextColorPicker = false },
                                 onColorSelected = { color ->
-                                    prefs.edit { putInt("theme_custom_text_color", color.toArgb()) }
+                                    val colorInt = color.toArgb()
+                                    prefs.edit { putInt("theme_custom_text_color", colorInt) }
+                                    customTextColor = colorInt
                                     showTextColorPicker = false
                                 }
                             )
