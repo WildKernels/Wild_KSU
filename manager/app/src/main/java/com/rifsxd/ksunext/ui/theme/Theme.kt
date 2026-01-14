@@ -74,13 +74,15 @@ fun KernelSUTheme(
             val scheme = if (dynamicColor) dynamicLightColorScheme(context) else LightColorScheme
             scheme to false
         }
-        AppTheme.LIGHT -> LightColorScheme to false
-        AppTheme.DARK -> DarkColorScheme to true
+        AppTheme.LIGHT -> LightColorScheme.copy(onBackground = Color.Black, onSurface = Color.Black) to false
+        AppTheme.DARK -> DarkColorScheme.copy(onBackground = Color.White, onSurface = Color.White) to true
         AppTheme.AMOLED -> {
             val baseScheme = if (dynamicColor) dynamicDarkColorScheme(context) else DarkColorScheme
             val amoledScheme = baseScheme.copy(
                 background = AMOLED_BLACK,
                 surface = AMOLED_BLACK,
+                onBackground = Color.White,
+                onSurface = Color.White,
                 surfaceVariant = baseScheme.surfaceVariant.blend(AMOLED_BLACK, 0.6f),
                 surfaceContainer = baseScheme.surfaceContainer.blend(AMOLED_BLACK, 0.6f),
                 surfaceContainerLow = baseScheme.surfaceContainerLow.blend(AMOLED_BLACK, 0.6f),
@@ -95,14 +97,23 @@ fun KernelSUTheme(
         }
         AppTheme.CUSTOM -> {
             val colorToUse = customColor ?: Color(prefs.getInt("theme_custom_color", PRIMARY.toArgb()))
+            val customBaseMode = prefs.getString("theme_custom_base_mode", "system")
+            val customTextColorArgb = prefs.getInt("theme_custom_text_color", 0)
+
+            val useDark = when (customBaseMode) {
+                "light" -> false
+                "dark", "amoled" -> true
+                else -> systemDark
+            }
+
             val argb = colorToUse.toArgb()
 
-            val scheme = if (systemDark) Scheme.dark(argb) else Scheme.light(argb)
+            val scheme = if (useDark) Scheme.dark(argb) else Scheme.light(argb)
             val corePalette = CorePalette.of(argb)
             val hct = Hct.fromInt(colorToUse.toArgb().toInt())
             val neutralPalette = TonalPalette.fromHueAndChroma(hct.hue, 4.0)
 
-            val m3Scheme = ColorScheme(
+            var m3Scheme = ColorScheme(
                 primary = Color(scheme.primary),
                 onPrimary = Color(scheme.onPrimary),
                 primaryContainer = Color(scheme.primaryContainer),
@@ -134,16 +145,40 @@ fun KernelSUTheme(
                 scrim = Color(scheme.scrim),
 
                 // Surface Container Roles (derived from Neutral Palette)
-                surfaceBright = Color(neutralPalette.tone(if (systemDark) 24 else 98)),
-                surfaceDim = Color(neutralPalette.tone(if (systemDark) 6 else 87)),
-                surfaceContainer = Color(neutralPalette.tone(if (systemDark) 12 else 94)),
-                surfaceContainerHigh = Color(neutralPalette.tone(if (systemDark) 17 else 92)),
-                surfaceContainerHighest = Color(neutralPalette.tone(if (systemDark) 22 else 90)),
-                surfaceContainerLow = Color(neutralPalette.tone(if (systemDark) 10 else 96)),
-                surfaceContainerLowest = Color(neutralPalette.tone(if (systemDark) 4 else 100))
+                surfaceBright = Color(neutralPalette.tone(if (useDark) 24 else 98)),
+                surfaceDim = Color(neutralPalette.tone(if (useDark) 6 else 87)),
+                surfaceContainer = Color(neutralPalette.tone(if (useDark) 12 else 94)),
+                surfaceContainerHigh = Color(neutralPalette.tone(if (useDark) 17 else 92)),
+                surfaceContainerHighest = Color(neutralPalette.tone(if (useDark) 22 else 90)),
+                surfaceContainerLow = Color(neutralPalette.tone(if (useDark) 10 else 96)),
+                surfaceContainerLowest = Color(neutralPalette.tone(if (useDark) 4 else 100))
             )
 
-            m3Scheme to systemDark
+            if (customBaseMode == "amoled") {
+                m3Scheme = m3Scheme.copy(
+                    background = AMOLED_BLACK,
+                    surface = AMOLED_BLACK,
+                    surfaceVariant = m3Scheme.surfaceVariant.blend(AMOLED_BLACK, 0.6f),
+                    surfaceContainer = m3Scheme.surfaceContainer.blend(AMOLED_BLACK, 0.6f),
+                    surfaceContainerLow = m3Scheme.surfaceContainerLow.blend(AMOLED_BLACK, 0.6f),
+                    surfaceContainerLowest = m3Scheme.surfaceContainerLowest.blend(AMOLED_BLACK, 0.6f),
+                    surfaceContainerHigh = m3Scheme.surfaceContainerHigh.blend(AMOLED_BLACK, 0.6f),
+                    surfaceContainerHighest = m3Scheme.surfaceContainerHighest.blend(AMOLED_BLACK, 0.6f),
+                    primaryContainer = m3Scheme.primaryContainer.blend(AMOLED_BLACK, 0.6f),
+                    secondaryContainer = m3Scheme.secondaryContainer.blend(AMOLED_BLACK, 0.6f),
+                    onTertiaryContainer = m3Scheme.onTertiaryContainer.blend(AMOLED_BLACK, 0.6f)
+                )
+            }
+
+            if (customTextColorArgb != 0) {
+                val textColor = Color(customTextColorArgb)
+                m3Scheme = m3Scheme.copy(
+                    onBackground = textColor,
+                    onSurface = textColor
+                )
+            }
+
+            m3Scheme to useDark
         }
     }
 

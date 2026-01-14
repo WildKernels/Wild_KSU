@@ -597,6 +597,68 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                                 .clickable { showColorPicker = true },
                             colors = ListItemDefaults.colors(containerColor = Color.Transparent)
                         )
+
+                        // Custom Theme Base Mode (Light/Dark/AMOLED)
+                        val currentBaseMode = prefs.getString("theme_custom_base_mode", "system") ?: "system"
+                        val baseModeOptions = listOf(
+                            "system" to "System",
+                            "light" to "Light",
+                            "dark" to "Dark",
+                            "amoled" to "AMOLED"
+                        )
+                        val baseModeDialogState = rememberUseCaseState()
+
+                        ListItem(
+                            headlineContent = { Text("Base Mode") },
+                            supportingContent = { Text(baseModeOptions.find { it.first == currentBaseMode }?.second ?: "System") },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable { baseModeDialogState.show() },
+                            colors = ListItemDefaults.colors(containerColor = Color.Transparent)
+                        )
+
+                        ListDialog(
+                            state = baseModeDialogState,
+                            selection = ListSelection.Single(
+                                options = baseModeOptions.map { ListOption(titleText = it.second, selected = it.first == currentBaseMode) }
+                            ) { index, _ ->
+                                prefs.edit { putString("theme_custom_base_mode", baseModeOptions[index].first) }
+                            },
+                            header = Header.Default(title = "Select Base Mode")
+                        )
+
+                        // Custom Text Color
+                        val customTextColor = prefs.getInt("theme_custom_text_color", 0) // 0 means default/not set
+                        var showTextColorPicker by remember { mutableStateOf(false) }
+
+                        if (showTextColorPicker) {
+                            ColorPickerDialog(
+                                initialColor = if (customTextColor != 0) Color(customTextColor) else MaterialTheme.colorScheme.onSurface,
+                                onDismissRequest = { showTextColorPicker = false },
+                                onColorSelected = { color ->
+                                    prefs.edit { putInt("theme_custom_text_color", color.toArgb()) }
+                                    showTextColorPicker = false
+                                }
+                            )
+                        }
+
+                        ListItem(
+                            headlineContent = { Text("Text Color") },
+                            supportingContent = { Text("Tap to pick text color") },
+                            trailingContent = {
+                                Box(
+                                    modifier = Modifier
+                                        .size(40.dp)
+                                        .clip(CircleShape)
+                                        .background(if (customTextColor != 0) Color(customTextColor) else MaterialTheme.colorScheme.onSurface)
+                                        .border(1.dp, MaterialTheme.colorScheme.onSurface, CircleShape)
+                                )
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable { showTextColorPicker = true },
+                            colors = ListItemDefaults.colors(containerColor = Color.Transparent)
+                        )
                     }
                 }
             }
