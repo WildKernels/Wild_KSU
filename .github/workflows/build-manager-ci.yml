@@ -240,9 +240,7 @@ jobs:
  
                  APK_NAME_ESCAPED="$(escape_html "$(basename "$apk")")"
 
-                 FULL_CAPTION="<b>${TYPE}:</b> ${APK_NAME_ESCAPED}
-
-                 ${MESSAGE}"
+                 FULL_CAPTION="$(printf '%s\n\n%s' "<b>${TYPE}:</b> ${APK_NAME_ESCAPED}" "${MESSAGE}")"
 
                  echo "Uploading $apk ($TYPE)..."
                  if [ ! -f "$apk" ]; then
@@ -281,16 +279,15 @@ jobs:
 
           COMMIT_MESSAGE_ESCAPED="$(escape_html "${COMMIT_MESSAGE}")"
 
-          MESSAGE=$(cat <<EOF
-          <b>Repository:</b> <a href="https://github.com/${REPO}">${REPO}</a>
-          <b>Branch:</b> <a href="https://github.com/${REPO}/tree/${BRANCH}">${BRANCH}</a>
-          <b>Commit:</b> <a href="https://github.com/${REPO}/commit/${COMMIT_SHA}">${COMMIT_SHA:0:7}</a>
-          <b>Workflow:</b> <a href="https://github.com/${REPO}/actions/runs/${RUN_ID}">View Run</a>
-
-          <b>Commit Message:</b>
-          <pre><code>${COMMIT_MESSAGE_ESCAPED}</code></pre>
-          EOF
-              )
+          MESSAGE=$(
+            printf '%s\n%s\n%s\n%s\n\n%s\n%s\n' \
+            "<b>Repository:</b> <a href=\"https://github.com/${REPO}\">${REPO}</a>" \
+            "<b>Branch:</b> <a href=\"https://github.com/${REPO}/tree/${BRANCH}\">${BRANCH}</a>" \
+            "<b>Commit:</b> <a href=\"https://github.com/${REPO}/commit/${COMMIT_SHA}\">${COMMIT_SHA:0:7}</a>" \
+            "<b>Workflow:</b> <a href=\"https://github.com/${REPO}/actions/runs/${RUN_ID}\">View Run</a>" \
+            "<b>Commit Message:</b>" \
+            "<pre><code>${COMMIT_MESSAGE_ESCAPED}</code></pre>"
+          )
 
           FILES=()
           shopt -s nullglob
@@ -314,9 +311,7 @@ jobs:
  
             APK_NAME_ESCAPED="$(escape_html "$(basename "$apk")")"
 
-            FULL_CAPTION="<b>${TYPE}:</b> ${APK_NAME_ESCAPED}
-
-            ${MESSAGE}"
+            FULL_CAPTION="$(printf '%s\n\n%s' "<b>${TYPE}:</b> ${APK_NAME_ESCAPED}" "${MESSAGE}")"
 
             echo "Sending $apk ($TYPE) to Telegram DM..."
             curl -sS "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" \
@@ -337,18 +332,16 @@ jobs:
         run: |
           set -euo pipefail
 
-          MESSAGE=$(cat <<EOF
-          <b>Wild KSU Build Failed</b> 🔴
-
-          <b>Repository:</b> <a href="https://github.com/${REPO}">${REPO}</a>
-          <b>Branch:</b> <a href="https://github.com/${REPO}/tree/${BRANCH}">${BRANCH}</a>
-          <b>Commit:</b> <a href="https://github.com/${REPO}/commit/${COMMIT_SHA}">${COMMIT_SHA:0:7}</a>
-          <b>Workflow:</b> <a href="https://github.com/${REPO}/actions/runs/${RUN_ID}">View Run</a>
-
-          <b>Commit Message:</b>
-          ${COMMIT_MESSAGE}
-          EOF
-              )
+          MESSAGE=$(
+            printf '%s\n\n%s\n%s\n%s\n%s\n\n%s\n%s\n' \
+            "<b>Wild KSU Build Failed</b> 🔴" \
+            "<b>Repository:</b> <a href=\"https://github.com/${REPO}\">${REPO}</a>" \
+            "<b>Branch:</b> <a href=\"https://github.com/${REPO}/tree/${BRANCH}\">${BRANCH}</a>" \
+            "<b>Commit:</b> <a href=\"https://github.com/${REPO}/commit/${COMMIT_SHA}\">${COMMIT_SHA:0:7}</a>" \
+            "<b>Workflow:</b> <a href=\"https://github.com/${REPO}/actions/runs/${RUN_ID}\">View Run</a>" \
+            "<b>Commit Message:</b>" \
+            "${COMMIT_MESSAGE}"
+          )
 
           echo "Sending Failure Notification..."
           curl -sS -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
