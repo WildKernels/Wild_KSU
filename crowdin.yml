@@ -1,2 +1,5 @@
 bundles:
   - 8
+files:
+  - source: manager/app/src/main/res/values/strings.xml
+    translation: manager/app/src/main/res/values-%android_code%/strings.xml
