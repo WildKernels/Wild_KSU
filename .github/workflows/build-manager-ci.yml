@@ -195,6 +195,16 @@ jobs:
         run: |
           set -euo pipefail
 
+          escape_html() {
+            local s="$1"
+            s="${s//&/&amp;}"
+            s="${s//</&lt;}"
+            s="${s//>/&gt;}"
+            printf '%s' "$s"
+          }
+
+          COMMIT_MESSAGE_ESCAPED="$(escape_html "${COMMIT_MESSAGE}")"
+
           MESSAGE=$(cat <<EOF
           <b>Wild KSU Build Success</b> 🟢
 
@@ -204,7 +214,7 @@ jobs:
           <b>Workflow:</b> <a href="https://github.com/${REPO}/actions/runs/${RUN_ID}">View Run</a>
 
           <b>Commit Message:</b>
-          ${COMMIT_MESSAGE}
+          ${COMMIT_MESSAGE_ESCAPED}
           EOF
               )
 
@@ -225,6 +235,7 @@ jobs:
               echo "Found ${#FILES[@]} APKs to upload."
 
               for apk in "${FILES[@]}"; do
+                 apk="${apk//$'\r'/}"
                  if [[ "$apk" == *"manager-spoofed"* ]]; then
                      TYPE="Spoofed"
                  else
@@ -236,12 +247,12 @@ jobs:
                  ${MESSAGE}"
 
                  echo "Uploading $apk ($TYPE)..."
-                 curl -sS -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" \
-                    -F chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
-                    -F message_thread_id="${{ secrets.TELEGRAM_TOPIC_ID_WKSU }}" \
-                    -F document=@"$apk" \
-                    -F caption="$FULL_CAPTION" \
-                    -F parse_mode="HTML"
+                 if [ ! -f "$apk" ]; then
+                   echo "Missing file: $apk"
+                   ls -la "$(dirname "$apk")" || true
+                   exit 1
+                 fi
+                 curl -sS -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" -F "message_thread_id=${{ secrets.TELEGRAM_TOPIC_ID_WKSU }}" -F "document=@${apk}" -F "caption=${FULL_CAPTION}" -F "parse_mode=HTML"
               done
 
               echo "All uploads completed successfully."
@@ -257,6 +268,16 @@ jobs:
         run: |
           set -euo pipefail
 
+          escape_html() {
+            local s="$1"
+            s="${s//&/&amp;}"
+            s="${s//</&lt;}"
+            s="${s//>/&gt;}"
+            printf '%s' "$s"
+          }
+
+          COMMIT_MESSAGE_ESCAPED="$(escape_html "${COMMIT_MESSAGE}")"
+
           MESSAGE=$(cat <<EOF
           <b>Wild KSU Build Success</b> 🟢
 
@@ -266,25 +287,37 @@ jobs:
           <b>Workflow:</b> <a href="https://github.com/${REPO}/actions/runs/${RUN_ID}">View Run</a>
 
           <b>Commit Message:</b>
-          ${COMMIT_MESSAGE}
+          ${COMMIT_MESSAGE_ESCAPED}
           EOF
               )
-          # Check for Normal artifacts
-          for apk in ./manager/*.apk; do
-            if [ -f "$apk" ]; then
-              echo "Sending Telegram message..."
-              curl -sS -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
-                -d chat_id="${{ secrets.TELEGRAM_USER_ID }}" \
-                -d parse_mode="HTML" \
-                --data-urlencode "text=$MESSAGE"
 
-              echo "Sending $apk to Telegram DM..."
-              curl -sS -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" \
-                  -F chat_id="${{ secrets.TELEGRAM_USER_ID }}" \
-                  -F document=@"$apk" \
-                  -F caption="📦 Build: $(basename "$apk")"
-            fi
+          FILES=()
+          shopt -s nullglob
+          for apk in ./manager/*.apk ./manager-spoofed/*.apk; do
+            FILES+=("$apk")
           done
+          shopt -u nullglob
+
+          if [ ${#FILES[@]} -eq 0 ]; then
+            echo "No APKs to DM."
+            exit 0
+          fi
+
+          for apk in "${FILES[@]}"; do
+            apk="${apk//$'\r'/}"
+            if [[ "$apk" == *"manager-spoofed"* ]]; then
+              TYPE="Spoofed"
+            else
+              TYPE="Normal"
+            fi
+
+            FULL_CAPTION="<b>${TYPE}:</b>
+
+            ${MESSAGE}"
+
+            echo "Sending $apk ($TYPE) to Telegram DM..."
+            curl -sS -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" -F "chat_id=${{ secrets.TELEGRAM_USER_ID }}" -F "document=@${apk}" -F "caption=${FULL_CAPTION}" -F "parse_mode=HTML"
+          done=
 
       - name: DM Failure Notification
         if: needs.build-manager.result == 'failure'
