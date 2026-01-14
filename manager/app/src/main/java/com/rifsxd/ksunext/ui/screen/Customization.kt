@@ -626,6 +626,7 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                                 val selectedMode = baseModeOptions[index].first
                                 prefs.edit { putString("theme_custom_base_mode", selectedMode) }
                                 currentBaseMode = selectedMode
+                                refreshActivity(context) // Force activity refresh to apply base mode change
                             },
                             header = Header.Default(title = "Select Base Mode")
                         )
