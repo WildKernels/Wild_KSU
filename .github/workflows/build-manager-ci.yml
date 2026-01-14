@@ -208,16 +208,6 @@ jobs:
           EOF
               )
 
-              echo "Sending Telegram message..."
-              RESPONSE=$(curl -sS -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
-                -d chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
-                -d message_thread_id="${{ secrets.TELEGRAM_TOPIC_ID_WKSU }}" \
-                -d parse_mode="HTML" \
-                --data-urlencode "text=$MESSAGE")
-
-              echo "$RESPONSE" | grep -q '"ok":true'
-              echo "Message sent."
-
               # Collect APKs
               FILES=()
               # Enable nullglob to handle empty directories
@@ -234,32 +224,25 @@ jobs:
 
               echo "Found ${#FILES[@]} APKs to upload."
 
-              if [ ${#FILES[@]} -eq 1 ]; then
-                echo "Uploading single APK: ${FILES[0]}"
-                curl -sS -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" \
-                  -F chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
-                  -F message_thread_id="${{ secrets.TELEGRAM_TOPIC_ID_WKSU }}" \
-                  -F document=@"${FILES[0]}"
-              else
-                echo "Uploading APKs as album..."
-                MEDIA_GROUP="["
-                CURL_ARGS=()
-                for i in "${!FILES[@]}"; do
-                   FILE="${FILES[$i]}"
-                   NAME="file$i"
-                   # Add comma if not first
-                   if [ $i -gt 0 ]; then MEDIA_GROUP="$MEDIA_GROUP,"; fi
-                   MEDIA_GROUP="$MEDIA_GROUP{\"type\":\"document\",\"media\":\"attach://$NAME\"}"
-                   CURL_ARGS+=("-F" "$NAME=@$FILE")
-                done
-                MEDIA_GROUP="$MEDIA_GROUP]"
+              for apk in "${FILES[@]}"; do
+                 if [[ "$apk" == *"manager-spoofed"* ]]; then
+                     TYPE="Spoofed"
+                 else
+                     TYPE="Normal"
+                 fi
 
-                curl -sS -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMediaGroup" \
-                  -F chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
-                  -F message_thread_id="${{ secrets.TELEGRAM_TOPIC_ID_WKSU }}" \
-                  -F media="$MEDIA_GROUP" \
-                  "${CURL_ARGS[@]}"
-              fi
+                 FULL_CAPTION="<b>${TYPE}:</b>
+
+                 ${MESSAGE}"
+
+                 echo "Uploading $apk ($TYPE)..."
+                 curl -sS -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" \
+                    -F chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
+                    -F message_thread_id="${{ secrets.TELEGRAM_TOPIC_ID_WKSU }}" \
+                    -F document=@"$apk" \
+                    -F caption="$FULL_CAPTION" \
+                    -F parse_mode="HTML"
+              done
 
               echo "All uploads completed successfully."
 
