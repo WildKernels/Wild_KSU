@@ -18,15 +18,15 @@ export word1 word2 word3
 find . -type f -exec sed -i \
     -e "s/com\.twj\.wksu/$word1.$word2.$word3/g" {} +
 
-# Append '-spoofed' to managerVersionName in build.gradle.kts
+# Append '-Spoofed' to managerVersionName in build.gradle.kts
 if [ -f "./build.gradle.kts" ]; then
-    sed -i 's/\(val managerVersionName by extra(getVersionName())\)/\1\nval managerVersionNameSpoofed = "${managerVersionName}-spoofed"/' ./build.gradle.kts
+    sed -i 's/\(val managerVersionName by extra(getVersionName())\)/\1\nval managerVersionNameSpoofed = "${managerVersionName}-Spoofed"/' ./build.gradle.kts
     sed -i 's/\(versionName = managerVersionName\)/versionName = managerVersionNameSpoofed/' ./build.gradle.kts
 fi
 
 if [ -f "./app/build.gradle.kts" ]; then
-    sed -i '/val managerVersionName:/a val managerVersionNameSpoofed = "${managerVersionName}-spoofed"' ./app/build.gradle.kts
-    sed -i 's/outputFileName = "KernelSU_Next_${managerVersionName}_${managerVersionCode}-\$name.apk"/outputFileName = "KernelSU_Next_${managerVersionNameSpoofed}_${managerVersionCode}-\$name.apk"/' ./app/build.gradle.kts
+    sed -i '/val managerVersionName:/a val managerVersionNameSpoofed = "${managerVersionName}-Spoofed"' ./app/build.gradle.kts
+    sed -i 's/"Wild_KSU\(_Spoofed\)\?_${managerVersionName}_${managerVersionCode}-\$name.apk"/"Wild_KSU_Spoofed_${managerVersionNameSpoofed}_${managerVersionCode}-\$name.apk"/' ./app/build.gradle.kts
 fi
 
 echo "Done."
