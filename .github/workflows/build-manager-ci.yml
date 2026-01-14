@@ -208,8 +208,8 @@ jobs:
           MESSAGE=$(cat <<EOF
           <b>Wild KSU Build Success</b> 🟢
 
-          <b>Repository:</b> ${REPO}
-          <b>Branch:</b> ${BRANCH}
+          <b>Repository:</b> <a href="https://github.com/${REPO}">${REPO}</a>
+          <b>Branch:</b> <a href="https://github.com/${REPO}/tree/${BRANCH}">${BRANCH}</a>
           <b>Commit:</b> <a href="https://github.com/${REPO}/commit/${COMMIT_SHA}">${COMMIT_SHA:0:7}</a>
           <b>Workflow:</b> <a href="https://github.com/${REPO}/actions/runs/${RUN_ID}">View Run</a>
 
@@ -286,8 +286,8 @@ jobs:
           MESSAGE=$(cat <<EOF
           <b>Wild KSU Build Success</b> 🟢
 
-          <b>Repository:</b> ${REPO}
-          <b>Branch:</b> ${BRANCH}
+          <b>Repository:</b> <a href="https://github.com/${REPO}">${REPO}</a>
+          <b>Branch:</b> <a href="https://github.com/${REPO}/tree/${BRANCH}">${BRANCH}</a>
           <b>Commit:</b> <a href="https://github.com/${REPO}/commit/${COMMIT_SHA}">${COMMIT_SHA:0:7}</a>
           <b>Workflow:</b> <a href="https://github.com/${REPO}/actions/runs/${RUN_ID}">View Run</a>
 
@@ -342,8 +342,8 @@ jobs:
           MESSAGE=$(cat <<EOF
           <b>Wild KSU Build Failed</b> 🔴
 
-          <b>Repository:</b> ${REPO}
-          <b>Branch:</b> ${BRANCH}
+          <b>Repository:</b> <a href="https://github.com/${REPO}">${REPO}</a>
+          <b>Branch:</b> <a href="https://github.com/${REPO}/tree/${BRANCH}">${BRANCH}</a>
           <b>Commit:</b> <a href="https://github.com/${REPO}/commit/${COMMIT_SHA}">${COMMIT_SHA:0:7}</a>
           <b>Workflow:</b> <a href="https://github.com/${REPO}/actions/runs/${RUN_ID}">View Run</a>
 
