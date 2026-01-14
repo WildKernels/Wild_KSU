@@ -252,7 +252,12 @@ jobs:
                    ls -la "$(dirname "$apk")" || true
                    exit 1
                  fi
-                 curl -sS -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" -F "message_thread_id=${{ secrets.TELEGRAM_TOPIC_ID_WKSU }}" -F "document=@${apk}" -F "caption=${FULL_CAPTION}" -F "parse_mode=HTML"
+                 curl -sS "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" \
+                   --form-string "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" \
+                   --form-string "message_thread_id=${{ secrets.TELEGRAM_TOPIC_ID_WKSU }}" \
+                   --form "document=@${apk}" \
+                   --form-string "caption=${FULL_CAPTION}" \
+                   --form-string "parse_mode=HTML"
               done
 
               echo "All uploads completed successfully."
@@ -316,8 +321,12 @@ jobs:
             ${MESSAGE}"
 
             echo "Sending $apk ($TYPE) to Telegram DM..."
-            curl -sS -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" -F "chat_id=${{ secrets.TELEGRAM_USER_ID }}" -F "document=@${apk}" -F "caption=${FULL_CAPTION}" -F "parse_mode=HTML"
-          done=
+            curl -sS "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" \
+              --form-string "chat_id=${{ secrets.TELEGRAM_USER_ID }}" \
+              --form "document=@${apk}" \
+              --form-string "caption=${FULL_CAPTION}" \
+              --form-string "parse_mode=HTML"
+          done
 
       - name: DM Failure Notification
         if: needs.build-manager.result == 'failure'
