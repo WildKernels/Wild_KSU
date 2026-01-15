@@ -601,35 +601,35 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                             colors = ListItemDefaults.colors(containerColor = Color.Transparent)
                         )
 
-                        // Custom Theme Base Mode (Light/Dark/AMOLED)
-                        var currentBaseMode by remember { mutableStateOf(prefs.getString("theme_custom_base_mode", "light") ?: "light") }
-                        val baseModeOptions = listOf(
+                        // Custom Theme Mode (Light/Dark/AMOLED)
+                        var currentThemeMode by remember { mutableStateOf(prefs.getString("theme_custom_base_mode", "light") ?: "light") }
+                        val themeModeOptions = listOf(
                             "light" to "Light",
                             "dark" to "Dark",
                             "amoled" to "AMOLED"
                         )
-                        val baseModeDialogState = rememberUseCaseState()
+                        val themeModeDialogState = rememberUseCaseState()
 
                         ListItem(
-                            headlineContent = { Text("Base Mode") },
-                            supportingContent = { Text(baseModeOptions.find { it.first == currentBaseMode }?.second ?: "Light") },
+                            headlineContent = { Text("Theme Mode") },
+                            supportingContent = { Text(themeModeOptions.find { it.first == currentThemeMode }?.second ?: "Light") },
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .clickable { baseModeDialogState.show() },
+                                .clickable { themeModeDialogState.show() },
                             colors = ListItemDefaults.colors(containerColor = Color.Transparent)
                         )
 
                         ListDialog(
-                            state = baseModeDialogState,
+                            state = themeModeDialogState,
                             selection = ListSelection.Single(
-                                options = baseModeOptions.map { ListOption(titleText = it.second, selected = it.first == currentBaseMode) }
+                                options = themeModeOptions.map { ListOption(titleText = it.second, selected = it.first == currentThemeMode) }
                             ) { index, _ ->
-                                val selectedMode = baseModeOptions[index].first
+                                val selectedMode = themeModeOptions[index].first
                                 prefs.edit { putString("theme_custom_base_mode", selectedMode) }
-                                currentBaseMode = selectedMode
-                                refreshActivity(context) // Force activity refresh to apply base mode change
+                                currentThemeMode = selectedMode
+                                refreshActivity(context) // Force activity refresh to apply theme mode change
                             },
-                            header = Header.Default(title = "Select Base Mode")
+                            header = Header.Default(title = "Select Theme Mode")
                         )
 
                         // Custom Text Color
@@ -667,6 +667,24 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                                 .clickable { showTextColorPicker = true },
                             colors = ListItemDefaults.colors(containerColor = Color.Transparent)
                         )
+
+                        // Reset Button
+                        Button(
+                            onClick = {
+                                prefs.edit {
+                                    remove("theme_custom_color")
+                                    remove("theme_custom_base_mode")
+                                    remove("theme_custom_text_color")
+                                }
+                                refreshActivity(context)
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp, vertical = 8.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                        ) {
+                            Text("Reset Custom Theme")
+                        }
                     }
                 }
             }
