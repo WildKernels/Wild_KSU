@@ -299,7 +299,7 @@ fun FlashScreen(
                 }
             }
         },
-        contentWindowInsets = WindowInsets.safeDrawing,
+        contentWindowInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal),
         snackbarHost = { SnackbarHost(hostState = snackBarHost) }
     ) { innerPadding ->
         KeyEventBlocker {
