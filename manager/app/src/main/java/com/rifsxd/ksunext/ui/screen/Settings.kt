@@ -93,9 +93,6 @@ fun SettingScreen(navigator: DestinationsNavigator) {
         snackbarHost = { SnackbarHost(snackBarHost) },
         contentWindowInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal)
     ) { paddingValues ->
-        val aboutDialog = rememberCustomDialog {
-            AboutDialog(it)
-        }
         val loadingDialog = rememberLoadingDialog()
 
         Column(
@@ -536,26 +533,6 @@ fun SettingScreen(navigator: DestinationsNavigator) {
                             }
                         }
                     }
-
-                    ListItem(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clip(MaterialTheme.shapes.small)
-                            .clickable {
-                                aboutDialog.show()
-                            },
-                        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                        leadingContent = {
-                            Icon(Icons.Filled.ContactPage, null)
-                        },
-                        headlineContent = {
-                            Text(
-                                text = stringResource(R.string.about),
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.SemiBold
-                            )
-                        }
-                    )
                 }
             }
             
