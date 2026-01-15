@@ -2,13 +2,14 @@ name: Build Manager CI
 
 on:
   push:
-    branches: [ "wild" ]
+    branches: [ "wild", "wild-dev" ]
 
 permissions:
   contents: write
 
 jobs:
   tag-release:
+    if: github.ref == 'refs/heads/wild'
     runs-on: ubuntu-latest
     outputs:
       tag_name: ${{ steps.create_tag.outputs.new_tag }}
@@ -49,15 +50,18 @@ jobs:
 
   build-lkm:
     needs: tag-release
+    if: always()
     uses: ./.github/workflows/build-lkm.yml
     secrets: inherit
 
   build-ksuinit:
     needs: tag-release
+    if: always()
     uses: ./.github/workflows/ksuinit.yml
 
   build-ksud:
     needs: [tag-release, build-lkm, build-ksuinit]
+    if: always()
     strategy:
       matrix:
         include:
@@ -72,6 +76,7 @@ jobs:
 
   build-ksud-extra:
     needs: [tag-release, build-lkm, build-ksuinit]
+    if: always()
     strategy:
       matrix:
         include:
@@ -92,6 +97,7 @@ jobs:
 
   build-manager:
     needs: [tag-release, build-ksud]
+    if: always()
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -190,7 +196,7 @@ jobs:
   release:
     needs: [tag-release, build-manager, build-lkm, build-ksud, build-ksud-extra]
     runs-on: ubuntu-latest
-    if: success()
+    if: github.ref == 'refs/heads/wild' && success()
     steps:
       - name: Checkout
         uses: actions/checkout@v4
