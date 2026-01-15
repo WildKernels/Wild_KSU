@@ -18,8 +18,13 @@ fun IssueReportCard(modifier: Modifier = Modifier) {
     val uriHandler = LocalUriHandler.current
     val githubIssueUrl = stringResource(R.string.issue_report_github_link)
     val telegramUrl = stringResource(R.string.issue_report_telegram_link)
-    val cardAlpha = LocalUiOverlaySettings.current.cardAlpha
-    Card(modifier = modifier) {
+    
+    Card(
+        modifier = modifier,
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainerLow
+        )
+    ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
