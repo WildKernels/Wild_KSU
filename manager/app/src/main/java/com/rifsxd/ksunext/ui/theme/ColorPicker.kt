@@ -9,7 +9,6 @@ import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -20,7 +19,9 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.rifsxd.ksunext.ui.component.BlurDialog
 
 @Composable
 fun ColorPickerDialog(
@@ -37,56 +38,64 @@ fun ColorPickerDialog(
         ) 
     }
 
-    AlertDialog(
-        onDismissRequest = onDismissRequest,
-        title = { Text("Pick a Color") },
-        text = {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                // Preview
-                Box(
-                    modifier = Modifier
-                        .size(64.dp)
-                        .clip(CircleShape)
-                        .background(currentColor)
-                        .border(1.dp, MaterialTheme.colorScheme.onSurface, CircleShape)
-                )
+    BlurDialog(onDismissRequest = onDismissRequest) {
+        Text(
+            text = "Pick a Color",
+            style = MaterialTheme.typography.headlineSmall,
+            fontWeight = FontWeight.Bold
+        )
+        Spacer(modifier = Modifier.height(16.dp))
 
-                // Saturation/Value Box
-                SatValBox(
-                    hue = hsv[0],
-                    saturation = hsv[1],
-                    value = hsv[2],
-                    onSatValChange = { s, v ->
-                        hsv[1] = s
-                        hsv[2] = v
-                        currentColor = Color(HSVToColor(hsv))
-                    }
-                )
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            // Preview
+            Box(
+                modifier = Modifier
+                    .size(64.dp)
+                    .clip(CircleShape)
+                    .background(currentColor)
+                    .border(1.dp, MaterialTheme.colorScheme.onSurface, CircleShape)
+            )
 
-                // Hue Slider
-                HueSlider(
-                    hue = hsv[0],
-                    onHueChange = { h ->
-                        hsv[0] = h
-                        currentColor = Color(HSVToColor(hsv))
-                    }
-                )
-            }
-        },
-        confirmButton = {
-            TextButton(onClick = { onColorSelected(currentColor) }) {
-                Text("Select")
-            }
-        },
-        dismissButton = {
+            // Saturation/Value Box
+            SatValBox(
+                hue = hsv[0],
+                saturation = hsv[1],
+                value = hsv[2],
+                onSatValChange = { s, v ->
+                    hsv[1] = s
+                    hsv[2] = v
+                    currentColor = Color(HSVToColor(hsv))
+                }
+            )
+
+            // Hue Slider
+            HueSlider(
+                hue = hsv[0],
+                onHueChange = { h ->
+                    hsv[0] = h
+                    currentColor = Color(HSVToColor(hsv))
+                }
+            )
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End
+        ) {
             TextButton(onClick = onDismissRequest) {
                 Text("Cancel")
             }
+            Spacer(modifier = Modifier.width(8.dp))
+            Button(onClick = { onColorSelected(currentColor) }) {
+                Text("Select")
+            }
         }
-    )
+    }
 }
 
 @Composable
@@ -170,30 +179,13 @@ fun SatValBox(
             drawRect(color = Color(HSVToColor(floatArrayOf(hue, 1f, 1f))))
             
             // Draw Saturation gradient (Left to Right, White to Transparent)
-            // Wait, Saturation is usually White -> Color (Left to Right) if using the S-V square?
-            // Actually, S-V square:
-            // Top-Left: White (S=0, V=1)
-            // Top-Right: Color (S=1, V=1)
-            // Bottom-Left: Black (S=0, V=0)
-            // Bottom-Right: Black (S=1, V=0)
-            
-            // So: Horizontal gradient from White to Transparent (assuming underlying color is the Hue)
-            // NO. 
-            // Layer 1: Hue Color (solid)
-            // Layer 2: Horizontal Gradient (White -> Transparent) -- this makes Left side White (S=0)
-            // Layer 3: Vertical Gradient (Transparent -> Black) -- this makes Bottom side Black (V=0)
-            
-            // Let's verify:
-            // Top-Right: Hue (S=1), White transparent, Black transparent -> Hue. Correct.
-            // Top-Left: Hue, White opaque (overwrites hue), Black transparent -> White. Correct.
-            // Bottom-Left: White, Black opaque -> Black. Correct.
-            
             drawRect(
                 brush = Brush.horizontalGradient(
                     colors = listOf(Color.White, Color.Transparent)
                 )
             )
             
+            // Draw Value gradient (Top to Bottom, Transparent to Black)
             drawRect(
                 brush = Brush.verticalGradient(
                     colors = listOf(Color.Transparent, Color.Black)

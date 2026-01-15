@@ -36,11 +36,6 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.edit
 import androidx.lifecycle.compose.dropUnlessResumed
 import com.rifsxd.ksunext.ui.MainActivity
-import com.maxkeppeker.sheets.core.models.base.Header
-import com.maxkeppeker.sheets.core.models.base.rememberUseCaseState
-import com.maxkeppeler.sheets.list.ListDialog
-import com.maxkeppeler.sheets.list.models.ListOption
-import com.maxkeppeler.sheets.list.models.ListSelection
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -196,46 +191,18 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                     }
                     
                     val currentLocale = prefs.getString("app_locale", "system") ?: "system"
-                    val options = allOptions.map { (tag, displayName) ->
-                        ListOption(
-                            titleText = displayName,
-                            selected = currentLocale == tag
-                        )
-                    }
-                    
-                    var selectedIndex by remember { 
-                        mutableIntStateOf(allOptions.indexOfFirst { (tag, _) -> currentLocale == tag })
-                    }
-                    
-                    ListDialog(
-                        state = rememberUseCaseState(
-                            visible = true,
-                            onFinishedRequest = {
-                                if (selectedIndex >= 0 && selectedIndex < allOptions.size) {
-                                    val newLocale = allOptions[selectedIndex].first
-                                    prefs.edit { putString("app_locale", newLocale) }
-                                    
-                                    // Update local state immediately
-                                    currentAppLocale = LocaleHelper.getCurrentAppLocale(context)
-                                    
-                                    // Apply locale change immediately for Android < 13
-                                    refreshActivity(context)
-                                }
-                                dismiss()
-                            },
-                            onCloseRequest = {
-                                dismiss()
-                            }
-                        ),
-                        header = Header.Default(
-                            title = stringResource(R.string.settings_language),
-                        ),
-                        selection = ListSelection.Single(
-                            showRadioButtons = true,
-                            options = options
-                        ) { index, _ ->
-                            selectedIndex = index
-                        }
+
+                    SelectionDialog(
+                        title = stringResource(R.string.settings_language),
+                        options = allOptions,
+                        selectedOption = currentLocale,
+                        onOptionSelected = { newLocale ->
+                            prefs.edit { putString("app_locale", newLocale) }
+                            currentAppLocale = LocaleHelper.getCurrentAppLocale(context)
+                            refreshActivity(context)
+                            dismiss()
+                        },
+                        onDismissRequest = { dismiss() }
                     )
                 }
             }
@@ -535,7 +502,7 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                         AppTheme.CUSTOM to "Custom"
                     )
                     
-                    val themeDialogState = rememberUseCaseState()
+                    var showThemeDialog by remember { mutableStateOf(false) }
                     
                     ListItem(
                         headlineContent = { Text(text = "App Theme") },
@@ -545,23 +512,24 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                             .fillMaxWidth()
                             .clip(MaterialTheme.shapes.small)
                             .clickable {
-                                themeDialogState.show()
+                                showThemeDialog = true
                             },
                         colors = ListItemDefaults.colors(containerColor = Color.Transparent)
                     )
                     
-                    ListDialog(
-                        state = themeDialogState,
-                        selection = ListSelection.Single(
-                            options = themeOptions.map { ListOption(titleText = it.second, selected = it.first == currentTheme) }
-                        ) { index, _ ->
-                            val selectedTheme = themeOptions[index].first
-                            prefs.edit { putInt("app_theme", selectedTheme.value) }
-                            // Also sync legacy amoled pref for other parts of the app that might read it directly
-                            prefs.edit { putBoolean("enable_amoled", selectedTheme == AppTheme.AMOLED) }
-                        },
-                        header = Header.Default(title = "Select Theme")
-                    )
+                    if (showThemeDialog) {
+                        SelectionDialog(
+                            title = "Select Theme",
+                            options = themeOptions,
+                            selectedOption = currentTheme,
+                            onOptionSelected = { selectedTheme ->
+                                prefs.edit { putInt("app_theme", selectedTheme.value) }
+                                prefs.edit { putBoolean("enable_amoled", selectedTheme == AppTheme.AMOLED) }
+                                showThemeDialog = false
+                            },
+                            onDismissRequest = { showThemeDialog = false }
+                        )
+                    }
 
                     if (currentTheme == AppTheme.CUSTOM) {
                         var currentCustomColor by remember { mutableIntStateOf(prefs.getInt("theme_custom_color", PRIMARY.toArgb())) }
@@ -608,29 +576,31 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                             "dark" to "Dark",
                             "amoled" to "AMOLED"
                         )
-                        val themeModeDialogState = rememberUseCaseState()
+                        var showThemeModeDialog by remember { mutableStateOf(false) }
 
                         ListItem(
                             headlineContent = { Text("Theme Mode") },
                             supportingContent = { Text(themeModeOptions.find { it.first == currentThemeMode }?.second ?: "Light") },
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .clickable { themeModeDialogState.show() },
+                                .clickable { showThemeModeDialog = true },
                             colors = ListItemDefaults.colors(containerColor = Color.Transparent)
                         )
 
-                        ListDialog(
-                            state = themeModeDialogState,
-                            selection = ListSelection.Single(
-                                options = themeModeOptions.map { ListOption(titleText = it.second, selected = it.first == currentThemeMode) }
-                            ) { index, _ ->
-                                val selectedMode = themeModeOptions[index].first
-                                prefs.edit { putString("theme_custom_base_mode", selectedMode) }
-                                currentThemeMode = selectedMode
-                                refreshActivity(context) // Force activity refresh to apply theme mode change
-                            },
-                            header = Header.Default(title = "Select Theme Mode")
-                        )
+                        if (showThemeModeDialog) {
+                            SelectionDialog(
+                                title = "Select Theme Mode",
+                                options = themeModeOptions,
+                                selectedOption = currentThemeMode,
+                                onOptionSelected = { selectedMode ->
+                                    prefs.edit { putString("theme_custom_base_mode", selectedMode) }
+                                    currentThemeMode = selectedMode
+                                    refreshActivity(context) // Force activity refresh to apply theme mode change
+                                    showThemeModeDialog = false
+                                },
+                                onDismissRequest = { showThemeModeDialog = false }
+                            )
+                        }
 
                         // Custom Text Color
                         var customTextColor by remember { mutableIntStateOf(prefs.getInt("theme_custom_text_color", 0)) } // 0 means default/not set
