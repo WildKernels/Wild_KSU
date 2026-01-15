@@ -636,6 +636,80 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                     }
                 }
             }
+            // Card 3: Info Card Customization
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(12.dp),
+                colors = CardDefaults.cardColors(containerColor = elevatedContainerColor),
+            ) {
+                Column(
+                    modifier = Modifier.padding(12.dp),
+                    verticalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    Text(
+                        text = "Info Card Items",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+
+                    var infoCardItems by remember { mutableStateOf(InfoCardHelper.getConfig(context)) }
+
+                    infoCardItems.forEachIndexed { index, item ->
+                        ListItem(
+                            headlineContent = { Text(stringResource(InfoCardHelper.getLabelResId(item.id))) },
+                            leadingContent = {
+                                Checkbox(
+                                    checked = item.visible,
+                                    onCheckedChange = { checked ->
+                                        val newItems = infoCardItems.toMutableList()
+                                        newItems[index] = item.copy(visible = checked)
+                                        infoCardItems = newItems
+                                        InfoCardHelper.saveConfig(context, newItems)
+                                    }
+                                )
+                            },
+                            trailingContent = {
+                                Row {
+                                    IconButton(
+                                        onClick = {
+                                            if (index > 0) {
+                                                val newItems = infoCardItems.toMutableList()
+                                                val temp = newItems[index]
+                                                newItems[index] = newItems[index - 1]
+                                                newItems[index - 1] = temp
+                                                infoCardItems = newItems
+                                                InfoCardHelper.saveConfig(context, newItems)
+                                            }
+                                        },
+                                        enabled = index > 0
+                                    ) {
+                                        Icon(Icons.Filled.KeyboardArrowUp, contentDescription = "Move Up")
+                                    }
+                                    IconButton(
+                                        onClick = {
+                                            if (index < infoCardItems.size - 1) {
+                                                val newItems = infoCardItems.toMutableList()
+                                                val temp = newItems[index]
+                                                newItems[index] = newItems[index + 1]
+                                                newItems[index + 1] = temp
+                                                infoCardItems = newItems
+                                                InfoCardHelper.saveConfig(context, newItems)
+                                            }
+                                        },
+                                        enabled = index < infoCardItems.size - 1
+                                    ) {
+                                        Icon(Icons.Filled.KeyboardArrowDown, contentDescription = "Move Down")
+                                    }
+                                }
+                            },
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = ListItemDefaults.colors(containerColor = Color.Transparent)
+                        )
+                    }
+                }
+            }
         }
     }
 }

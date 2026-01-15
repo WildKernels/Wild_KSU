@@ -1026,6 +1026,13 @@ private fun InfoCard(autoExpand: Boolean = false) {
     val bbgVersion = if (isManager) getBBGVersion() else null
 
     val developerOptionsEnabled = prefs.getBoolean("enable_developer_options", false)
+    
+    // Use remember to prevent recomposition loop if config loading triggers one, 
+    // though here we just read from prefs which is fast. 
+    // Ideally we should observe it, but for now simple read is fine.
+    // However, if we want it to update when we come back from settings, we need to read it freshly.
+    // Since Home screen is recomposed when we navigate back, this is fine.
+    val config = InfoCardHelper.getConfig(context)
 
     Card() {
         Column(
@@ -1065,116 +1072,120 @@ private fun InfoCard(autoExpand: Boolean = false) {
                 }
             }
 
-            Column {
-                val managerVersion = getManagerVersion(context)
-                InfoCardItem(
-                    label = stringResource(R.string.home_manager_version),
-                    content = if (
-                        developerOptionsEnabled
-                    ) {
-                        "${managerVersion.first} (${managerVersion.second}) | UID: ${Natives.getManagerAppid()}"
-                    } else {
-                        "${managerVersion.first} (${managerVersion.second})"
-                    },
-                    icon = Icons.Filled.AutoAwesomeMotion,
-                )
+            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                config.forEach { item ->
+                    if (item.visible) {
+                        when (item.id) {
+                            "manager_version" -> {
+                                val managerVersion = getManagerVersion(context)
+                                InfoCardItem(
+                                    label = stringResource(R.string.home_manager_version),
+                                    content = if (
+                                        developerOptionsEnabled
+                                    ) {
+                                        "${managerVersion.first} (${managerVersion.second}) | UID: ${Natives.getManagerAppid()}"
+                                    } else {
+                                        "${managerVersion.first} (${managerVersion.second})"
+                                    },
+                                    icon = Icons.Filled.AutoAwesomeMotion,
+                                )
+                            }
+                            "hook_mode" -> {
+                                if (ksuVersion != null) {
+                                    val hookMode =
+                                        Natives.getHookMode()
+                                            .takeUnless { it.isNullOrBlank() }
+                                            ?: stringResource(R.string.unavailable)
+                                    InfoCardItem(
+                                        label   = stringResource(R.string.hook_mode),
+                                        content = hookMode,
+                                        icon    = Icons.Filled.Phishing,
+                                    )
+                                }
+                            }
+                            "mount_system" -> {
+                                if (ksuVersion != null) {
+                                    val moduleViewModel: ModuleViewModel = viewModel()
+                                    val meta = moduleViewModel.moduleList.firstOrNull {
+                                        it.isMetaModule && it.enabled && !it.remove
+                                    }
 
-                if (ksuVersion != null) {
+                                    val mountSystem = currentMountSystem()
+                                        .ifBlank { stringResource(R.string.unavailable) }
 
-                    val hookMode =
-                        Natives.getHookMode()
-                            .takeUnless { it.isNullOrBlank() }
-                            ?: stringResource(R.string.unavailable)
+                                    val content = listOfNotNull(
+                                        mountSystem,
+                                        meta?.name?.takeIf { it.isNotBlank() }
+                                            ?: stringResource(R.string.home_not_installed),
+                                        meta?.version?.takeIf { it.isNotBlank() }
+                                    ).joinToString(" | ")
 
-                    Spacer(Modifier.height(16.dp))
-
-                    InfoCardItem(
-                        label   = stringResource(R.string.hook_mode),
-                        content = hookMode,
-                        icon    = Icons.Filled.Phishing,
-                    )
+                                    InfoCardItem(
+                                        label = stringResource(R.string.home_mount_system),
+                                        content = content,
+                                        icon = Icons.Filled.SettingsSuggest
+                                    )
+                                }
+                            }
+                            "susfs_version" -> {
+                                if (ksuVersion != null && susfsVersion != null) {
+                                    InfoCardItem(
+                                        label = stringResource(R.string.home_susfs_version),
+                                        content = "${stringResource(R.string.susfs_supported)} | $susfsVersion",
+                                        icon = painterResource(R.drawable.ic_sus),
+                                    )
+                                }
+                            }
+                            "bbg_version" -> {
+                                if (ksuVersion != null && bbgVersion != null) {
+                                    InfoCardItem(
+                                        label = stringResource(R.string.home_bbg_version),
+                                        content = "${stringResource(R.string.bbg_supported)} | $bbgVersion",
+                                        icon = Icons.Filled.Security,
+                                    )
+                                }
+                            }
+                            "zygisk_status" -> {
+                                if (ksuVersion != null && Natives.isZygiskEnabled()) {
+                                    InfoCardItem(
+                                        label = stringResource(R.string.zygisk_status),
+                                        content = "${stringResource(R.string.enabled)} | ${getZygiskImplementation("name")} | ${getZygiskImplementation("version")}",
+                                        icon = Icons.Filled.Vaccines
+                                    )
+                                }
+                            }
+                            "kernel_version" -> {
+                                val uname = Os.uname()
+                                InfoCardItem(
+                                    label = stringResource(R.string.home_kernel),
+                                    content = "${uname.release} (${uname.machine})",
+                                    icon = painterResource(R.drawable.ic_linux),
+                                )
+                            }
+                            "android_version" -> {
+                                InfoCardItem(
+                                    label = stringResource(R.string.home_android),
+                                    content = "${Build.VERSION.RELEASE} (${Build.VERSION.SDK_INT})",
+                                    icon = Icons.Filled.Android,
+                                )
+                            }
+                            "abis" -> {
+                                InfoCardItem(
+                                    label = stringResource(R.string.home_abi),
+                                    content = Build.SUPPORTED_ABIS.joinToString(", "),
+                                    icon = Icons.Filled.Memory,
+                                )
+                            }
+                            "selinux_status" -> {
+                                InfoCardItem(
+                                    label = stringResource(R.string.home_selinux_status),
+                                    content = getSELinuxStatus(),
+                                    icon = Icons.Filled.Security,
+                                )
+                            }
+                        }
+                    }
                 }
-
-                if (ksuVersion != null) {
-                    Spacer(Modifier.height(16.dp))
-                    
-                    val moduleViewModel: ModuleViewModel = viewModel()
-                    val meta = moduleViewModel.moduleList.firstOrNull {
-                        it.isMetaModule && it.enabled && !it.remove
-                    }
-
-                    val mountSystem = currentMountSystem()
-                        .ifBlank { stringResource(R.string.unavailable) }
-
-                    val content = listOfNotNull(
-                        mountSystem,
-                        meta?.name?.takeIf { it.isNotBlank() }
-                            ?: stringResource(R.string.home_not_installed),
-                        meta?.version?.takeIf { it.isNotBlank() }
-                    ).joinToString(" | ")
-
-                    InfoCardItem(
-                        label = stringResource(R.string.home_mount_system),
-                        content = content,
-                        icon = Icons.Filled.SettingsSuggest
-                    )
-
-                    if (susfsVersion != null) {
-                        Spacer(Modifier.height(16.dp))
-                        InfoCardItem(
-                            label = stringResource(R.string.home_susfs_version),
-                            content = "${stringResource(R.string.susfs_supported)} | $susfsVersion",
-                            icon = painterResource(R.drawable.ic_sus),
-                        )
-                    }
-
-                    if (bbgVersion != null) {
-                        Spacer(Modifier.height(16.dp))
-                        InfoCardItem(
-                            label = stringResource(R.string.home_bbg_version),
-                            content = "${stringResource(R.string.bbg_supported)} | $bbgVersion",
-                            icon = Icons.Filled.Security,
-                        )
-                    }
-
-                    if (Natives.isZygiskEnabled()) {
-                        Spacer(Modifier.height(16.dp))
-                        InfoCardItem(
-                            label = stringResource(R.string.zygisk_status),
-                            content = "${stringResource(R.string.enabled)} | ${getZygiskImplementation("name")} | ${getZygiskImplementation("version")}",
-                            icon = Icons.Filled.Vaccines
-                        )
-                    }
-                }
-
-                val uname = Os.uname()
-                Spacer(Modifier.height(16.dp))
-                InfoCardItem(
-                    label = stringResource(R.string.home_kernel),
-                    content = "${uname.release} (${uname.machine})",
-                    icon = painterResource(R.drawable.ic_linux),
-                )
-
-                Spacer(Modifier.height(16.dp))
-                InfoCardItem(
-                    label = stringResource(R.string.home_android),
-                    content = "${Build.VERSION.RELEASE} (${Build.VERSION.SDK_INT})",
-                    icon = Icons.Filled.Android,
-                )
-
-                Spacer(Modifier.height(16.dp))
-                InfoCardItem(
-                    label = stringResource(R.string.home_abi),
-                    content = Build.SUPPORTED_ABIS.joinToString(", "),
-                    icon = Icons.Filled.Memory,
-                )
-
-                Spacer(Modifier.height(16.dp))
-                InfoCardItem(
-                    label = stringResource(R.string.home_selinux_status),
-                    content = getSELinuxStatus(),
-                    icon = Icons.Filled.Security,
-                )
             }
         }
     }
