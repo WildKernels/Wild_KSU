@@ -30,7 +30,7 @@
     <string name="home_bbg_version">BBG version</string>
     <string name="home_android">Android version</string>
     <string name="home_manager_version">Manager version</string>
-    <string name="home_abi">ABI list</string>
+    <string name="home_abi">Лист ABI</string>
     <string name="home_selinux_status">Статус SELinux</string>
     <string name="selinux_status_disabled">Отключено</string>
     <string name="selinux_status_enforcing">Enforcing</string>
@@ -66,7 +66,7 @@
     <string name="module_uninstall_success">%s удалён</string>
     <string name="module_uninstall_failed">Не удалось установить: %s</string>
     <string name="module_restore_confirm">Вы действительно хотите восстановить модуль %s?</string>
-    <string name="module_restore_success">%s восстановлен</string>
+    <string name="module_restore_success">%s Был восстановлен</string>
     <string name="module_restore_failed">Не удалось восстановить: %s</string>
     <string name="module_version">Версия</string>
     <string name="module_author">Автор</string>
@@ -126,7 +126,7 @@
     <string name="profile_capabilities">Возможности</string>
     <string name="profile_selinux_context">Контекст SELinux</string>
     <string name="profile_umount_modules">Размонтировать модули</string>
-    <string name="failed_to_update_app_profile">Не удалось обновить Профиль Приложения для %s</string>
+    <string name="failed_to_update_app_profile">Не удалось обновить Профиль Приложения для%s</string>
     <string name="require_kernel_version">Текущая версия KernelSU Next %1$d слишком низкая для корректной работы менеджера. Пожалуйста, обновитесь до версии %2$d или выше!</string>
     <string name="settings_umount_modules_default">Размонтировать модули</string>
     <string name="settings_umount_modules_default_summary">Глобальное значение по умолчанию для параметра \"Размонтировать модули\" в Профиле Приложения. Если этот параметр включён, то все изменения, внесённые модулями, будут скрыты для приложений без установленного профиля.</string>
@@ -148,7 +148,7 @@
     <string name="restart_required">Требуется перезапуск</string>
     <string name="restart_app_message">Чтобы изменения вступили в силу, необходимо перезапустить приложение.</string>
     <string name="failed_to_update_sepolicy">Не удалось обновить правила SELinux для %s</string>
-    <string name="su_not_allowed">Предоставление прав суперпользователя запрещено для: %s</string>
+    <string name="su_not_allowed">Предоставление прав root запрещено для: %s</string>
     <string name="module_changelog">Журнал изменений</string>
     <string name="settings_profile_template">Шаблоны доступа</string>
     <string name="settings_profile_template_summary">Управление локальными и онлайн шаблонами root-доступа.</string>
@@ -193,8 +193,8 @@
     <string name="settings_uninstall_permanent">Полное удаление</string>
     <string name="settings_restore_stock_image">Восстановить исходный образ</string>
     <string name="settings_uninstall_temporary_message">Временно удаляет KernelSU Next, восстановив исходное состояние после следующей перезагрузки.</string>
-    <string name="settings_uninstall_permanent_message">Uninstalling Wild KSU (root and all modules) completely and permanently.</string>
-    <string name="settings_restore_stock_image_message">Restore the stock factory image (if a backup exists), usually used before OTA; if you need to uninstall Wild KSU, please use \"Uninstall permanently\".</string>
+    <string name="settings_uninstall_permanent_message">Полностью удаляет Wild KSU (включая все модули) без возможности восстановления.</string>
+    <string name="settings_restore_stock_image_message">Восстанавливает исходный образ (если резервная копия доступна). Обычно используется перед OTA-обновлением. Если Вы хотите удалить Wild KSU, пожалуйста, воспользуйтесь опцией \"Полное удаление\".</string>
     <string name="flashing">Прошивка</string>
     <string name="flash_success">Прошивка выполнена успешно</string>
     <string name="flash_failed">Ошибка прошивки</string>
@@ -237,7 +237,7 @@
     <string name="module_sort_action_first">По статусу (Сначала со скриптом)</string>
     <string name="module_sort_webui_first">По статусу (Сначала с WebUI)</string>
     <string name="settings_global_namespace_mode">Global namespace mode</string>
-    <string name="settings_global_namespace_mode_summary">Все сессии root используют единое пространство имён.</string>
+    <string name="settings_global_namespace_mode_summary">Все сессии root используют единое пространство имён</string>
     <string name="settings_disable_kernel_umount">Disable kernel umount</string>
     <string name="settings_disable_kernel_umount_summary">Temporarily disable kernel-level umount behavior controlled by KernelSU.</string>
     <string name="settings_disable_avc_spoof">Disable avc spoofing</string>
