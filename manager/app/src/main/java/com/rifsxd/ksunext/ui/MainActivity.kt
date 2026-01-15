@@ -113,7 +113,7 @@ class MainActivity : ComponentActivity() {
                     mutableStateOf(
                         BackgroundSettings(
                             uri = prefs.getString("background_uri", null),
-                            fillScreen = prefs.getBoolean("background_fill_screen", false),
+                            fillScreen = true, // Force zoom to fill
                             isVideo = prefs.getBoolean("background_is_video", false),
                         )
                     )
@@ -152,14 +152,14 @@ class MainActivity : ComponentActivity() {
                             if (key == "background_uri" || key == "background_fill_screen") {
                                 backgroundSettings = BackgroundSettings(
                                     uri = prefs.getString("background_uri", null),
-                                    fillScreen = prefs.getBoolean("background_fill_screen", false),
+                                    fillScreen = true,
                                     isVideo = prefs.getBoolean("background_is_video", false),
                                 )
                             }
                             if (key == "background_is_video") {
                                 backgroundSettings = BackgroundSettings(
                                     uri = prefs.getString("background_uri", null),
-                                    fillScreen = prefs.getBoolean("background_fill_screen", false),
+                                    fillScreen = true,
                                     isVideo = prefs.getBoolean("background_is_video", false),
                                 )
                             }

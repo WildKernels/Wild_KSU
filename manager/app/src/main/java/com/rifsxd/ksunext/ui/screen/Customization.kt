@@ -210,9 +210,6 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
             var backgroundUri by rememberSaveable {
                 mutableStateOf(prefs.getString("background_uri", null))
             }
-            var backgroundFillScreen by rememberSaveable {
-                mutableStateOf(prefs.getBoolean("background_fill_screen", false))
-            }
             var backgroundIsVideo by rememberSaveable {
                 mutableStateOf(prefs.getBoolean("background_is_video", false))
             }
@@ -366,32 +363,13 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                             val subtitle = if (backgroundUri == null) {
                                 stringResource(R.string.settings_background_choose_media)
                             } else {
-                                val mode = if (backgroundFillScreen) {
-                                    stringResource(R.string.settings_background_scale_zoom)
-                                } else {
-                                    stringResource(R.string.settings_background_scale_fit)
-                                }
-                                "${stringResource(R.string.settings_background_selected)} • $mode"
+                                stringResource(R.string.settings_background_selected)
                             }
                             Text(subtitle)
                         },
                         trailingContent = {
                             if (backgroundUri != null) {
                                 Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                                    IconButton(
-                                        onClick = {
-                                            val next = !backgroundFillScreen
-                                            prefs.edit {
-                                                putBoolean("background_fill_screen", next)
-                                            }
-                                            backgroundFillScreen = next
-                                        }
-                                    ) {
-                                        Icon(
-                                            Icons.Filled.Flip,
-                                            contentDescription = stringResource(R.string.settings_background_scale_photo)
-                                        )
-                                    }
                                     IconButton(
                                         onClick = {
                                             val uriString = backgroundUri
