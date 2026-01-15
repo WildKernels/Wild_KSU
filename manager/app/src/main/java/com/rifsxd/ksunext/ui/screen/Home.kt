@@ -1025,15 +1025,7 @@ private fun InfoCard(autoExpand: Boolean = false) {
     val susfsVersion = if (isManager) getSuSFSVersion() else null
     val bbgVersion = if (isManager) getBBGVersion() else null
 
-    var expanded by rememberSaveable { mutableStateOf(false) }
-
     val developerOptionsEnabled = prefs.getBoolean("enable_developer_options", false)
-
-    LaunchedEffect(autoExpand) {
-        if (autoExpand) {
-            expanded = true
-        }
-    }   
 
     Card() {
         Column(
@@ -1155,57 +1147,34 @@ private fun InfoCard(autoExpand: Boolean = false) {
                     }
                 }
 
-                if (!expanded) {
-                    Spacer(Modifier.height(16.dp))
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        IconButton(
-                            onClick = { expanded = true },
-                            modifier = Modifier.size(36.dp)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Filled.KeyboardArrowDown,
-                                contentDescription = "Show more"
-                            )
-                        }
-                    }
-                }
+                val uname = Os.uname()
+                Spacer(Modifier.height(16.dp))
+                InfoCardItem(
+                    label = stringResource(R.string.home_kernel),
+                    content = "${uname.release} (${uname.machine})",
+                    icon = painterResource(R.drawable.ic_linux),
+                )
 
-                AnimatedVisibility(visible = expanded) {
-                    val uname = Os.uname()
-                    Column {
-                        Spacer(Modifier.height(16.dp))
-                        InfoCardItem(
-                            label = stringResource(R.string.home_kernel),
-                            content = "${uname.release} (${uname.machine})",
-                            icon = painterResource(R.drawable.ic_linux),
-                        )
+                Spacer(Modifier.height(16.dp))
+                InfoCardItem(
+                    label = stringResource(R.string.home_android),
+                    content = "${Build.VERSION.RELEASE} (${Build.VERSION.SDK_INT})",
+                    icon = Icons.Filled.Android,
+                )
 
-                        Spacer(Modifier.height(16.dp))
-                        InfoCardItem(
-                            label = stringResource(R.string.home_android),
-                            content = "${Build.VERSION.RELEASE} (${Build.VERSION.SDK_INT})",
-                            icon = Icons.Filled.Android,
-                        )
+                Spacer(Modifier.height(16.dp))
+                InfoCardItem(
+                    label = stringResource(R.string.home_abi),
+                    content = Build.SUPPORTED_ABIS.joinToString(", "),
+                    icon = Icons.Filled.Memory,
+                )
 
-                        Spacer(Modifier.height(16.dp))
-                        InfoCardItem(
-                            label = stringResource(R.string.home_abi),
-                            content = Build.SUPPORTED_ABIS.joinToString(", "),
-                            icon = Icons.Filled.Memory,
-                        )
-
-                        Spacer(Modifier.height(16.dp))
-                        InfoCardItem(
-                            label = stringResource(R.string.home_selinux_status),
-                            content = getSELinuxStatus(),
-                            icon = Icons.Filled.Security,
-                        )
-                    }
-                }
+                Spacer(Modifier.height(16.dp))
+                InfoCardItem(
+                    label = stringResource(R.string.home_selinux_status),
+                    content = getSELinuxStatus(),
+                    icon = Icons.Filled.Security,
+                )
             }
         }
     }
