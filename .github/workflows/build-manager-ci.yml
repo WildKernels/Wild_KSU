@@ -2,38 +2,62 @@ name: Build Manager CI
 
 on:
   push:
-    branches: [ "wild", "wild-dev" ]
-    paths:
-      - '.github/workflows/build-manager-ci.yml'
-      - '.github/workflows/build-manager.yml'
-      - '.github/workflows/build-lkm.yml'
-      - '.github/workflows/ksud.yml'
-      - 'manager/**'
-      - 'kernel/**'
-      - 'userspace/**'
-  pull_request:
-    branches: [ "wild", "wild-dev" ]
-    paths:
-      - '.github/workflows/build-manager-ci.yml'
-      - '.github/workflows/build-manager.yml'
-      - '.github/workflows/build-lkm.yml'
-      - '.github/workflows/ksud.yml'
-      - 'manager/**'
-      - 'kernel/**'
-      - 'userspace/**'
-  workflow_call:
-  workflow_dispatch:
+    branches: [ "wild" ]
+
+permissions:
+  contents: write
 
 jobs:
+  tag-release:
+    runs-on: ubuntu-latest
+    outputs:
+      tag_name: ${{ steps.create_tag.outputs.new_tag }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Create Tag
+        id: create_tag
+        run: |
+          git fetch --tags
+          # Find the latest tag matching v4.2.0-r*
+          LAST_TAG=$(git tag -l "v4.2.0-r*" | sort -V | tail -n1)
+          
+          if [ -z "$LAST_TAG" ]; then
+            NEW_TAG="v4.2.0-r1"
+          else
+            # Extract number after -r
+            # Assuming format v4.2.0-rX
+            LAST_VER=$(echo "$LAST_TAG" | sed 's/.*-r//')
+            if [[ "$LAST_VER" =~ ^[0-9]+$ ]]; then
+               NEXT_VER=$((LAST_VER + 1))
+               NEW_TAG="v4.2.0-r$NEXT_VER"
+            else
+               # Fallback if parsing fails
+               NEW_TAG="v4.2.0-r1"
+            fi
+          fi
+          
+          echo "new_tag=$NEW_TAG" >> $GITHUB_OUTPUT
+          echo "Creating tag: $NEW_TAG"
+          
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag $NEW_TAG
+          git push origin $NEW_TAG
+
   build-lkm:
+    needs: tag-release
     uses: ./.github/workflows/build-lkm.yml
     secrets: inherit
 
   build-ksuinit:
+    needs: tag-release
     uses: ./.github/workflows/ksuinit.yml
 
   build-ksud:
-    needs: [build-lkm, build-ksuinit]
+    needs: [tag-release, build-lkm, build-ksuinit]
     strategy:
       matrix:
         include:
@@ -47,7 +71,7 @@ jobs:
       os: ${{ matrix.os }}
 
   build-ksud-extra:
-    needs: [build-lkm, build-ksuinit]
+    needs: [tag-release, build-lkm, build-ksuinit]
     strategy:
       matrix:
         include:
@@ -67,7 +91,7 @@ jobs:
       os: ${{ matrix.os }}
 
   build-manager:
-    needs: build-ksud
+    needs: [tag-release, build-ksud]
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -163,7 +187,62 @@ jobs:
           name: ${{ matrix.spoofed && 'mappings-spoofed' || 'mappings' }}
           path: "manager/app/build/outputs/mapping/release/"
 
+  release:
+    needs: [tag-release, build-manager, build-lkm, build-ksud, build-ksud-extra]
+    runs-on: ubuntu-latest
+    if: success()
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          
+      - name: Download artifacts
+        uses: actions/download-artifact@v6
 
+      - name: Rename ksud
+        run: |
+          mkdir -p ksud
+          for dir in ./ksud-*; do
+              if [ -d "$dir" ]; then
+                 echo "----- Rename $dir -----"
+                 ksud_platform_name=$(basename "$dir")
+                 find "$dir" -type f -name "ksud" -path "*/release/*" | while read -r ksud_file; do
+                   if [ -f "$ksud_file" ]; then
+                     mv "$ksud_file" "ksud/$ksud_platform_name"
+                   fi
+                 done
+              fi
+          done
+
+      - name: Generate Release Notes
+        run: |
+           echo "## Wild KSU Testing Release" > RELEASE_NOTES.md
+           echo "**Tag:** ${{ needs.tag-release.outputs.tag_name }}" >> RELEASE_NOTES.md
+           echo "" >> RELEASE_NOTES.md
+           echo "### ⚠️ This release is for testing purposes only." >> RELEASE_NOTES.md
+           echo "" >> RELEASE_NOTES.md
+           echo "### Changes" >> RELEASE_NOTES.md
+           
+           # Get previous tag if possible to make log cleaner, else just last 20 commits
+           PREV_TAG=$(git describe --tags --abbrev=0 ${{ needs.tag-release.outputs.tag_name }}^ 2>/dev/null || true)
+           if [ -z "$PREV_TAG" ]; then
+              git log --pretty=format:"* %s (%an)" -n 20 >> RELEASE_NOTES.md
+           else
+              git log --pretty=format:"* %s (%an)" $PREV_TAG..${{ needs.tag-release.outputs.tag_name }} >> RELEASE_NOTES.md
+           fi
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ needs.tag-release.outputs.tag_name }}
+          body_path: RELEASE_NOTES.md
+          prerelease: true
+          files: |
+            manager/*.apk
+            manager-spoofed/*.apk
+            *-lkm/*_kernelsu.ko
+            ksud/*
 
   upload-telegram-manager:
     if: ${{ always() && (( github.event_name != 'pull_request' && (github.ref == 'refs/heads/wild' || github.ref == 'refs/heads/wild-dev')) || github.ref_type == 'tag') }}
@@ -348,10 +427,3 @@ jobs:
             -d chat_id="${{ secrets.TELEGRAM_USER_ID }}" \
             -d parse_mode="HTML" \
             --data-urlencode "text=$MESSAGE"
-
-
-
-
-
-
-
