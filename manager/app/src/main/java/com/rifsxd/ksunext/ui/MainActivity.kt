@@ -301,33 +301,33 @@ class MainActivity : ComponentActivity() {
                                     defaultTransitions = object : NavHostAnimatedDestinationStyle() {
                                         override val enterTransition: AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition =
                                             {
-                                                fadeIn(animationSpec = tween(300)) + scaleIn(
-                                                    initialScale = 0.95f,
-                                                    animationSpec = tween(300, easing = FastOutSlowInEasing)
+                                                fadeIn(animationSpec = tween(250)) + scaleIn(
+                                                    initialScale = 0.92f,
+                                                    animationSpec = tween(250, easing = FastOutSlowInEasing)
                                                 )
                                             }
 
                                         override val exitTransition: AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition =
                                             {
-                                                fadeOut(animationSpec = tween(300)) + scaleOut(
-                                                    targetScale = 0.95f,
-                                                    animationSpec = tween(300, easing = FastOutSlowInEasing)
+                                                fadeOut(animationSpec = tween(250)) + scaleOut(
+                                                    targetScale = 0.92f,
+                                                    animationSpec = tween(250, easing = FastOutSlowInEasing)
                                                 )
                                             }
 
                                         override val popEnterTransition: AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition =
                                             {
-                                                fadeIn(animationSpec = tween(300)) + scaleIn(
-                                                    initialScale = 0.95f,
-                                                    animationSpec = tween(300, easing = FastOutSlowInEasing)
+                                                fadeIn(animationSpec = tween(250)) + scaleIn(
+                                                    initialScale = 0.92f,
+                                                    animationSpec = tween(250, easing = FastOutSlowInEasing)
                                                 )
                                             }
 
                                         override val popExitTransition: AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition =
                                             {
-                                                fadeOut(animationSpec = tween(300)) + scaleOut(
-                                                    targetScale = 0.95f,
-                                                    animationSpec = tween(300, easing = FastOutSlowInEasing)
+                                                fadeOut(animationSpec = tween(250)) + scaleOut(
+                                                    targetScale = 0.92f,
+                                                    animationSpec = tween(250, easing = FastOutSlowInEasing)
                                                 )
                                             }
                                     }
