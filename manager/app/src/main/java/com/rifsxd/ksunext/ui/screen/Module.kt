@@ -1242,7 +1242,6 @@ fun ModuleItem(
                                     }
                                 }
                             }
-                        }
                     }
                 }
             }
