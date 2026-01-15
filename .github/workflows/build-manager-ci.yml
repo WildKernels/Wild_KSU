@@ -13,7 +13,7 @@ jobs:
     outputs:
       tag_name: ${{ steps.create_tag.outputs.new_tag }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
       
@@ -103,7 +103,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
@@ -147,13 +147,13 @@ jobs:
         uses: android-actions/setup-android@v3
 
       - name: Download arm64 ksud
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: ksud-aarch64-linux-android
           path: .
 
       - name: Download x86_64 ksud
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: ksud-x86_64-linux-android
           path: .
@@ -174,14 +174,14 @@ jobs:
           cp app/build/outputs/apk/release/*.apk artifact_upload/
 
       - name: Upload build artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         if: ${{ ( github.event_name != 'pull_request' && (github.ref == 'refs/heads/wild' || github.ref == 'refs/heads/wild-dev')) || github.ref_type == 'tag' }}
         with:
           name: ${{ matrix.spoofed && 'manager-spoofed' || 'manager' }}
           path: manager/artifact_upload/
 
       - name: Upload mappings
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         if: ${{ ( github.event_name != 'pull_request' && (github.ref == 'refs/heads/wild' || github.ref == 'refs/heads/wild-dev')) || github.ref_type == 'tag' }}
         with:
           name: ${{ matrix.spoofed && 'mappings-spoofed' || 'mappings' }}
@@ -193,12 +193,12 @@ jobs:
     if: success()
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
           
       - name: Download artifacts
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
 
       - name: Rename ksud
         run: |
@@ -251,14 +251,14 @@ jobs:
     steps:
       - name: Download Normal Manager
         if: needs.build-manager.result == 'success'
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: manager
           path: manager
 
       - name: Download Spoofed Manager
         if: needs.build-manager.result == 'success'
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: manager-spoofed
           path: manager-spoofed
