@@ -576,6 +576,7 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                                     prefs.edit { putInt("theme_custom_color", colorInt) }
                                     currentCustomColor = colorInt
                                     showColorPicker = false
+                                    refreshActivity(context)
                                 }
                             )
                         }
@@ -644,6 +645,7 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                                     prefs.edit { putInt("theme_custom_text_color", colorInt) }
                                     customTextColor = colorInt
                                     showTextColorPicker = false
+                                    refreshActivity(context)
                                 }
                             )
                         }
