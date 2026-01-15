@@ -245,5 +245,5 @@
     <string name="meta_module">Meta</string>
     <string name="donate">Donate</string>
     <string name="settings_enable_bottom_bar">Enable Bottom Bar</string>
-    <string name="settings_enable_bottom_bar_summary">Show bottom navigation bar</string>
+    <string name="settings_enable_bottom_bar_summary">Показать панель навигации с кнопками</string>
 </resources>
