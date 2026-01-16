@@ -17,9 +17,13 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Flip
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.icons.filled.Save
+import androidx.compose.material.icons.filled.SettingsBackupRestore
 import androidx.compose.material.icons.filled.Translate
 import androidx.compose.material.icons.filled.UnfoldMore
 import androidx.compose.material.icons.filled.ViewCarousel
+import android.widget.Toast
+import com.rifsxd.ksunext.ui.util.SettingsBackupHelper
 import androidx.compose.material.icons.filled.ViewStream
 import androidx.compose.material.icons.filled.Wallpaper
 import androidx.compose.material3.*
@@ -100,6 +104,31 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
 
             val context = LocalContext.current
             val scope = rememberCoroutineScope()
+
+            val backupLauncher = rememberLauncherForActivityResult(
+                contract = ActivityResultContracts.CreateDocument("application/json")
+            ) { uri ->
+                uri?.let {
+                    if (SettingsBackupHelper.backupSettings(context, it)) {
+                        Toast.makeText(context, "Settings backed up successfully", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(context, "Failed to backup settings", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+
+            val restoreLauncher = rememberLauncherForActivityResult(
+                contract = ActivityResultContracts.OpenDocument()
+            ) { uri ->
+                uri?.let {
+                    if (SettingsBackupHelper.restoreSettings(context, it)) {
+                        Toast.makeText(context, "Settings restored successfully", Toast.LENGTH_SHORT).show()
+                        refreshActivity(context)
+                    } else {
+                        Toast.makeText(context, "Failed to restore settings", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
 
             val prefs = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
 
@@ -731,6 +760,54 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                             colors = ListItemDefaults.colors(containerColor = Color.Transparent)
                         )
                     }
+                }
+            }
+
+            // Card 4: Backup & Restore
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(12.dp),
+                colors = CardDefaults.cardColors(containerColor = elevatedContainerColor),
+            ) {
+                Column(
+                    modifier = Modifier.padding(12.dp),
+                    verticalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    Text(
+                        text = "Backup & Restore",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+
+                    ListItem(
+                        headlineContent = { Text("Backup Settings") },
+                        supportingContent = { Text("Save settings to a JSON file") },
+                        leadingContent = {
+                            Icon(Icons.Filled.Save, contentDescription = null)
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                backupLauncher.launch("ksu_next_settings_backup.json")
+                            },
+                        colors = ListItemDefaults.colors(containerColor = Color.Transparent)
+                    )
+
+                    ListItem(
+                        headlineContent = { Text("Restore Settings") },
+                        supportingContent = { Text("Restore settings from a JSON file") },
+                        leadingContent = {
+                            Icon(Icons.Filled.SettingsBackupRestore, contentDescription = null)
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                restoreLauncher.launch(arrayOf("application/json"))
+                            },
+                        colors = ListItemDefaults.colors(containerColor = Color.Transparent)
+                    )
                 }
             }
         }
