@@ -537,6 +537,8 @@ private fun ModuleList(
     val hasShownWarning =
         rememberSaveable { mutableStateOf(prefs.getBoolean("has_shown_warning", false)) }
 
+    val modulesAlwaysExpanded = prefs.getBoolean("modules_always_expanded", false)
+
     val loadingDialog = rememberLoadingDialog()
     val confirmDialog = rememberConfirmDialog()
 
@@ -766,9 +768,11 @@ private fun ModuleList(
                             onClick = {
                                 onClickModule(it.id, it.name, it.hasWebUi)
                             },
-                            expanded = expandedModuleId == module.id,
+                            expanded = modulesAlwaysExpanded || expandedModuleId == module.id,
                             onExpandToggle = {
-                                expandedModuleId = if (expandedModuleId == module.id) null else module.id
+                                if (!modulesAlwaysExpanded) {
+                                    expandedModuleId = if (expandedModuleId == module.id) null else module.id
+                                }
                             }
                         )
 
