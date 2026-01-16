@@ -328,7 +328,7 @@ private fun SelectInstallMethod(onSelected: (InstallMethod) -> Unit = {}) {
                         fontSize = MaterialTheme.typography.titleMedium.fontSize,
                         fontFamily = MaterialTheme.typography.titleMedium.fontFamily,
                         fontStyle = MaterialTheme.typography.titleMedium.fontStyle,
-                        color = Color.White
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                     option.summary?.let {
                         Text(
@@ -336,7 +336,7 @@ private fun SelectInstallMethod(onSelected: (InstallMethod) -> Unit = {}) {
                             fontSize = MaterialTheme.typography.bodySmall.fontSize,
                             fontFamily = MaterialTheme.typography.bodySmall.fontFamily,
                             fontStyle = MaterialTheme.typography.bodySmall.fontStyle,
-                            color = Color.White
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                     }
                 }
