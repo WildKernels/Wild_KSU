@@ -1025,6 +1025,12 @@ private fun InfoCard(autoExpand: Boolean = false) {
     val susfsVersion = if (isManager) getSuSFSVersion() else null
     val bbgVersion = if (isManager) getBBGVersion() else null
 
+    val alwaysExpanded = prefs.getBoolean("info_card_always_expanded", false)
+
+    var expanded by rememberSaveable(alwaysExpanded, autoExpand) { 
+        mutableStateOf(alwaysExpanded || autoExpand) 
+    }
+
     val developerOptionsEnabled = prefs.getBoolean("enable_developer_options", false)
     
     // Use remember to prevent recomposition loop if config loading triggers one, 
@@ -1072,115 +1078,156 @@ private fun InfoCard(autoExpand: Boolean = false) {
                 }
             }
 
+            @Composable
+            fun RenderConfigItem(itemId: String) {
+                when (itemId) {
+                    "manager_version" -> {
+                        val managerVersion = getManagerVersion(context)
+                        InfoCardItem(
+                            label = stringResource(R.string.home_manager_version),
+                            content = if (
+                                developerOptionsEnabled
+                            ) {
+                                "${managerVersion.first} (${managerVersion.second}) | UID: ${Natives.getManagerAppid()}"
+                            } else {
+                                "${managerVersion.first} (${managerVersion.second})"
+                            },
+                            icon = Icons.Filled.AutoAwesomeMotion,
+                        )
+                    }
+                    "hook_mode" -> {
+                        if (ksuVersion != null) {
+                            val hookMode =
+                                Natives.getHookMode()
+                                    .takeUnless { it.isNullOrBlank() }
+                                    ?: stringResource(R.string.unavailable)
+                            InfoCardItem(
+                                label   = stringResource(R.string.hook_mode),
+                                content = hookMode,
+                                icon    = Icons.Filled.Phishing,
+                            )
+                        }
+                    }
+                    "mount_system" -> {
+                        if (ksuVersion != null) {
+                            val moduleViewModel: ModuleViewModel = viewModel()
+                            val meta = moduleViewModel.moduleList.firstOrNull {
+                                it.isMetaModule && it.enabled && !it.remove
+                            }
+
+                            val mountSystem = currentMountSystem()
+                                .ifBlank { stringResource(R.string.unavailable) }
+
+                            val content = listOfNotNull(
+                                mountSystem,
+                                meta?.name?.takeIf { it.isNotBlank() }
+                                    ?: stringResource(R.string.home_not_installed),
+                                meta?.version?.takeIf { it.isNotBlank() }
+                            ).joinToString(" | ")
+
+                            InfoCardItem(
+                                label = stringResource(R.string.home_mount_system),
+                                content = content,
+                                icon = Icons.Filled.SettingsSuggest
+                            )
+                        }
+                    }
+                    "susfs_version" -> {
+                        if (ksuVersion != null && susfsVersion != null) {
+                            InfoCardItem(
+                                label = stringResource(R.string.home_susfs_version),
+                                content = "${stringResource(R.string.susfs_supported)} | $susfsVersion",
+                                icon = painterResource(R.drawable.ic_sus),
+                            )
+                        }
+                    }
+                    "bbg_version" -> {
+                        if (ksuVersion != null && bbgVersion != null) {
+                            InfoCardItem(
+                                label = stringResource(R.string.home_bbg_version),
+                                content = "${stringResource(R.string.bbg_supported)} | $bbgVersion",
+                                icon = Icons.Filled.Security,
+                            )
+                        }
+                    }
+                    "zygisk_status" -> {
+                        if (ksuVersion != null && Natives.isZygiskEnabled()) {
+                            InfoCardItem(
+                                label = stringResource(R.string.zygisk_status),
+                                content = "${stringResource(R.string.enabled)} | ${getZygiskImplementation("name")} | ${getZygiskImplementation("version")}",
+                                icon = Icons.Filled.Vaccines
+                            )
+                        }
+                    }
+                    "kernel_version" -> {
+                        val uname = Os.uname()
+                        InfoCardItem(
+                            label = stringResource(R.string.home_kernel),
+                            content = "${uname.release} (${uname.machine})",
+                            icon = painterResource(R.drawable.ic_linux),
+                        )
+                    }
+                    "android_version" -> {
+                        InfoCardItem(
+                            label = stringResource(R.string.home_android),
+                            content = "${Build.VERSION.RELEASE} (${Build.VERSION.SDK_INT})",
+                            icon = Icons.Filled.Android,
+                        )
+                    }
+                    "abis" -> {
+                        InfoCardItem(
+                            label = stringResource(R.string.home_abi),
+                            content = Build.SUPPORTED_ABIS.joinToString(", "),
+                            icon = Icons.Filled.Memory,
+                        )
+                    }
+                    "selinux_status" -> {
+                        InfoCardItem(
+                            label = stringResource(R.string.home_selinux_status),
+                            content = getSELinuxStatus(),
+                            icon = Icons.Filled.Security,
+                        )
+                    }
+                }
+            }
+
             Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                config.forEach { item ->
-                    if (item.visible) {
-                        when (item.id) {
-                            "manager_version" -> {
-                                val managerVersion = getManagerVersion(context)
-                                InfoCardItem(
-                                    label = stringResource(R.string.home_manager_version),
-                                    content = if (
-                                        developerOptionsEnabled
-                                    ) {
-                                        "${managerVersion.first} (${managerVersion.second}) | UID: ${Natives.getManagerAppid()}"
-                                    } else {
-                                        "${managerVersion.first} (${managerVersion.second})"
-                                    },
-                                    icon = Icons.Filled.AutoAwesomeMotion,
-                                )
-                            }
-                            "hook_mode" -> {
-                                if (ksuVersion != null) {
-                                    val hookMode =
-                                        Natives.getHookMode()
-                                            .takeUnless { it.isNullOrBlank() }
-                                            ?: stringResource(R.string.unavailable)
-                                    InfoCardItem(
-                                        label   = stringResource(R.string.hook_mode),
-                                        content = hookMode,
-                                        icon    = Icons.Filled.Phishing,
-                                    )
-                                }
-                            }
-                            "mount_system" -> {
-                                if (ksuVersion != null) {
-                                    val moduleViewModel: ModuleViewModel = viewModel()
-                                    val meta = moduleViewModel.moduleList.firstOrNull {
-                                        it.isMetaModule && it.enabled && !it.remove
-                                    }
+                val visibleConfig = config.filter { it.visible }
+                val limit = 4
 
-                                    val mountSystem = currentMountSystem()
-                                        .ifBlank { stringResource(R.string.unavailable) }
+                visibleConfig.take(limit).forEach { item ->
+                    RenderConfigItem(item.id)
+                }
 
-                                    val content = listOfNotNull(
-                                        mountSystem,
-                                        meta?.name?.takeIf { it.isNotBlank() }
-                                            ?: stringResource(R.string.home_not_installed),
-                                        meta?.version?.takeIf { it.isNotBlank() }
-                                    ).joinToString(" | ")
+                if (visibleConfig.size > limit) {
+                    AnimatedVisibility(
+                        visible = expanded,
+                        enter = fadeIn() + expandVertically(),
+                        exit = shrinkVertically() + fadeOut()
+                    ) {
+                        Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                            // Spacer to maintain consistent spacing between fixed and expanded items
+                            if (visibleConfig.take(limit).isNotEmpty()) {
+                                Spacer(Modifier.height(0.dp))
+                            }
+                            visibleConfig.drop(limit).forEach { item ->
+                                RenderConfigItem(item.id)
+                            }
+                        }
+                    }
 
-                                    InfoCardItem(
-                                        label = stringResource(R.string.home_mount_system),
-                                        content = content,
-                                        icon = Icons.Filled.SettingsSuggest
-                                    )
-                                }
-                            }
-                            "susfs_version" -> {
-                                if (ksuVersion != null && susfsVersion != null) {
-                                    InfoCardItem(
-                                        label = stringResource(R.string.home_susfs_version),
-                                        content = "${stringResource(R.string.susfs_supported)} | $susfsVersion",
-                                        icon = painterResource(R.drawable.ic_sus),
-                                    )
-                                }
-                            }
-                            "bbg_version" -> {
-                                if (ksuVersion != null && bbgVersion != null) {
-                                    InfoCardItem(
-                                        label = stringResource(R.string.home_bbg_version),
-                                        content = "${stringResource(R.string.bbg_supported)} | $bbgVersion",
-                                        icon = Icons.Filled.Security,
-                                    )
-                                }
-                            }
-                            "zygisk_status" -> {
-                                if (ksuVersion != null && Natives.isZygiskEnabled()) {
-                                    InfoCardItem(
-                                        label = stringResource(R.string.zygisk_status),
-                                        content = "${stringResource(R.string.enabled)} | ${getZygiskImplementation("name")} | ${getZygiskImplementation("version")}",
-                                        icon = Icons.Filled.Vaccines
-                                    )
-                                }
-                            }
-                            "kernel_version" -> {
-                                val uname = Os.uname()
-                                InfoCardItem(
-                                    label = stringResource(R.string.home_kernel),
-                                    content = "${uname.release} (${uname.machine})",
-                                    icon = painterResource(R.drawable.ic_linux),
-                                )
-                            }
-                            "android_version" -> {
-                                InfoCardItem(
-                                    label = stringResource(R.string.home_android),
-                                    content = "${Build.VERSION.RELEASE} (${Build.VERSION.SDK_INT})",
-                                    icon = Icons.Filled.Android,
-                                )
-                            }
-                            "abis" -> {
-                                InfoCardItem(
-                                    label = stringResource(R.string.home_abi),
-                                    content = Build.SUPPORTED_ABIS.joinToString(", "),
-                                    icon = Icons.Filled.Memory,
-                                )
-                            }
-                            "selinux_status" -> {
-                                InfoCardItem(
-                                    label = stringResource(R.string.home_selinux_status),
-                                    content = getSELinuxStatus(),
-                                    icon = Icons.Filled.Security,
+                    if (!alwaysExpanded) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            IconButton(
+                                onClick = { expanded = !expanded },
+                                modifier = Modifier.size(36.dp)
+                            ) {
+                                Icon(
+                                    imageVector = if (expanded) Icons.Filled.KeyboardArrowUp else Icons.Filled.KeyboardArrowDown,
+                                    contentDescription = if (expanded) "Show less" else "Show more"
                                 )
                             }
                         }

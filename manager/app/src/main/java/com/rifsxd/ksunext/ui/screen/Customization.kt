@@ -18,6 +18,7 @@ import androidx.compose.material.icons.filled.Flip
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Translate
+import androidx.compose.material.icons.filled.UnfoldMore
 import androidx.compose.material.icons.filled.ViewCarousel
 import androidx.compose.material.icons.filled.ViewStream
 import androidx.compose.material.icons.filled.Wallpaper
@@ -655,6 +656,26 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                         fontWeight = FontWeight.SemiBold,
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
+
+                    var infoCardAlwaysExpanded by rememberSaveable {
+                        mutableStateOf(prefs.getBoolean("info_card_always_expanded", false))
+                    }
+
+                    SwitchItem(
+                        icon = Icons.Filled.UnfoldMore,
+                        title = "Always Expanded",
+                        summary = "Keep the Info Card expanded by default",
+                        checked = infoCardAlwaysExpanded,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(MaterialTheme.shapes.small),
+                        colors = ListItemDefaults.colors(containerColor = Color.Transparent)
+                    ) {
+                        prefs.edit { putBoolean("info_card_always_expanded", it) }
+                        infoCardAlwaysExpanded = it
+                    }
+
+                    HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
 
                     var infoCardItems by remember { mutableStateOf(InfoCardHelper.getConfig(context)) }
 
