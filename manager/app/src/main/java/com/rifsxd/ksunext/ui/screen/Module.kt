@@ -1264,6 +1264,7 @@ fun ModuleItem(
         }
     }
 }
+}
 
 fun formatSize(size: Long): String {
     if (size == 0L) return "null"
