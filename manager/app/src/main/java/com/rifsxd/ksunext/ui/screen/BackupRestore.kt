@@ -1,6 +1,9 @@
 package com.rifsxd.ksunext.ui.screen
 
 import android.content.Context
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -9,6 +12,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Backup
 import androidx.compose.material.icons.filled.Restore
+import androidx.compose.material.icons.filled.Save
+import androidx.compose.material.icons.filled.SettingsBackupRestore
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -32,6 +37,7 @@ import com.rifsxd.ksunext.ui.component.ConfirmResult
 import com.rifsxd.ksunext.ui.component.rememberConfirmDialog
 import com.rifsxd.ksunext.ui.component.rememberLoadingDialog
 import com.rifsxd.ksunext.ui.util.*
+import com.rifsxd.ksunext.ui.util.SettingsBackupHelper
 import kotlinx.coroutines.launch
 
 /**
@@ -74,6 +80,31 @@ fun BackupRestoreScreen(navigator: DestinationsNavigator) {
 
             val context = LocalContext.current
             val scope = rememberCoroutineScope()
+
+            val backupLauncher = rememberLauncherForActivityResult(
+                contract = ActivityResultContracts.CreateDocument("application/json")
+            ) { uri ->
+                uri?.let {
+                    if (SettingsBackupHelper.backupSettings(context, it)) {
+                        Toast.makeText(context, "Settings backed up successfully", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(context, "Failed to backup settings", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+
+            val restoreLauncher = rememberLauncherForActivityResult(
+                contract = ActivityResultContracts.OpenDocument()
+            ) { uri ->
+                uri?.let {
+                    if (SettingsBackupHelper.restoreSettings(context, it)) {
+                        Toast.makeText(context, "Settings restored successfully", Toast.LENGTH_SHORT).show()
+                        refreshActivity(context)
+                    } else {
+                        Toast.makeText(context, "Failed to restore settings", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
 
             var showRebootDialog by remember { mutableStateOf(false) }
 
@@ -238,6 +269,48 @@ fun BackupRestoreScreen(navigator: DestinationsNavigator) {
                             }
                         }
                     }
+                }
+            )
+
+            HorizontalDivider(thickness = Dp.Hairline)
+
+            val settingsBackup = "Backup Settings"
+            val settingsBackupMessage = "Save settings to a JSON file"
+            ListItem(
+                leadingContent = {
+                    Icon(
+                        Icons.Filled.Save,
+                        settingsBackup
+                    )
+                },
+                headlineContent = { Text(
+                    text = settingsBackup,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
+                ) },
+                supportingContent = { Text(settingsBackupMessage) },
+                modifier = Modifier.clickable {
+                    backupLauncher.launch("ksu_next_settings_backup.json")
+                }
+            )
+
+            val settingsRestore = "Restore Settings"
+            val settingsRestoreMessage = "Restore settings from a JSON file"
+            ListItem(
+                leadingContent = {
+                    Icon(
+                        Icons.Filled.SettingsBackupRestore,
+                        settingsRestore
+                    )
+                },
+                headlineContent = { Text(
+                    text = settingsRestore,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
+                ) },
+                supportingContent = { Text(settingsRestoreMessage) },
+                modifier = Modifier.clickable {
+                    restoreLauncher.launch(arrayOf("application/json"))
                 }
             )
         }

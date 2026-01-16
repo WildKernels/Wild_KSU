@@ -1026,12 +1026,56 @@ private fun InfoCard(autoExpand: Boolean = false) {
     val bbgVersion = if (isManager) getBBGVersion() else null
 
     val developerOptionsEnabled = prefs.getBoolean("enable_developer_options", false)
+    val alwaysExpanded = prefs.getBoolean("info_card_always_expanded", false)
+    
+    // Use remember to prevent recomposition loop if config loading triggers one, 
+    // though here we just read from prefs which is fast. 
+    // Ideally we should observe it, but for now simple read is fine.
+    // However, if we want it to update when we come back from settings, we need to read it freshly.
+    // Since Home screen is recomposed when we navigate back, this is fine.
+    val config = InfoCardHelper.getConfig(context)
 
-    Card() {
+    var expanded by rememberSaveable(alwaysExpanded, autoExpand) { 
+        mutableStateOf(alwaysExpanded || autoExpand) 
+    }
+
+    val availableIds = remember(ksuVersion, susfsVersion, bbgVersion) {
+        val list = mutableListOf<String>()
+        list.add("manager_version")
+        if (ksuVersion != null) {
+            list.add("hook_mode")
+            list.add("mount_system")
+            if (susfsVersion != null) list.add("susfs_version")
+            if (bbgVersion != null) list.add("bbg_version")
+            if (Natives.isZygiskEnabled()) list.add("zygisk_status")
+        }
+        list.add("kernel_version")
+        list.add("android_version")
+        list.add("abis")
+        list.add("selinux_status")
+        list.toSet()
+    }
+
+    val visibleItems = remember(config, availableIds) {
+        config.filter { it.visible && it.id in availableIds }
+    }
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .animateContentSize()
+            .then(
+                if (expanded && !alwaysExpanded) {
+                    Modifier.clickable { expanded = false }
+                } else {
+                    Modifier
+                }
+            )
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 24.dp, top = 24.dp, end = 24.dp, bottom = 24.dp)
+                .padding(24.dp)
         ) {
             @Composable
             fun InfoCardItem(label: String, content: String, icon: Any? = null) {
@@ -1065,116 +1109,133 @@ private fun InfoCard(autoExpand: Boolean = false) {
                 }
             }
 
-            Column {
-                val managerVersion = getManagerVersion(context)
-                InfoCardItem(
-                    label = stringResource(R.string.home_manager_version),
-                    content = if (
-                        developerOptionsEnabled
-                    ) {
-                        "${managerVersion.first} (${managerVersion.second}) | UID: ${Natives.getManagerAppid()}"
-                    } else {
-                        "${managerVersion.first} (${managerVersion.second})"
-                    },
-                    icon = Icons.Filled.AutoAwesomeMotion,
-                )
-
-                if (ksuVersion != null) {
-
-                    val hookMode =
-                        Natives.getHookMode()
+            @Composable
+            fun RenderItem(itemId: String) {
+                when (itemId) {
+                    "manager_version" -> {
+                        val managerVersion = getManagerVersion(context)
+                        InfoCardItem(
+                            label = stringResource(R.string.home_manager_version),
+                            content = if (
+                                developerOptionsEnabled
+                            ) {
+                                "${managerVersion.first} (${managerVersion.second}) | UID: ${Natives.getManagerAppid()}"
+                            } else {
+                                "${managerVersion.first} (${managerVersion.second})"
+                            },
+                            icon = Icons.Filled.AutoAwesomeMotion,
+                        )
+                    }
+                    "hook_mode" -> {
+                        val hookMode = Natives.getHookMode()
                             .takeUnless { it.isNullOrBlank() }
                             ?: stringResource(R.string.unavailable)
-
-                    Spacer(Modifier.height(16.dp))
-
-                    InfoCardItem(
-                        label   = stringResource(R.string.hook_mode),
-                        content = hookMode,
-                        icon    = Icons.Filled.Phishing,
-                    )
-                }
-
-                if (ksuVersion != null) {
-                    Spacer(Modifier.height(16.dp))
-                    
-                    val moduleViewModel: ModuleViewModel = viewModel()
-                    val meta = moduleViewModel.moduleList.firstOrNull {
-                        it.isMetaModule && it.enabled && !it.remove
+                        InfoCardItem(
+                            label   = stringResource(R.string.hook_mode),
+                            content = hookMode,
+                            icon    = Icons.Filled.Phishing,
+                        )
                     }
+                    "mount_system" -> {
+                        val moduleViewModel: ModuleViewModel = viewModel()
+                        val meta = moduleViewModel.moduleList.firstOrNull {
+                            it.isMetaModule && it.enabled && !it.remove
+                        }
 
-                    val mountSystem = currentMountSystem()
-                        .ifBlank { stringResource(R.string.unavailable) }
+                        val mountSystem = currentMountSystem()
+                            .ifBlank { stringResource(R.string.unavailable) }
 
-                    val content = listOfNotNull(
-                        mountSystem,
-                        meta?.name?.takeIf { it.isNotBlank() }
-                            ?: stringResource(R.string.home_not_installed),
-                        meta?.version?.takeIf { it.isNotBlank() }
-                    ).joinToString(" | ")
+                        val content = listOfNotNull(
+                            mountSystem,
+                            meta?.name?.takeIf { it.isNotBlank() }
+                                ?: stringResource(R.string.home_not_installed),
+                            meta?.version?.takeIf { it.isNotBlank() }
+                        ).joinToString(" | ")
 
-                    InfoCardItem(
-                        label = stringResource(R.string.home_mount_system),
-                        content = content,
-                        icon = Icons.Filled.SettingsSuggest
-                    )
-
-                    if (susfsVersion != null) {
-                        Spacer(Modifier.height(16.dp))
+                        InfoCardItem(
+                            label = stringResource(R.string.home_mount_system),
+                            content = content,
+                            icon = Icons.Filled.SettingsSuggest
+                        )
+                    }
+                    "susfs_version" -> {
                         InfoCardItem(
                             label = stringResource(R.string.home_susfs_version),
                             content = "${stringResource(R.string.susfs_supported)} | $susfsVersion",
                             icon = painterResource(R.drawable.ic_sus),
                         )
                     }
-
-                    if (bbgVersion != null) {
-                        Spacer(Modifier.height(16.dp))
+                    "bbg_version" -> {
                         InfoCardItem(
                             label = stringResource(R.string.home_bbg_version),
                             content = "${stringResource(R.string.bbg_supported)} | $bbgVersion",
                             icon = Icons.Filled.Security,
                         )
                     }
-
-                    if (Natives.isZygiskEnabled()) {
-                        Spacer(Modifier.height(16.dp))
+                    "zygisk_status" -> {
                         InfoCardItem(
                             label = stringResource(R.string.zygisk_status),
                             content = "${stringResource(R.string.enabled)} | ${getZygiskImplementation("name")} | ${getZygiskImplementation("version")}",
                             icon = Icons.Filled.Vaccines
                         )
                     }
+                    "kernel_version" -> {
+                        val uname = Os.uname()
+                        InfoCardItem(
+                            label = stringResource(R.string.home_kernel),
+                            content = "${uname.release} (${uname.machine})",
+                            icon = painterResource(R.drawable.ic_linux),
+                        )
+                    }
+                    "android_version" -> {
+                        InfoCardItem(
+                            label = stringResource(R.string.home_android),
+                            content = "${Build.VERSION.RELEASE} (${Build.VERSION.SDK_INT})",
+                            icon = Icons.Filled.Android,
+                        )
+                    }
+                    "abis" -> {
+                        InfoCardItem(
+                            label = stringResource(R.string.home_abi),
+                            content = Build.SUPPORTED_ABIS.joinToString(", "),
+                            icon = Icons.Filled.Memory,
+                        )
+                    }
+                    "selinux_status" -> {
+                        InfoCardItem(
+                            label = stringResource(R.string.home_selinux_status),
+                            content = getSELinuxStatus(),
+                            icon = Icons.Filled.Security,
+                        )
+                    }
                 }
+            }
 
-                val uname = Os.uname()
-                Spacer(Modifier.height(16.dp))
-                InfoCardItem(
-                    label = stringResource(R.string.home_kernel),
-                    content = "${uname.release} (${uname.machine})",
-                    icon = painterResource(R.drawable.ic_linux),
-                )
+            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                val limit = 4
+                val itemsToShow = if (expanded) visibleItems else visibleItems.take(limit)
 
-                Spacer(Modifier.height(16.dp))
-                InfoCardItem(
-                    label = stringResource(R.string.home_android),
-                    content = "${Build.VERSION.RELEASE} (${Build.VERSION.SDK_INT})",
-                    icon = Icons.Filled.Android,
-                )
+                itemsToShow.forEach { item ->
+                    RenderItem(item.id)
+                }
+            }
 
+            if (!expanded && visibleItems.size > 4) {
                 Spacer(Modifier.height(16.dp))
-                InfoCardItem(
-                    label = stringResource(R.string.home_abi),
-                    content = Build.SUPPORTED_ABIS.joinToString(", "),
-                    icon = Icons.Filled.Memory,
-                )
-
-                Spacer(Modifier.height(16.dp))
-                InfoCardItem(
-                    label = stringResource(R.string.home_selinux_status),
-                    content = getSELinuxStatus(),
-                    icon = Icons.Filled.Security,
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    IconButton(
+                        onClick = { expanded = true },
+                        modifier = Modifier.size(36.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.KeyboardArrowDown,
+                            contentDescription = "Show more"
+                        )
+                    }
+                }
             }
         }
     }

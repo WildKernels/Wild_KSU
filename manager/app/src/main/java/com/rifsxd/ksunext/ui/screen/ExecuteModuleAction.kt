@@ -149,7 +149,7 @@ fun ExecuteModuleActionScreen(navigator: DestinationsNavigator, moduleId: String
                 fontSize = MaterialTheme.typography.bodySmall.fontSize,
                 fontFamily = FontFamily.Monospace,
                 lineHeight = MaterialTheme.typography.bodySmall.lineHeight,
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onSurface,
             )
         }
     }

@@ -537,6 +537,8 @@ private fun ModuleList(
     val hasShownWarning =
         rememberSaveable { mutableStateOf(prefs.getBoolean("has_shown_warning", false)) }
 
+    val modulesAlwaysExpanded = prefs.getBoolean("modules_always_expanded", false)
+
     val loadingDialog = rememberLoadingDialog()
     val confirmDialog = rememberConfirmDialog()
 
@@ -765,6 +767,12 @@ private fun ModuleList(
                             },
                             onClick = {
                                 onClickModule(it.id, it.name, it.hasWebUi)
+                            },
+                            expanded = modulesAlwaysExpanded || expandedModuleId == module.id,
+                            onExpandToggle = {
+                                if (!modulesAlwaysExpanded) {
+                                    expandedModuleId = if (expandedModuleId == module.id) null else module.id
+                                }
                             }
                         )
 
@@ -788,7 +796,9 @@ fun ModuleItem(
     onRestore: (ModuleViewModel.ModuleInfo) -> Unit,
     onCheckChanged: (Boolean) -> Unit,
     onUpdate: (ModuleViewModel.ModuleInfo) -> Unit,
-    onClick: (ModuleViewModel.ModuleInfo) -> Unit
+    onClick: (ModuleViewModel.ModuleInfo) -> Unit,
+    expanded: Boolean,
+    onExpandToggle: () -> Unit,
 ) {
     val viewModel = viewModel<ModuleViewModel>()
     val cardAlpha = LocalUiOverlaySettings.current.cardAlpha
@@ -796,6 +806,9 @@ fun ModuleItem(
         modifier = Modifier
             .fillMaxWidth()
             .clip(MaterialTheme.shapes.medium)
+            .clickable(
+                onClick = onExpandToggle
+            )
     ) {
         Box(
             modifier = Modifier
@@ -1080,13 +1093,20 @@ fun ModuleItem(
 
                     Spacer(modifier = Modifier.height(2.dp))
 
-                    Spacer(modifier = Modifier.height(10.dp))
+                    if (expanded) {
+                        Spacer(modifier = Modifier.height(10.dp))
+                    }
 
-                    Row(
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
+                    AnimatedVisibility(
+                        visible = expanded,
+                        enter = fadeIn() + expandVertically(),
+                        exit = shrinkVertically() + fadeOut()
                     ) {
-                        if (module.hasActionScript) {
+                        Row(
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            if (module.hasActionScript) {
                                 FilledTonalButton(
                                     modifier = Modifier.defaultMinSize(52.dp, 32.dp),
                                     enabled = !module.remove && module.enabled && filterZygiskModules,
@@ -1248,6 +1268,7 @@ fun ModuleItem(
         }
     }
 }
+}
 
 fun formatSize(size: Long): String {
     if (size == 0L) return "null"
@@ -1284,5 +1305,5 @@ fun ModuleItemPreview() {
         isMetaModule = false,
         donate = ""
     )
-    ModuleItem(EmptyDestinationsNavigator, module, "", {}, {}, {}, {}, {})
+    ModuleItem(EmptyDestinationsNavigator, module, "", {}, {}, {}, {}, {}, false, {})
 }
