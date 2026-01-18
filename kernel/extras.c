@@ -21,7 +21,7 @@ static atomic_t disable_spoof = ATOMIC_INIT(1);
 void ksu_avc_spoof_enable();
 void ksu_avc_spoof_disable();
 
-static bool ksu_avc_spoof_enabled = true;
+static bool ksu_avc_spoof_enabled = false;
 static bool boot_completed = false;
 
 static int avc_spoof_feature_get(u64 *value)
