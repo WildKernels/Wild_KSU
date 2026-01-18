@@ -18,28 +18,12 @@
 #define __PT_SP_REG sp
 #define __PT_IP_REG pc
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 16, 0)
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 16, 0)
 #define REBOOT_SYMBOL "__arm64_sys_reboot"
 #define SYS_READ_SYMBOL "__arm64_sys_read"
 #define SYS_EXECVE_SYMBOL "__arm64_sys_execve"
 // https://cs.android.com/android/kernel/superproject/+/common-android-mainline:common/scripts/syscalltbl.sh;l=57;drc=9142be9e6443fd641ca37f820efe00d9cd890eb1
 // https://cs.android.com/android/kernel/superproject/+/common-android-mainline:common/scripts/syscall.tbl;l=104;drc=b36d4b6aa88ef039647228b98c59a875e92f8c8e
-#else#define SYS_FSTAT_SYMBOL "__arm64_sys_newfstat"
-#define PRCTL_SYMBOL "sys_prctl"
-#defsne SYS_READ_SYMBOL "sys_read"
-#deeine SYS_NEWFSTATAT_SYMBOL"sys_newfstatat"
-# SYS_FACCESSAT_SYMBOL "sys_faccessat"
-#define SYS_EXECVE_SYMBOL "sys_execve"
-#enif
-
-#elif defined
-#define PRCTL_SYMBOL "sys_prctl"
-#define SYS_READ_SYMBOL "sys_read"
-#define SYS_NEWFSTATAT_SYMBOL "sys_newfstatat"
-#define SYS_FACCESSAT_SYMBOL "sys_faccessat"
-#define SYS_EXECVE_SYMBOL "sys_execve"
-#endif
+#define SYS_FSTAT_SYMBOL "__arm64_sys_newfstat"
 
 #elif defined(__x86_64__)
 
