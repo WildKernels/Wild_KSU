@@ -157,18 +157,24 @@ fun AppProfileTemplateScreen(
                     targetScale = 0.8f
                 ) + fadeOut(animationSpec = tween(400))
             ) {
-                ExtendedFloatingActionButton(
-                    onClick = {
-                        navigator.navigate(
-                            TemplateEditorScreenDestination(
-                                TemplateViewModel.TemplateInfo(),
-                                false
+                Box(
+                    modifier = Modifier.padding(
+                        bottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
+                    )
+                ) {
+                    ExtendedFloatingActionButton(
+                        onClick = {
+                            navigator.navigate(
+                                TemplateEditorScreenDestination(
+                                    TemplateViewModel.TemplateInfo(),
+                                    false
+                                )
                             )
-                        )
-                    },
-                    icon = { Icon(Icons.Filled.Add, null) },
-                    text = { Text(stringResource(id = R.string.app_profile_template_create)) },
-                )
+                        },
+                        icon = { Icon(Icons.Filled.Add, null) },
+                        text = { Text(stringResource(id = R.string.app_profile_template_create)) },
+                    )
+                }
             }
         },
         contentWindowInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal)
@@ -180,14 +186,16 @@ fun AppProfileTemplateScreen(
                 scope.launch { viewModel.fetchTemplates() }
             }
         ) {
+            val navBarPadding = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
+
             LazyColumn(
                 state = listState,
                 modifier = Modifier
                     .fillMaxSize()
                     .nestedScroll(scrollBehavior.nestedScrollConnection),
-                contentPadding = remember {
-                    PaddingValues(bottom = 16.dp /* Scaffold Fab Spacing + Fab container height */)
-                }
+                contentPadding = PaddingValues(
+                    bottom = 16.dp + navBarPadding
+                )
             ) {
                 items(viewModel.templateList, key = { it.id }) { app ->
                     TemplateItem(navigator, app)
