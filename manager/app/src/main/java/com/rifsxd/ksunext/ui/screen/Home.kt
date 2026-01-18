@@ -120,9 +120,7 @@ fun HomeScreen(navigator: DestinationsNavigator) {
                 onSettingsClick = {
                     navigator.navigate(SettingScreenDestination) {
                         launchSingleTop = true
-                        popUpTo(HomeScreenDestination) {
-                            saveState = true
-                        }
+                        popUpTo(HomeScreenDestination)
                     }
                 },
                 onInstallClick = {
@@ -162,10 +160,7 @@ fun HomeScreen(navigator: DestinationsNavigator) {
                         SuperuserCard(onClick = {
                             navigator.navigate(SuperUserScreenDestination) {
                                 launchSingleTop = true
-                                restoreState = true
-                                popUpTo(HomeScreenDestination) {
-                                    saveState = true
-                                }
+                                popUpTo(HomeScreenDestination)
                             }
                         })
                     }
@@ -173,10 +168,7 @@ fun HomeScreen(navigator: DestinationsNavigator) {
                         ModuleCard(onClick = {
                             navigator.navigate(ModuleScreenDestination) {
                                 launchSingleTop = true
-                                restoreState = true
-                                popUpTo(HomeScreenDestination) {
-                                    saveState = true
-                                }
+                                popUpTo(HomeScreenDestination)
                             }
                         })
                     }
