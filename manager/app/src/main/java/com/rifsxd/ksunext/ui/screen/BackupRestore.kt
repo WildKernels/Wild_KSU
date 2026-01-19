@@ -82,10 +82,10 @@ fun BackupRestoreScreen(navigator: DestinationsNavigator) {
             val scope = rememberCoroutineScope()
 
             val backupLauncher = rememberLauncherForActivityResult(
-                contract = ActivityResultContracts.CreateDocument("application/json")
+                contract = ActivityResultContracts.CreateDocument("application/gzip")
             ) { uri ->
                 uri?.let {
-                    if (SettingsBackupHelper.backupSettings(context, it)) {
+                    if (SettingsBackupHelper.backupSettingsArchive(context, it)) {
                         Toast.makeText(context, "Settings backed up successfully", Toast.LENGTH_SHORT).show()
                     } else {
                         Toast.makeText(context, "Failed to backup settings", Toast.LENGTH_SHORT).show()
@@ -97,7 +97,7 @@ fun BackupRestoreScreen(navigator: DestinationsNavigator) {
                 contract = ActivityResultContracts.OpenDocument()
             ) { uri ->
                 uri?.let {
-                    if (SettingsBackupHelper.restoreSettings(context, it)) {
+                    if (SettingsBackupHelper.restoreSettingsArchive(context, it)) {
                         Toast.makeText(context, "Settings restored successfully", Toast.LENGTH_SHORT).show()
                         refreshActivity(context)
                     } else {
@@ -290,7 +290,7 @@ fun BackupRestoreScreen(navigator: DestinationsNavigator) {
                 ) },
                 supportingContent = { Text(settingsBackupMessage) },
                 modifier = Modifier.clickable {
-                    backupLauncher.launch("ksu_next_settings_backup.json")
+                    backupLauncher.launch("wild_ksu_settings_backup.tar.gz")
                 }
             )
 
@@ -310,7 +310,7 @@ fun BackupRestoreScreen(navigator: DestinationsNavigator) {
                 ) },
                 supportingContent = { Text(settingsRestoreMessage) },
                 modifier = Modifier.clickable {
-                    restoreLauncher.launch(arrayOf("application/json"))
+                    restoreLauncher.launch(arrayOf("application/gzip", "application/x-gzip", "application/octet-stream"))
                 }
             )
         }
