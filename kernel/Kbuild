@@ -105,7 +105,32 @@ $(info -- Read: https://gitlab.com/simonpunk/susfs4ksu)
 endif
 else
 ifneq ($(strip $(CONFIG_KPROBES)),y)
-$(error KSU requires Kprobes; enable it (defconfig))
+$(info -- requires Kprobes; enable it (defconfig))
+endif
+endif
+
+## SUSFS / KPROBES info ##
+
+# Check if SUSFS is enabled and integrated
+SUSFS_SRC := $(wildcard $(srctree)/fs/susfs.c)
+
+ifdef CONFIG_KSU_SUSFS
+ifeq ($(CONFIG_KSU_SUSFS),y)
+ifneq ($(SUSFS_SRC),)
+SUSFS_VERSION := $(shell sed -n 's/^#define SUSFS_VERSION "\(.*\)"/\1/p' $(srctree)/include/linux/susfs.h)
+$(info -- SUSFS enabled)
+$(info -- SUSFS_VERSION: $(SUSFS_VERSION))
+else
+$(warning SUSFS enabled but fs/susfs.c not found)
+$(warning Read: https://gitlab.com/simonpunk/susfs4ksu)
+endif
+else
+# SUSFS disabled → check KPROBES
+ifdef CONFIG_KPROBES
+ifeq ($(CONFIG_KPROBES),n)
+$(warning KSU requires Kprobes; enable it (defconfig))
+endif
+endif
 endif
 endif
 
