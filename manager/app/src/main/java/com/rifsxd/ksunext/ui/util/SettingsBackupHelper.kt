@@ -241,7 +241,8 @@ object SettingsBackupHelper {
             val header = ByteArray(512)
 
             writeString(header, 0, 100, name)
-            writeOctal(header, 100, 8, 0o644L)
+            writeOctal(header, 100, 8, 420L) // 0644
+
             writeOctal(header, 108, 8, 0L)
             writeOctal(header, 116, 8, 0L)
             writeOctal(header, 124, 12, size)
