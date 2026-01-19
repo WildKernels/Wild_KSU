@@ -243,7 +243,6 @@ jobs:
         with:
           tag_name: ${{ needs.tag-release.outputs.tag_name }}
           body_path: RELEASE_NOTES.md
-          prerelease: true
           files: |
             manager/*.apk
             manager-spoofed/*.apk
@@ -270,7 +269,7 @@ jobs:
           path: manager-spoofed
 
       - name: Send Telegram notification and APKs
-        if: needs.build-manager.result == 'success'
+        if: needs.build-manager.result == 'success' && (github.ref == 'refs/heads/wild' || github.ref == 'refs/heads/wild-dev')
         env:
           COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
           COMMIT_SHA: ${{ github.sha }}
