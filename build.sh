@@ -16,4 +16,4 @@ cd manager
 
 cd ..
 
-adb install manager/app/build/outputs/apk/release/KernelSU_Next_v*.apk
+adb install manager/app/build/outputs/apk/release/Wild_KSU_v*.apk
