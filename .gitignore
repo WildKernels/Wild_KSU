@@ -1,10 +1,7 @@
 .idea
 .vscode
-CLAUDE.md
-AGENTS.md
 *.rej
 *.orig
 *.patch
 susfs4ksu
 Baseband-guard
-android-sdk
