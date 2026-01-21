@@ -85,7 +85,7 @@ fun DeveloperScreen(navigator: DestinationsNavigator) {
                     loadingDialog.withLoading {
                         withContext(Dispatchers.IO) {
                             runCatching {
-                                val url = "https://nightly.link/WildKernels/Wild_KSU/workflows/build-manager-ci/$branch/manager.zip"
+                                val url = "https://nightly.link/WildKernels/Wild_KSU/workflows/build-manager/$branch/manager.zip"
                                 val request = okhttp3.Request.Builder().url(url).build()
 
                                 ksuApp.okhttpClient.newCall(request).execute().use { response ->
@@ -142,49 +142,72 @@ fun DeveloperScreen(navigator: DestinationsNavigator) {
                 }
             }
 
-            // --- Force Update (Wild) ---
+            // --- Force Update (Stable) ---
             ListItem(
                 headlineContent = {
                     Text(
-                        text = "Update Manager (Wild)",
+                        text = "Update Manager (Stable)",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.SemiBold
                     )
                 },
                 supportingContent = {
-                    Text("Download and install latest manager from Wild branch")
+                    Text("Download and install latest manager from Stable branch")
                 },
                 leadingContent = {
                     Icon(
                         imageVector = Icons.Filled.Update,
-                        contentDescription = "Update Wild"
+                        contentDescription = "Update Stable"
                     )
                 },
                 modifier = Modifier.clickable {
-                    installUpdate("wild")
+                    installUpdate("stable")
                 }
             )
 
-            // --- Force Update (Wild Dev) ---
+            // --- Force Update (Beta) ---
             ListItem(
                 headlineContent = {
                     Text(
-                        text = "Update Manager (Wild Dev)",
+                        text = "Update Manager (Beta)",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.SemiBold
                     )
                 },
                 supportingContent = {
-                    Text("Download and install latest manager from Wild Dev branch")
+                    Text("Download and install latest manager from Beta branch")
                 },
                 leadingContent = {
                     Icon(
                         imageVector = Icons.Filled.Update,
-                        contentDescription = "Update Wild Dev"
+                        contentDescription = "Update Beta"
                     )
                 },
                 modifier = Modifier.clickable {
-                    installUpdate("wild-dev")
+                    installUpdate("beta")
+                }
+            )
+
+            // --- Force Update (Canary) ---
+            ListItem(
+                headlineContent = {
+                    Text(
+                        text = "Update Manager (Canary)",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                },
+                supportingContent = {
+                    Text("Download and install latest manager from Canary branch")
+                },
+                leadingContent = {
+                    Icon(
+                        imageVector = Icons.Filled.Update,
+                        contentDescription = "Update Canary"
+                    )
+                },
+                modifier = Modifier.clickable {
+                    installUpdate("canary")
                 }
             )
 
