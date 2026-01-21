@@ -60,15 +60,19 @@ class ModuleViewModel : ViewModel() {
     var isRefreshing by mutableStateOf(false)
         private set
 
+    private val prefs by lazy {
+        ksuApp.getSharedPreferences("settings", android.content.Context.MODE_PRIVATE)
+    }
+
     var search by mutableStateOf("")
 
-    var sortAToZ by mutableStateOf(false)
-    var sortZToA by mutableStateOf(false)
-    var sortSizeLowToHigh by mutableStateOf(false)
-    var sortSizeHighToLow by mutableStateOf(false)
-    var sortEnabledFirst by mutableStateOf(false)
-    var sortActionFirst by mutableStateOf(false)
-    var sortWebUiFirst by mutableStateOf(false)
+    var sortAToZ by mutableStateOf(prefs.getBoolean("module_sort_a_to_z", true))
+    var sortZToA by mutableStateOf(prefs.getBoolean("module_sort_z_to_a", false))
+    var sortSizeLowToHigh by mutableStateOf(prefs.getBoolean("module_sort_size_low_to_high", false))
+    var sortSizeHighToLow by mutableStateOf(prefs.getBoolean("module_sort_size_high_to_low", false))
+    var sortEnabledFirst by mutableStateOf(prefs.getBoolean("module_sort_enabled_first", false))
+    var sortActionFirst by mutableStateOf(prefs.getBoolean("module_sort_action_first", false))
+    var sortWebUiFirst by mutableStateOf(prefs.getBoolean("module_sort_webui_first", false))
 
     val moduleList by derivedStateOf {
         val comparator = when {

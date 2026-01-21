@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -93,14 +92,6 @@ fun ModuleScreen(navigator: DestinationsNavigator) {
     val prefs = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
 
     LaunchedEffect(Unit) {
-        viewModel.sortAToZ = prefs.getBoolean("module_sort_a_to_z", true)
-        viewModel.sortZToA = prefs.getBoolean("module_sort_z_to_a", false)
-        viewModel.sortSizeLowToHigh = prefs.getBoolean("module_sort_size_low_to_high", false)
-        viewModel.sortSizeHighToLow = prefs.getBoolean("module_sort_size_high_to_low", false)
-        viewModel.sortEnabledFirst = prefs.getBoolean("module_sort_enabled_first", false)
-        viewModel.sortActionFirst = prefs.getBoolean("module_sort_action_first", false)
-        viewModel.sortWebUiFirst = prefs.getBoolean("module_sort_webui_first", false)
-
         if (viewModel.moduleList.isEmpty() || viewModel.isNeedRefresh) {
             viewModel.fetchModuleList()
         }
@@ -122,7 +113,7 @@ fun ModuleScreen(navigator: DestinationsNavigator) {
         contract = ActivityResultContracts.StartActivityForResult()
     ) { viewModel.fetchModuleList() }
 
-    val listState = rememberLazyListState()
+    val listState = remember { LazyListState() }
     var showFab by remember { mutableStateOf(true) }
 
     LaunchedEffect(listState) {
