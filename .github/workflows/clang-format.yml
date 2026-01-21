@@ -2,13 +2,19 @@ name: ClangFormat check
 
 on:
   push:
-    branches: [ "wild-stable", "wild" ]
+    branches:
+      - stable
+      - beta
+      - canary
     paths:
       - '.github/workflows/clang-format.yml'
       - 'kernel/**/*.c'
       - 'kernel/**/*.h'
   pull_request:
-    branches: [ "wild-stable", "wild" ]
+    branches:
+      - stable
+      - beta
+      - canary
     paths:
       - '.github/workflows/clang-format.yml'
       - 'kernel/**/*.c'

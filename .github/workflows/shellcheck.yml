@@ -3,13 +3,17 @@ name: ShellCheck
 on:
   push:
     branches:
-      - 'wild-stable'
+      - stable
+      - beta
+      - canary
     paths:
       - '.github/workflows/shellcheck.yml'
       - '**/*.sh'
   pull_request:
     branches:
-      - 'wild-stable'
+      - stable
+      - beta
+      - canary
     paths:
       - '.github/workflows/shellcheck.yml'
       - '**/*.sh'

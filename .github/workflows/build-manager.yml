@@ -2,7 +2,10 @@ name: Build Manager
 
 on:
   push:
-    branches: [ "wild-stable" ]
+    branches:
+      - stable
+      - beta
+      - canary
     paths:
       - '.github/workflows/build-manager.yml'
       - '.github/workflows/build-lkm.yml'
@@ -11,11 +14,12 @@ on:
       - 'kernel/**'
       - 'userspace/**'
   pull_request:
-    branches: [ "wild-stable" ]
+    branches:
+      - stable
+      - beta
+      - canary
     paths:
-      - '.github/workflows/build-manager.yml'
-      - '.github/workflows/build-lkm.yml'
-      - '.github/workflows/ksud.yml'
+      - '.github/workflows/**'
       - 'manager/**'
       - 'kernel/**'
       - 'userspace/**'
@@ -69,7 +73,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        spoofed: [ false, true ]
+        spoofed: [ Normal, Spoofed ]
 
     defaults:
       run:
@@ -82,7 +86,7 @@ jobs:
           fetch-depth: 0
 
       - name: Spoof Package ID
-        if: matrix.spoofed == true
+        if: matrix.spoofed == 'Spoofed'
         run: |
           chmod +x spoof
           ./spoof
@@ -144,33 +148,194 @@ jobs:
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v5
-        if: ${{ ( github.event_name != 'pull_request' && (github.ref == 'refs/heads/stable' )) || github.ref_type == 'tag' }}
+        if: ${{ ( github.event_name != 'pull_request' && (github.ref == 'refs/heads/stable' || github.ref == 'refs/heads/beta' || github.ref == 'refs/heads/canary' )) || github.ref_type == 'tag' }}
         with:
-          name: ${{ matrix.spoofed && 'manager-spoofed' || 'manager' }}
+          name: ${{ matrix.spoofed == 'Spoofed' && 'manager-spoofed' || 'manager' }}
           path: manager/app/build/outputs/apk/release/*.apk
 
       - name: Upload mappings
         uses: actions/upload-artifact@v5
-        if: ${{ ( github.event_name != 'pull_request' && (github.ref == 'refs/heads/stable' )) || github.ref_type == 'tag' }}
+        if: ${{ ( github.event_name != 'pull_request' && (github.ref == 'refs/heads/stable' || github.ref == 'refs/heads/beta' || github.ref == 'refs/heads/canary' )) || github.ref_type == 'tag' }}
         with:
-          name: ${{ matrix.spoofed && 'mappings-spoofed' || 'mappings' }}
+          name: ${{ matrix.spoofed == 'Spoofed' && 'mappings-spoofed' || 'mappings' }}
           path: "manager/app/build/outputs/mapping/release/"
 
-      - name: Upload to telegram
-        if: github.event_name != 'pull_request' && steps.need_upload.outputs.UPLOAD == 'true'
+  upload-manager-telegram:
+    needs: build-manager
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Normal Manager
+        uses: actions/download-artifact@v6
+        with:
+          name: manager
+          path: manager
+
+      - name: Download Spoofed Manager
+        uses: actions/download-artifact@v6
+        with:
+          name: manager-spoofed
+          path: manager-spoofed
+
+      - name: Send Telegram notification and APKs
+        if: github.ref == 'refs/heads/stable' || github.ref == 'refs/heads/beta'
         env:
-          CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-          BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          MESSAGE_THREAD_ID: ${{ secrets.TELEGRAM_TOPIC_ID_WKSU }}
           COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
-          COMMIT_URL: ${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}
-          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-          TITLE: ${{ matrix.spoofed && 'Stable Manager Build (Spoofed)' || 'Stable Manager Build (Normal)' }}
+          COMMIT_SHA: ${{ github.sha }}
+          RUN_ID: ${{ github.run_id }}
+          REPO: ${{ github.repository }}
           BRANCH: ${{ github.ref_name }}
         run: |
-          if [ ! -z "${{ secrets.TELEGRAM_BOT_TOKEN }}" ]; then
-            export VERSION=$(git rev-list --count HEAD)
-            APK=$(find ./app/build/outputs/apk/release -name "*.apk")
-            pip3 install requests
-            python3 $GITHUB_WORKSPACE/scripts/ksunextbot.py $APK
+          set -euo pipefail
+
+          escape_html() {
+            local s="$1"
+            s="${s//&/&amp;}"
+            s="${s//</&lt;}"
+            s="${s//>/&gt;}"
+            printf '%s' "$s"
+          }
+
+          COMMIT_MESSAGE_ESCAPED="$(escape_html "${COMMIT_MESSAGE}")"
+          MESSAGE=$(
+            printf '%s\n%s\n%s\n%s\n\n%s\n%s\n' \
+            "<b>Repository:</b> <a href=\"https://github.com/${REPO}\">${REPO}</a>" \
+            "<b>Branch:</b> <a href=\"https://github.com/${REPO}/tree/${BRANCH}\">${BRANCH}</a>" \
+            "<b>Commit:</b> <a href=\"https://github.com/${REPO}/commit/${COMMIT_SHA}\">${COMMIT_SHA:0:7}</a>" \
+            "<b>Workflow:</b> <a href=\"https://github.com/${REPO}/actions/runs/${RUN_ID}\">View Run</a>" \
+            "<b>Commit Message:</b>" \
+            "<pre><code>${COMMIT_MESSAGE_ESCAPED}</code></pre>"
+          )
+
+              # Collect APKs
+              FILES=()
+              # Enable nullglob to handle empty directories
+              shopt -s nullglob
+              for apk in ./manager/*.apk ./manager-spoofed/*.apk; do
+                FILES+=("$apk")
+              done
+              shopt -u nullglob
+
+              if [ ${#FILES[@]} -eq 0 ]; then
+                echo "No APKs to upload."
+                exit 0
+              fi
+
+              echo "Found ${#FILES[@]} APKs to upload."
+
+              for apk in "${FILES[@]}"; do
+                 apk="${apk//$'\r'/}"
+                 if [[ "$apk" == *"manager-spoofed"* ]]; then
+                     TYPE="Spoofed"
+                 else
+                     TYPE="Normal"
+                 fi
+ 
+                 APK_NAME_ESCAPED="$(escape_html "$(basename "$apk")")"
+
+                 FULL_CAPTION="$(printf '%s\n\n%s' "<b>${TYPE}:</b> ${APK_NAME_ESCAPED}" "${MESSAGE}")"
+
+                 echo "Uploading $apk ($TYPE)..."
+                 if [ ! -f "$apk" ]; then
+                   echo "Missing file: $apk"
+                   ls -la "$(dirname "$apk")" || true
+                   exit 1
+                 fi
+                 curl -sS "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" \
+                   --form-string "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" \
+                   --form-string "message_thread_id=${{ secrets.TELEGRAM_TOPIC_ID_WKSU }}" \
+                   --form "document=@${apk}" \
+                   --form-string "caption=${FULL_CAPTION}" \
+                   --form-string "parse_mode=HTML"
+              done
+
+              echo "All uploads completed successfully."
+
+      - name: DM Artifacts
+        env:
+          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+          COMMIT_SHA: ${{ github.sha }}
+          RUN_ID: ${{ github.run_id }}
+          REPO: ${{ github.repository }}
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+
+          escape_html() {
+            local s="$1"
+            s="${s//&/&amp;}"
+            s="${s//</&lt;}"
+            s="${s//>/&gt;}"
+            printf '%s' "$s"
+          }
+
+          COMMIT_MESSAGE_ESCAPED="$(escape_html "${COMMIT_MESSAGE}")"
+
+          MESSAGE=$(
+            printf '%s\n%s\n%s\n%s\n\n%s\n%s\n' \
+            "<b>Repository:</b> <a href=\"https://github.com/${REPO}\">${REPO}</a>" \
+            "<b>Branch:</b> <a href=\"https://github.com/${REPO}/tree/${BRANCH}\">${BRANCH}</a>" \
+            "<b>Commit:</b> <a href=\"https://github.com/${REPO}/commit/${COMMIT_SHA}\">${COMMIT_SHA:0:7}</a>" \
+            "<b>Workflow:</b> <a href=\"https://github.com/${REPO}/actions/runs/${RUN_ID}\">View Run</a>" \
+            "<b>Commit Message:</b>" \
+            "<pre><code>${COMMIT_MESSAGE_ESCAPED}</code></pre>"
+          )
+
+          FILES=()
+          shopt -s nullglob
+          for apk in ./manager/*.apk ./manager-spoofed/*.apk; do
+            FILES+=("$apk")
+          done
+          shopt -u nullglob
+
+          if [ ${#FILES[@]} -eq 0 ]; then
+            echo "No APKs to DM."
+            exit 0
           fi
+
+          for apk in "${FILES[@]}"; do
+            apk="${apk//$'\r'/}"
+            if [[ "$apk" == *"manager-spoofed"* ]]; then
+              TYPE="Spoofed"
+            else
+              TYPE="Normal"
+            fi
+ 
+            APK_NAME_ESCAPED="$(escape_html "$(basename "$apk")")"
+
+            FULL_CAPTION="$(printf '%s\n\n%s' "<b>${TYPE}:</b> ${APK_NAME_ESCAPED}" "${MESSAGE}")"
+
+            echo "Sending $apk ($TYPE) to Telegram DM..."
+            curl -sS "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" \
+              --form-string "chat_id=${{ secrets.TELEGRAM_USER_ID }}" \
+              --form "document=@${apk}" \
+              --form-string "caption=${FULL_CAPTION}" \
+              --form-string "parse_mode=HTML"
+          done
+
+      - name: DM Failure Notification
+        if: always() && needs.build-manager.result == 'failure'
+        env:
+          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+          COMMIT_SHA: ${{ github.sha }}
+          RUN_ID: ${{ github.run_id }}
+          REPO: ${{ github.repository }}
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+
+          MESSAGE=$(
+            printf '%s\n\n%s\n%s\n%s\n%s\n\n%s\n%s\n' \
+            "<b>Wild KSU Build Failed</b> 🔴" \
+            "<b>Repository:</b> <a href=\"https://github.com/${REPO}\">${REPO}</a>" \
+            "<b>Branch:</b> <a href=\"https://github.com/${REPO}/tree/${BRANCH}\">${BRANCH}</a>" \
+            "<b>Commit:</b> <a href=\"https://github.com/${REPO}/commit/${COMMIT_SHA}\">${COMMIT_SHA:0:7}</a>" \
+            "<b>Workflow:</b> <a href=\"https://github.com/${REPO}/actions/runs/${RUN_ID}\">View Run</a>" \
+            "<b>Commit Message:</b>" \
+            "${COMMIT_MESSAGE}"
+          )
+
+          echo "Sending Failure Notification..."
+          curl -sS -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
+            -d chat_id="${{ secrets.TELEGRAM_USER_ID }}" \
+            -d parse_mode="HTML" \
+            --data-urlencode "text=$MESSAGE"
