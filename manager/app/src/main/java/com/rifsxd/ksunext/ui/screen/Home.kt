@@ -450,15 +450,17 @@ fun UpdateCard(snackBarHost: SnackbarHostState, loadingDialog: LoadingDialogHand
                     Column(modifier = Modifier.padding(24.dp)) {
                         Text(
                             text = title,
-                            style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.Bold
+                            style = MaterialTheme.typography.headlineSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                         Spacer(modifier = Modifier.height(16.dp))
 
                         Column(modifier = Modifier.verticalScroll(rememberScrollState()).weight(1f, fill = false)) {
                             Text(
                                 text = changelog,
-                                style = MaterialTheme.typography.bodyMedium
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurface
                             )
                         }
 

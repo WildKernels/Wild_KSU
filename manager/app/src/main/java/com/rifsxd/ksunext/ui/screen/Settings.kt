@@ -246,28 +246,7 @@ fun SettingScreen(navigator: DestinationsNavigator) {
                         modifier = Modifier.padding(12.dp),
                         verticalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
-                        ListItem(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clip(MaterialTheme.shapes.small)
-                                .clickable {
-                                    navigator.navigate(AppProfileTemplateScreenDestination)
-                                },
-                            colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                            leadingContent = {
-                                Icon(Icons.Filled.Fence, null)
-                            },
-                            headlineContent = {
-                                Text(
-                                    text = stringResource(R.string.settings_profile_template),
-                                    style = MaterialTheme.typography.titleMedium,
-                                    fontWeight = FontWeight.SemiBold
-                                )
-                            },
-                            supportingContent = {
-                                Text(stringResource(R.string.settings_profile_template_summary))
-                            }
-                        )
+
 
                         ListItem(
                             modifier = Modifier

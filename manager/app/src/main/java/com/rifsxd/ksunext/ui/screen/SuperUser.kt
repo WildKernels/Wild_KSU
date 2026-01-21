@@ -34,6 +34,7 @@ import com.dergoogler.mmrl.ui.component.LabelItemDefaults
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.generated.destinations.AppProfileScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.AppProfileTemplateScreenDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.rifsxd.ksunext.ksuApp
 import com.rifsxd.ksunext.Natives
@@ -41,6 +42,12 @@ import com.rifsxd.ksunext.R
 import com.rifsxd.ksunext.ui.component.SearchAppBar
 import com.rifsxd.ksunext.ui.viewmodel.SuperUserViewModel
 import kotlinx.coroutines.launch
+import android.os.Build
+import android.view.WindowManager
+import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.window.Dialog
+import com.rifsxd.ksunext.ui.util.LocalBaseColorScheme
+import com.rifsxd.ksunext.ui.util.LocalUiOverlaySettings
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
 @Destination<RootGraph>
@@ -98,29 +105,116 @@ fun SuperUserScreen(navigator: DestinationsNavigator) {
                             contentDescription = stringResource(id = R.string.settings)
                         )
 
-                        DropdownMenu(expanded = showDropdown, onDismissRequest = {
-                            showDropdown = false
-                        }) {
-                            DropdownMenuItem(text = {
-                                Text(stringResource(R.string.refresh))
-                            }, onClick = {
-                                scope.launch {
-                                    viewModel.fetchAppList()
-                                }
-                                showDropdown = false
-                            })
-                            DropdownMenuItem(text = {
-                                Text(
-                                    if (viewModel.showSystemApps) {
-                                        stringResource(R.string.hide_system_apps)
-                                    } else {
-                                        stringResource(R.string.show_system_apps)
+                        if (showDropdown) {
+                            val baseScheme = LocalBaseColorScheme.current
+                            val cardAlpha = LocalUiOverlaySettings.current.cardAlpha
+                            MaterialTheme(
+                                colorScheme = baseScheme,
+                                typography = MaterialTheme.typography,
+                                shapes = MaterialTheme.shapes,
+                            ) {
+                                Dialog(
+                                    onDismissRequest = { showDropdown = false }
+                                ) {
+                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                                        val view = LocalView.current
+                                        val context = LocalContext.current
+                                        DisposableEffect(view) {
+                                            val root = view.rootView
+                                            val params = root.layoutParams as? WindowManager.LayoutParams
+                                            if (params != null) {
+                                                params.flags = params.flags or WindowManager.LayoutParams.FLAG_BLUR_BEHIND
+                                                params.blurBehindRadius = 60
+                                                val wm = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+                                                wm.updateViewLayout(root, params)
+                                            }
+                                            onDispose {}
+                                        }
                                     }
-                                )
-                            }, onClick = {
-                                viewModel.updateShowSystemApps(!viewModel.showSystemApps)
-                                showDropdown = false
-                            })
+
+                                    Card(
+                                        modifier = Modifier.fillMaxWidth(0.95f),
+                                        colors = CardDefaults.cardColors(
+                                            containerColor = baseScheme.surfaceContainer.copy(alpha = cardAlpha),
+                                        ),
+                                    ) {
+                                        Column(modifier = Modifier.padding(24.dp)) {
+                                            Text(
+                                                text = stringResource(R.string.settings),
+                                                style = MaterialTheme.typography.headlineSmall,
+                                                fontWeight = FontWeight.Bold,
+                                                color = MaterialTheme.colorScheme.onSurface
+                                            )
+                                            Spacer(modifier = Modifier.height(16.dp))
+
+                                            Row(
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .clickable {
+                                                        scope.launch { viewModel.fetchAppList() }
+                                                        showDropdown = false
+                                                    }
+                                                    .padding(vertical = 12.dp),
+                                                verticalAlignment = Alignment.CenterVertically
+                                            ) {
+                                                Text(
+                                                    text = stringResource(R.string.refresh),
+                                                    style = MaterialTheme.typography.titleMedium,
+                                                    color = MaterialTheme.colorScheme.onSurface
+                                                )
+                                            }
+
+                                            Row(
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .clickable {
+                                                        viewModel.updateShowSystemApps(!viewModel.showSystemApps)
+                                                        showDropdown = false
+                                                    }
+                                                    .padding(vertical = 12.dp),
+                                                verticalAlignment = Alignment.CenterVertically
+                                            ) {
+                                                Text(
+                                                    text = if (viewModel.showSystemApps) {
+                                                        stringResource(R.string.hide_system_apps)
+                                                    } else {
+                                                        stringResource(R.string.show_system_apps)
+                                                    },
+                                                    style = MaterialTheme.typography.titleMedium,
+                                                    color = MaterialTheme.colorScheme.onSurface
+                                                )
+                                            }
+
+                                            Row(
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .clickable {
+                                                        navigator.navigate(AppProfileTemplateScreenDestination)
+                                                        showDropdown = false
+                                                    }
+                                                    .padding(vertical = 12.dp),
+                                                verticalAlignment = Alignment.CenterVertically
+                                            ) {
+                                                Text(
+                                                    text = stringResource(R.string.settings_profile_template),
+                                                    style = MaterialTheme.typography.titleMedium,
+                                                    color = MaterialTheme.colorScheme.onSurface
+                                                )
+                                            }
+
+                                            Spacer(modifier = Modifier.height(24.dp))
+                                            Row(
+                                                modifier = Modifier.fillMaxWidth(),
+                                                horizontalArrangement = Arrangement.End
+                                            ) {
+                                                TextButton(onClick = { showDropdown = false }) {
+                                                    Text(stringResource(android.R.string.cancel))
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 },

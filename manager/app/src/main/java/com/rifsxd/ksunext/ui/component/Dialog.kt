@@ -1,5 +1,6 @@
 package com.rifsxd.ksunext.ui.component
 
+import android.content.Context
 import android.graphics.text.LineBreaker
 import android.os.Build
 import android.os.Parcelable
@@ -7,12 +8,12 @@ import android.text.Layout
 import android.text.method.LinkMovementMethod
 import android.util.Log
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.TextView
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.Saver
@@ -20,12 +21,16 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.rifsxd.ksunext.ui.util.LocalBaseColorScheme
+import com.rifsxd.ksunext.ui.util.LocalUiOverlaySettings
 import io.noties.markwon.Markwon
 import io.noties.markwon.utils.NoCopySpannableFactory
 import kotlinx.coroutines.*
@@ -398,35 +403,82 @@ private fun LoadingDialog() {
 
 @Composable
 private fun ConfirmDialog(visuals: ConfirmDialogVisuals, confirm: () -> Unit, dismiss: () -> Unit) {
-    AlertDialog(
+    val baseScheme = LocalBaseColorScheme.current
+    val cardAlpha = LocalUiOverlaySettings.current.cardAlpha
+
+    Dialog(
         onDismissRequest = {
             dismiss()
-        },
-        title = {
-            Text(
-                text = visuals.title,
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.SemiBold
-            )
-        },
-        text = {
-            if (visuals.isMarkdown) {
-                MarkdownContent(content = visuals.content)
-            } else {
-                Text(text = visuals.content)
+        }
+    ) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val view = LocalView.current
+            val context = LocalContext.current
+            DisposableEffect(view) {
+                val root = view.rootView
+                val params = root.layoutParams as? WindowManager.LayoutParams
+                if (params != null) {
+                    params.flags = params.flags or WindowManager.LayoutParams.FLAG_BLUR_BEHIND
+                    params.blurBehindRadius = 60
+                    val wm = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+                    wm.updateViewLayout(root, params)
+                }
+                onDispose {}
             }
-        },
-        confirmButton = {
-            TextButton(onClick = confirm) {
-                Text(text = visuals.confirm ?: stringResource(id = android.R.string.ok))
+        }
+
+        Card(
+            modifier = Modifier.fillMaxWidth(0.95f),
+            colors = CardDefaults.cardColors(
+                containerColor = baseScheme.surfaceContainer.copy(alpha = cardAlpha),
+            ),
+        ) {
+            Column(modifier = Modifier.padding(24.dp)) {
+                if (visuals.title.isNotEmpty()) {
+                    Text(
+                        text = visuals.title,
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
+
+                Column(modifier = Modifier.verticalScroll(rememberScrollState()).weight(1f, fill = false)) {
+                    if (visuals.isMarkdown) {
+                        MarkdownContent(content = visuals.content)
+                    } else {
+                        Text(
+                            text = visuals.content,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    TextButton(onClick = dismiss) {
+                        Text(
+                            text = visuals.dismiss ?: stringResource(id = android.R.string.cancel),
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(8.dp))
+                    TextButton(onClick = confirm) {
+                        Text(
+                            text = visuals.confirm ?: stringResource(id = android.R.string.ok),
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                }
             }
-        },
-        dismissButton = {
-            TextButton(onClick = dismiss) {
-                Text(text = visuals.dismiss ?: stringResource(id = android.R.string.cancel))
-            }
-        },
-    )
+        }
+    }
 }
 
 @Composable

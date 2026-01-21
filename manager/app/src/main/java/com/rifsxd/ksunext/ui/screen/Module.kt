@@ -19,6 +19,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.outlined.Wysiwyg
@@ -75,6 +77,10 @@ import com.topjohnwu.superuser.io.SuFile
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import android.os.Build
+import android.view.WindowManager
+import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.window.Dialog
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Destination<RootGraph>
@@ -176,218 +182,223 @@ fun ModuleScreen(navigator: DestinationsNavigator) {
                             imageVector = Icons.Filled.MoreVert,
                             contentDescription = stringResource(id = R.string.settings)
                         )
-                        DropdownMenu(
-                            expanded = showDropdown,
-                            onDismissRequest = {
-                                showDropdown = false
+                        
+                        if (showDropdown) {
+                            val baseScheme = LocalBaseColorScheme.current
+                            val cardAlpha = LocalUiOverlaySettings.current.cardAlpha
+                            MaterialTheme(
+                                colorScheme = baseScheme,
+                                typography = MaterialTheme.typography,
+                                shapes = MaterialTheme.shapes,
+                            ) {
+                                Dialog(
+                                    onDismissRequest = { showDropdown = false }
+                                ) {
+                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                                        val view = LocalView.current
+                                        val context = LocalContext.current
+                                        DisposableEffect(view) {
+                                            val root = view.rootView
+                                            val params = root.layoutParams as? WindowManager.LayoutParams
+                                            if (params != null) {
+                                                params.flags = params.flags or WindowManager.LayoutParams.FLAG_BLUR_BEHIND
+                                                params.blurBehindRadius = 60
+                                                val wm = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+                                                wm.updateViewLayout(root, params)
+                                            }
+                                            onDispose {}
+                                        }
+                                    }
+
+                                    Card(
+                                        modifier = Modifier.fillMaxWidth(0.95f),
+                                        colors = CardDefaults.cardColors(
+                                            containerColor = baseScheme.surfaceContainer.copy(alpha = cardAlpha),
+                                        ),
+                                    ) {
+                                        Column(modifier = Modifier.padding(24.dp)) {
+                                            Text(
+                                                text = stringResource(R.string.settings),
+                                                style = MaterialTheme.typography.headlineSmall,
+                                                fontWeight = FontWeight.Bold,
+                                                color = MaterialTheme.colorScheme.onSurface
+                                            )
+                                            Spacer(modifier = Modifier.height(16.dp))
+
+                                            Column(modifier = Modifier.verticalScroll(rememberScrollState()).weight(1f, fill = false)) {
+                                                @Composable
+                                                fun SortOption(text: String, checked: Boolean, onClick: () -> Unit) {
+                                                    Row(
+                                                        modifier = Modifier
+                                                            .fillMaxWidth()
+                                                            .clickable(onClick = onClick)
+                                                            .padding(vertical = 8.dp),
+                                                        verticalAlignment = Alignment.CenterVertically
+                                                    ) {
+                                                        Text(
+                                                            text = text,
+                                                            style = MaterialTheme.typography.titleMedium,
+                                                            color = MaterialTheme.colorScheme.onSurface,
+                                                            modifier = Modifier.weight(1f)
+                                                        )
+                                                        Checkbox(checked = checked, onCheckedChange = null)
+                                                    }
+                                                }
+
+                                                SortOption(stringResource(R.string.module_sort_a_to_z), viewModel.sortAToZ) {
+                                                    viewModel.sortAToZ = !viewModel.sortAToZ
+                                                    viewModel.sortZToA = false
+                                                    viewModel.sortSizeLowToHigh = false
+                                                    viewModel.sortSizeHighToLow = false
+                                                    viewModel.sortEnabledFirst = false
+                                                    viewModel.sortActionFirst = false
+                                                    viewModel.sortWebUiFirst = false
+                                                    prefs.edit {
+                                                        putBoolean("module_sort_a_to_z", viewModel.sortAToZ)
+                                                        putBoolean("module_sort_z_to_a", false)
+                                                        putBoolean("module_sort_size_low_to_high", false)
+                                                        putBoolean("module_sort_size_high_to_low", false)
+                                                        putBoolean("module_sort_enabled_first", false)
+                                                        putBoolean("module_sort_action_first", false)
+                                                        putBoolean("module_sort_webui_first", false)
+                                                    }
+                                                    scope.launch { viewModel.fetchModuleList() }
+                                                }
+
+                                                SortOption(stringResource(R.string.module_sort_z_to_a), viewModel.sortZToA) {
+                                                    viewModel.sortZToA = !viewModel.sortZToA
+                                                    viewModel.sortAToZ = false
+                                                    viewModel.sortSizeLowToHigh = false
+                                                    viewModel.sortSizeHighToLow = false
+                                                    viewModel.sortEnabledFirst = false
+                                                    viewModel.sortActionFirst = false
+                                                    viewModel.sortWebUiFirst = false
+                                                    prefs.edit {
+                                                        putBoolean("module_sort_z_to_a", viewModel.sortZToA)
+                                                        putBoolean("module_sort_a_to_z", false)
+                                                        putBoolean("module_sort_size_low_to_high", false)
+                                                        putBoolean("module_sort_size_high_to_low", false)
+                                                        putBoolean("module_sort_enabled_first", false)
+                                                        putBoolean("module_sort_action_first", false)
+                                                        putBoolean("module_sort_webui_first", false)
+                                                    }
+                                                    scope.launch { viewModel.fetchModuleList() }
+                                                }
+
+                                                SortOption(stringResource(R.string.module_size_low_to_high), viewModel.sortSizeLowToHigh) {
+                                                    viewModel.sortSizeLowToHigh = !viewModel.sortSizeLowToHigh
+                                                    viewModel.sortAToZ = false
+                                                    viewModel.sortZToA = false
+                                                    viewModel.sortSizeHighToLow = false
+                                                    viewModel.sortEnabledFirst = false
+                                                    viewModel.sortActionFirst = false
+                                                    viewModel.sortWebUiFirst = false
+                                                    prefs.edit {
+                                                        putBoolean("module_sort_size_low_to_high", viewModel.sortSizeLowToHigh)
+                                                        putBoolean("module_sort_a_to_z", false)
+                                                        putBoolean("module_sort_z_to_a", false)
+                                                        putBoolean("module_sort_size_high_to_low", false)
+                                                        putBoolean("module_sort_enabled_first", false)
+                                                        putBoolean("module_sort_action_first", false)
+                                                        putBoolean("module_sort_webui_first", false)
+                                                    }
+                                                    scope.launch { viewModel.fetchModuleList() }
+                                                }
+
+                                                SortOption(stringResource(R.string.module_size_high_to_low), viewModel.sortSizeHighToLow) {
+                                                    viewModel.sortSizeHighToLow = !viewModel.sortSizeHighToLow
+                                                    viewModel.sortAToZ = false
+                                                    viewModel.sortZToA = false
+                                                    viewModel.sortSizeLowToHigh = false
+                                                    viewModel.sortEnabledFirst = false
+                                                    viewModel.sortActionFirst = false
+                                                    viewModel.sortWebUiFirst = false
+                                                    prefs.edit {
+                                                        putBoolean("module_sort_size_high_to_low", viewModel.sortSizeHighToLow)
+                                                        putBoolean("module_sort_a_to_z", false)
+                                                        putBoolean("module_sort_z_to_a", false)
+                                                        putBoolean("module_sort_size_low_to_high", false)
+                                                        putBoolean("module_sort_enabled_first", false)
+                                                        putBoolean("module_sort_action_first", false)
+                                                        putBoolean("module_sort_webui_first", false)
+                                                    }
+                                                    scope.launch { viewModel.fetchModuleList() }
+                                                }
+
+                                                SortOption(stringResource(R.string.module_sort_enabled_first), viewModel.sortEnabledFirst) {
+                                                    viewModel.sortEnabledFirst = !viewModel.sortEnabledFirst
+                                                    viewModel.sortAToZ = false
+                                                    viewModel.sortZToA = false
+                                                    viewModel.sortSizeLowToHigh = false
+                                                    viewModel.sortSizeHighToLow = false
+                                                    viewModel.sortActionFirst = false
+                                                    viewModel.sortWebUiFirst = false
+                                                    prefs.edit {
+                                                        putBoolean("module_sort_enabled_first", viewModel.sortEnabledFirst)
+                                                        putBoolean("module_sort_a_to_z", false)
+                                                        putBoolean("module_sort_z_to_a", false)
+                                                        putBoolean("module_sort_size_low_to_high", false)
+                                                        putBoolean("module_sort_size_high_to_low", false)
+                                                        putBoolean("module_sort_action_first", false)
+                                                        putBoolean("module_sort_webui_first", false)
+                                                    }
+                                                    scope.launch { viewModel.fetchModuleList() }
+                                                }
+
+                                                SortOption(stringResource(R.string.module_sort_action_first), viewModel.sortActionFirst) {
+                                                    viewModel.sortActionFirst = !viewModel.sortActionFirst
+                                                    viewModel.sortAToZ = false
+                                                    viewModel.sortZToA = false
+                                                    viewModel.sortSizeLowToHigh = false
+                                                    viewModel.sortSizeHighToLow = false
+                                                    viewModel.sortEnabledFirst = false
+                                                    viewModel.sortWebUiFirst = false
+                                                    prefs.edit {
+                                                        putBoolean("module_sort_action_first", viewModel.sortActionFirst)
+                                                        putBoolean("module_sort_a_to_z", false)
+                                                        putBoolean("module_sort_z_to_a", false)
+                                                        putBoolean("module_sort_size_low_to_high", false)
+                                                        putBoolean("module_sort_size_high_to_low", false)
+                                                        putBoolean("module_sort_enabled_first", false)
+                                                        putBoolean("module_sort_webui_first", false)
+                                                    }
+                                                    scope.launch { viewModel.fetchModuleList() }
+                                                }
+
+                                                SortOption(stringResource(R.string.module_sort_webui_first), viewModel.sortWebUiFirst) {
+                                                    viewModel.sortWebUiFirst = !viewModel.sortWebUiFirst
+                                                    viewModel.sortAToZ = false
+                                                    viewModel.sortZToA = false
+                                                    viewModel.sortSizeLowToHigh = false
+                                                    viewModel.sortSizeHighToLow = false
+                                                    viewModel.sortEnabledFirst = false
+                                                    viewModel.sortActionFirst = false
+                                                    prefs.edit {
+                                                        putBoolean("module_sort_webui_first", viewModel.sortWebUiFirst)
+                                                        putBoolean("module_sort_a_to_z", false)
+                                                        putBoolean("module_sort_z_to_a", false)
+                                                        putBoolean("module_sort_size_low_to_high", false)
+                                                        putBoolean("module_sort_size_high_to_low", false)
+                                                        putBoolean("module_sort_enabled_first", false)
+                                                        putBoolean("module_sort_action_first", false)
+                                                    }
+                                                    scope.launch { viewModel.fetchModuleList() }
+                                                }
+                                            }
+
+                                            Spacer(modifier = Modifier.height(24.dp))
+                                            Row(
+                                                modifier = Modifier.fillMaxWidth(),
+                                                horizontalArrangement = Arrangement.End
+                                            ) {
+                                                TextButton(onClick = { showDropdown = false }) {
+                                                    Text(stringResource(android.R.string.cancel))
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
                             }
-                        ) {
-                            DropdownMenuItem(
-                                text = {
-                                    Text(stringResource(R.string.module_sort_a_to_z))
-                                },
-                                trailingIcon = {
-                                    Checkbox(checked = viewModel.sortAToZ, onCheckedChange = null)
-                                },
-                                onClick = {
-                                    viewModel.sortAToZ = !viewModel.sortAToZ
-                                    viewModel.sortZToA = false
-                                    viewModel.sortSizeLowToHigh = false
-                                    viewModel.sortSizeHighToLow = false
-                                    viewModel.sortEnabledFirst = false
-                                    viewModel.sortActionFirst = false
-                                    viewModel.sortWebUiFirst = false
-                                    prefs.edit {
-                                        putBoolean("module_sort_a_to_z", viewModel.sortAToZ)
-                                        putBoolean("module_sort_z_to_a", false)
-                                        putBoolean("module_sort_size_low_to_high", false)
-                                        putBoolean("module_sort_size_high_to_low", false)
-                                        putBoolean("module_sort_enabled_first", false)
-                                        putBoolean("module_sort_action_first", false)
-                                        putBoolean("module_sort_webui_first", false)
-                                    }
-                                    scope.launch {
-                                        viewModel.fetchModuleList()
-                                    }
-                                }
-                            )
-
-                            DropdownMenuItem(
-                                text = {
-                                    Text(stringResource(R.string.module_sort_z_to_a))
-                                },
-                                trailingIcon = {
-                                    Checkbox(checked = viewModel.sortZToA, onCheckedChange = null)
-                                },
-                                onClick = {
-                                    viewModel.sortZToA = !viewModel.sortZToA
-                                    viewModel.sortAToZ = false
-                                    viewModel.sortSizeLowToHigh = false
-                                    viewModel.sortSizeHighToLow = false
-                                    viewModel.sortEnabledFirst = false
-                                    viewModel.sortActionFirst = false
-                                    viewModel.sortWebUiFirst = false
-                                    prefs.edit {
-                                        putBoolean("module_sort_z_to_a", viewModel.sortZToA)
-                                        putBoolean("module_sort_a_to_z", false)
-                                        putBoolean("module_sort_size_low_to_high", false)
-                                        putBoolean("module_sort_size_high_to_low", false)
-                                        putBoolean("module_sort_enabled_first", false)
-                                        putBoolean("module_sort_action_first", false)
-                                        putBoolean("module_sort_webui_first", false)
-                                    }
-                                    scope.launch {
-                                        viewModel.fetchModuleList()
-                                    }
-                                }
-                            )
-
-                            DropdownMenuItem(
-                                text = {
-                                    Text(stringResource(R.string.module_size_low_to_high))
-                                },
-                                trailingIcon = {
-                                    Checkbox(checked = viewModel.sortSizeLowToHigh, onCheckedChange = null)
-                                },
-                                onClick = {
-                                    viewModel.sortSizeLowToHigh = !viewModel.sortSizeLowToHigh
-                                    viewModel.sortAToZ = false
-                                    viewModel.sortZToA = false
-                                    viewModel.sortSizeHighToLow = false
-                                    viewModel.sortEnabledFirst = false
-                                    viewModel.sortActionFirst = false
-                                    viewModel.sortWebUiFirst = false
-                                    prefs.edit {
-                                        putBoolean("module_sort_size_low_to_high", viewModel.sortSizeLowToHigh)
-                                        putBoolean("module_sort_a_to_z", false)
-                                        putBoolean("module_sort_z_to_a", false)
-                                        putBoolean("module_sort_size_high_to_low", false)
-                                        putBoolean("module_sort_enabled_first", false)
-                                        putBoolean("module_sort_action_first", false)
-                                        putBoolean("module_sort_webui_first", false)
-                                    }
-                                    scope.launch {
-                                        viewModel.fetchModuleList()
-                                    }
-                                }
-                            )
-
-                            DropdownMenuItem(
-                                text = {
-                                    Text(stringResource(R.string.module_size_high_to_low))
-                                },
-                                trailingIcon = {
-                                    Checkbox(checked = viewModel.sortSizeHighToLow, onCheckedChange = null)
-                                },
-                                onClick = {
-                                    viewModel.sortSizeHighToLow = !viewModel.sortSizeHighToLow
-                                    viewModel.sortAToZ = false
-                                    viewModel.sortZToA = false
-                                    viewModel.sortSizeLowToHigh = false
-                                    viewModel.sortEnabledFirst = false
-                                    viewModel.sortActionFirst = false
-                                    viewModel.sortWebUiFirst = false
-                                    prefs.edit {
-                                        putBoolean("module_sort_size_high_to_low", viewModel.sortSizeHighToLow)
-                                        putBoolean("module_sort_a_to_z", false)
-                                        putBoolean("module_sort_z_to_a", false)
-                                        putBoolean("module_sort_size_low_to_high", false)
-                                        putBoolean("module_sort_enabled_first", false)
-                                        putBoolean("module_sort_action_first", false)
-                                        putBoolean("module_sort_webui_first", false)
-                                    }
-                                    scope.launch {
-                                        viewModel.fetchModuleList()
-                                    }
-                                }
-                            )
-                            DropdownMenuItem(
-                                text = {
-                                    Text(stringResource(R.string.module_sort_enabled_first))
-                                },
-                                trailingIcon = {
-                                    Checkbox(checked = viewModel.sortEnabledFirst, onCheckedChange = null)
-                                },
-                                onClick = {
-                                    viewModel.sortEnabledFirst = !viewModel.sortEnabledFirst
-                                    viewModel.sortAToZ = false
-                                    viewModel.sortZToA = false
-                                    viewModel.sortSizeLowToHigh = false
-                                    viewModel.sortSizeHighToLow = false
-                                    viewModel.sortActionFirst = false
-                                    viewModel.sortWebUiFirst = false
-                                    prefs.edit {
-                                        putBoolean("module_sort_enabled_first", viewModel.sortEnabledFirst)
-                                        putBoolean("module_sort_a_to_z", false)
-                                        putBoolean("module_sort_z_to_a", false)
-                                        putBoolean("module_sort_size_low_to_high", false)
-                                        putBoolean("module_sort_size_high_to_low", false)
-                                        putBoolean("module_sort_action_first", false)
-                                        putBoolean("module_sort_webui_first", false)
-                                    }
-                                    scope.launch {
-                                        viewModel.fetchModuleList()
-                                    }
-                                }
-                            )
-                            DropdownMenuItem(
-                                text = {
-                                    Text(stringResource(R.string.module_sort_action_first))
-                                },
-                                trailingIcon = {
-                                    Checkbox(checked = viewModel.sortActionFirst, onCheckedChange = null)
-                                },
-                                onClick = {
-                                    viewModel.sortActionFirst = !viewModel.sortActionFirst
-                                    viewModel.sortAToZ = false
-                                    viewModel.sortZToA = false
-                                    viewModel.sortSizeLowToHigh = false
-                                    viewModel.sortSizeHighToLow = false
-                                    viewModel.sortEnabledFirst = false
-                                    viewModel.sortWebUiFirst = false
-                                    prefs.edit {
-                                        putBoolean("module_sort_action_first", viewModel.sortActionFirst)
-                                        putBoolean("module_sort_a_to_z", false)
-                                        putBoolean("module_sort_z_to_a", false)
-                                        putBoolean("module_sort_size_low_to_high", false)
-                                        putBoolean("module_sort_size_high_to_low", false)
-                                        putBoolean("module_sort_enabled_first", false)
-                                        putBoolean("module_sort_webui_first", false)
-                                    }
-                                    scope.launch {
-                                        viewModel.fetchModuleList()
-                                    }
-                                }
-                            )
-                            DropdownMenuItem(
-                                text = {
-                                    Text(stringResource(R.string.module_sort_webui_first))
-                                },
-                                trailingIcon = {
-                                    Checkbox(checked = viewModel.sortWebUiFirst, onCheckedChange = null)
-                                },
-                                onClick = {
-                                    viewModel.sortWebUiFirst = !viewModel.sortWebUiFirst
-                                    viewModel.sortAToZ = false
-                                    viewModel.sortZToA = false
-                                    viewModel.sortSizeLowToHigh = false
-                                    viewModel.sortSizeHighToLow = false
-                                    viewModel.sortEnabledFirst = false
-                                    viewModel.sortActionFirst = false
-                                    prefs.edit {
-                                        putBoolean("module_sort_webui_first", viewModel.sortWebUiFirst)
-                                        putBoolean("module_sort_a_to_z", false)
-                                        putBoolean("module_sort_z_to_a", false)
-                                        putBoolean("module_sort_size_low_to_high", false)
-                                        putBoolean("module_sort_size_high_to_low", false)
-                                        putBoolean("module_sort_enabled_first", false)
-                                        putBoolean("module_sort_action_first", false)
-                                    }
-                                    scope.launch {
-                                        viewModel.fetchModuleList()
-                                    }
-                                }
-                            )
                         }
                     }
                 },
