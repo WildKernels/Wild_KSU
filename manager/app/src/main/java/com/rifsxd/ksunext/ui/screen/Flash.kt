@@ -342,8 +342,14 @@ fun Uri.getFileName(context: Context): String {
 
 @Parcelize
 sealed class FlashIt : Parcelable {
-    data class FlashBoot(val boot: Uri? = null, val lkm: LkmSelection, val ota: Boolean) :
-        FlashIt()
+    data class FlashBoot(
+        val boot: Uri? = null,
+        val lkm: LkmSelection,
+        val ota: Boolean,
+        val allowShell: Boolean = false,
+        val enableAdbd: Boolean = false,
+        val noInstall: Boolean = false
+    ) : FlashIt()
 
     data class FlashModules(val uris: List<Uri>) : FlashIt()
 
@@ -364,6 +370,9 @@ fun flashIt(
             flashIt.boot,
             flashIt.lkm,
             flashIt.ota,
+            flashIt.allowShell,
+            flashIt.enableAdbd,
+            flashIt.noInstall,
             onStdout,
             onStderr
         )

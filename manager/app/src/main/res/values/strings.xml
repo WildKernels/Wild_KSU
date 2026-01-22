@@ -264,4 +264,12 @@
     <string name="module_shortcut_permission_tip_xiaomi">Please enable \"Create desktop shortcuts\" permission for this app in Xiaomi settings.</string>
     <string name="module_shortcut_permission_tip_oppo">Please enable \"Desktop shortcut\" permission for this app in OPPO settings.</string>
     <string name="module_shortcut_permission_tip_default">If shortcut creation fails, please enable desktop shortcut permission for this app in system settings.</string>
+    
+    <!-- Install Options -->
+    <string name="install_option_allow_shell">Allow shell</string>
+    <string name="install_option_allow_shell_summary">Always allow shell to get root permission</string>
+    <string name="install_option_enable_adbd">Enable adbd</string>
+    <string name="install_option_enable_adbd_summary">Force enable adbd and disable adbd auth</string>
+    <string name="install_option_no_install">No install</string>
+    <string name="install_option_no_install_summary">Do not (re-)install kernelsu, only modify configs</string>
 </resources>

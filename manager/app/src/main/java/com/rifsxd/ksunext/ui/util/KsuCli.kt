@@ -303,6 +303,9 @@ fun installBoot(
     bootUri: Uri?,
     lkm: LkmSelection,
     ota: Boolean,
+    allowShell: Boolean,
+    enableAdbd: Boolean,
+    noInstall: Boolean,
     onStdout: (String) -> Unit,
     onStderr: (String) -> Unit,
 ): FlashResult {
@@ -321,6 +324,16 @@ fun installBoot(
 
     val magiskboot = File(ksuApp.applicationInfo.nativeLibraryDir, "libmagiskboot.so")
     var cmd = "boot-patch --magiskboot ${magiskboot.absolutePath}"
+
+    if (allowShell) {
+        cmd += " --allow-shell"
+    }
+    if (enableAdbd) {
+        cmd += " --enable-adbd"
+    }
+    if (noInstall) {
+        cmd += " --no-install"
+    }
 
     cmd += if (bootFile == null) {
         // no boot.img, use -f to force install

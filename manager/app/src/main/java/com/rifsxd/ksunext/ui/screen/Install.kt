@@ -10,6 +10,7 @@ import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -42,6 +43,7 @@ import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
 import com.rifsxd.ksunext.*
 import com.rifsxd.ksunext.R
 import com.rifsxd.ksunext.ui.component.DialogHandle
+import com.rifsxd.ksunext.ui.component.SelectionDialog
 import com.rifsxd.ksunext.ui.component.rememberConfirmDialog
 import com.rifsxd.ksunext.ui.component.rememberCustomDialog
 import com.rifsxd.ksunext.ui.util.*
@@ -64,6 +66,10 @@ fun InstallScreen(navigator: DestinationsNavigator) {
         mutableStateOf<LkmSelection>(LkmSelection.KmiNone)
     }
 
+    var allowShell by rememberSaveable { mutableStateOf(false) }
+    var enableAdbd by rememberSaveable { mutableStateOf(false) }
+    var noInstall by rememberSaveable { mutableStateOf(false) }
+
     val context = LocalContext.current
 
     val onInstall = {
@@ -80,7 +86,10 @@ fun InstallScreen(navigator: DestinationsNavigator) {
             val flashIt = FlashIt.FlashBoot(
                 boot = if (method is InstallMethod.SelectFile) method.uri else null,
                 lkm = lkmSelection,
-                ota = method is InstallMethod.DirectInstallToInactiveSlot
+                ota = method is InstallMethod.DirectInstallToInactiveSlot,
+                allowShell = allowShell,
+                enableAdbd = enableAdbd,
+                noInstall = noInstall
             )
             navigator.navigate(FlashScreenDestination(flashIt))
         }
@@ -102,7 +111,7 @@ fun InstallScreen(navigator: DestinationsNavigator) {
             }
 
             else -> {
-                if (lkmSelection == LkmSelection.KmiNone && currentKmi.isBlank()) {
+                if (!noInstall && lkmSelection == LkmSelection.KmiNone && currentKmi.isBlank()) {
                     // no lkm file selected and cannot get current kmi
                     selectKmiDialog.show()
                 } else {
@@ -152,6 +161,14 @@ fun InstallScreen(navigator: DestinationsNavigator) {
                 installMethod = method
             }
 
+            if (installMethod !is InstallMethod.AnyKernel && installMethod != null) {
+                SelectInstallOptions(
+                    allowShell, { allowShell = it },
+                    enableAdbd, { enableAdbd = it },
+                    noInstall, { noInstall = it }
+                )
+            }
+
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -176,6 +193,97 @@ fun InstallScreen(navigator: DestinationsNavigator) {
                     )
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun SelectInstallOptions(
+    allowShell: Boolean,
+    onAllowShellChange: (Boolean) -> Unit,
+    enableAdbd: Boolean,
+    onEnableAdbdChange: (Boolean) -> Unit,
+    noInstall: Boolean,
+    onNoInstallChange: (Boolean) -> Unit
+) {
+    Column(modifier = Modifier.padding(16.dp)) {
+        // Allow Shell
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .toggleable(
+                    value = allowShell,
+                    onValueChange = onAllowShellChange,
+                    role = Role.Switch
+                ),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = stringResource(R.string.install_option_allow_shell),
+                    style = MaterialTheme.typography.bodyLarge
+                )
+                Text(
+                    text = stringResource(R.string.install_option_allow_shell_summary),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            Switch(checked = allowShell, onCheckedChange = null)
+        }
+        
+        HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+
+        // Enable Adbd
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .toggleable(
+                    value = enableAdbd,
+                    onValueChange = onEnableAdbdChange,
+                    role = Role.Switch
+                ),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = stringResource(R.string.install_option_enable_adbd),
+                    style = MaterialTheme.typography.bodyLarge
+                )
+                Text(
+                    text = stringResource(R.string.install_option_enable_adbd_summary),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            Switch(checked = enableAdbd, onCheckedChange = null)
+        }
+
+        HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+
+        // No Install
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .toggleable(
+                    value = noInstall,
+                    onValueChange = onNoInstallChange,
+                    role = Role.Checkbox
+                ),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = stringResource(R.string.install_option_no_install),
+                    style = MaterialTheme.typography.bodyLarge
+                )
+                Text(
+                    text = stringResource(R.string.install_option_no_install_summary),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            Checkbox(checked = noInstall, onCheckedChange = null)
         }
     }
 }
@@ -298,45 +406,33 @@ private fun SelectInstallMethod(onSelected: (InstallMethod) -> Unit = {}) {
 
     Column {
         radioOptions.forEach { option ->
-            val interactionSource = remember { MutableInteractionSource() }
             Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
+                Modifier
                     .fillMaxWidth()
-                    .toggleable(
-                        value = option.javaClass == selectedOption?.javaClass,
-                        onValueChange = {
-                            onClick(option)
-                        },
-                        role = Role.RadioButton,
-                        indication = LocalIndication.current,
-                        interactionSource = interactionSource
+                    .selectable(
+                        selected = (option == selectedOption),
+                        onClick = { onClick(option) },
+                        role = Role.RadioButton
                     )
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 RadioButton(
-                    selected = option.javaClass == selectedOption?.javaClass,
-                    onClick = {
-                        onClick(option)
-                    },
-                    interactionSource = interactionSource
+                    selected = (option == selectedOption),
+                    onClick = null // null recommended for accessibility with selectable
                 )
                 Column(
-                    modifier = Modifier.padding(vertical = 12.dp)
+                    modifier = Modifier.padding(start = 16.dp)
                 ) {
                     Text(
                         text = stringResource(id = option.label),
-                        fontSize = MaterialTheme.typography.titleMedium.fontSize,
-                        fontFamily = MaterialTheme.typography.titleMedium.fontFamily,
-                        fontStyle = MaterialTheme.typography.titleMedium.fontStyle,
-                        color = MaterialTheme.colorScheme.onSurface
+                        style = MaterialTheme.typography.bodyLarge
                     )
-                    option.summary?.let {
+                    if (option.summary != null) {
                         Text(
-                            text = it,
-                            fontSize = MaterialTheme.typography.bodySmall.fontSize,
-                            fontFamily = MaterialTheme.typography.bodySmall.fontFamily,
-                            fontStyle = MaterialTheme.typography.bodySmall.fontStyle,
-                            color = MaterialTheme.colorScheme.onSurface
+                            text = option.summary!!,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
@@ -347,64 +443,71 @@ private fun SelectInstallMethod(onSelected: (InstallMethod) -> Unit = {}) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun rememberSelectKmiDialog(onSelected: (String?) -> Unit): DialogHandle {
-    return rememberCustomDialog { dismiss ->
-        val supportedKmi by produceState(initialValue = emptyList()) {
-            value = getSupportedKmis()
-        }
-        val options = supportedKmi.map { value ->
-            ListOption(
-                titleText = value
-            )
-        }
-
-        var selection by remember { mutableStateOf<String?>(null) }
-        ListDialog(state = rememberUseCaseState(visible = true, onFinishedRequest = {
-            onSelected(selection)
-        }, onCloseRequest = {
-            dismiss()
-        }), header = Header.Default(
-            title = stringResource(R.string.select_kmi),
-        ), selection = ListSelection.Single(
-            showRadioButtons = true,
-            options = options,
-        ) { _, option ->
-            selection = option.titleText
-        })
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
 private fun TopBar(
-    onBack: () -> Unit = {},
+    onBack: () -> Unit,
     onLkmUpload: (() -> Unit)? = null,
     scrollBehavior: TopAppBarScrollBehavior? = null
 ) {
     TopAppBar(
-        title = { Text(
+        title = {
+            Text(
                 text = stringResource(R.string.install),
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Black,
-            ) }, navigationIcon = {
-            IconButton(
-                onClick = onBack
-            ) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null) }
-        }, actions = {
-            onLkmUpload?.let { action ->
-                IconButton(onClick = action) {
-                    Icon(Icons.Filled.FileUpload, contentDescription = null)
+            )
+        },
+        navigationIcon = {
+            IconButton(onClick = onBack) {
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
+            }
+        },
+        actions = {
+            if (onLkmUpload != null) {
+                IconButton(onClick = onLkmUpload) {
+                    Icon(
+                        imageVector = Icons.Filled.FileUpload,
+                        contentDescription = stringResource(id = R.string.select_file)
+                    )
                 }
             }
         },
-        colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
         windowInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal),
         scrollBehavior = scrollBehavior
     )
 }
 
+private interface SelectKmiDialogHandle {
+    fun show()
+}
+
 @Composable
-@Preview
-fun SelectInstallPreview() {
-    InstallScreen(EmptyDestinationsNavigator)
+private fun rememberSelectKmiDialog(onSelected: (String?) -> Unit): SelectKmiDialogHandle {
+    var showDialog by remember { mutableStateOf(false) }
+    
+    val kmis by produceState<List<String>>(initialValue = emptyList()) {
+        value = getSupportedKmis()
+    }
+
+    if (showDialog) {
+        SelectionDialog(
+            title = stringResource(R.string.select_kmi),
+            options = kmis.map { it to it },
+            selectedOption = "",
+            onOptionSelected = {
+                onSelected(it)
+                showDialog = false
+            },
+            onDismissRequest = {
+                showDialog = false
+            }
+        )
+    }
+
+    return remember {
+        object : SelectKmiDialogHandle {
+            override fun show() {
+                showDialog = true
+            }
+        }
+    }
 }
