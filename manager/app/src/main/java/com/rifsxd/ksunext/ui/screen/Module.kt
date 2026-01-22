@@ -10,8 +10,10 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
@@ -42,10 +44,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import com.rifsxd.ksunext.ui.component.ShortcutDialog
+import com.rifsxd.ksunext.ui.util.module.Shortcut
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.edit
@@ -767,6 +773,26 @@ private fun ModuleList(
                                     viewModel.markNeedRefresh()
                                 }
                             },
+                            onForceUpdate = {
+                                scope.launch {
+                                    val forceResult = withContext(Dispatchers.IO) {
+                                        viewModel.checkUpdate(module, force = true)
+                                    }
+                                    if (forceResult.first.isNotEmpty()) {
+                                        onModuleUpdate(
+                                            module,
+                                            forceResult.third,
+                                            forceResult.first,
+                                            "${module.name}-${forceResult.second}.zip"
+                                        )
+                                        viewModel.markNeedRefresh()
+                                    } else {
+                                        withContext(Dispatchers.Main) {
+                                            Toast.makeText(context, "No update found or invalid JSON", Toast.LENGTH_SHORT).show()
+                                        }
+                                    }
+                                }
+                            },
                             onClick = {
                                 onClickModule(it.id, it.name, it.hasWebUi)
                             },
@@ -789,6 +815,7 @@ private fun ModuleList(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ModuleItem(
     navigator: DestinationsNavigator,
@@ -798,18 +825,182 @@ fun ModuleItem(
     onRestore: (ModuleViewModel.ModuleInfo) -> Unit,
     onCheckChanged: (Boolean) -> Unit,
     onUpdate: (ModuleViewModel.ModuleInfo) -> Unit,
+    onForceUpdate: (ModuleViewModel.ModuleInfo) -> Unit,
     onClick: (ModuleViewModel.ModuleInfo) -> Unit,
     expanded: Boolean,
     onExpandToggle: () -> Unit,
 ) {
     val viewModel = viewModel<ModuleViewModel>()
+    val baseScheme = LocalBaseColorScheme.current
     val cardAlpha = LocalUiOverlaySettings.current.cardAlpha
+    var showMenu by remember { mutableStateOf(false) }
+    var showShortcutDialog by remember { mutableStateOf(false) }
+    var shortcutType by remember { mutableStateOf("") }
+    val haptic = LocalHapticFeedback.current
+
+    val context = LocalContext.current
+
+    if (showShortcutDialog) {
+        ShortcutDialog(
+            initialName = module.name,
+            onDismiss = { showShortcutDialog = false },
+            onConfirm = { name, iconUri ->
+                showShortcutDialog = false
+                if (shortcutType == "action") {
+                    Shortcut.createModuleActionShortcut(context, module.id, name, iconUri)
+                } else if (shortcutType == "webui") {
+                    Shortcut.createModuleWebUiShortcut(context, module.id, name, iconUri)
+                }
+            }
+        )
+    }
+
+    if (showMenu) {
+        Dialog(
+            onDismissRequest = { showMenu = false }
+        ) {
+            // Apply blur behind the popup window if transparency is active and supported
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                val view = LocalView.current
+                DisposableEffect(view) {
+                    val root = view.rootView
+                    val params = root.layoutParams as? WindowManager.LayoutParams
+                    if (params != null) {
+                        params.flags = params.flags or WindowManager.LayoutParams.FLAG_BLUR_BEHIND
+                        params.blurBehindRadius = 60 // Blur radius in pixels
+                        val wm = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+                        wm.updateViewLayout(root, params)
+                    }
+                    onDispose {}
+                }
+            }
+
+            Card(
+                modifier = Modifier.fillMaxWidth(0.95f),
+                colors = CardDefaults.cardColors(
+                    containerColor = baseScheme.surfaceContainer.copy(alpha = cardAlpha),
+                ),
+            ) {
+                Column(modifier = Modifier.padding(24.dp)) {
+                    Text(
+                        text = stringResource(R.string.module_extras),
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    if (module.hasWebUi) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    showMenu = false
+                                    shortcutType = "webui"
+                                    showShortcutDialog = true
+                                }
+                                .padding(vertical = 12.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = stringResource(R.string.create_webui_shortcut),
+                                style = MaterialTheme.typography.bodyLarge
+                            )
+                        }
+                    }
+
+                    if (module.hasActionScript) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    showMenu = false
+                                    shortcutType = "action"
+                                    showShortcutDialog = true
+                                }
+                                .padding(vertical = 12.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = stringResource(R.string.create_action_shortcut),
+                                style = MaterialTheme.typography.bodyLarge
+                            )
+                        }
+                    }
+
+                    HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+
+                    // Force Update
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                showMenu = false
+                                onForceUpdate(module)
+                            }
+                            .padding(vertical = 12.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = stringResource(R.string.module_force_update),
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+                    }
+
+                    // Disable Update Check
+                    val ignoredUpdates = remember { 
+                         context.getSharedPreferences("ignored_updates", Context.MODE_PRIVATE)
+                    }
+                    var isIgnored by remember { mutableStateOf(ignoredUpdates.getBoolean(module.id, false)) }
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                isIgnored = !isIgnored
+                                ignoredUpdates.edit().putBoolean(module.id, isIgnored).apply()
+                            }
+                            .padding(vertical = 12.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = stringResource(R.string.module_disable_update_check),
+                            style = MaterialTheme.typography.bodyLarge,
+                            modifier = Modifier.weight(1f)
+                        )
+                        Switch(
+                            checked = isIgnored,
+                            onCheckedChange = {
+                                isIgnored = it
+                                ignoredUpdates.edit().putBoolean(module.id, it).apply()
+                            }
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(24.dp))
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End
+                    ) {
+                        TextButton(onClick = { showMenu = false }) {
+                            Text(stringResource(R.string.exit))
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .clip(MaterialTheme.shapes.medium)
-            .clickable(
-                onClick = onExpandToggle
+            .combinedClickable(
+                onClick = onExpandToggle,
+                onLongClick = {
+                    showMenu = true
+                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                }
             )
     ) {
         Box(
@@ -817,6 +1008,7 @@ fun ModuleItem(
                 .fillMaxWidth()
         ) {
             val context = LocalContext.current
+
             val prefs = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
 
             val useBanner = prefs.getBoolean("use_banner", true)
@@ -1307,5 +1499,5 @@ fun ModuleItemPreview() {
         isMetaModule = false,
         donate = ""
     )
-    ModuleItem(EmptyDestinationsNavigator, module, "", {}, {}, {}, {}, {}, false, {})
+    ModuleItem(EmptyDestinationsNavigator, module, "", {}, {}, {}, {}, {}, {}, false, {})
 }

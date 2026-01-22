@@ -192,7 +192,7 @@ class ModuleViewModel : ViewModel() {
         return version.replace(Regex("[^a-zA-Z0-9.\\-_]"), "_")
     }
 
-    fun checkUpdate(m: ModuleInfo): Triple<String, String, String> {
+    fun checkUpdate(m: ModuleInfo, force: Boolean = false): Triple<String, String, String> {
         val empty = Triple("", "", "")
         if (m.updateJson.isEmpty() || m.remove || m.update || !m.enabled) {
             return empty
@@ -226,8 +226,20 @@ class ModuleViewModel : ViewModel() {
         val versionCode = updateJson.optInt("versionCode", 0)
         val zipUrl = updateJson.optString("zipUrl", "")
         val changelog = updateJson.optString("changelog", "")
-        if (versionCode <= m.versionCode || zipUrl.isEmpty()) {
-            return empty
+        val ignoredUpdates = ksuApp.getSharedPreferences("ignored_updates", android.content.Context.MODE_PRIVATE)
+        
+        if (!force) {
+            if (ignoredUpdates.getBoolean(m.id, false)) {
+                return empty
+            }
+
+            if (versionCode <= m.versionCode || zipUrl.isEmpty()) {
+                return empty
+            }
+        } else {
+            if (zipUrl.isEmpty()) {
+                return empty
+            }
         }
 
         return Triple(zipUrl, version, changelog)
