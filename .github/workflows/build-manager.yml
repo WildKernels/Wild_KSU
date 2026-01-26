@@ -164,6 +164,11 @@ jobs:
     needs: build-manager
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
       - name: Download Normal Manager
         uses: actions/download-artifact@v6
         with:
@@ -176,8 +181,7 @@ jobs:
           name: manager-spoofed
           path: manager-spoofed
 
-      - name: Send Telegram notification and APKs
-        if: github.ref == 'refs/heads/stable' || github.ref == 'refs/heads/beta'
+      - name: Prepare Telegram Context
         env:
           COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
           COMMIT_SHA: ${{ github.sha }}
@@ -185,80 +189,7 @@ jobs:
           REPO: ${{ github.repository }}
           BRANCH: ${{ github.ref_name }}
         run: |
-          set -euo pipefail
-
-          escape_html() {
-            local s="$1"
-            s="${s//&/&amp;}"
-            s="${s//</&lt;}"
-            s="${s//>/&gt;}"
-            printf '%s' "$s"
-          }
-
-          COMMIT_MESSAGE_ESCAPED="$(escape_html "${COMMIT_MESSAGE}")"
-          MESSAGE=$(
-            printf '%s\n%s\n%s\n%s\n\n%s\n%s\n' \
-            "<b>Repository:</b> <a href=\"https://github.com/${REPO}\">${REPO}</a>" \
-            "<b>Branch:</b> <a href=\"https://github.com/${REPO}/tree/${BRANCH}\">${BRANCH}</a>" \
-            "<b>Commit:</b> <a href=\"https://github.com/${REPO}/commit/${COMMIT_SHA}\">${COMMIT_SHA:0:7}</a>" \
-            "<b>Workflow:</b> <a href=\"https://github.com/${REPO}/actions/runs/${RUN_ID}\">View Run</a>" \
-            "<b>Commit Message:</b>" \
-            "<pre><code>${COMMIT_MESSAGE_ESCAPED}</code></pre>"
-          )
-
-              # Collect APKs
-              FILES=()
-              # Enable nullglob to handle empty directories
-              shopt -s nullglob
-              for apk in ./manager/*.apk ./manager-spoofed/*.apk; do
-                FILES+=("$apk")
-              done
-              shopt -u nullglob
-
-              if [ ${#FILES[@]} -eq 0 ]; then
-                echo "No APKs to upload."
-                exit 0
-              fi
-
-              echo "Found ${#FILES[@]} APKs to upload."
-
-              for apk in "${FILES[@]}"; do
-                 apk="${apk//$'\r'/}"
-                 if [[ "$apk" == *"manager-spoofed"* ]]; then
-                     TYPE="Spoofed"
-                 else
-                     TYPE="Normal"
-                 fi
- 
-                 APK_NAME_ESCAPED="$(escape_html "$(basename "$apk")")"
-
-                 FULL_CAPTION="$(printf '%s\n\n%s' "<b>${TYPE}:</b> ${APK_NAME_ESCAPED}" "${MESSAGE}")"
-
-                 echo "Uploading $apk ($TYPE)..."
-                 if [ ! -f "$apk" ]; then
-                   echo "Missing file: $apk"
-                   ls -la "$(dirname "$apk")" || true
-                   exit 1
-                 fi
-                 curl -sS "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" \
-                   --form-string "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" \
-                   --form-string "message_thread_id=${{ secrets.TELEGRAM_TOPIC_ID_WKSU }}" \
-                   --form "document=@${apk}" \
-                   --form-string "caption=${FULL_CAPTION}" \
-                   --form-string "parse_mode=HTML"
-              done
-
-              echo "All uploads completed successfully."
-
-      - name: DM Artifacts
-        env:
-          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
-          COMMIT_SHA: ${{ github.sha }}
-          RUN_ID: ${{ github.run_id }}
-          REPO: ${{ github.repository }}
-          BRANCH: ${{ github.ref_name }}
-        run: |
-          set -euo pipefail
+          set -eu
 
           escape_html() {
             local s="$1"
@@ -270,49 +201,121 @@ jobs:
 
           COMMIT_MESSAGE_ESCAPED="$(escape_html "${COMMIT_MESSAGE}")"
 
-          MESSAGE=$(
-            printf '%s\n%s\n%s\n%s\n\n%s\n%s\n' \
-            "<b>Repository:</b> <a href=\"https://github.com/${REPO}\">${REPO}</a>" \
-            "<b>Branch:</b> <a href=\"https://github.com/${REPO}/tree/${BRANCH}\">${BRANCH}</a>" \
-            "<b>Commit:</b> <a href=\"https://github.com/${REPO}/commit/${COMMIT_SHA}\">${COMMIT_SHA:0:7}</a>" \
-            "<b>Workflow:</b> <a href=\"https://github.com/${REPO}/actions/runs/${RUN_ID}\">View Run</a>" \
-            "<b>Commit Message:</b>" \
-            "<pre><code>${COMMIT_MESSAGE_ESCAPED}</code></pre>"
-          )
-
-          FILES=()
-          shopt -s nullglob
-          for apk in ./manager/*.apk ./manager-spoofed/*.apk; do
-            FILES+=("$apk")
-          done
-          shopt -u nullglob
-
-          if [ ${#FILES[@]} -eq 0 ]; then
-            echo "No APKs to DM."
-            exit 0
+          # Determine comparison target based on branch
+          TARGET_BRANCH_NAME=""
+          CHANGELOG_HEADER=""
+          PREV_REF=""
+          
+          if [[ "${BRANCH}" == "canary" ]]; then
+            TARGET_BRANCH_NAME="beta"
+            CHANGELOG_HEADER="New Commits since Beta:"
+          elif [[ "${BRANCH}" == "beta" ]]; then
+            TARGET_BRANCH_NAME="stable"
+            CHANGELOG_HEADER="New Commits since Stable:"
+          elif [[ "${BRANCH}" == "stable" ]]; then
+            LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || true)
+            if [ -n "$LAST_TAG" ]; then
+              PREV_REF="$LAST_TAG"
+              CHANGELOG_HEADER="New Commits since $LAST_TAG:"
+            fi
+          fi
+          
+          CHANGELOG_SECTION=""
+          
+          # If we have a target branch to compare against
+          if [ -n "$TARGET_BRANCH_NAME" ]; then
+             echo "Fetching origin/$TARGET_BRANCH_NAME..."
+             if git fetch origin "$TARGET_BRANCH_NAME"; then
+                PREV_REF="FETCH_HEAD"
+             else
+                echo "Fetch failed."
+             fi
           fi
 
-          for apk in "${FILES[@]}"; do
-            apk="${apk//$'\r'/}"
-            if [[ "$apk" == *"manager-spoofed"* ]]; then
-              TYPE="Spoofed"
-            else
-              TYPE="Normal"
-            fi
- 
-            APK_NAME_ESCAPED="$(escape_html "$(basename "$apk")")"
+          if [ -n "$PREV_REF" ]; then
+             if git rev-parse --verify "$PREV_REF" >/dev/null 2>&1; then
+                COUNT=$(git rev-list --count "$PREV_REF..HEAD")
+                echo "Commit count: $COUNT"
+                if [ "$COUNT" -gt 0 ]; then
+                   LOGS=$(git log --oneline --format="- %s (%h)" "$PREV_REF..HEAD" | head -n 15)
+                   LOGS_ESCAPED="$(escape_html "$LOGS")"
+                   CHANGELOG_SECTION=$(printf '\n\n<b>%s (%s)</b>\n<pre><code>%s</code></pre>' "$CHANGELOG_HEADER" "$COUNT" "$LOGS_ESCAPED")
+                fi
+             fi
+          fi
 
-            FULL_CAPTION="$(printf '%s\n\n%s' "<b>${TYPE}:</b> ${APK_NAME_ESCAPED}" "${MESSAGE}")"
+          MESSAGE=$(
+            printf '%s\n%s\n%s\n%s\n\n%s\n%s\n' \
+            "<b>Repository:</b> <a href=\"https://github.com/${REPO}\">${REPO}</a>" \
+            "<b>Branch:</b> <a href=\"https://github.com/${REPO}/tree/${BRANCH}\">${BRANCH}</a>" \
+            "<b>Commit:</b> <a href=\"https://github.com/${REPO}/commit/${COMMIT_SHA}\">${COMMIT_SHA:0:7}</a>" \
+            "<b>Workflow:</b> <a href=\"https://github.com/${REPO}/actions/runs/${RUN_ID}\">View Run</a>" \
+            "<b>Commit Message:</b>" \
+            "<pre><code>${COMMIT_MESSAGE_ESCAPED}</code></pre>"
+          )
+          
+          FULL_MESSAGE=$(printf '%s%s' "$MESSAGE" "$CHANGELOG_SECTION")
 
-            echo "Sending $apk ($TYPE) to Telegram DM..."
-            curl -sS "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" \
-              --form-string "chat_id=${{ secrets.TELEGRAM_USER_ID }}" \
-              --form "document=@${apk}" \
-              --form-string "caption=${FULL_CAPTION}" \
-              --form-string "parse_mode=HTML"
-          done
+          {
+            echo "TELEGRAM_CAPTION<<EOF"
+            echo "$MESSAGE"
+            echo "EOF"
+          } >> "$GITHUB_ENV"
 
-      - name: DM Failure Notification
+          {
+            echo "TELEGRAM_CHANGELOG_MSG<<EOF"
+            echo "$FULL_MESSAGE"
+            echo "EOF"
+          } >> "$GITHUB_ENV"
+          
+          if [ -n "$CHANGELOG_SECTION" ]; then
+            echo "SHOULD_SEND_CHANGELOG=true" >> "$GITHUB_ENV"
+          else
+            echo "SHOULD_SEND_CHANGELOG=false" >> "$GITHUB_ENV"
+          fi
+
+      - name: Send Changelog to Channel
+        if: (github.ref == 'refs/heads/stable' || github.ref == 'refs/heads/beta') && env.SHOULD_SEND_CHANGELOG == 'true'
+        uses: xireiki/channel-post@v1
+        with:
+          bot_token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          chat_id: ${{ secrets.TELEGRAM_WILD_KSU_CI }}
+          context: ${{ env.TELEGRAM_CHANGELOG_MSG }}
+          parse_mode: HTML
+          method: sendMessage
+
+      - name: Post APKs to Channel
+        if: github.ref == 'refs/heads/stable' || github.ref == 'refs/heads/beta'
+        uses: xireiki/channel-post@v1
+        with:
+          bot_token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          chat_id: ${{ secrets.TELEGRAM_WILD_KSU_CI }}
+          context: ${{ env.TELEGRAM_CAPTION }}
+          parse_mode: HTML
+          path: "**/*.apk"
+          method: sendFile
+
+      - name: Send Changelog to DM
+        if: env.SHOULD_SEND_CHANGELOG == 'true'
+        uses: xireiki/channel-post@v1
+        with:
+          bot_token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          chat_id: ${{ secrets.TELEGRAM_USER_ID }}
+          context: ${{ env.TELEGRAM_CHANGELOG_MSG }}
+          parse_mode: HTML
+          method: sendMessage
+
+      - name: Post APKs to DM
+        uses: xireiki/channel-post@v1
+        with:
+          bot_token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          chat_id: ${{ secrets.TELEGRAM_USER_ID }}
+          context: ${{ env.TELEGRAM_CAPTION }}
+          parse_mode: HTML
+          path: "**/*.apk"
+          method: sendFile
+
+      - name: Prepare Failure Context
         if: always() && needs.build-manager.result == 'failure'
         env:
           COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
@@ -321,8 +324,7 @@ jobs:
           REPO: ${{ github.repository }}
           BRANCH: ${{ github.ref_name }}
         run: |
-          set -euo pipefail
-
+          set -eu
           MESSAGE=$(
             printf '%s\n\n%s\n%s\n%s\n%s\n\n%s\n%s\n' \
             "<b>Wild KSU Build Failed</b> 🔴" \
@@ -333,9 +335,18 @@ jobs:
             "<b>Commit Message:</b>" \
             "${COMMIT_MESSAGE}"
           )
+          {
+            echo "FAILURE_MESSAGE<<EOF"
+            echo "$MESSAGE"
+            echo "EOF"
+          } >> "$GITHUB_ENV"
 
-          echo "Sending Failure Notification..."
-          curl -sS -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
-            -d chat_id="${{ secrets.TELEGRAM_USER_ID }}" \
-            -d parse_mode="HTML" \
-            --data-urlencode "text=$MESSAGE"
+      - name: DM Failure Notification
+        if: always() && needs.build-manager.result == 'failure'
+        uses: xireiki/channel-post@v1
+        with:
+          bot_token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          chat_id: ${{ secrets.TELEGRAM_USER_ID }}
+          context: ${{ env.FAILURE_MESSAGE }}
+          parse_mode: HTML
+          method: sendMessage
