@@ -782,11 +782,14 @@ fun installKpn(
             return FlashResult(1, "Root access required for direct install", false)
         }
         onStdout("- Detecting boot partition...\n")
-        val partition = ShellUtils.fastCmd("${getKsuDaemonPath()} boot-info default-partition").trim()
+        // KPN always patches the kernel, which is in boot partition (never init_boot)
+        val partition = "boot"
         val suffix = ShellUtils.fastCmd("${getKsuDaemonPath()} boot-info slot-suffix").trim()
         
-        if (partition.isEmpty()) {
-            return FlashResult(1, "Failed to detect boot partition", false)
+        // Verify partition exists
+        val checkPath = "/dev/block/by-name/$partition$suffix"
+        if (!ShellUtils.fastCmdResult("ls $checkPath")) {
+            return FlashResult(1, "Boot partition not found: $checkPath", false)
         }
 
         bootDevice = "/dev/block/by-name/$partition$suffix"
