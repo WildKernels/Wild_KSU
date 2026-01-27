@@ -365,7 +365,7 @@ sealed class FlashIt : Parcelable {
 
     data class FlashAnyKernel(val uri: Uri) : FlashIt()
 
-    data class FlashKpn(val bootUri: Uri) : FlashIt()
+    data class FlashKpn(val bootUri: Uri?) : FlashIt()
 
     data object FlashRestore : FlashIt()
 

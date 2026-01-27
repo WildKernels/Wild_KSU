@@ -749,7 +749,7 @@ fun deleteAppProfileTemplate(id: String): Boolean {
 }
 
 fun installKpn(
-    bootUri: Uri,
+    bootUri: Uri?,
     onStdout: (String) -> Unit,
     onStderr: (String) -> Unit
 ): FlashResult {
@@ -764,14 +764,39 @@ fun installKpn(
 
     // Copy boot.img
     val bootFile = File(workDir, "boot.img")
-    try {
-        resolver.openInputStream(bootUri)?.use { input ->
-            bootFile.outputStream().use { output ->
-                input.copyTo(output)
-            }
-        } ?: return FlashResult(1, "Failed to open boot URI", false)
-    } catch (e: Exception) {
-        return FlashResult(1, "Failed to copy boot image: ${e.message}", false)
+    var bootDevice: String? = null
+
+    if (bootUri != null) {
+        try {
+            resolver.openInputStream(bootUri)?.use { input ->
+                bootFile.outputStream().use { output ->
+                    input.copyTo(output)
+                }
+            } ?: return FlashResult(1, "Failed to open boot URI", false)
+        } catch (e: Exception) {
+            return FlashResult(1, "Failed to copy boot image: ${e.message}", false)
+        }
+    } else {
+        // Direct install
+        if (!rootAvailable()) {
+            return FlashResult(1, "Root access required for direct install", false)
+        }
+        onStdout("- Detecting boot partition...\n")
+        val partition = ShellUtils.fastCmd("${getKsuDaemonPath()} boot-info default-partition").trim()
+        val suffix = ShellUtils.fastCmd("${getKsuDaemonPath()} boot-info slot-suffix").trim()
+        
+        if (partition.isEmpty()) {
+            return FlashResult(1, "Failed to detect boot partition", false)
+        }
+
+        bootDevice = "/dev/block/by-name/$partition$suffix"
+        onStdout("- Boot partition: $bootDevice\n")
+        
+        onStdout("- Dumping boot image...\n")
+        val dumpResult = ShellUtils.fastCmdResult("dd if=$bootDevice of=${bootFile.absolutePath}")
+        if (!dumpResult) {
+            return FlashResult(1, "Failed to dump boot image", false)
+        }
     }
 
     // Copy tools
@@ -815,16 +840,30 @@ fun installKpn(
     val result = flashWithIO(cmd, onStdout, onStderr)
 
     if (result.isSuccess) {
-        // Copy new-boot.img to Downloads
         val newBoot = File(workDir, "new-boot.img")
         if (newBoot.exists()) {
-            val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-            val destFile = File(downloadsDir, "kpn-new-boot.img")
-            try {
-                newBoot.copyTo(destFile, overwrite = true)
-                onStdout("\nPatch successful! Output saved to: ${destFile.absolutePath}")
-            } catch (e: Exception) {
-                onStderr("\nFailed to copy output file: ${e.message}")
+            if (bootUri != null) {
+                // Copy new-boot.img to Downloads
+                val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+                val destFile = File(downloadsDir, "kpn-new-boot.img")
+                try {
+                    newBoot.copyTo(destFile, overwrite = true)
+                    onStdout("\nPatch successful! Output saved to: ${destFile.absolutePath}")
+                } catch (e: Exception) {
+                    onStderr("\nFailed to copy output file: ${e.message}")
+                }
+            } else {
+                // Flash back
+                if (bootDevice != null) {
+                    onStdout("- Flashing new boot image to $bootDevice...\n")
+                    val flashResult = ShellUtils.fastCmdResult("dd if=${newBoot.absolutePath} of=$bootDevice")
+                    if (flashResult) {
+                        onStdout("\nFlash successful!\n")
+                        return FlashResult(0, "", true)
+                    } else {
+                        return FlashResult(1, "Failed to flash boot image", false)
+                    }
+                }
             }
         } else {
             onStderr("\nPatch failed: new-boot.img not found")

@@ -294,5 +294,8 @@
     <string name="kpn_mode_desc">Patch and hook the Linux kernel using a stripped kernel image to provide Kernel Patch Module (KPM) support.</string>
     <string name="kpn_patch_and_flash">Patch and Flash</string>
     <string name="kpn_select_file">Select file to patch</string>
+    <string name="kpn_select_file_desc">Select a boot image file to patch.</string>
+    <string name="kpn_direct_install">Direct install (Recommended)</string>
+    <string name="kpn_direct_install_desc">Automatically patch and flash the current boot image.</string>
     <string name="kpn_select_file_tip">Select boot image or kernel image</string>
 </resources>

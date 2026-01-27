@@ -95,6 +95,13 @@ fun InstallScreen(navigator: DestinationsNavigator) {
                 return@let
             }
 
+            if (method is InstallMethod.KpnDirect) {
+                navigator.navigate(
+                    FlashScreenDestination(FlashIt.FlashKpn(null))
+                )
+                return@let
+            }
+
             val flashIt = FlashIt.FlashBoot(
                 boot = if (method is InstallMethod.SelectFile) method.uri else null,
                 lkm = lkmSelection,
@@ -410,6 +417,11 @@ sealed class InstallMethod {
         @param:StringRes override val label: Int = R.string.kpn_select_file,
         override val summary: String? = null
     ) : InstallMethod()
+
+    data object KpnDirect : InstallMethod() {
+        override val label: Int
+            get() = R.string.kpn_direct_install
+    }
 
     data object KpnPatchAndFlash : InstallMethod() {
         override val label: Int
@@ -739,40 +751,69 @@ private fun SelectKpnInstallMethod(
         }
     }
 
-    Column(modifier = Modifier.padding(16.dp)) {
-        val method = InstallMethod.KpnSelectFile()
-        val selected = currentMethod is InstallMethod.KpnSelectFile
+    val kpnOptions = listOf(
+        InstallMethod.KpnSelectFile(summary = stringResource(R.string.kpn_select_file_desc)),
+        InstallMethod.KpnDirect
+    )
 
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable {
-                    selectFileLauncher.launch(Intent(Intent.ACTION_GET_CONTENT).apply {
-                        type = "application/octet-stream"
-                    })
-                }
-                .padding(vertical = 8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            RadioButton(
-                selected = selected,
-                onClick = {
-                    selectFileLauncher.launch(Intent(Intent.ACTION_GET_CONTENT).apply {
-                        type = "application/octet-stream"
-                    })
-                }
-            )
-            Column(modifier = Modifier.padding(start = 16.dp)) {
-                Text(
-                    text = stringResource(method.label),
-                    style = MaterialTheme.typography.bodyLarge
-                )
-                if (selected && currentMethod is InstallMethod.KpnSelectFile && currentMethod.uri != null) {
-                    Text(
-                        text = currentMethod.uri.lastPathSegment ?: "(file)",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+    Column(modifier = Modifier.padding(16.dp)) {
+        kpnOptions.forEach { option ->
+            val selected = if (option is InstallMethod.KpnSelectFile) {
+                currentMethod is InstallMethod.KpnSelectFile
+            } else {
+                currentMethod is InstallMethod.KpnDirect
+            }
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .selectable(
+                        selected = selected,
+                        onClick = {
+                            if (option is InstallMethod.KpnSelectFile) {
+                                selectFileLauncher.launch(Intent(Intent.ACTION_GET_CONTENT).apply {
+                                    type = "application/octet-stream"
+                                })
+                            } else {
+                                onMethodSelected(option)
+                            }
+                        },
+                        role = Role.RadioButton
                     )
+                    .padding(vertical = 8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                RadioButton(
+                    selected = selected,
+                    onClick = null
+                )
+                Column(modifier = Modifier.padding(start = 16.dp)) {
+                    Text(
+                        text = stringResource(option.label),
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+
+                    val summary = if (option is InstallMethod.KpnDirect) {
+                        stringResource(R.string.kpn_direct_install_desc)
+                    } else {
+                        option.summary
+                    }
+
+                    if (summary != null) {
+                        Text(
+                            text = summary,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+
+                    if (selected && currentMethod is InstallMethod.KpnSelectFile && currentMethod.uri != null) {
+                        Text(
+                            text = currentMethod.uri.lastPathSegment ?: "(file)",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                 }
             }
         }
