@@ -3,6 +3,7 @@ package com.rifsxd.ksunext.ui.screen
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
+import androidx.compose.animation.*
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
@@ -586,6 +587,7 @@ fun InstallCategoryCard(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp)
+            .animateContentSize()
             .clickable { onSelect() },
         colors = CardDefaults.elevatedCardColors(
             containerColor = if (selected) MaterialTheme.colorScheme.surfaceContainerHigh else MaterialTheme.colorScheme.surfaceContainerLow
@@ -617,9 +619,15 @@ fun InstallCategoryCard(
                     }
                 }
             }
-            if (selected) {
-                HorizontalDivider()
-                content()
+            AnimatedVisibility(
+                visible = selected,
+                enter = fadeIn() + expandVertically(),
+                exit = shrinkVertically() + fadeOut()
+            ) {
+                Column {
+                    HorizontalDivider()
+                    content()
+                }
             }
         }
     }
