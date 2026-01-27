@@ -297,5 +297,6 @@
     <string name="kpn_select_file_desc">Select a boot image file to patch.</string>
     <string name="kpn_direct_install">Direct install (Recommended)</string>
     <string name="kpn_direct_install_desc">Automatically patch and flash the current boot image.</string>
+    <string name="uninstall_lkm">Uninstall LKM</string>
     <string name="kpn_select_file_tip">Select boot image or kernel image</string>
 </resources>

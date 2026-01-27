@@ -103,6 +103,13 @@ fun InstallScreen(navigator: DestinationsNavigator) {
                 return@let
             }
 
+            if (method is InstallMethod.UninstallLkm) {
+                navigator.navigate(
+                    FlashScreenDestination(FlashIt.FlashRestore)
+                )
+                return@let
+            }
+
             val flashIt = FlashIt.FlashBoot(
                 boot = if (method is InstallMethod.SelectFile) method.uri else null,
                 lkm = lkmSelection,
@@ -126,7 +133,10 @@ fun InstallScreen(navigator: DestinationsNavigator) {
 
     val onClickNext = {
         when (installMethod) {
-            is InstallMethod.AnyKernel -> {
+            is InstallMethod.AnyKernel,
+            is InstallMethod.UninstallLkm,
+            is InstallMethod.KpnSelectFile,
+            is InstallMethod.KpnDirect -> {
                 onInstall()
             }
 
@@ -429,6 +439,11 @@ sealed class InstallMethod {
             get() = R.string.kpn_patch_and_flash
     }
 
+    data object UninstallLkm : InstallMethod() {
+        override val label: Int
+            get() = R.string.uninstall_lkm
+    }
+
     abstract val label: Int
     open val summary: String? = null
 }
@@ -654,6 +669,7 @@ private fun SelectInstallMethod(
     val radioOptions = mutableListOf<InstallMethod>()
 
     radioOptions.add(InstallMethod.SelectFile(summary = selectFileTip))
+    radioOptions.add(InstallMethod.UninstallLkm)
 
     if (rootAvailable) {
         if (kernelVersion.isGKI()) {
@@ -693,7 +709,7 @@ private fun SelectInstallMethod(
                 })
             }
 
-            is InstallMethod.DirectInstall -> {
+            is InstallMethod.DirectInstall, InstallMethod.UninstallLkm -> {
                 selectedOption = option
                 onSelected(option)
             }
