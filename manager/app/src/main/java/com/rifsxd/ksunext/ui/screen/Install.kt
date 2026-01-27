@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.animation.*
+import androidx.compose.animation.core.tween
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
@@ -602,7 +603,6 @@ fun InstallCategoryCard(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp)
-            .animateContentSize()
             .clickable { onSelect() },
         colors = CardDefaults.elevatedCardColors(
             containerColor = if (selected) MaterialTheme.colorScheme.surfaceContainerHigh else MaterialTheme.colorScheme.surfaceContainerLow
@@ -637,7 +637,7 @@ fun InstallCategoryCard(
             AnimatedVisibility(
                 visible = selected,
                 enter = fadeIn() + expandVertically(),
-                exit = shrinkVertically() + fadeOut()
+                exit = shrinkVertically(animationSpec = tween(150)) + fadeOut(animationSpec = tween(150))
             ) {
                 Column {
                     HorizontalDivider()
