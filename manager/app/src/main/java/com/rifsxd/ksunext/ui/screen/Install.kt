@@ -86,6 +86,15 @@ fun InstallScreen(navigator: DestinationsNavigator) {
                 return@let
             }
 
+            if (method is InstallMethod.KpnSelectFile) {
+                method.uri?.let {
+                    navigator.navigate(
+                        FlashScreenDestination(FlashIt.FlashKpn(it))
+                    )
+                }
+                return@let
+            }
+
             val flashIt = FlashIt.FlashBoot(
                 boot = if (method is InstallMethod.SelectFile) method.uri else null,
                 lkm = lkmSelection,
@@ -719,38 +728,51 @@ private fun SelectKpnInstallMethod(
     currentMethod: InstallMethod?,
     onMethodSelected: (InstallMethod) -> Unit
 ) {
+    val selectFileLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) {
+        if (it.resultCode == Activity.RESULT_OK) {
+            it.data?.data?.let { uri ->
+                val option = InstallMethod.KpnSelectFile(uri)
+                onMethodSelected(option)
+            }
+        }
+    }
+
     Column(modifier = Modifier.padding(16.dp)) {
-        val kpnMethods = listOf(
-            InstallMethod.KpnPatchAndFlash,
-            InstallMethod.KpnSelectFile(summary = null)
-        )
+        val method = InstallMethod.KpnSelectFile()
+        val selected = currentMethod is InstallMethod.KpnSelectFile
 
-        kpnMethods.forEach { method ->
-            val selected = currentMethod?.javaClass == method.javaClass
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { onMethodSelected(method) }
-                    .padding(vertical = 8.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                RadioButton(
-                    selected = selected,
-                    onClick = { onMethodSelected(method) }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable {
+                    selectFileLauncher.launch(Intent(Intent.ACTION_GET_CONTENT).apply {
+                        type = "application/octet-stream"
+                    })
+                }
+                .padding(vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            RadioButton(
+                selected = selected,
+                onClick = {
+                    selectFileLauncher.launch(Intent(Intent.ACTION_GET_CONTENT).apply {
+                        type = "application/octet-stream"
+                    })
+                }
+            )
+            Column(modifier = Modifier.padding(start = 16.dp)) {
+                Text(
+                    text = stringResource(method.label),
+                    style = MaterialTheme.typography.bodyLarge
                 )
-                Column(modifier = Modifier.padding(start = 16.dp)) {
+                if (selected && currentMethod is InstallMethod.KpnSelectFile && currentMethod.uri != null) {
                     Text(
-                        text = stringResource(method.label),
-                        style = MaterialTheme.typography.bodyLarge
+                        text = currentMethod.uri.lastPathSegment ?: "(file)",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
-                    method.summary?.let {
-                        Text(
-                            text = it,
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
                 }
             }
         }

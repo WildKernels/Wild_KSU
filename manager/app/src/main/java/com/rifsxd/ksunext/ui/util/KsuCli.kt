@@ -748,6 +748,93 @@ fun deleteAppProfileTemplate(id: String): Boolean {
         .to(ArrayList(), null).exec().isSuccess
 }
 
+fun installKpn(
+    bootUri: Uri,
+    onStdout: (String) -> Unit,
+    onStderr: (String) -> Unit
+): FlashResult {
+    val resolver = ksuApp.contentResolver
+
+    // Prepare work directory
+    val workDir = File(ksuApp.cacheDir, "kpn_patch")
+    if (workDir.exists()) {
+        workDir.deleteRecursively()
+    }
+    workDir.mkdirs()
+
+    // Copy boot.img
+    val bootFile = File(workDir, "boot.img")
+    try {
+        resolver.openInputStream(bootUri)?.use { input ->
+            bootFile.outputStream().use { output ->
+                input.copyTo(output)
+            }
+        } ?: return FlashResult(1, "Failed to open boot URI", false)
+    } catch (e: Exception) {
+        return FlashResult(1, "Failed to copy boot image: ${e.message}", false)
+    }
+
+    // Copy tools
+    val libDir = ksuApp.applicationInfo.nativeLibraryDir
+    val tools = mapOf(
+        "libmagiskboot.so" to "magiskboot",
+        "libkptools.so" to "kptools",
+        "libkpimg.so" to "kpimg"
+    )
+
+    try {
+        tools.forEach { (libName, binName) ->
+            val libFile = File(libDir, libName)
+            val binFile = File(workDir, binName)
+            if (!libFile.exists()) {
+                return FlashResult(1, "Required binary $libName not found in $libDir", false)
+            }
+            libFile.copyTo(binFile, overwrite = true)
+        }
+    } catch (e: Exception) {
+        return FlashResult(1, "Failed to copy tools: ${e.message}", false)
+    }
+
+    // Construct command
+    val cmd = """
+        cd '${workDir.absolutePath}' && \
+        chmod 755 magiskboot kptools && \
+        echo "- Unpacking boot image" && \
+        ./magiskboot unpack boot.img && \
+        if [ -f kernel ]; then \
+            mv kernel kernel.ori && \
+            echo "- Patching kernel" && \
+            ./kptools -p -i kernel.ori -k kpimg -o kernel && \
+            echo "- Repacking boot image" && \
+            ./magiskboot repack boot.img; \
+        else \
+            echo "! Kernel not found"; exit 1; \
+        fi
+    """.trimIndent()
+
+    val result = flashWithIO(cmd, onStdout, onStderr)
+
+    if (result.isSuccess) {
+        // Copy new-boot.img to Downloads
+        val newBoot = File(workDir, "new-boot.img")
+        if (newBoot.exists()) {
+            val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+            val destFile = File(downloadsDir, "kpn-new-boot.img")
+            try {
+                newBoot.copyTo(destFile, overwrite = true)
+                onStdout("\nPatch successful! Output saved to: ${destFile.absolutePath}")
+            } catch (e: Exception) {
+                onStderr("\nFailed to copy output file: ${e.message}")
+            }
+        } else {
+            onStderr("\nPatch failed: new-boot.img not found")
+            return FlashResult(1, "Patch failed: output not generated", false)
+        }
+    }
+
+    return FlashResult(result, false)
+}
+
 fun forceStopApp(packageName: String) {
     val result = Shell.cmd("am force-stop $packageName").exec()
     Log.i(TAG, "force stop $packageName result: $result")

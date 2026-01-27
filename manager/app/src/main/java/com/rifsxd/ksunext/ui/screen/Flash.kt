@@ -248,6 +248,16 @@ fun FlashScreen(
                 )
             }
 
+            if (flashIt is FlashIt.FlashKpn && (flashing == FlashingStatus.SUCCESS || flashing == FlashingStatus.FAILED)) {
+                ExtendedFloatingActionButton(
+                    text = { Text(text = stringResource(R.string.close)) },
+                    icon = { Icon(Icons.Filled.Close, contentDescription = null) },
+                    onClick = {
+                        navigator.popBackStack()
+                    }
+                )
+            }
+
             if (flashIt is FlashIt.FlashModules && (flashing == FlashingStatus.FAILED)) {
                 // Close button for modules flashing
                 ExtendedFloatingActionButton(
@@ -355,6 +365,8 @@ sealed class FlashIt : Parcelable {
 
     data class FlashAnyKernel(val uri: Uri) : FlashIt()
 
+    data class FlashKpn(val bootUri: Uri) : FlashIt()
+
     data object FlashRestore : FlashIt()
 
     data object FlashUninstall : FlashIt()
@@ -379,6 +391,12 @@ fun flashIt(
 
         is FlashIt.FlashAnyKernel -> flashAnyKernelZip(
             flashIt.uri,
+            onStdout,
+            onStderr
+        )
+
+        is FlashIt.FlashKpn -> installKpn(
+            flashIt.bootUri,
             onStdout,
             onStderr
         )
