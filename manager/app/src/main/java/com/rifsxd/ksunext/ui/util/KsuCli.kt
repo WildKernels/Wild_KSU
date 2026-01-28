@@ -472,7 +472,7 @@ fun magiskBootRepack(
         } ?: return FlashResult(1, "Failed to read zip file", false)
 
         // Unzip
-        val unzipCmd = "$BUSYBOX unzip -o '${zipFile.absolutePath}' -d '${workDir.absolutePath}'"
+        val unzipCmd = "$BUSYBOX unzip -o '${zipFile.absolutePath}' -d '${workDir.absolutePath}' && $BUSYBOX chmod -R 777 '${workDir.absolutePath}'"
         val unzipResult = flashWithIO(unzipCmd, { }, { })
         if (!unzipResult.isSuccess) {
             return FlashResult(unzipResult.code, "Failed to unzip archive", false)
