@@ -520,13 +520,6 @@ private fun SelectGkiInstallMethod(
     Column(modifier = Modifier.padding(16.dp)) {
         // AnyKernel3 Group
         if (rootAvailable()) {
-            Text(
-                text = "AnyKernel3",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-
             val method = InstallMethod.AnyKernel()
             val selected = currentMethod is InstallMethod.AnyKernel
 
@@ -562,19 +555,7 @@ private fun SelectGkiInstallMethod(
                     )
                 }
             }
-
-            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
         }
-
-        // MagiskBoot Group
-        Text(
-            text = "MagiskBoot",
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
-
-
 
         val magiskBootMethod = InstallMethod.AnyKernelMagiskBoot(Uri.EMPTY, Uri.EMPTY, enableKpn)
         val magiskBootSelected = currentMethod is InstallMethod.AnyKernelMagiskBoot
