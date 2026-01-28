@@ -1,6 +1,7 @@
 package com.rifsxd.ksunext.ui.screen
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.animation.*
@@ -99,14 +100,14 @@ fun InstallScreen(navigator: DestinationsNavigator) {
 
             if (method is InstallMethod.AnyKernelMagiskBoot) {
                 navigator.navigate(
-                    FlashScreenDestination(FlashIt.FlashAnyKernelMagiskBoot(method.zipUri, method.targetBootUri))
+                    FlashScreenDestination(FlashIt.FlashAnyKernelMagiskBoot(method.zipUri, method.targetBootUri, method.enableKpn))
                 )
                 return@let
             }
 
             if (method is InstallMethod.AnyKernelMagiskBootDirect) {
                 navigator.navigate(
-                    FlashScreenDestination(FlashIt.FlashAnyKernelMagiskBootDirect(method.zipUri))
+                    FlashScreenDestination(FlashIt.FlashAnyKernelMagiskBootDirect(method.zipUri, method.enableKpn))
                 )
                 return@let
             }
@@ -397,7 +398,7 @@ private fun SelectInstallOptions(
                 .toggleable(
                     value = noInstall,
                     onValueChange = onNoInstallChange,
-                    role = Role.Checkbox
+                    role = Role.Switch
                 )
                 .padding(vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically
@@ -413,7 +414,7 @@ private fun SelectInstallOptions(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
-            Checkbox(checked = noInstall, onCheckedChange = null)
+            Switch(checked = noInstall, onCheckedChange = null)
         }
     }
 }
@@ -446,12 +447,14 @@ sealed class InstallMethod {
     data class AnyKernelMagiskBoot(
         val zipUri: Uri,
         val targetBootUri: Uri,
+        val enableKpn: Boolean = false,
         @param:StringRes override val label: Int = R.string.anykernel_magiskboot,
         override val summary: String? = null
     ) : InstallMethod()
 
     data class AnyKernelMagiskBootDirect(
         val zipUri: Uri,
+        val enableKpn: Boolean = false,
         @param:StringRes override val label: Int = R.string.anykernel_magiskboot_direct,
         override val summary: String? = null
     ) : InstallMethod()
@@ -518,6 +521,8 @@ private fun SelectGkiInstallMethod(
             }
         }
     }
+    
+    var enableKpn by rememberSaveable { mutableStateOf(false) }
 
     var tempMagiskBootZipUri by remember { mutableStateOf<Uri?>(null) }
 
@@ -527,7 +532,7 @@ private fun SelectGkiInstallMethod(
         if (it.resultCode == Activity.RESULT_OK) {
             it.data?.data?.let { targetUri ->
                 tempMagiskBootZipUri?.let { zipUri ->
-                    val option = InstallMethod.AnyKernelMagiskBoot(zipUri, targetUri)
+                    val option = InstallMethod.AnyKernelMagiskBoot(zipUri, targetUri, enableKpn)
                     onMethodSelected(option)
                 }
             }
@@ -555,13 +560,21 @@ private fun SelectGkiInstallMethod(
     ) {
         if (it.resultCode == Activity.RESULT_OK) {
             it.data?.data?.let { uri ->
-                val option = InstallMethod.AnyKernelMagiskBootDirect(uri)
+                val option = InstallMethod.AnyKernelMagiskBootDirect(uri, enableKpn)
                 onMethodSelected(option)
             }
         }
     }
 
     Column(modifier = Modifier.padding(16.dp)) {
+        // AnyKernel3 Group
+        Text(
+            text = "AnyKernel3",
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+
         val method = InstallMethod.AnyKernel()
         val selected = currentMethod is InstallMethod.AnyKernel
 
@@ -595,8 +608,6 @@ private fun SelectGkiInstallMethod(
                 )
             }
         }
-
-        HorizontalDivider()
 
         val patchMethod = InstallMethod.AnyKernelPatch()
         val patchSelected = currentMethod is InstallMethod.AnyKernelPatch
@@ -637,9 +648,56 @@ private fun SelectGkiInstallMethod(
             }
         }
 
-        HorizontalDivider()
+        HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
 
-        val magiskBootMethod = InstallMethod.AnyKernelMagiskBoot(Uri.EMPTY, Uri.EMPTY)
+        // MagiskBoot Group
+        Text(
+            text = "MagiskBoot",
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+
+        val magiskBootDirectMethod = InstallMethod.AnyKernelMagiskBootDirect(Uri.EMPTY, enableKpn)
+        val magiskBootDirectSelected = currentMethod is InstallMethod.AnyKernelMagiskBootDirect
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable {
+                    selectAnyKernelMagiskBootDirectLauncher.launch(Intent(Intent.ACTION_GET_CONTENT).apply {
+                        type = "application/zip"
+                        putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("application/zip", "application/x-zip-compressed", "application/octet-stream"))
+                        addCategory(Intent.CATEGORY_OPENABLE)
+                    })
+                }
+                .padding(vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            RadioButton(
+                selected = magiskBootDirectSelected,
+                onClick = {
+                    selectAnyKernelMagiskBootDirectLauncher.launch(Intent(Intent.ACTION_GET_CONTENT).apply {
+                        type = "application/zip"
+                        putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("application/zip", "application/x-zip-compressed", "application/octet-stream"))
+                        addCategory(Intent.CATEGORY_OPENABLE)
+                    })
+                }
+            )
+            Column(modifier = Modifier.padding(start = 16.dp)) {
+                Text(
+                    text = stringResource(magiskBootDirectMethod.label),
+                    style = MaterialTheme.typography.bodyLarge
+                )
+                Text(
+                    text = stringResource(R.string.anykernel_magiskboot_direct_desc),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
+
+        val magiskBootMethod = InstallMethod.AnyKernelMagiskBoot(Uri.EMPTY, Uri.EMPTY, enableKpn)
         val magiskBootSelected = currentMethod is InstallMethod.AnyKernelMagiskBoot
 
         Row(
@@ -678,45 +736,43 @@ private fun SelectGkiInstallMethod(
             }
         }
 
-        HorizontalDivider()
-
-        val magiskBootDirectMethod = InstallMethod.AnyKernelMagiskBootDirect(Uri.EMPTY)
-        val magiskBootDirectSelected = currentMethod is InstallMethod.AnyKernelMagiskBootDirect
+        // KPN Toggle
+        // val prefs = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
+        // var enableKpn by remember { mutableStateOf(prefs.getBoolean("enable_kpn", false)) }
+        // Moved to top of composable as 'var enableKpn by rememberSaveable { mutableStateOf(false) }'
 
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable {
-                    selectAnyKernelMagiskBootDirectLauncher.launch(Intent(Intent.ACTION_GET_CONTENT).apply {
-                        type = "application/zip"
-                        putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("application/zip", "application/x-zip-compressed", "application/octet-stream"))
-                        addCategory(Intent.CATEGORY_OPENABLE)
-                    })
-                }
+                .toggleable(
+                    value = enableKpn,
+                    onValueChange = {
+                        enableKpn = it
+                        // prefs.edit().putBoolean("enable_kpn", it).apply()
+                    },
+                    role = Role.Switch
+                )
                 .padding(vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            RadioButton(
-                selected = magiskBootDirectSelected,
-                onClick = {
-                    selectAnyKernelMagiskBootDirectLauncher.launch(Intent(Intent.ACTION_GET_CONTENT).apply {
-                        type = "application/zip"
-                        putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("application/zip", "application/x-zip-compressed", "application/octet-stream"))
-                        addCategory(Intent.CATEGORY_OPENABLE)
-                    })
-                }
-            )
-            Column(modifier = Modifier.padding(start = 16.dp)) {
+            Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = stringResource(magiskBootDirectMethod.label),
+                    text = stringResource(R.string.settings_enable_kpn),
                     style = MaterialTheme.typography.bodyLarge
                 )
                 Text(
-                    text = stringResource(R.string.anykernel_magiskboot_direct_desc),
+                    text = stringResource(R.string.settings_enable_kpn_summary),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
+            Switch(
+                checked = enableKpn,
+                onCheckedChange = {
+                    enableKpn = it
+                    // prefs.edit().putBoolean("enable_kpn", it).apply()
+                }
+            )
         }
     }
 }

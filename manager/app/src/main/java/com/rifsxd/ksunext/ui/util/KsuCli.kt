@@ -447,9 +447,19 @@ fun magiskBootRepack(
     onStdout: (String) -> Unit,
     onStderr: (String) -> Unit
 ): FlashResult {
+    return magiskBootRepack(zipUri, targetBootUri, false, onStdout, onStderr)
+}
+
+fun magiskBootRepack(
+    zipUri: Uri,
+    targetBootUri: Uri?,
+    enableKpn: Boolean,
+    onStdout: (String) -> Unit,
+    onStderr: (String) -> Unit
+): FlashResult {
     val resolver = ksuApp.contentResolver
-    val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
-    val workDir = File(ksuApp.cacheDir, "magiskboot_${timestamp}")
+    val context = ksuApp.applicationContext
+    val workDir = File(context.cacheDir, "magiskboot_repack")
     workDir.mkdirs()
 
     val zipFile = File(workDir, "kernel.zip")
@@ -542,8 +552,7 @@ fun magiskBootRepack(
         kernelFile!!.copyTo(currentKernel, overwrite = true)
 
         // KPN Auto-Patch
-        val prefs = ksuApp.getSharedPreferences("settings", Context.MODE_PRIVATE)
-        if (prefs.getBoolean("enable_kpn", false)) {
+        if (enableKpn) {
             onStdout("KPN enabled. Patching kernel...")
             val libDir = ksuApp.applicationInfo.nativeLibraryDir
             val kptools = File(workDir, "kptools")

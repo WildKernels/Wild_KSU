@@ -188,13 +188,6 @@
     <string name="direct_install">Direct install (Recommended)</string>
     <string name="select_file">Select a file</string>
     <string name="select_custom_lkm">Select custom LKM</string>
-    <string name="anykernel_install">Flash AnyKernel (.zip)</string>
-    <string name="anykernel_patch">Patch AnyKernel (.zip)</string>
-    <string name="anykernel_patch_desc">Patch the boot image and save it to Downloads instead of flashing.</string>
-    <string name="anykernel_magiskboot">MagiskBoot Repack (Select File)</string>
-    <string name="anykernel_magiskboot_desc">Extract kernel from AnyKernel3 zip and repack with a user-provided boot.img</string>
-    <string name="anykernel_magiskboot_direct">MagiskBoot Repack (Direct Install)</string>
-    <string name="anykernel_magiskboot_direct_desc">Extract kernel from AnyKernel3 zip, repack with current boot.img, and flash directly</string>
     <string name="install_inactive_slot">Install to inactive slot (After OTA)</string>
     <string name="install_inactive_slot_warning">Your device will be **FORCED** to boot to the current inactive slot after a reboot!\nOnly use this option after OTA is done.\nContinue?</string>
     <string name="install_next">Next</string>
@@ -291,6 +284,13 @@
     <string name="lkm_mode_desc">Load the Loadable Kernel Module (LKM) into the device kernel without replacing the original kernel.</string>
     <string name="gki_mode_title">GKI: Generic Kernel Image</string>
     <string name="gki_mode_desc">Replace the original kernel of the device with a Generic Kernel Image (GKI).</string>
+    <string name="anykernel_install">Flash AnyKernel3.zip (Direct Install &amp; Recommended)</string>
+    <string name="anykernel_patch">Patch boot.img with AnyKernel3.zip</string>
+    <string name="anykernel_patch_desc">Patch the boot image and save it to Downloads instead of flashing.</string>
+    <string name="anykernel_magiskboot">Patch boot.img with MagiskBoot</string>
+    <string name="anykernel_magiskboot_desc">Select a zip file to patch</string>
+    <string name="anykernel_magiskboot_direct">Flash with MagiskBoot (Direct Install)</string>
+    <string name="anykernel_magiskboot_direct_desc">Patch and flash current boot image directly</string>
     <string name="magiskboot_title">Magiskboot</string>
     <string name="magiskboot_unpack">Unpack Kernel</string>
     <string name="magiskboot_repack">Repack Kernel</string>
