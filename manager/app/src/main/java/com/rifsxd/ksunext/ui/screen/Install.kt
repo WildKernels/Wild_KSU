@@ -964,6 +964,7 @@ private fun SelectInstallMethod(
     }
 
     var selectedOption by remember { mutableStateOf<InstallMethod?>(null) }
+    val context = LocalContext.current
     val selectImageLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
     ) {
@@ -987,7 +988,7 @@ private fun SelectInstallMethod(
 
         when (option) {
             is InstallMethod.SelectFile -> {
-                android.widget.Toast.makeText(LocalContext.current, "Please select image file", android.widget.Toast.LENGTH_SHORT).show()
+                android.widget.Toast.makeText(context, "Please select image file", android.widget.Toast.LENGTH_SHORT).show()
                 selectImageLauncher.launch(Intent(Intent.ACTION_GET_CONTENT).apply {
                     type = "application/octet-stream"
                 })
