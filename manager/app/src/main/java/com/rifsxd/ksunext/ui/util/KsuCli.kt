@@ -496,11 +496,11 @@ fun magiskBootRepack(
             onStdout("Dumping current boot image...")
             // Try to find boot partition
             val findBootCmd = """
-                SLOT=$(getprop ro.boot.slot_suffix)
-                if [ -e /dev/block/by-name/boot$SLOT ]; then
-                    echo /dev/block/by-name/boot$SLOT
-                elif [ -e /dev/block/bootdevice/by-name/boot$SLOT ]; then
-                    echo /dev/block/bootdevice/by-name/boot$SLOT
+                SLOT=${'$'}(getprop ro.boot.slot_suffix)
+                if [ -e /dev/block/by-name/boot${'$'}SLOT ]; then
+                    echo /dev/block/by-name/boot${'$'}SLOT
+                elif [ -e /dev/block/bootdevice/by-name/boot${'$'}SLOT ]; then
+                    echo /dev/block/bootdevice/by-name/boot${'$'}SLOT
                 elif [ -e /dev/block/by-name/boot ]; then
                     echo /dev/block/by-name/boot
                 else
@@ -588,11 +588,11 @@ fun magiskBootRepack(
             onStdout("Flashing new boot image...")
             // Find boot partition again (or reuse) - better reuse but clean scope
              val findBootCmd = """
-                SLOT=$(getprop ro.boot.slot_suffix)
-                if [ -e /dev/block/by-name/boot$SLOT ]; then
-                    echo /dev/block/by-name/boot$SLOT
-                elif [ -e /dev/block/bootdevice/by-name/boot$SLOT ]; then
-                    echo /dev/block/bootdevice/by-name/boot$SLOT
+                SLOT=${'$'}(getprop ro.boot.slot_suffix)
+                if [ -e /dev/block/by-name/boot${'$'}SLOT ]; then
+                    echo /dev/block/by-name/boot${'$'}SLOT
+                elif [ -e /dev/block/bootdevice/by-name/boot${'$'}SLOT ]; then
+                    echo /dev/block/bootdevice/by-name/boot${'$'}SLOT
                 elif [ -e /dev/block/by-name/boot ]; then
                     echo /dev/block/by-name/boot
                 else

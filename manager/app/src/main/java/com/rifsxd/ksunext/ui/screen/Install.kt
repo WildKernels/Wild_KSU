@@ -440,20 +440,20 @@ sealed class InstallMethod {
     data class AnyKernelPatch(
         val uri: Uri? = null,
         @param:StringRes override val label: Int = R.string.anykernel_patch,
-        override val summary: String? = R.string.anykernel_patch_desc
+        override val summary: String? = null
     ) : InstallMethod()
 
     data class AnyKernelMagiskBoot(
         val zipUri: Uri,
         val targetBootUri: Uri,
         @param:StringRes override val label: Int = R.string.anykernel_magiskboot,
-        override val summary: String? = R.string.anykernel_magiskboot_desc
+        override val summary: String? = null
     ) : InstallMethod()
 
     data class AnyKernelMagiskBootDirect(
         val zipUri: Uri,
         @param:StringRes override val label: Int = R.string.anykernel_magiskboot_direct,
-        override val summary: String? = R.string.anykernel_magiskboot_direct_desc
+        override val summary: String? = null
     ) : InstallMethod()
 
     data object DirectInstall : InstallMethod() {
