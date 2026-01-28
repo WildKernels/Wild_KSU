@@ -459,40 +459,48 @@ fun magiskBootRepack(
 ): FlashResult {
     val context = ksuApp.applicationContext
     val workDir = File(context.cacheDir, "magiskboot_repack")
+    
+    // Cleanup
     workDir.deleteRecursively()
     workDir.mkdirs()
 
-    val zipFile = File(workDir, "kernel.zip")
-    
     try {
         onStdout("Preparing workspace...")
         
+        // Setup Magiskboot
+        val libMagiskboot = File(ksuApp.applicationInfo.nativeLibraryDir, "libmagiskboot.so")
+        val magiskboot = File(workDir, "magiskboot")
+        libMagiskboot.copyTo(magiskboot, overwrite = true)
+        magiskboot.setExecutable(true)
+
+        // 1. Unzip AK3
+        val zipFile = File(workDir, "kernel.zip")
         ksuApp.contentResolver.openInputStream(zipUri)?.use { input ->
             zipFile.outputStream().use { output -> input.copyTo(output) }
         } ?: return FlashResult(1, "Failed to read zip file", false)
 
-        // Unzip
-        val unzipCmd = "$BUSYBOX unzip -o '${zipFile.absolutePath}' -d '${workDir.absolutePath}' && $BUSYBOX chmod -R 777 '${workDir.absolutePath}'"
+        val unzipCmd = "$BUSYBOX unzip -o '${zipFile.absolutePath}' -d '${workDir.absolutePath}'"
         val unzipResult = flashWithIO(unzipCmd, { }, { })
-        if (!unzipResult.isSuccess) {
-            return FlashResult(unzipResult.code, "Failed to unzip archive", false)
-        }
+        if (!unzipResult.isSuccess) return FlashResult(unzipResult.code, "Failed to unzip archive", false)
 
-        // Find Kernel Image
+        // Find Kernel in AK3
         val kernelNames = listOf("Image", "Image.gz", "Image.lz4", "zImage", "kernel", "Image.gz-dtb", "zImage-dtb")
-        var kernelFile: File? = null
+        var extractedKernel: File? = null
         workDir.walk().forEach { file ->
-            if (kernelFile == null && file.isFile && kernelNames.contains(file.name)) {
-                kernelFile = file
+            if (extractedKernel == null && file.isFile && kernelNames.contains(file.name)) {
+                extractedKernel = file
             }
         }
-
-        if (kernelFile == null) {
-            return FlashResult(1, "No kernel image found in zip (checked: ${kernelNames.joinToString()})", false)
+        if (extractedKernel == null) return FlashResult(1, "No kernel image found in zip", false)
+        
+        // 2. Rename to 'kernel'
+        onStdout("Found kernel image: ${extractedKernel!!.name}")
+        val kernelFile = File(workDir, "kernel")
+        if (extractedKernel!!.absolutePath != kernelFile.absolutePath) {
+            extractedKernel!!.copyTo(kernelFile, overwrite = true)
         }
-        onStdout("Found kernel image: ${kernelFile!!.name}")
 
-        // KPN Auto-Patch
+        // 3. KPN Patch (if enabled)
         if (enableKpn) {
             onStdout("KPN enabled. Patching kernel...")
             val libDir = ksuApp.applicationInfo.nativeLibraryDir
@@ -504,32 +512,44 @@ fun magiskBootRepack(
                 File(libDir, "libkpimg.so").copyTo(kpimg, overwrite = true)
                 kptools.setExecutable(true)
 
+                // Patch in-place (kernel -> kernel) or use temp
                 val kernelOri = File(workDir, "kernel.ori")
-                kernelFile!!.copyTo(kernelOri, overwrite = true)
+                kernelFile.copyTo(kernelOri, overwrite = true)
                 
-                val patchCmd = "cd '${workDir.absolutePath}' && ./kptools -p -i kernel.ori -k kpimg -o ${kernelFile!!.name}"
+                val patchCmd = "cd '${workDir.absolutePath}' && ./kptools -p -i kernel.ori -k kpimg -o kernel"
                 val patchResult = flashWithIO(patchCmd, onStdout, onStderr)
                 
-                if (!patchResult.isSuccess) {
-                    return FlashResult(patchResult.code, "KPN Patch failed", false)
-                }
+                if (!patchResult.isSuccess) return FlashResult(patchResult.code, "KPN Patch failed", false)
                 onStdout("KPN Patch successful!")
             } catch (e: Exception) {
                 return FlashResult(1, "KPN Patch error: ${e.message}", false)
             }
         }
 
-        // Delegate to installBoot for patching/repacking/flashing
-        return installBoot(
-            bootUri = targetBootUri,
-            lkm = LkmSelection.LkmUri(Uri.fromFile(kernelFile)),
-            ota = false,
-            allowShell = false,
-            enableAdbd = false,
-            noInstall = false,
-            onStdout = onStdout,
-            onStderr = onStderr
-        )
+        // 4. Prepare Boot Image
+        if (targetBootUri == null) return FlashResult(1, "Target boot image required", false)
+        val bootImg = File(workDir, "boot.img")
+        ksuApp.contentResolver.openInputStream(targetBootUri)?.use { input ->
+            bootImg.outputStream().use { output -> input.copyTo(output) }
+        } ?: return FlashResult(1, "Failed to read target boot image", false)
+
+        // 5. Repack (magiskboot uses 'kernel' from CWD and 'boot.img' structure)
+        onStdout("Repacking boot image...")
+        val repackCmd = "cd '${workDir.absolutePath}' && ./magiskboot repack '${bootImg.absolutePath}'"
+        val repackResult = flashWithIO(repackCmd, onStdout, onStderr)
+        if (!repackResult.isSuccess) return FlashResult(repackResult.code, "Failed to repack boot image", false)
+
+        val newBoot = File(workDir, "new-boot.img")
+        if (!newBoot.exists()) return FlashResult(1, "Repack failed: new-boot.img not found", false)
+
+        // 6. Save Output
+        val timestamp2 = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+        val destPath = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "boot-magiskboot-${timestamp2}.img")
+        onStdout("Saving to ${destPath.absolutePath}...")
+        newBoot.copyTo(destPath, overwrite = true)
+        onStdout("Done!")
+        
+        return FlashResult(0, "", false)
 
     } catch (e: Exception) {
         return FlashResult(1, "Error: ${e.message}", false)
