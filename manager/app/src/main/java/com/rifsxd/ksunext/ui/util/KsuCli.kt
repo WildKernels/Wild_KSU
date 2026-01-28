@@ -457,34 +457,30 @@ fun magiskBootRepack(
     onStdout: (String) -> Unit,
     onStderr: (String) -> Unit
 ): FlashResult {
-    val resolver = ksuApp.contentResolver
     val context = ksuApp.applicationContext
     val workDir = File(context.cacheDir, "magiskboot_repack")
+    workDir.deleteRecursively()
     workDir.mkdirs()
 
     val zipFile = File(workDir, "kernel.zip")
-    val bootImg = File(workDir, "boot.img")
-    val magiskboot = File(ksuApp.applicationInfo.nativeLibraryDir, "libmagiskboot.so").absolutePath
-
+    
     try {
         onStdout("Preparing workspace...")
         
-        // 1. Save Zip
-        resolver.openInputStream(zipUri)?.use { input ->
+        ksuApp.contentResolver.openInputStream(zipUri)?.use { input ->
             zipFile.outputStream().use { output -> input.copyTo(output) }
         } ?: return FlashResult(1, "Failed to read zip file", false)
 
-        // 2. Extract Zip
+        // Unzip
         val unzipCmd = "$BUSYBOX unzip -o '${zipFile.absolutePath}' -d '${workDir.absolutePath}'"
-        val unzipResult = flashWithIO(unzipCmd, { /* ignore */ }, { /* ignore */ })
+        val unzipResult = flashWithIO(unzipCmd, { }, { })
         if (!unzipResult.isSuccess) {
             return FlashResult(unzipResult.code, "Failed to unzip archive", false)
         }
 
-        // 3. Find Kernel Image
+        // Find Kernel Image
         val kernelNames = listOf("Image", "Image.gz", "Image.lz4", "zImage", "kernel", "Image.gz-dtb", "zImage-dtb")
         var kernelFile: File? = null
-        // Simple search in root and subdirs
         workDir.walk().forEach { file ->
             if (kernelFile == null && file.isFile && kernelNames.contains(file.name)) {
                 kernelFile = file
@@ -495,61 +491,6 @@ fun magiskBootRepack(
             return FlashResult(1, "No kernel image found in zip (checked: ${kernelNames.joinToString()})", false)
         }
         onStdout("Found kernel image: ${kernelFile!!.name}")
-
-        // 4. Prepare Boot Image
-        if (targetBootUri != null) {
-            onStdout("Reading target boot image...")
-            resolver.openInputStream(targetBootUri)?.use { input ->
-                bootImg.outputStream().use { output -> input.copyTo(output) }
-            } ?: return FlashResult(1, "Failed to read target boot image", false)
-        } else {
-            onStdout("Dumping current boot image...")
-            // Try to find boot partition
-            val findBootCmd = """
-                SLOT=${'$'}(getprop ro.boot.slot_suffix)
-                if [ -e /dev/block/by-name/boot${'$'}SLOT ]; then
-                    echo /dev/block/by-name/boot${'$'}SLOT
-                elif [ -e /dev/block/bootdevice/by-name/boot${'$'}SLOT ]; then
-                    echo /dev/block/bootdevice/by-name/boot${'$'}SLOT
-                elif [ -e /dev/block/by-name/boot ]; then
-                    echo /dev/block/by-name/boot
-                else
-                    echo ""
-                fi
-            """.trimIndent()
-            
-            var bootPart = ""
-            withNewRootShell {
-                val out = newJob().add(findBootCmd).to(ArrayList(), null).exec().out
-                bootPart = out.firstOrNull()?.trim() ?: ""
-            }
-
-            if (bootPart.isEmpty()) {
-                return FlashResult(1, "Could not detect boot partition. Please use 'Select File' mode.", false)
-            }
-            onStdout("Boot partition: $bootPart")
-            
-            val dumpResult = flashWithIO("dd if='$bootPart' of='${bootImg.absolutePath}'", { }, { })
-            if (!dumpResult.isSuccess) return FlashResult(dumpResult.code, "Failed to dump boot image", false)
-        }
-
-        // 5. Unpack Boot
-        onStdout("Unpacking boot image...")
-        val unpackCmd = "cd '${workDir.absolutePath}' && $magiskboot unpack '${bootImg.absolutePath}'"
-        val unpackResult = flashWithIO(unpackCmd, onStdout, onStderr)
-        if (!unpackResult.isSuccess) return FlashResult(unpackResult.code, "Failed to unpack boot image", false)
-
-        // 6. Replace Kernel
-        onStdout("Replacing kernel...")
-        val currentKernel = File(workDir, "kernel")
-        // If kernel file exists from unpack, replace it. 
-        // Note: magiskboot unpack might produce 'kernel' or 'kernel_dtb' etc. usually just 'kernel'.
-        if (!currentKernel.exists()) {
-             return FlashResult(1, "Unpacked boot image does not contain a 'kernel' file", false)
-        }
-        
-        // Copy our found kernel to 'kernel'
-        kernelFile!!.copyTo(currentKernel, overwrite = true)
 
         // KPN Auto-Patch
         if (enableKpn) {
@@ -564,82 +505,39 @@ fun magiskBootRepack(
                 kptools.setExecutable(true)
 
                 val kernelOri = File(workDir, "kernel.ori")
-                if (currentKernel.renameTo(kernelOri)) {
-                    val patchCmd = "cd '${workDir.absolutePath}' && ./kptools -p -i kernel.ori -k kpimg -o kernel"
-                    val patchResult = flashWithIO(patchCmd, onStdout, onStderr)
-                    
-                    if (!patchResult.isSuccess) {
-                        return FlashResult(patchResult.code, "KPN Patch failed", false)
-                    }
-                    onStdout("KPN Patch successful!")
-                } else {
-                    return FlashResult(1, "Failed to rename kernel for KPN patching", false)
+                kernelFile!!.copyTo(kernelOri, overwrite = true)
+                
+                val patchCmd = "cd '${workDir.absolutePath}' && ./kptools -p -i kernel.ori -k kpimg -o ${kernelFile!!.name}"
+                val patchResult = flashWithIO(patchCmd, onStdout, onStderr)
+                
+                if (!patchResult.isSuccess) {
+                    return FlashResult(patchResult.code, "KPN Patch failed", false)
                 }
+                onStdout("KPN Patch successful!")
             } catch (e: Exception) {
                 return FlashResult(1, "KPN Patch error: ${e.message}", false)
             }
         }
 
-        // 7. Repack
-        onStdout("Repacking boot image...")
-        val repackCmd = "cd '${workDir.absolutePath}' && $magiskboot repack '${bootImg.absolutePath}'"
-        val repackResult = flashWithIO(repackCmd, onStdout, onStderr)
-        if (!repackResult.isSuccess) return FlashResult(repackResult.code, "Failed to repack boot image", false)
-
-        val newBoot = File(workDir, "new-boot.img")
-        if (!newBoot.exists()) {
-             return FlashResult(1, "Repack failed: new-boot.img not found", false)
-        }
-
-        // 8. Finalize
-        if (targetBootUri == null) {
-            // Direct Install -> Flash
-            onStdout("Flashing new boot image...")
-            // Find boot partition again (or reuse) - better reuse but clean scope
-             val findBootCmd = """
-                SLOT=${'$'}(getprop ro.boot.slot_suffix)
-                if [ -e /dev/block/by-name/boot${'$'}SLOT ]; then
-                    echo /dev/block/by-name/boot${'$'}SLOT
-                elif [ -e /dev/block/bootdevice/by-name/boot${'$'}SLOT ]; then
-                    echo /dev/block/bootdevice/by-name/boot${'$'}SLOT
-                elif [ -e /dev/block/by-name/boot ]; then
-                    echo /dev/block/by-name/boot
-                else
-                    echo ""
-                fi
-            """.trimIndent()
-            var bootPart = ""
-             withNewRootShell {
-                val out = newJob().add(findBootCmd).to(ArrayList(), null).exec().out
-                bootPart = out.firstOrNull()?.trim() ?: ""
-            }
-            
-            if (bootPart.isEmpty()) return FlashResult(1, "Boot partition not found for flashing", false)
-            
-            val flashCmd = "dd if='${newBoot.absolutePath}' of='$bootPart'"
-            val flashResult = flashWithIO(flashCmd, onStdout, onStderr)
-            
-            if (flashResult.isSuccess) {
-                onStdout("Flashing complete!")
-                return FlashResult(0, "", true)
-            } else {
-                return FlashResult(flashResult.code, "Failed to flash boot image", false)
-            }
-        } else {
-            // Patch File -> Save
-            val timestamp2 = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
-            val destPath = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "boot-magiskboot-${timestamp2}.img")
-            
-            onStdout("Saving to ${destPath.absolutePath}...")
-            newBoot.copyTo(destPath, overwrite = true)
-            onStdout("Done!")
-            return FlashResult(0, "", false)
-        }
+        // Delegate to installBoot for patching/repacking/flashing
+        return installBoot(
+            bootUri = targetBootUri,
+            lkm = LkmSelection.LkmUri(Uri.fromFile(kernelFile)),
+            ota = false,
+            allowShell = false,
+            enableAdbd = false,
+            noInstall = false,
+            onStdout = onStdout,
+            onStderr = onStderr
+        )
 
     } catch (e: Exception) {
-        return FlashResult(1, "Exception: ${e.message}", false)
+        return FlashResult(1, "Error: ${e.message}", false)
     } finally {
-        workDir.deleteRecursively()
+        try {
+            workDir.deleteRecursively()
+        } catch (_: Throwable) {
+        }
     }
 }
 

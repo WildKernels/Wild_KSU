@@ -519,52 +519,52 @@ private fun SelectGkiInstallMethod(
 
     Column(modifier = Modifier.padding(16.dp)) {
         // AnyKernel3 Group
-        Text(
-            text = "AnyKernel3",
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
-
-        val method = InstallMethod.AnyKernel()
-        val selected = currentMethod is InstallMethod.AnyKernel
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable {
-                    android.widget.Toast.makeText(context, "Please select AnyKernel3 zip", android.widget.Toast.LENGTH_SHORT).show()
-                    selectAnyKernelLauncher.launch(Intent(Intent.ACTION_GET_CONTENT).apply {
-                        type = "application/zip"
-                        putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("application/zip", "application/x-zip-compressed", "application/octet-stream"))
-                        addCategory(Intent.CATEGORY_OPENABLE)
-                    })
-                }
-                .padding(vertical = 8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            RadioButton(
-                selected = selected,
-                onClick = {
-                    android.widget.Toast.makeText(context, "Please select AnyKernel3 zip", android.widget.Toast.LENGTH_SHORT).show()
-                    selectAnyKernelLauncher.launch(Intent(Intent.ACTION_GET_CONTENT).apply {
-                        type = "application/zip"
-                        putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("application/zip", "application/x-zip-compressed", "application/octet-stream"))
-                        addCategory(Intent.CATEGORY_OPENABLE)
-                    })
-                }
+        if (rootAvailable()) {
+            Text(
+                text = "AnyKernel3",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(bottom = 8.dp)
             )
-            Column(modifier = Modifier.padding(start = 16.dp)) {
-                Text(
-                    text = stringResource(method.label),
-                    style = MaterialTheme.typography.bodyLarge
+
+            val method = InstallMethod.AnyKernel()
+            val selected = currentMethod is InstallMethod.AnyKernel
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable {
+                        android.widget.Toast.makeText(context, "Please select AnyKernel3 zip", android.widget.Toast.LENGTH_SHORT).show()
+                        selectAnyKernelLauncher.launch(Intent(Intent.ACTION_GET_CONTENT).apply {
+                            type = "application/zip"
+                            putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("application/zip", "application/x-zip-compressed", "application/octet-stream"))
+                            addCategory(Intent.CATEGORY_OPENABLE)
+                        })
+                    }
+                    .padding(vertical = 8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                RadioButton(
+                    selected = selected,
+                    onClick = {
+                        android.widget.Toast.makeText(context, "Please select AnyKernel3 zip", android.widget.Toast.LENGTH_SHORT).show()
+                        selectAnyKernelLauncher.launch(Intent(Intent.ACTION_GET_CONTENT).apply {
+                            type = "application/zip"
+                            putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("application/zip", "application/x-zip-compressed", "application/octet-stream"))
+                            addCategory(Intent.CATEGORY_OPENABLE)
+                        })
+                    }
                 )
+                Column(modifier = Modifier.padding(start = 16.dp)) {
+                    Text(
+                        text = stringResource(method.label),
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                }
             }
+
+            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
         }
-
-
-
-        HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
 
         // MagiskBoot Group
         Text(
@@ -825,9 +825,9 @@ private fun SelectInstallMethod(
     val radioOptions = mutableListOf<InstallMethod>()
 
     radioOptions.add(InstallMethod.SelectFile(summary = selectFileTip))
-    radioOptions.add(InstallMethod.UninstallLkm)
 
     if (rootAvailable) {
+        radioOptions.add(InstallMethod.UninstallLkm)
         if (kernelVersion.isGKI()) {
             radioOptions.add(InstallMethod.DirectInstall)
             if (isAbDevice) {
@@ -934,11 +934,14 @@ private fun SelectKpnInstallMethod(
     }
 
     val context = LocalContext.current
+    val rootAvailable = rootAvailable()
 
-    val kpnOptions = listOf(
-        InstallMethod.KpnSelectFile(summary = stringResource(R.string.kpn_select_file_desc)),
-        InstallMethod.KpnDirect
-    )
+    val kpnOptions = mutableListOf<InstallMethod>()
+    kpnOptions.add(InstallMethod.KpnSelectFile(summary = stringResource(R.string.kpn_select_file_desc)))
+
+    if (rootAvailable) {
+        kpnOptions.add(InstallMethod.KpnDirect)
+    }
 
     Column(modifier = Modifier.padding(16.dp)) {
         kpnOptions.forEach { option ->
