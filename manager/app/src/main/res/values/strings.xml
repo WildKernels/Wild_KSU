@@ -288,7 +288,7 @@
     <string name="anykernel_patch">Patch boot.img with AnyKernel3.zip</string>
     <string name="anykernel_patch_desc">Patch the boot image and save it to Downloads instead of flashing.</string>
     <string name="anykernel_magiskboot">Patch boot.img with MagiskBoot</string>
-    <string name="anykernel_magiskboot_desc">Select a zip file to patch</string>
+    <string name="anykernel_magiskboot_desc">1. select Anykernel3.zip\n2. select boot.img</string>
     <string name="anykernel_magiskboot_direct">Flash with MagiskBoot (Direct Install)</string>
     <string name="anykernel_magiskboot_direct_desc">Patch and flash current boot image directly</string>
     <string name="magiskboot_title">Magiskboot</string>

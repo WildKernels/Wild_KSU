@@ -287,11 +287,7 @@ sealed class FlashIt : Parcelable {
 
     data class FlashAnyKernel(val uri: Uri) : FlashIt()
 
-    data class FlashAnyKernelPatch(val uri: Uri) : FlashIt()
-
     data class FlashAnyKernelMagiskBoot(val zipUri: Uri, val targetBootUri: Uri, val enableKpn: Boolean) : FlashIt()
-
-    data class FlashAnyKernelMagiskBootDirect(val zipUri: Uri, val enableKpn: Boolean) : FlashIt()
 
     data class FlashKpn(val bootUri: Uri?) : FlashIt()
 
@@ -323,23 +319,9 @@ fun flashIt(
             onStderr
         )
 
-        is FlashIt.FlashAnyKernelPatch -> patchAnyKernelZip(
-            flashIt.uri,
-            onStdout,
-            onStderr
-        )
-
         is FlashIt.FlashAnyKernelMagiskBoot -> magiskBootRepack(
             flashIt.zipUri,
             flashIt.targetBootUri,
-            flashIt.enableKpn,
-            onStdout,
-            onStderr
-        )
-
-        is FlashIt.FlashAnyKernelMagiskBootDirect -> magiskBootRepack(
-            flashIt.zipUri,
-            null,
             flashIt.enableKpn,
             onStdout,
             onStderr
