@@ -88,6 +88,29 @@ fun InstallScreen(navigator: DestinationsNavigator) {
                 return@let
             }
 
+            if (method is InstallMethod.AnyKernelPatch) {
+                method.uri?.let {
+                    navigator.navigate(
+                        FlashScreenDestination(FlashIt.FlashAnyKernelPatch(it))
+                    )
+                }
+                return@let
+            }
+
+            if (method is InstallMethod.AnyKernelMagiskBoot) {
+                navigator.navigate(
+                    FlashScreenDestination(FlashIt.FlashAnyKernelMagiskBoot(method.zipUri, method.targetBootUri))
+                )
+                return@let
+            }
+
+            if (method is InstallMethod.AnyKernelMagiskBootDirect) {
+                navigator.navigate(
+                    FlashScreenDestination(FlashIt.FlashAnyKernelMagiskBootDirect(method.zipUri))
+                )
+                return@let
+            }
+
             if (method is InstallMethod.KpnSelectFile) {
                 method.uri?.let {
                     navigator.navigate(
@@ -414,6 +437,25 @@ sealed class InstallMethod {
         override val summary: String? = null
     ) : InstallMethod()
 
+    data class AnyKernelPatch(
+        val uri: Uri? = null,
+        @param:StringRes override val label: Int = R.string.anykernel_patch,
+        override val summary: String? = R.string.anykernel_patch_desc
+    ) : InstallMethod()
+
+    data class AnyKernelMagiskBoot(
+        val zipUri: Uri,
+        val targetBootUri: Uri,
+        @param:StringRes override val label: Int = R.string.anykernel_magiskboot,
+        override val summary: String? = R.string.anykernel_magiskboot_desc
+    ) : InstallMethod()
+
+    data class AnyKernelMagiskBootDirect(
+        val zipUri: Uri,
+        @param:StringRes override val label: Int = R.string.anykernel_magiskboot_direct,
+        override val summary: String? = R.string.anykernel_magiskboot_direct_desc
+    ) : InstallMethod()
+
     data object DirectInstall : InstallMethod() {
         override val label: Int
             get() = R.string.direct_install
@@ -454,12 +496,66 @@ private fun SelectGkiInstallMethod(
     currentMethod: InstallMethod?,
     onMethodSelected: (InstallMethod) -> Unit
 ) {
+    val context = LocalContext.current
     val selectAnyKernelLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
     ) {
         if (it.resultCode == Activity.RESULT_OK) {
             it.data?.data?.let { uri ->
                 val option = InstallMethod.AnyKernel(uri)
+                onMethodSelected(option)
+            }
+        }
+    }
+
+    val selectAnyKernelPatchLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) {
+        if (it.resultCode == Activity.RESULT_OK) {
+            it.data?.data?.let { uri ->
+                val option = InstallMethod.AnyKernelPatch(uri)
+                onMethodSelected(option)
+            }
+        }
+    }
+
+    var tempMagiskBootZipUri by remember { mutableStateOf<Uri?>(null) }
+
+    val selectAnyKernelMagiskBootTargetLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) {
+        if (it.resultCode == Activity.RESULT_OK) {
+            it.data?.data?.let { targetUri ->
+                tempMagiskBootZipUri?.let { zipUri ->
+                    val option = InstallMethod.AnyKernelMagiskBoot(zipUri, targetUri)
+                    onMethodSelected(option)
+                }
+            }
+        }
+    }
+
+    val selectAnyKernelMagiskBootZipLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) {
+        if (it.resultCode == Activity.RESULT_OK) {
+            it.data?.data?.let { uri ->
+                tempMagiskBootZipUri = uri
+                android.widget.Toast.makeText(context, "Please select target boot image", android.widget.Toast.LENGTH_LONG).show()
+                selectAnyKernelMagiskBootTargetLauncher.launch(Intent(Intent.ACTION_GET_CONTENT).apply {
+                    type = "application/octet-stream"
+                    putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("application/octet-stream", "application/x-img"))
+                    addCategory(Intent.CATEGORY_OPENABLE)
+                })
+            }
+        }
+    }
+
+    val selectAnyKernelMagiskBootDirectLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) {
+        if (it.resultCode == Activity.RESULT_OK) {
+            it.data?.data?.let { uri ->
+                val option = InstallMethod.AnyKernelMagiskBootDirect(uri)
                 onMethodSelected(option)
             }
         }
@@ -496,6 +592,129 @@ private fun SelectGkiInstallMethod(
                 Text(
                     text = stringResource(method.label),
                     style = MaterialTheme.typography.bodyLarge
+                )
+            }
+        }
+
+        HorizontalDivider()
+
+        val patchMethod = InstallMethod.AnyKernelPatch()
+        val patchSelected = currentMethod is InstallMethod.AnyKernelPatch
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable {
+                    selectAnyKernelPatchLauncher.launch(Intent(Intent.ACTION_GET_CONTENT).apply {
+                        type = "application/zip"
+                        putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("application/zip", "application/x-zip-compressed", "application/octet-stream"))
+                        addCategory(Intent.CATEGORY_OPENABLE)
+                    })
+                }
+                .padding(vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            RadioButton(
+                selected = patchSelected,
+                onClick = {
+                    selectAnyKernelPatchLauncher.launch(Intent(Intent.ACTION_GET_CONTENT).apply {
+                        type = "application/zip"
+                        putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("application/zip", "application/x-zip-compressed", "application/octet-stream"))
+                        addCategory(Intent.CATEGORY_OPENABLE)
+                    })
+                }
+            )
+            Column(modifier = Modifier.padding(start = 16.dp)) {
+                Text(
+                    text = stringResource(patchMethod.label),
+                    style = MaterialTheme.typography.bodyLarge
+                )
+                Text(
+                    text = stringResource(R.string.anykernel_patch_desc),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
+
+        HorizontalDivider()
+
+        val magiskBootMethod = InstallMethod.AnyKernelMagiskBoot(Uri.EMPTY, Uri.EMPTY)
+        val magiskBootSelected = currentMethod is InstallMethod.AnyKernelMagiskBoot
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable {
+                    selectAnyKernelMagiskBootZipLauncher.launch(Intent(Intent.ACTION_GET_CONTENT).apply {
+                        type = "application/zip"
+                        putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("application/zip", "application/x-zip-compressed", "application/octet-stream"))
+                        addCategory(Intent.CATEGORY_OPENABLE)
+                    })
+                }
+                .padding(vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            RadioButton(
+                selected = magiskBootSelected,
+                onClick = {
+                    selectAnyKernelMagiskBootZipLauncher.launch(Intent(Intent.ACTION_GET_CONTENT).apply {
+                        type = "application/zip"
+                        putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("application/zip", "application/x-zip-compressed", "application/octet-stream"))
+                        addCategory(Intent.CATEGORY_OPENABLE)
+                    })
+                }
+            )
+            Column(modifier = Modifier.padding(start = 16.dp)) {
+                Text(
+                    text = stringResource(magiskBootMethod.label),
+                    style = MaterialTheme.typography.bodyLarge
+                )
+                Text(
+                    text = stringResource(R.string.anykernel_magiskboot_desc),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
+
+        HorizontalDivider()
+
+        val magiskBootDirectMethod = InstallMethod.AnyKernelMagiskBootDirect(Uri.EMPTY)
+        val magiskBootDirectSelected = currentMethod is InstallMethod.AnyKernelMagiskBootDirect
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable {
+                    selectAnyKernelMagiskBootDirectLauncher.launch(Intent(Intent.ACTION_GET_CONTENT).apply {
+                        type = "application/zip"
+                        putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("application/zip", "application/x-zip-compressed", "application/octet-stream"))
+                        addCategory(Intent.CATEGORY_OPENABLE)
+                    })
+                }
+                .padding(vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            RadioButton(
+                selected = magiskBootDirectSelected,
+                onClick = {
+                    selectAnyKernelMagiskBootDirectLauncher.launch(Intent(Intent.ACTION_GET_CONTENT).apply {
+                        type = "application/zip"
+                        putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("application/zip", "application/x-zip-compressed", "application/octet-stream"))
+                        addCategory(Intent.CATEGORY_OPENABLE)
+                    })
+                }
+            )
+            Column(modifier = Modifier.padding(start = 16.dp)) {
+                Text(
+                    text = stringResource(magiskBootDirectMethod.label),
+                    style = MaterialTheme.typography.bodyLarge
+                )
+                Text(
+                    text = stringResource(R.string.anykernel_magiskboot_direct_desc),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }

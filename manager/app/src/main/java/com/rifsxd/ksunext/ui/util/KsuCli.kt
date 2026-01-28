@@ -441,6 +441,305 @@ fun flashAnyKernelZip(
     }
 }
 
+fun magiskBootRepack(
+    zipUri: Uri,
+    targetBootUri: Uri?,
+    onStdout: (String) -> Unit,
+    onStderr: (String) -> Unit
+): FlashResult {
+    val resolver = ksuApp.contentResolver
+    val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+    val workDir = File(ksuApp.cacheDir, "magiskboot_${timestamp}")
+    workDir.mkdirs()
+
+    val zipFile = File(workDir, "kernel.zip")
+    val bootImg = File(workDir, "boot.img")
+    val magiskboot = File(ksuApp.applicationInfo.nativeLibraryDir, "libmagiskboot.so").absolutePath
+
+    try {
+        onStdout("Preparing workspace...")
+        
+        // 1. Save Zip
+        resolver.openInputStream(zipUri)?.use { input ->
+            zipFile.outputStream().use { output -> input.copyTo(output) }
+        } ?: return FlashResult(1, "Failed to read zip file", false)
+
+        // 2. Extract Zip
+        val unzipCmd = "$BUSYBOX unzip -o '${zipFile.absolutePath}' -d '${workDir.absolutePath}'"
+        val unzipResult = flashWithIO(unzipCmd, { /* ignore */ }, { /* ignore */ })
+        if (!unzipResult.isSuccess) {
+            return FlashResult(unzipResult.code, "Failed to unzip archive", false)
+        }
+
+        // 3. Find Kernel Image
+        val kernelNames = listOf("Image", "Image.gz", "Image.lz4", "zImage", "kernel", "Image.gz-dtb", "zImage-dtb")
+        var kernelFile: File? = null
+        // Simple search in root and subdirs
+        workDir.walk().forEach { file ->
+            if (kernelFile == null && file.isFile && kernelNames.contains(file.name)) {
+                kernelFile = file
+            }
+        }
+
+        if (kernelFile == null) {
+            return FlashResult(1, "No kernel image found in zip (checked: ${kernelNames.joinToString()})", false)
+        }
+        onStdout("Found kernel image: ${kernelFile!!.name}")
+
+        // 4. Prepare Boot Image
+        if (targetBootUri != null) {
+            onStdout("Reading target boot image...")
+            resolver.openInputStream(targetBootUri)?.use { input ->
+                bootImg.outputStream().use { output -> input.copyTo(output) }
+            } ?: return FlashResult(1, "Failed to read target boot image", false)
+        } else {
+            onStdout("Dumping current boot image...")
+            // Try to find boot partition
+            val findBootCmd = """
+                SLOT=$(getprop ro.boot.slot_suffix)
+                if [ -e /dev/block/by-name/boot$SLOT ]; then
+                    echo /dev/block/by-name/boot$SLOT
+                elif [ -e /dev/block/bootdevice/by-name/boot$SLOT ]; then
+                    echo /dev/block/bootdevice/by-name/boot$SLOT
+                elif [ -e /dev/block/by-name/boot ]; then
+                    echo /dev/block/by-name/boot
+                else
+                    echo ""
+                fi
+            """.trimIndent()
+            
+            var bootPart = ""
+            withNewRootShell {
+                val out = newJob().add(findBootCmd).to(ArrayList(), null).exec().out
+                bootPart = out.firstOrNull()?.trim() ?: ""
+            }
+
+            if (bootPart.isEmpty()) {
+                return FlashResult(1, "Could not detect boot partition. Please use 'Select File' mode.", false)
+            }
+            onStdout("Boot partition: $bootPart")
+            
+            val dumpResult = flashWithIO("dd if='$bootPart' of='${bootImg.absolutePath}'", { }, { })
+            if (!dumpResult.isSuccess) return FlashResult(dumpResult.code, "Failed to dump boot image", false)
+        }
+
+        // 5. Unpack Boot
+        onStdout("Unpacking boot image...")
+        val unpackCmd = "cd '${workDir.absolutePath}' && $magiskboot unpack '${bootImg.absolutePath}'"
+        val unpackResult = flashWithIO(unpackCmd, onStdout, onStderr)
+        if (!unpackResult.isSuccess) return FlashResult(unpackResult.code, "Failed to unpack boot image", false)
+
+        // 6. Replace Kernel
+        onStdout("Replacing kernel...")
+        val currentKernel = File(workDir, "kernel")
+        // If kernel file exists from unpack, replace it. 
+        // Note: magiskboot unpack might produce 'kernel' or 'kernel_dtb' etc. usually just 'kernel'.
+        if (!currentKernel.exists()) {
+             return FlashResult(1, "Unpacked boot image does not contain a 'kernel' file", false)
+        }
+        
+        // Copy our found kernel to 'kernel'
+        kernelFile!!.copyTo(currentKernel, overwrite = true)
+
+        // 7. Repack
+        onStdout("Repacking boot image...")
+        val repackCmd = "cd '${workDir.absolutePath}' && $magiskboot repack '${bootImg.absolutePath}'"
+        val repackResult = flashWithIO(repackCmd, onStdout, onStderr)
+        if (!repackResult.isSuccess) return FlashResult(repackResult.code, "Failed to repack boot image", false)
+
+        val newBoot = File(workDir, "new-boot.img")
+        if (!newBoot.exists()) {
+             return FlashResult(1, "Repack failed: new-boot.img not found", false)
+        }
+
+        // 8. Finalize
+        if (targetBootUri == null) {
+            // Direct Install -> Flash
+            onStdout("Flashing new boot image...")
+            // Find boot partition again (or reuse) - better reuse but clean scope
+             val findBootCmd = """
+                SLOT=$(getprop ro.boot.slot_suffix)
+                if [ -e /dev/block/by-name/boot$SLOT ]; then
+                    echo /dev/block/by-name/boot$SLOT
+                elif [ -e /dev/block/bootdevice/by-name/boot$SLOT ]; then
+                    echo /dev/block/bootdevice/by-name/boot$SLOT
+                elif [ -e /dev/block/by-name/boot ]; then
+                    echo /dev/block/by-name/boot
+                else
+                    echo ""
+                fi
+            """.trimIndent()
+            var bootPart = ""
+             withNewRootShell {
+                val out = newJob().add(findBootCmd).to(ArrayList(), null).exec().out
+                bootPart = out.firstOrNull()?.trim() ?: ""
+            }
+            
+            if (bootPart.isEmpty()) return FlashResult(1, "Boot partition not found for flashing", false)
+            
+            val flashCmd = "dd if='${newBoot.absolutePath}' of='$bootPart'"
+            val flashResult = flashWithIO(flashCmd, onStdout, onStderr)
+            
+            if (flashResult.isSuccess) {
+                onStdout("Flashing complete!")
+                return FlashResult(0, "", true)
+            } else {
+                return FlashResult(flashResult.code, "Failed to flash boot image", false)
+            }
+        } else {
+            // Patch File -> Save
+            val timestamp2 = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+            val destPath = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "boot-magiskboot-${timestamp2}.img")
+            
+            onStdout("Saving to ${destPath.absolutePath}...")
+            newBoot.copyTo(destPath, overwrite = true)
+            onStdout("Done!")
+            return FlashResult(0, "", false)
+        }
+
+    } catch (e: Exception) {
+        return FlashResult(1, "Exception: ${e.message}", false)
+    } finally {
+        workDir.deleteRecursively()
+    }
+}
+
+fun patchAnyKernelZip(
+    uri: Uri,
+    onStdout: (String) -> Unit,
+    onStderr: (String) -> Unit
+): FlashResult {
+    val resolver = ksuApp.contentResolver
+
+    val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+    val tmpFile = File(ksuApp.cacheDir, "anykernel_${timestamp}.zip")
+    resolver.openInputStream(uri).use { input ->
+        tmpFile.outputStream().use { out ->
+            input?.copyTo(out)
+        }
+    }
+
+    val destZip = tmpFile.absolutePath
+    val destZipName = File(destZip).name
+    val destDirFile = File(ksuApp.cacheDir, "anykernel3_${timestamp}")
+    val destDir = destDirFile.absolutePath
+
+    // We append the override functions to ak3-core.sh (if it exists) or inject them via a wrapper script.
+    // Since we don't know exactly where ak3-core.sh is (it's inside the zip), we'll rely on the fact that
+    // standard AnyKernel3 zips have tools/ak3-core.sh.
+    // However, the safest way is to prepend the override to the execution environment or modify the files after unzip.
+    // We unzip first, then modify, then run.
+
+    val overrides = """
+        # Override flash_boot to save instead of flash
+        flash_boot() {
+          ui_print " " "NOT FLASHING - SAVING TO FILE..."
+          local timestamp=$(date +%Y%m%d_%H%M%S)
+          local dest="/sdcard/Download/boot-patched-${timestamp}.img"
+          cp boot-new.img "${"$"}dest"
+          ui_print " " "Saved to ${"$"}dest"
+        }
+
+        # Override generic flash (for vendor_boot, dtbo, etc.)
+        flash_generic() {
+          local name="${"$"}1"
+          local imgFile="${"$"}name"
+          [ -f "${"$"}name.img" ] && imgFile="${"$"}name.img"
+
+          if [ -f "${"$"}imgFile" ]; then
+             ui_print " " "NOT FLASHING ${"$"}name - SAVING TO FILE..."
+             local timestamp=$(date +%Y%m%d_%H%M%S)
+             local dest="/sdcard/Download/${"$"}name-patched-${timestamp}.img"
+             cp "${"$"}imgFile" "${"$"}dest"
+             ui_print " " "Saved to ${"$"}dest"
+          fi
+        }
+    """.trimIndent()
+
+    // We need to write this override to a file and source it, or append it to ak3-core.sh.
+    // Let's try appending to tools/ak3-core.sh if it exists, otherwise we might be in trouble if the zip structure is weird.
+    // But wait, the update-binary (shell script) usually sources ak3-core.sh.
+    // If we append to ak3-core.sh, it will be loaded.
+
+    // Unzip command
+    // We need to unzip everything first to modify it.
+    // But flashAnyKernelZip uses "unzip -p ... > update-binary" and then runs it with the zip as argument.
+    // Standard AK3 runs from the zip directly (passed as arg 3).
+    // Wait, `anykernel.sh` (the update-binary) unzips the rest of itself.
+    // If we want to intercept, we need to modify the files *after* `anykernel.sh` extracts them?
+    // No, `anykernel.sh` usually contains `unzip -o "$3"` (where $3 is the zip path) to extract itself to /tmp/anykernel.
+
+    // If we want to override, we have a problem: the script extracts *fresh* copies of tools/ak3-core.sh from the zip, overwriting anything we put there.
+    // UNLESS we modify the ZIP file itself? No, that's hard.
+    // OR we modify the `anykernel.sh` that we extract and run as `update-binary`.
+    // In `flashAnyKernelZip`:
+    // $BUSYBOX unzip -p -o '$destZip' "META-INF/com/google/android/update-binary" > '$destDir/update-binary'
+    // This extracts the entry point.
+    // If we append our overrides to *this* `update-binary` (which is `anykernel.sh`), they will be defined.
+    // AND since `anykernel.sh` sources `ak3-core.sh`, if we define our functions *after* the source command (or if we define them *before* and `ak3-core.sh` uses `function name() { ... }` style which might overwrite... shell functions can be overwritten).
+    // If `ak3-core.sh` defines `flash_boot`, and we define `flash_boot` *after* sourcing it, ours wins.
+    // If we define it *before*, `ak3-core.sh` wins.
+    // `anykernel.sh` usually has `. tools/ak3-core.sh` near the top.
+    // So we should append our overrides to the *end* of `update-binary`.
+    // BUT `anykernel.sh` usually ends with `write_boot`.
+    // If we append *after* `write_boot`, it's too late.
+
+    // So we need to insert our overrides *after* `. tools/ak3-core.sh` but *before* `flash_boot` or `write_boot` is called.
+    // Or, we can use `sed` to inject the overrides right after the source line.
+
+    // The source line is usually `. tools/ak3-core.sh`.
+    // Let's try to inject right after that.
+
+    val cmd = """
+                mkdir -p '$destDir' && \
+                $BUSYBOX unzip -p -o '$destZip' "META-INF/com/google/android/update-binary" > '$destDir/update-binary' 2>/dev/null && \
+                cp '$destZip' '$destDir/$destZipName' 2>/dev/null || true && \
+                $BUSYBOX chmod 755 '$destDir/update-binary' && \
+                $BUSYBOX chown root:root '$destDir/update-binary' && \
+                (cd '$destDir' && \
+                    if [ -f './update-binary' ]; then \
+                        # Inject overrides
+                        $BUSYBOX sed -i '/\. tools\/ak3-core.sh/a \
+                        flash_boot() { \
+                          ui_print " " "NOT FLASHING - SAVING TO FILE..."; \
+                          local timestamp=$(date +%Y%m%d_%H%M%S); \
+                          local dest="/sdcard/Download/boot-patched-${"$"}{timestamp}.img"; \
+                          cp boot-new.img "${"$"}{dest}"; \
+                          ui_print " " "Saved to ${"$"}{dest}"; \
+                        } \
+                        flash_generic() { \
+                          local name="${"$"}{1}"; \
+                          local imgFile="${"$"}{name}"; \
+                          [ -f "${"$"}{name}.img" ] && imgFile="${"$"}{name}.img"; \
+                          if [ -f "${"$"}{imgFile}" ]; then \
+                             ui_print " " "NOT FLASHING ${"$"}{name} - SAVING TO FILE..."; \
+                             local timestamp=$(date +%Y%m%d_%H%M%S); \
+                             local dest="/sdcard/Download/${"$"}{name}-patched-${"$"}{timestamp}.img"; \
+                             cp "${"$"}{imgFile}" "${"$"}{dest}"; \
+                             ui_print " " "Saved to ${"$"}{dest}"; \
+                          fi; \
+                        }' ./update-binary; \
+                        AKHOME='$destDir/tmp' $BUSYBOX ash '$destDir/update-binary' 3 1 '$destDir/$destZipName'; \
+                    else \
+                        echo 'No installer script found' >&2; exit 1; \
+                    fi)
+            """.trimIndent().replace(Regex("\\s+\\\\\\s*"), " ")
+
+    val result = flashWithIO_ak3(cmd, onStdout, onStderr)
+    try {
+        return FlashResult(result, result.isSuccess)
+    } finally {
+        try {
+            runCatching {
+                createRootShell(true).use { sh ->
+                    sh.newJob().add("rm -rf '$destDir' '$destZip'").exec()
+                }
+            }
+        } catch (_: Throwable) {
+        }
+    }
+}
+
 fun rootAvailable() = Shell.isAppGrantedRoot() == true
 
 fun isInitBoot(): Boolean {
