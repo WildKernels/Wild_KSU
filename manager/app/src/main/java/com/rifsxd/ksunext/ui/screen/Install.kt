@@ -582,6 +582,7 @@ private fun SelectGkiInstallMethod(
             modifier = Modifier
                 .fillMaxWidth()
                 .clickable {
+                    android.widget.Toast.makeText(context, "Please select AnyKernel3 zip", android.widget.Toast.LENGTH_SHORT).show()
                     selectAnyKernelLauncher.launch(Intent(Intent.ACTION_GET_CONTENT).apply {
                         type = "application/zip"
                         putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("application/zip", "application/x-zip-compressed", "application/octet-stream"))
@@ -594,6 +595,7 @@ private fun SelectGkiInstallMethod(
             RadioButton(
                 selected = selected,
                 onClick = {
+                    android.widget.Toast.makeText(context, "Please select AnyKernel3 zip", android.widget.Toast.LENGTH_SHORT).show()
                     selectAnyKernelLauncher.launch(Intent(Intent.ACTION_GET_CONTENT).apply {
                         type = "application/zip"
                         putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("application/zip", "application/x-zip-compressed", "application/octet-stream"))
@@ -616,6 +618,7 @@ private fun SelectGkiInstallMethod(
             modifier = Modifier
                 .fillMaxWidth()
                 .clickable {
+                    android.widget.Toast.makeText(context, "Please select AnyKernel3 zip", android.widget.Toast.LENGTH_SHORT).show()
                     selectAnyKernelPatchLauncher.launch(Intent(Intent.ACTION_GET_CONTENT).apply {
                         type = "application/zip"
                         putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("application/zip", "application/x-zip-compressed", "application/octet-stream"))
@@ -628,6 +631,7 @@ private fun SelectGkiInstallMethod(
             RadioButton(
                 selected = patchSelected,
                 onClick = {
+                    android.widget.Toast.makeText(context, "Please select AnyKernel3 zip", android.widget.Toast.LENGTH_SHORT).show()
                     selectAnyKernelPatchLauncher.launch(Intent(Intent.ACTION_GET_CONTENT).apply {
                         type = "application/zip"
                         putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("application/zip", "application/x-zip-compressed", "application/octet-stream"))
@@ -665,6 +669,7 @@ private fun SelectGkiInstallMethod(
             modifier = Modifier
                 .fillMaxWidth()
                 .clickable {
+                    android.widget.Toast.makeText(context, "Please select AnyKernel3 zip", android.widget.Toast.LENGTH_SHORT).show()
                     selectAnyKernelMagiskBootDirectLauncher.launch(Intent(Intent.ACTION_GET_CONTENT).apply {
                         type = "application/zip"
                         putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("application/zip", "application/x-zip-compressed", "application/octet-stream"))
@@ -677,6 +682,7 @@ private fun SelectGkiInstallMethod(
             RadioButton(
                 selected = magiskBootDirectSelected,
                 onClick = {
+                    android.widget.Toast.makeText(context, "Please select AnyKernel3 zip", android.widget.Toast.LENGTH_SHORT).show()
                     selectAnyKernelMagiskBootDirectLauncher.launch(Intent(Intent.ACTION_GET_CONTENT).apply {
                         type = "application/zip"
                         putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("application/zip", "application/x-zip-compressed", "application/octet-stream"))
@@ -704,6 +710,7 @@ private fun SelectGkiInstallMethod(
             modifier = Modifier
                 .fillMaxWidth()
                 .clickable {
+                    android.widget.Toast.makeText(context, "Please select AnyKernel3 zip", android.widget.Toast.LENGTH_SHORT).show()
                     selectAnyKernelMagiskBootZipLauncher.launch(Intent(Intent.ACTION_GET_CONTENT).apply {
                         type = "application/zip"
                         putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("application/zip", "application/x-zip-compressed", "application/octet-stream"))
@@ -716,6 +723,7 @@ private fun SelectGkiInstallMethod(
             RadioButton(
                 selected = magiskBootSelected,
                 onClick = {
+                    android.widget.Toast.makeText(context, "Please select AnyKernel3 zip", android.widget.Toast.LENGTH_SHORT).show()
                     selectAnyKernelMagiskBootZipLauncher.launch(Intent(Intent.ACTION_GET_CONTENT).apply {
                         type = "application/zip"
                         putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("application/zip", "application/x-zip-compressed", "application/octet-stream"))
@@ -979,6 +987,7 @@ private fun SelectInstallMethod(
 
         when (option) {
             is InstallMethod.SelectFile -> {
+                android.widget.Toast.makeText(LocalContext.current, "Please select image file", android.widget.Toast.LENGTH_SHORT).show()
                 selectImageLauncher.launch(Intent(Intent.ACTION_GET_CONTENT).apply {
                     type = "application/octet-stream"
                 })
@@ -1050,6 +1059,8 @@ private fun SelectKpnInstallMethod(
         }
     }
 
+    val context = LocalContext.current
+
     val kpnOptions = listOf(
         InstallMethod.KpnSelectFile(summary = stringResource(R.string.kpn_select_file_desc)),
         InstallMethod.KpnDirect
@@ -1070,6 +1081,7 @@ private fun SelectKpnInstallMethod(
                         selected = selected,
                         onClick = {
                             if (option is InstallMethod.KpnSelectFile) {
+                                android.widget.Toast.makeText(context, "Please select image to patch", android.widget.Toast.LENGTH_SHORT).show()
                                 selectFileLauncher.launch(Intent(Intent.ACTION_GET_CONTENT).apply {
                                     type = "application/octet-stream"
                                 })
