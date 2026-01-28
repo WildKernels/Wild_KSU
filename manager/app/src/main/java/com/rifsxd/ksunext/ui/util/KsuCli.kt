@@ -541,6 +541,36 @@ fun magiskBootRepack(
         // Copy our found kernel to 'kernel'
         kernelFile!!.copyTo(currentKernel, overwrite = true)
 
+        // KPN Auto-Patch
+        val prefs = ksuApp.getSharedPreferences("settings", Context.MODE_PRIVATE)
+        if (prefs.getBoolean("enable_kpn", false)) {
+            onStdout("KPN enabled. Patching kernel...")
+            val libDir = ksuApp.applicationInfo.nativeLibraryDir
+            val kptools = File(workDir, "kptools")
+            val kpimg = File(workDir, "kpimg")
+
+            try {
+                File(libDir, "libkptools.so").copyTo(kptools, overwrite = true)
+                File(libDir, "libkpimg.so").copyTo(kpimg, overwrite = true)
+                kptools.setExecutable(true)
+
+                val kernelOri = File(workDir, "kernel.ori")
+                if (currentKernel.renameTo(kernelOri)) {
+                    val patchCmd = "cd '${workDir.absolutePath}' && ./kptools -p -i kernel.ori -k kpimg -o kernel"
+                    val patchResult = flashWithIO(patchCmd, onStdout, onStderr)
+                    
+                    if (!patchResult.isSuccess) {
+                        return FlashResult(patchResult.code, "KPN Patch failed", false)
+                    }
+                    onStdout("KPN Patch successful!")
+                } else {
+                    return FlashResult(1, "Failed to rename kernel for KPN patching", false)
+                }
+            } catch (e: Exception) {
+                return FlashResult(1, "KPN Patch error: ${e.message}", false)
+            }
+        }
+
         // 7. Repack
         onStdout("Repacking boot image...")
         val repackCmd = "cd '${workDir.absolutePath}' && $magiskboot repack '${bootImg.absolutePath}'"

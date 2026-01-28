@@ -259,6 +259,9 @@
     <string name="settings_enable_bottom_bar">Enable Bottom Bar</string>
     <string name="settings_enable_bottom_bar_summary">Show bottom navigation bar</string>
 
+    <string name="settings_enable_kpn">Enable KPN Patching</string>
+    <string name="settings_enable_kpn_summary">Automatically patch KPN when using MagiskBoot Repack</string>
+
     <string name="module_shortcut_title">Create shortcut</string>
     <string name="module_shortcut_name_label">Shortcut name</string>
     <string name="module_shortcut_icon_pick">Choose custom icon</string>

@@ -334,6 +334,24 @@ fun SettingScreen(navigator: DestinationsNavigator) {
                         checkUpdate = it
                     }
 
+                    var enableKpn by rememberSaveable {
+                        mutableStateOf(prefs.getBoolean("enable_kpn", false))
+                    }
+
+                    SwitchItem(
+                        icon = Icons.Filled.Build,
+                        title = stringResource(R.string.settings_enable_kpn),
+                        summary = stringResource(R.string.settings_enable_kpn_summary),
+                        checked = enableKpn,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(MaterialTheme.shapes.small),
+                        colors = ListItemDefaults.colors(containerColor = Color.Transparent)
+                    ) {
+                        prefs.edit { putBoolean("enable_kpn", it) }
+                        enableKpn = it
+                    }
+
                     ListItem(
                         modifier = Modifier
                             .fillMaxWidth()
