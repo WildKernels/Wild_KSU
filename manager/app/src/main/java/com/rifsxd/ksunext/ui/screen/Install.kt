@@ -611,47 +611,6 @@ private fun SelectGkiInstallMethod(
             }
         }
 
-        val patchMethod = InstallMethod.AnyKernelPatch()
-        val patchSelected = currentMethod is InstallMethod.AnyKernelPatch
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable {
-                    android.widget.Toast.makeText(context, "Please select AnyKernel3 zip", android.widget.Toast.LENGTH_SHORT).show()
-                    selectAnyKernelPatchLauncher.launch(Intent(Intent.ACTION_GET_CONTENT).apply {
-                        type = "application/zip"
-                        putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("application/zip", "application/x-zip-compressed", "application/octet-stream"))
-                        addCategory(Intent.CATEGORY_OPENABLE)
-                    })
-                }
-                .padding(vertical = 8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            RadioButton(
-                selected = patchSelected,
-                onClick = {
-                    android.widget.Toast.makeText(context, "Please select AnyKernel3 zip", android.widget.Toast.LENGTH_SHORT).show()
-                    selectAnyKernelPatchLauncher.launch(Intent(Intent.ACTION_GET_CONTENT).apply {
-                        type = "application/zip"
-                        putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("application/zip", "application/x-zip-compressed", "application/octet-stream"))
-                        addCategory(Intent.CATEGORY_OPENABLE)
-                    })
-                }
-            )
-            Column(modifier = Modifier.padding(start = 16.dp)) {
-                Text(
-                    text = stringResource(patchMethod.label),
-                    style = MaterialTheme.typography.bodyLarge
-                )
-                Text(
-                    text = stringResource(R.string.anykernel_patch_desc),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-        }
-
         HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
 
         // MagiskBoot Group
@@ -697,47 +656,6 @@ private fun SelectGkiInstallMethod(
                 )
                 Text(
                     text = stringResource(R.string.anykernel_magiskboot_direct_desc),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-        }
-
-        val magiskBootMethod = InstallMethod.AnyKernelMagiskBoot(Uri.EMPTY, Uri.EMPTY, enableKpn)
-        val magiskBootSelected = currentMethod is InstallMethod.AnyKernelMagiskBoot
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable {
-                    android.widget.Toast.makeText(context, "Please select AnyKernel3 zip", android.widget.Toast.LENGTH_SHORT).show()
-                    selectAnyKernelMagiskBootZipLauncher.launch(Intent(Intent.ACTION_GET_CONTENT).apply {
-                        type = "application/zip"
-                        putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("application/zip", "application/x-zip-compressed", "application/octet-stream"))
-                        addCategory(Intent.CATEGORY_OPENABLE)
-                    })
-                }
-                .padding(vertical = 8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            RadioButton(
-                selected = magiskBootSelected,
-                onClick = {
-                    android.widget.Toast.makeText(context, "Please select AnyKernel3 zip", android.widget.Toast.LENGTH_SHORT).show()
-                    selectAnyKernelMagiskBootZipLauncher.launch(Intent(Intent.ACTION_GET_CONTENT).apply {
-                        type = "application/zip"
-                        putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("application/zip", "application/x-zip-compressed", "application/octet-stream"))
-                        addCategory(Intent.CATEGORY_OPENABLE)
-                    })
-                }
-            )
-            Column(modifier = Modifier.padding(start = 16.dp)) {
-                Text(
-                    text = stringResource(magiskBootMethod.label),
-                    style = MaterialTheme.typography.bodyLarge
-                )
-                Text(
-                    text = stringResource(R.string.anykernel_magiskboot_desc),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
