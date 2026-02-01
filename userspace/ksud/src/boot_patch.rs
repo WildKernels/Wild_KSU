@@ -1,4 +1,7 @@
 #![allow(clippy::ref_option, clippy::needless_pass_by_value)]
+
+use std::fs::File;
+use std::io::Write;
 #[cfg(unix)]
 use std::os::unix::fs::PermissionsExt;
 use std::path::Path;
@@ -487,6 +490,22 @@ pub struct BootPatchArgs {
     /// File name of the output.
     #[arg(long, default_value = None)]
     pub out_name: Option<String>,
+
+    /// Always allow shell to get root permission
+    #[arg(long, default_value = "false")]
+    pub allow_shell: bool,
+
+    /// Force enable adbd and disable adbd auth
+    #[arg(long, default_value = "false")]
+    pub enable_adbd: bool,
+
+    /// Add more adb_debug prop
+    #[arg(long, required = false)]
+    pub adb_debug_prop: Option<String>,
+
+    /// Do not (re-)install kernelsu, only modify configs (allow_shell, etc.)
+    #[arg(long, default_value = "false")]
+    pub no_install: bool,
 }
 
 pub fn patch(args: BootPatchArgs) -> Result<()> {
@@ -500,6 +519,10 @@ pub fn patch(args: BootPatchArgs) -> Result<()> {
             magiskboot: magiskboot_path,
             kmi,
             out_name,
+            allow_shell,
+            enable_adbd,
+            adb_debug_prop,
+            no_install,
             ..
         } = args;
         #[cfg(target_os = "android")]
@@ -588,7 +611,7 @@ pub fn patch(args: BootPatchArgs) -> Result<()> {
         let kmod_file = workdir.join("kernelsu.ko");
         if let Some(kmod) = kmod {
             std::fs::copy(kmod, kmod_file).context("copy kernel module failed")?;
-        } else {
+        } else if !no_install {
             // If kmod is not specified, extract from assets
             println!("- KMI: {kmi}");
             let name = format!("{kmi}_kernelsu.ko");
@@ -599,7 +622,7 @@ pub fn patch(args: BootPatchArgs) -> Result<()> {
         let init_file = workdir.join("init");
         if let Some(init) = init {
             std::fs::copy(init, init_file).context("copy init failed")?;
-        } else {
+        } else if !no_install {
             assets::copy_assets_to_file("ksuinit", init_file).context("copy ksuinit failed")?;
         }
 
@@ -625,34 +648,76 @@ pub fn patch(args: BootPatchArgs) -> Result<()> {
             ramdisk = "ramdisk.cpio".into();
         }
         let ramdisk = ramdisk.as_path();
-        let is_magisk_patched = is_magisk_patched(&magiskboot, workdir, ramdisk)?;
-        ensure!(!is_magisk_patched, "Cannot work with Magisk patched image");
+        if !no_install {
+            let is_magisk_patched = is_magisk_patched(&magiskboot, workdir, ramdisk)?;
+            ensure!(!is_magisk_patched, "Cannot work with Magisk patched image");
 
-        println!("- Adding KernelSU LKM");
-        let is_kernelsu_patched = is_kernelsu_patched(&magiskboot, workdir, ramdisk)?;
+            println!("- Adding KernelSU LKM");
+            let is_kernelsu_patched = is_kernelsu_patched(&magiskboot, workdir, ramdisk)?;
 
-        if !is_kernelsu_patched {
-            // kernelsu.ko is not exist, backup init if necessary
-            let status = do_cpio_cmd(&magiskboot, workdir, ramdisk, "exists init");
-            if status.is_ok() {
-                do_cpio_cmd(&magiskboot, workdir, ramdisk, "mv init init.real")?;
+            if !is_kernelsu_patched {
+                // kernelsu.ko is not exist, backup init if necessary
+                let status = do_cpio_cmd(&magiskboot, workdir, ramdisk, "exists init");
+                if status.is_ok() {
+                    do_cpio_cmd(&magiskboot, workdir, ramdisk, "mv init init.real")?;
+                }
+            }
+
+            do_cpio_cmd(&magiskboot, workdir, ramdisk, "add 0755 init init")?;
+            do_cpio_cmd(
+                &magiskboot,
+                workdir,
+                ramdisk,
+                "add 0755 kernelsu.ko kernelsu.ko",
+            )?;
+
+            #[cfg(target_os = "android")]
+            if !is_kernelsu_patched
+                && flash
+                && let Err(e) = do_backup(&magiskboot, workdir, ramdisk, bootimage)
+            {
+                println!("- Backup stock image failed: {e}");
             }
         }
 
-        do_cpio_cmd(&magiskboot, workdir, ramdisk, "add 0755 init init")?;
-        do_cpio_cmd(
-            &magiskboot,
-            workdir,
-            ramdisk,
-            "add 0755 kernelsu.ko kernelsu.ko",
-        )?;
+        if allow_shell {
+            println!("- Adding allow shell config");
+            {
+                let allow_shell_file = workdir.join("ksu_allow_shell");
+                File::create(allow_shell_file)?;
+            }
+            do_cpio_cmd(
+                &magiskboot,
+                workdir,
+                ramdisk,
+                "add 0755 ksu_allow_shell ksu_allow_shell",
+            )?;
+        } else if do_cpio_cmd(&magiskboot, workdir, ramdisk, "exists ksu_allow_shell").is_ok() {
+            println!("- Removing allow shell config");
+            do_cpio_cmd(&magiskboot, workdir, ramdisk, "rm ksu_allow_shell").ok();
+        }
 
-        #[cfg(target_os = "android")]
-        if !is_kernelsu_patched
-            && flash
-            && let Err(e) = do_backup(&magiskboot, workdir, ramdisk, bootimage)
-        {
-            println!("- Backup stock image failed: {e}");
+        if enable_adbd || adb_debug_prop.is_some() {
+            println!("- Adding adb_debug props");
+            {
+                let force_debuggable_file = workdir.join("force_debuggable");
+                let mut file = File::create(&force_debuggable_file)?;
+                if enable_adbd {
+                    writeln!(file, "enable_adbd=true")?;
+                }
+                if let Some(prop) = adb_debug_prop {
+                    writeln!(file, "adb_debug_prop={}", prop)?;
+                }
+            }
+            do_cpio_cmd(
+                &magiskboot,
+                workdir,
+                ramdisk,
+                "add 0755 force_debuggable force_debuggable",
+            )?;
+        } else if do_cpio_cmd(&magiskboot, workdir, ramdisk, "exists force_debuggable").is_ok() {
+            println!("- Removing adb_debug props");
+            do_cpio_cmd(&magiskboot, workdir, ramdisk, "rm force_debuggable").ok();
         }
 
         println!("- Repacking boot image");

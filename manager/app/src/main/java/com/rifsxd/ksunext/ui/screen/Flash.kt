@@ -209,8 +209,7 @@ fun FlashScreen(
             )
         },
         floatingActionButton = {
-            if (flashIt is FlashIt.FlashModules && (flashing == FlashingStatus.SUCCESS)) {
-                // Reboot button for modules flashing
+            if (flashing == FlashingStatus.SUCCESS && showFloatAction) {
                 ExtendedFloatingActionButton(
                     onClick = {
                         scope.launch {
@@ -222,23 +221,7 @@ fun FlashScreen(
                     icon = { Icon(Icons.Filled.Refresh, contentDescription = stringResource(R.string.reboot)) },
                     text = { Text(text = stringResource(R.string.reboot)) }
                 )
-            }
-
-            if (flashIt is FlashIt.FlashAnyKernel && (flashing == FlashingStatus.SUCCESS)) {
-                ExtendedFloatingActionButton(
-                    onClick = {
-                        scope.launch {
-                            withContext(Dispatchers.IO) {
-                                reboot()
-                            }
-                        }
-                    },
-                    icon = { Icon(Icons.Filled.Refresh, contentDescription = stringResource(R.string.reboot)) },
-                    text = { Text(text = stringResource(R.string.reboot)) }
-                )
-            }
-
-            if (flashIt is FlashIt.FlashAnyKernel && (flashing == FlashingStatus.FAILED)) {
+            } else if (flashing == FlashingStatus.SUCCESS || flashing == FlashingStatus.FAILED) {
                 ExtendedFloatingActionButton(
                     text = { Text(text = stringResource(R.string.close)) },
                     icon = { Icon(Icons.Filled.Close, contentDescription = null) },
@@ -246,57 +229,6 @@ fun FlashScreen(
                         navigator.popBackStack()
                     }
                 )
-            }
-
-            if (flashIt is FlashIt.FlashModules && (flashing == FlashingStatus.FAILED)) {
-                // Close button for modules flashing
-                ExtendedFloatingActionButton(
-                    text = { Text(text = stringResource(R.string.close)) },
-                    icon = { Icon(Icons.Filled.Close, contentDescription = null) },
-                    onClick = {
-                        navigator.popBackStack()
-                    }
-                )
-            }
-
-            if (flashIt is FlashIt.FlashBoot && (flashing == FlashingStatus.SUCCESS || flashing == FlashingStatus.FAILED)) {
-                val isLocalPatch = flashIt.boot != null && !flashIt.ota
-                val isDirectOrOta = flashIt.boot == null || flashIt.ota
-
-                if (flashing == FlashingStatus.FAILED) {
-                    // Always show close on failure
-                    ExtendedFloatingActionButton(
-                        text = { Text(text = stringResource(R.string.close)) },
-                        icon = { Icon(Icons.Filled.Close, contentDescription = null) },
-                        onClick = {
-                            navigator.popBackStack()
-                        }
-                    )
-                } else if (flashing == FlashingStatus.SUCCESS) {
-                    if (isLocalPatch) {
-                        // Local patching: show only Close
-                        ExtendedFloatingActionButton(
-                            text = { Text(text = stringResource(R.string.close)) },
-                            icon = { Icon(Icons.Filled.Close, contentDescription = null) },
-                            onClick = {
-                                navigator.popBackStack()
-                            }
-                        )
-                    } else if (isDirectOrOta) {
-                        // Direct install or OTA inactive slot: show only Reboot
-                        ExtendedFloatingActionButton(
-                            onClick = {
-                                scope.launch {
-                                    withContext(Dispatchers.IO) {
-                                        reboot()
-                                    }
-                                }
-                            },
-                            icon = { Icon(Icons.Filled.Refresh, contentDescription = stringResource(R.string.reboot)) },
-                            text = { Text(text = stringResource(R.string.reboot)) }
-                        )
-                    }
-                }
             }
         },
         contentWindowInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal),
@@ -342,12 +274,20 @@ fun Uri.getFileName(context: Context): String {
 
 @Parcelize
 sealed class FlashIt : Parcelable {
-    data class FlashBoot(val boot: Uri? = null, val lkm: LkmSelection, val ota: Boolean) :
-        FlashIt()
+    data class FlashBoot(
+        val boot: Uri? = null,
+        val lkm: LkmSelection,
+        val ota: Boolean,
+        val allowShell: Boolean = false,
+        val enableAdbd: Boolean = false,
+        val noInstall: Boolean = false
+    ) : FlashIt()
 
     data class FlashModules(val uris: List<Uri>) : FlashIt()
 
     data class FlashAnyKernel(val uri: Uri) : FlashIt()
+
+    data class FlashAnyKernelMagiskBoot(val zipUri: Uri, val targetBootUri: Uri) : FlashIt()
 
     data object FlashRestore : FlashIt()
 
@@ -364,12 +304,24 @@ fun flashIt(
             flashIt.boot,
             flashIt.lkm,
             flashIt.ota,
+            flashIt.allowShell,
+            flashIt.enableAdbd,
+            flashIt.noInstall,
             onStdout,
             onStderr
         )
 
-        is FlashIt.FlashAnyKernel -> flashAnyKernelZip(
-            flashIt.uri,
+        is FlashIt.FlashAnyKernel -> {
+            flashAnyKernelZip(
+                flashIt.uri,
+                onStdout,
+                onStderr
+            )
+        }
+
+        is FlashIt.FlashAnyKernelMagiskBoot -> magiskBootRepack(
+            flashIt.zipUri,
+            flashIt.targetBootUri,
             onStdout,
             onStderr
         )

@@ -51,6 +51,7 @@
     <string name="restore">Restore</string>
     <string name="module_install">Install</string>
     <string name="install">Install</string>
+    <string name="install_title">Patch &amp; Flash</string>
     <string name="reboot">Reboot</string>
     <string name="uninstalled">Uninstalled</string>
     <string name="settings">Settings</string>
@@ -187,7 +188,7 @@
     <string name="enable_web_debugging_summary">Can be used to debug WebUI. Please enable only when needed.</string>
     <string name="direct_install">Direct install (Recommended)</string>
     <string name="select_file">Select a file</string>
-    <string name="anykernel_install">Flash AnyKernel (.zip)</string>
+    <string name="select_custom_lkm">Select custom LKM</string>
     <string name="install_inactive_slot">Install to inactive slot (After OTA)</string>
     <string name="install_inactive_slot_warning">Your device will be **FORCED** to boot to the current inactive slot after a reboot!\nOnly use this option after OTA is done.\nContinue?</string>
     <string name="install_next">Next</string>
@@ -264,4 +265,36 @@
     <string name="module_shortcut_permission_tip_xiaomi">Please enable \"Create desktop shortcuts\" permission for this app in Xiaomi settings.</string>
     <string name="module_shortcut_permission_tip_oppo">Please enable \"Desktop shortcut\" permission for this app in OPPO settings.</string>
     <string name="module_shortcut_permission_tip_default">If shortcut creation fails, please enable desktop shortcut permission for this app in system settings.</string>
+    
+    <!-- Install Options -->
+    <string name="install_option_allow_shell">Allow shell</string>
+    <string name="install_option_allow_shell_summary">Always allow shell to get root permission</string>
+    <string name="install_option_enable_adbd">Enable adbd</string>
+    <string name="install_option_enable_adbd_summary">Force enable adbd and disable adbd auth</string>
+    <string name="install_option_no_install">No install</string>
+    <string name="install_option_no_install_summary">Do not (re-)install kernelsu, only modify configs</string>
+
+    <string name="install_category_lkm">LKM</string>
+    <string name="install_category_gki">GKI</string>
+    <string name="install_select_custom_lkm">Select custom LKM</string>
+    <string name="install_continue">Continue</string>
+    <string name="lkm_mode_title">LKM: Loadable Kernel Module</string>
+    <string name="lkm_mode_desc">Load the Loadable Kernel Module (LKM) into the device kernel without replacing the original kernel.</string>
+    <string name="gki_mode_title">GKI: Generic Kernel Image</string>
+    <string name="gki_mode_desc">Replace the original kernel of the device with a Generic Kernel Image (GKI).</string>
+    <string name="anykernel_install">Flash AnyKernel3.zip</string>
+    <string name="anykernel_patch">Patch boot.img with AnyKernel3.zip</string>
+    <string name="anykernel_patch_desc">Patch the boot image and save it to Downloads instead of flashing.</string>
+    <string name="anykernel_magiskboot">Patch boot.img with MagiskBoot</string>
+    <string name="anykernel_magiskboot_desc">1. select Anykernel3.zip\n2. select boot.img</string>
+    <string name="anykernel_magiskboot_direct">Flash with MagiskBoot (Direct Install)</string>
+    <string name="anykernel_magiskboot_direct_desc">Patch and flash current boot image directly</string>
+    <string name="magiskboot_title">Magiskboot</string>
+    <string name="magiskboot_unpack">Unpack Kernel</string>
+    <string name="magiskboot_repack">Repack Kernel</string>
+    <string name="magiskboot_unpack_success">Unpack successful (saved to Downloads)</string>
+    <string name="magiskboot_unpack_failed">Unpack failed</string>
+    <string name="magiskboot_repack_success">Repack successful (saved to Downloads)</string>
+    <string name="magiskboot_repack_failed">Repack failed</string>
+    <string name="uninstall_lkm">Uninstall LKM</string>
 </resources>

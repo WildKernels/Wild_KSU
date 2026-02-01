@@ -25,6 +25,7 @@ import org.json.JSONArray
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.zip.ZipInputStream
 
 /**
  * @author weishu
@@ -303,6 +304,9 @@ fun installBoot(
     bootUri: Uri?,
     lkm: LkmSelection,
     ota: Boolean,
+    allowShell: Boolean,
+    enableAdbd: Boolean,
+    noInstall: Boolean,
     onStdout: (String) -> Unit,
     onStderr: (String) -> Unit,
 ): FlashResult {
@@ -321,6 +325,16 @@ fun installBoot(
 
     val magiskboot = File(ksuApp.applicationInfo.nativeLibraryDir, "libmagiskboot.so")
     var cmd = "boot-patch --magiskboot ${magiskboot.absolutePath}"
+
+    if (allowShell) {
+        cmd += " --allow-shell"
+    }
+    if (enableAdbd) {
+        cmd += " --enable-adbd"
+    }
+    if (noInstall) {
+        cmd += " --no-install"
+    }
 
     cmd += if (bootFile == null) {
         // no boot.img, use -f to force install
@@ -359,7 +373,9 @@ fun installBoot(
     // output dir
     val downloadsDir =
         Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-    cmd += " -o $downloadsDir"
+    val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+    val outName = "wild_ksu_patched_lkm_${timestamp}.img"
+    cmd += " -o $downloadsDir --out-name $outName 2>&1"
 
     val result = flashWithIO("${getKsuDaemonPath()} $cmd", onStdout, onStderr)
     Log.i("KernelSU", "install boot result: ${result.isSuccess}")
@@ -407,7 +423,7 @@ fun flashAnyKernelZip(
                 $BUSYBOX chown root:root '$destDir/update-binary' && \
                 (cd '$destDir' && \
                     if [ -f './update-binary' ]; then \
-                        AKHOME='$destDir/tmp' $BUSYBOX ash '$destDir/update-binary' 3 1 '$destDir/$destZipName'; \
+                        AKHOME='$destDir/tmp' $BUSYBOX ash '$destDir/update-binary' 3 1 '$destDir/$destZipName' 2>&1; \
                     else \
                         echo 'No installer script found' >&2; exit 1; \
                     fi)
@@ -427,6 +443,101 @@ fun flashAnyKernelZip(
         }
     }
 }
+
+fun magiskBootRepack(
+    zipUri: Uri,
+    targetBootUri: Uri?,
+    onStdout: (String) -> Unit,
+    onStderr: (String) -> Unit
+): FlashResult {
+    val context = ksuApp.applicationContext
+    val workDir = File(context.cacheDir, "magiskboot_repack")
+    
+    // Cleanup
+    workDir.deleteRecursively()
+    workDir.mkdirs()
+
+    try {
+        onStdout("Preparing workspace...")
+        onStdout("")
+
+        // Setup Magiskboot
+        val libMagiskboot = File(ksuApp.applicationInfo.nativeLibraryDir, "libmagiskboot.so")
+        val magiskboot = libMagiskboot.absolutePath
+
+        // 1. Unzip AK3
+        onStdout("Unzipping AnyKernel3 archive...")
+        val zipFile = File(workDir, "kernel.zip")
+        ksuApp.contentResolver.openInputStream(zipUri)?.use { input ->
+            zipFile.outputStream().use { output -> input.copyTo(output) }
+        } ?: return FlashResult(1, "Failed to read zip file", false)
+
+        try {
+            unzip(zipFile, workDir)
+        } catch (e: Exception) {
+            onStderr("Unzip failed: ${e.message}")
+            return FlashResult(1, "Failed to unzip archive", false)
+        }
+
+        // Find Kernel in AK3
+        val kernelNames = listOf("Image", "Image.gz", "Image.lz4", "zImage", "kernel", "Image.gz-dtb", "zImage-dtb")
+        var extractedKernel: File? = null
+        workDir.walk().forEach { file ->
+            if (extractedKernel == null && file.isFile && kernelNames.contains(file.name)) {
+                extractedKernel = file
+            }
+        }
+        if (extractedKernel == null) return FlashResult(1, "No kernel image found in zip", false)
+        
+        // 2. Rename to 'kernel'
+        onStdout("")
+        onStdout("Found kernel image: ${extractedKernel!!.name}")
+        val kernelFile = File(workDir, "kernel")
+        if (extractedKernel!!.absolutePath != kernelFile.absolutePath) {
+            onStdout("Renaming ${extractedKernel!!.name} to kernel...")
+            extractedKernel!!.copyTo(kernelFile, overwrite = true)
+        } else {
+            onStdout("Kernel image is already named 'kernel'.")
+        }
+
+        // 3. Prepare Boot Image
+        if (targetBootUri == null) return FlashResult(1, "Target boot image required", false)
+        val bootImg = File(workDir, "boot.img")
+        ksuApp.contentResolver.openInputStream(targetBootUri)?.use { input ->
+            bootImg.outputStream().use { output -> input.copyTo(output) }
+        } ?: return FlashResult(1, "Failed to read target boot image", false)
+
+        // 4. Repack (magiskboot uses 'kernel' from CWD and 'boot.img' structure)
+        onStdout("")
+        onStdout("Repacking boot image...")
+        val repackCmd = "cd '${workDir.absolutePath}' && $magiskboot repack '${bootImg.absolutePath}' 2>&1"
+        val repackResult = flashWithIO(repackCmd, onStdout, onStderr)
+        if (!repackResult.isSuccess) return FlashResult(repackResult.code, "Failed to repack boot image", false)
+
+        val newBoot = File(workDir, "new-boot.img")
+        if (!newBoot.exists()) return FlashResult(1, "Repack failed: new-boot.img not found", false)
+
+        // 5. Save Output
+        val timestamp2 = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+        val destPath = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "wild_ksu_patched_gki_${timestamp2}.img")
+        onStdout("")
+        onStdout("Saving to ${destPath.absolutePath}...")
+        newBoot.copyTo(destPath, overwrite = true)
+        onStdout("Done!")
+        
+        return FlashResult(0, "", false)
+
+    } catch (e: Exception) {
+        return FlashResult(1, "Error: ${e.message}", false)
+    } finally {
+        try {
+            workDir.deleteRecursively()
+        } catch (_: Throwable) {
+        }
+    }
+}
+
+
 
 fun rootAvailable() = Shell.isAppGrantedRoot() == true
 
@@ -750,4 +861,25 @@ fun launchApp(packageName: String) {
 fun restartApp(packageName: String) {
     forceStopApp(packageName)
     launchApp(packageName)
+}
+
+private fun unzip(zipFile: File, targetDir: File) {
+    ZipInputStream(zipFile.inputStream()).use { zis ->
+        var entry = zis.nextEntry
+        while (entry != null) {
+            val file = File(targetDir, entry.name)
+            if (!file.canonicalPath.startsWith(targetDir.canonicalPath)) {
+                throw SecurityException("Zip entry is outside of the target dir: ${entry.name}")
+            }
+            if (entry.isDirectory) {
+                file.mkdirs()
+            } else {
+                file.parentFile?.mkdirs()
+                file.outputStream().use { fos ->
+                    zis.copyTo(fos)
+                }
+            }
+            entry = zis.nextEntry
+        }
+    }
 }
