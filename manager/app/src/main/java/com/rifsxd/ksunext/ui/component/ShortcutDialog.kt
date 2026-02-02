@@ -35,6 +35,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.rifsxd.ksunext.R
@@ -130,10 +132,15 @@ fun ShortcutDialog(
                         )
                     } else {
                         // Placeholder or default icon
-                        // For now just a box or text
-                        Text(
-                            text = "No Icon", // Maybe use a default icon resource if available
-                            style = MaterialTheme.typography.bodyMedium
+                        AsyncImage(
+                            model = ImageRequest.Builder(context)
+                                .data(R.mipmap.ic_launcher)
+                                .build(),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .size(48.dp)
+                                .clip(MaterialTheme.shapes.small),
+                            contentScale = ContentScale.Crop
                         )
                     }
                     

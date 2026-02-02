@@ -898,7 +898,7 @@ fun ModuleItem(
                                     shortcutType = "webui"
                                     showShortcutDialog = true
                                 }
-                                .padding(vertical = 12.dp),
+                                .padding(vertical = 8.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
@@ -959,7 +959,7 @@ fun ModuleItem(
                                 isIgnored = !isIgnored
                                 ignoredUpdates.edit().putBoolean(module.id, isIgnored).apply()
                             }
-                            .padding(vertical = 12.dp),
+                            .padding(vertical = 8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(

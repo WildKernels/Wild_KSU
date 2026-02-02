@@ -243,7 +243,11 @@ object Shortcut {
 
     private fun createShortcutIcon(context: Context, iconUri: String?): IconCompat? {
         val bitmap = loadShortcutBitmap(context, iconUri) ?: return null
-        return IconCompat.createWithBitmap(bitmap)
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            IconCompat.createWithAdaptiveBitmap(bitmap)
+        } else {
+            IconCompat.createWithBitmap(bitmap)
+        }
     }
 
     private fun hasPinnedShortcut(context: Context, id: String): Boolean {
