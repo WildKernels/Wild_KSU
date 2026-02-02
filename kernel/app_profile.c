@@ -151,12 +151,12 @@ void escape_with_root_profile(void)
            sizeof(cred->cap_bset));
 
     setup_groups(profile, cred);
+    setup_selinux(profile->selinux_domain, cred);
 
     commit_creds(cred);
 
     disable_seccomp();
 
-    setup_selinux(profile->selinux_domain);
 #ifndef CONFIG_KSU_SUSFS
     for_each_thread (p, t) {
         ksu_set_task_tracepoint_flag(t);
@@ -168,5 +168,12 @@ void escape_with_root_profile(void)
 
 void escape_to_root_for_init(void)
 {
-    setup_selinux(KERNEL_SU_CONTEXT);
+    struct cred *cred = prepare_creds();
+    if (!cred) {
+        pr_err("Failed to prepare init's creds!\n");
+        return;
+    }
+
+    setup_selinux(KERNEL_SU_CONTEXT, cred);
+    commit_creds(cred);
 }
