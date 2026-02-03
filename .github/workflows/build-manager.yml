@@ -325,6 +325,17 @@ jobs:
           BRANCH: ${{ github.ref_name }}
         run: |
           set -eu
+
+          escape_html() {
+            local s="$1"
+            s="${s//&/&amp;}"
+            s="${s//</&lt;}"
+            s="${s//>/&gt;}"
+            printf '%s' "$s"
+          }
+
+          COMMIT_MESSAGE_ESCAPED="$(escape_html "${COMMIT_MESSAGE}")"
+
           MESSAGE=$(
             printf '%s\n\n%s\n%s\n%s\n%s\n\n%s\n%s\n' \
             "<b>Wild KSU Build Failed</b> 🔴" \
@@ -333,7 +344,7 @@ jobs:
             "<b>Commit:</b> <a href=\"https://github.com/${REPO}/commit/${COMMIT_SHA}\">${COMMIT_SHA:0:7}</a>" \
             "<b>Workflow:</b> <a href=\"https://github.com/${REPO}/actions/runs/${RUN_ID}\">View Run</a>" \
             "<b>Commit Message:</b>" \
-            "${COMMIT_MESSAGE}"
+            "<pre><code>${COMMIT_MESSAGE_ESCAPED}</code></pre>"
           )
           {
             echo "FAILURE_MESSAGE<<EOF"
