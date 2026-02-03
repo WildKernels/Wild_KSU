@@ -390,7 +390,7 @@ fun installBoot(
 fun reboot(reason: String = "") {
     if (reason == "recovery") {
         // KEYCODE_POWER = 26, hide incorrect "Factory data reset" message
-        ShellUtils.fastCmdResult("/system/bin/reboot $reason")
+        ShellUtils.fastCmdResult("/system/bin/input keyevent 26")
     }
     ShellUtils.fastCmdResult("/system/bin/svc power reboot $reason || /system/bin/reboot $reason")
 }
