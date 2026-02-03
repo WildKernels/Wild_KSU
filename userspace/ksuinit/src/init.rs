@@ -109,14 +109,14 @@ pub fn init() -> Result<()> {
     // This relies on the fact that we have /proc mounted
     unlimit_kmsg();
 
-    // if has_kernelsu() {
-    //     log::info!("KernelSU may be already loaded in kernel, skip!");
-    // } else {
+    if has_kernelsu() {
+        log::info!("KernelSU may be already loaded in kernel, skip!");
+    } else {
         log::info!("Loading kernelsu.ko..");
         if let Err(e) = load_module("/kernelsu.ko") {
             log::error!("Cannot load kernelsu.ko: {:?}", e);
         }
-    // }
+    }
 
     // And now we should prepare the real init to transfer control to it
     unlink("/init")?;
