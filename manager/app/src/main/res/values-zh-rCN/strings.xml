@@ -228,7 +228,7 @@
   <string name="settings_background">界面背景</string>
   <string name="settings_background_choose_media">选择一张照片或一个视频。</string>
   <string name="settings_background_selected">已选择</string>
-  <string name="settings_background_clear">已选择</string>
+  <string name="settings_background_clear">清除背景</string>
   <string name="settings_background_scale_photo">拉伸照片</string>
   <string name="settings_background_scale_fit">适合页面</string>
   <string name="settings_background_scale_zoom">缩放照片</string>
