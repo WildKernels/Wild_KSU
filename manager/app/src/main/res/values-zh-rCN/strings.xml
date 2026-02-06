@@ -133,7 +133,7 @@
   <string name="module_updated">重启以应用更新</string>
   <string name="module_downloading">正在下载模块: %s</string>
   <string name="module_start_downloading">开始下载: %s</string>
-  <string name="new_version_available">New APK version %1$s (%2$d) is available, click to upgrade.</string>
+  <string name="new_version_available">新的管理器版本 %1$s (%2$d) 可用，点击升级。</string>
   <string name="launch_app">启动</string>
   <string name="close">关闭</string>
   <string name="force_stop_app">强行停止</string>
@@ -225,13 +225,13 @@
   <string name="settings_global_namespace_mode">全局命名空间模式</string>
   <string name="settings_disable_kernel_umount">关闭内核 umount</string>
   <string name="settings_disable_kernel_umount_summary">临时关闭 KernelSU 控制的内核级 umount 行为。</string>
-  <string name="settings_background">Background</string>
-  <string name="settings_background_choose_media">Choose a photo or video</string>
-  <string name="settings_background_selected">Selected</string>
-  <string name="settings_background_clear">Clear background</string>
-  <string name="settings_background_scale_photo">Scale photo</string>
-  <string name="settings_background_scale_fit">Fit</string>
-  <string name="settings_background_scale_zoom">Zoom to fill</string>
-  <string name="settings_background_dim">Background dim</string>
-  <string name="settings_ui_card_transparency">Card transparency</string>
+  <string name="settings_background">界面背景</string>
+  <string name="settings_background_choose_media">选择一张照片或一个视频。</string>
+  <string name="settings_background_selected">已选择</string>
+  <string name="settings_background_clear">已选择</string>
+  <string name="settings_background_scale_photo">拉伸照片</string>
+  <string name="settings_background_scale_fit">适合页面</string>
+  <string name="settings_background_scale_zoom">缩放照片</string>
+  <string name="settings_background_dim">背景调暗</string>
+  <string name="settings_ui_card_transparency">卡片透明度</string>
 </resources>
