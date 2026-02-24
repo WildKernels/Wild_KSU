@@ -361,7 +361,9 @@ static int do_set_app_profile(void __user *arg)
 	ret = ksu_set_app_profile(&cmd.profile);
 	if (!ret) {
 		ksu_persistent_allow_list();
+#ifndef CONFIG_KSU_SUSFS
 		ksu_mark_running_process();
+#endif // #ifndef CONFIG_KSU_SUSFS
 	}
 
 	return ret;
