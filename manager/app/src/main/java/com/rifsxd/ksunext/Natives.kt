@@ -17,7 +17,8 @@ object Natives {
     // 10977: change groups_count and groups to avoid overflow write
     // 11071: Fix the issue of failing to set a custom SELinux type.
     // 12797: zygisk query and get manager uid.
-    const val MINIMAL_SUPPORTED_KERNEL = 22000
+    // 32243: new get_allow_list ioctl
+    const val MINIMAL_SUPPORTED_KERNEL = 32243
 
     const val KERNEL_SU_DOMAIN = "u:r:su:s0"
 
@@ -29,10 +30,6 @@ object Natives {
     }
 
     val version: Int
-        external get
-
-    // get the uid list of allowed su processes.
-    val allowList: IntArray
         external get
 
     val isSafeMode: Boolean
@@ -80,6 +77,8 @@ object Natives {
      */
     external fun getAppProfile(key: String?, uid: Int): Profile
     external fun setAppProfile(profile: Profile?): Boolean
+
+    external fun getSuperuserCount(): Int
 
     /**
      * `su` compat mode can be disabled temporarily.
