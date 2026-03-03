@@ -491,6 +491,10 @@ pub struct BootPatchArgs {
     #[arg(long, default_value = None)]
     pub out_name: Option<String>,
 
+    /// Extra cmdline to append to boot image header
+    #[arg(long, default_value = None)]
+    pub cmdline: Option<String>,
+
     /// Always allow shell to get root permission
     #[arg(long, default_value = "false")]
     pub allow_shell: bool,
@@ -519,6 +523,7 @@ pub fn patch(args: BootPatchArgs) -> Result<()> {
             magiskboot: magiskboot_path,
             kmi,
             out_name,
+            cmdline,
             allow_shell,
             enable_adbd,
             adb_debug_prop,
@@ -636,6 +641,13 @@ pub fn patch(args: BootPatchArgs) -> Result<()> {
             .status()?;
         ensure!(status.success(), "magiskboot unpack failed");
 
+        if let Some(ref cmdline_value) = cmdline {
+            let header_path = workdir.join("header");
+            std::fs::write(&header_path, format!("cmdline={cmdline_value}\n"))
+                .context("write header file failed")?;
+            println!("- Set cmdline to: {cmdline_value}");
+        }
+
         let mut ramdisk = workdir.join("ramdisk.cpio");
         if !ramdisk.exists() {
             ramdisk = workdir.join("vendor_ramdisk").join("init_boot.cpio");
@@ -706,7 +718,7 @@ pub fn patch(args: BootPatchArgs) -> Result<()> {
                     writeln!(file, "enable_adbd=true")?;
                 }
                 if let Some(prop) = adb_debug_prop {
-                    writeln!(file, "adb_debug_prop={}", prop)?;
+                    writeln!(file, "adb_debug_prop={prop}")?;
                 }
             }
             do_cpio_cmd(
