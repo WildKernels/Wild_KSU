@@ -100,6 +100,11 @@ int __init kernelsu_init(void)
         cache_sid();
         setup_ksu_cred();
 
+        if (!getenforce()) {
+            pr_info("Permissive SELinux, enforcing\n");
+            setenforce(true);
+        }
+
         ksu_allowlist_init();
         ksu_load_allow_list();
 
@@ -174,8 +179,9 @@ void kernelsu_exit(void)
 	ksu_observer_exit();
 
 #ifndef CONFIG_KSU_SUSFS
-    if (!ksu_late_loaded)
-        ksu_ksud_exit();
+	if (!ksu_late_loaded) {
+		ksu_ksud_exit();
+	}
 
 	ksu_syscall_hook_manager_exit();
 #endif // #ifndef CONFIG_KSU_SUSFS
