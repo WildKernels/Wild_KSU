@@ -77,6 +77,8 @@
   <string name="hide_system_apps">隐藏系统应用</string>
   <string name="export_log">导出日志</string>
   <string name="safe_mode">安全模式</string>
+  <string name="jailbreak_mode">越狱模式</string>
+  <string name="safe_mode_module_disabled">处于安全模式下，禁止安装模块</string>
   <string name="reboot_to_apply">重启生效</string>
   <string name="module_magisk_conflict">由于与 Magisk 冲突，模块系统不可用！</string>
   <string name="home_mount_system">挂载系统</string>
