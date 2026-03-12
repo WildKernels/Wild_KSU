@@ -746,6 +746,7 @@ private fun TopBar(
 
                                     val options = mutableListOf<Pair<Int, String>>()
                                     options.add(R.string.reboot to "")
+                                    options.add(R.string.reboot_soft to "soft_reboot")
                                     
                                     val pm = LocalContext.current.getSystemService(Context.POWER_SERVICE) as PowerManager?
                                     @Suppress("DEPRECATION")

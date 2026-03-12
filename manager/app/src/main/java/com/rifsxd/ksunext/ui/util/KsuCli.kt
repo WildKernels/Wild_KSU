@@ -388,6 +388,10 @@ fun installBoot(
 }
 
 fun reboot(reason: String = "") {
+    if (reason == "soft_reboot") {
+        ShellUtils.fastCmdResult("setprop ctl.restart zygote")
+        return
+    }
     if (reason == "recovery") {
         // KEYCODE_POWER = 26, hide incorrect "Factory data reset" message
         ShellUtils.fastCmdResult("/system/bin/input keyevent 26")
