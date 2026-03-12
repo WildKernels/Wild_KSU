@@ -51,7 +51,8 @@
   <string name="reboot">重启</string>
   <string name="uninstalled">重启以应用卸载</string>
   <string name="settings">设置</string>
-  <string name="reboot_userspace">软重启</string>
+  <string name="reboot_soft">软重启</string>
+  <string name="reboot_userspace">用户空间重启</string>
   <string name="reboot_recovery">重启到恢复模式</string>
   <string name="reboot_bootloader">重启到引导加载程序</string>
   <string name="reboot_download">重启到下载模式</string>
