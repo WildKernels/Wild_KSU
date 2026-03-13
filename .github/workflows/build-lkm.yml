@@ -1,6 +1,13 @@
 name: Build LKM for KernelSU
 on:
   workflow_call:
+    inputs:
+      expected_size2:
+        required: false
+        type: string
+      expected_hash2:
+        required: false
+        type: string
   workflow_dispatch:
 jobs:
   build-lkm:
@@ -17,4 +24,6 @@ jobs:
     uses: ./.github/workflows/ddk-lkm.yml
     with:
       kmi: ${{ matrix.kmi }}
-      ddk_release: '20251104'
+      ddk_release: '20260313'
+      expected_size2: ${{ inputs.expected_size2 || '' }}
+      expected_hash2: ${{ inputs.expected_hash2 || '' }}
