@@ -3,10 +3,12 @@ menu "KernelSU"
 config KSU
     tristate "KernelSU function support"
     default y
+    depends on EXT4_FS
     select KPROBES if !KSU_SUSFS
     help
       Enable kernel-level root privileges on Android System.
       Requires CONFIG_KPROBES for kernel hooking support.
+      Requires CONFIG_EXT4_FS for `ext4_unregister_sysfs`.
       To compile as a module, choose M here: the
       module will be called kernelsu.
 
