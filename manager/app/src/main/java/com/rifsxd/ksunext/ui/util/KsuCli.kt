@@ -337,7 +337,7 @@ fun installBoot(
     }
 
     cmd += if (bootFile == null) {
-        // no boot.img, use -f to force install
+        // no boot.img, use -f to flash
         " -f"
     } else {
         " -b ${bootFile.absolutePath}"
@@ -371,11 +371,14 @@ fun installBoot(
     }
 
     // output dir
-    val downloadsDir =
-        Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-    val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
-    val outName = "wild_ksu_patched_lkm_${timestamp}.img"
-    cmd += " -o $downloadsDir --out-name $outName 2>&1"
+    if (bootFile != null) {
+        val downloadsDir =
+            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+        val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+        val outName = "wild_ksu_patched_lkm_${timestamp}.img"
+        cmd += " -o $downloadsDir --out-name $outName"
+    }
+    cmd += " 2>&1"
 
     val result = flashWithIO("${getKsuDaemonPath()} $cmd", onStdout, onStderr)
     Log.i("KernelSU", "install boot result: ${result.isSuccess}")
