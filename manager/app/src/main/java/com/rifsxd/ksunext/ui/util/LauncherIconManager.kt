@@ -8,31 +8,31 @@ import com.rifsxd.ksunext.R
 enum class LauncherIcon(
     val key: String,
     val label: String,
-    val previewResId: Int,
+    val previewBackgroundColorResId: Int,
     val aliasClassName: String
 ) {
     DEFAULT(
         key = "default",
         label = "Default",
-        previewResId = R.mipmap.ic_launcher,
+        previewBackgroundColorResId = R.color.ic_launcher_background,
         aliasClassName = "com.rifsxd.ksunext.ui.MainActivityAliasDefault"
     ),
     MONET(
         key = "monet",
         label = "Monet",
-        previewResId = R.mipmap.ic_launcher_monet,
+        previewBackgroundColorResId = R.color.launcher_monet_bg,
         aliasClassName = "com.rifsxd.ksunext.ui.MainActivityAliasMonet"
     ),
     CUSTOM(
         key = "custom",
         label = "Custom",
-        previewResId = R.mipmap.ic_launcher_custom,
+        previewBackgroundColorResId = R.color.launcher_custom_bg,
         aliasClassName = "com.rifsxd.ksunext.ui.MainActivityAliasCustom"
     ),
     OLD_GREEN(
         key = "old_green",
         label = "Old Green",
-        previewResId = R.mipmap.ic_launcher_old_green,
+        previewBackgroundColorResId = R.color.launcher_old_green_bg,
         aliasClassName = "com.rifsxd.ksunext.ui.MainActivityAliasOldGreen"
     );
 
