@@ -6,12 +6,15 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Apps
 import androidx.compose.material.icons.filled.Contrast
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Flip
@@ -36,6 +39,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -69,7 +74,7 @@ import kotlin.math.roundToInt
  * @author rifsxd
  * @date 2025/6/1.
  */
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Destination<RootGraph>
 @Composable
 fun CustomizationScreen(navigator: DestinationsNavigator) {
@@ -514,6 +519,102 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                             },
                             onDismissRequest = { showThemeDialog = false }
                         )
+                    }
+
+                    var currentLauncherIcon by remember {
+                        mutableStateOf(LauncherIconManager.getSelected(context))
+                    }
+                    var showLauncherIconDialog by remember { mutableStateOf(false) }
+
+                    ListItem(
+                        headlineContent = { Text(text = "App Icon") },
+                        supportingContent = { Text(text = currentLauncherIcon.label) },
+                        leadingContent = { Icon(Icons.Filled.Apps, contentDescription = null) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(MaterialTheme.shapes.small)
+                            .clickable { showLauncherIconDialog = true },
+                        colors = ListItemDefaults.colors(containerColor = Color.Transparent)
+                    )
+
+                    if (showLauncherIconDialog) {
+                        var selection by remember(currentLauncherIcon) { mutableStateOf(currentLauncherIcon) }
+
+                        BlurDialog(onDismissRequest = { showLauncherIconDialog = false }) {
+                            Text(
+                                text = "Select App Icon",
+                                style = MaterialTheme.typography.headlineSmall,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+
+                            FlowRow(
+                                modifier = Modifier.fillMaxWidth(),
+                                maxItemsInEachRow = 4,
+                                horizontalArrangement = Arrangement.spacedBy(14.dp),
+                                verticalArrangement = Arrangement.spacedBy(14.dp)
+                            ) {
+                                LauncherIcon.entries.forEach { icon ->
+                                    val selected = icon == selection
+                                    Column(
+                                        horizontalAlignment = Alignment.CenterHorizontally,
+                                        modifier = Modifier
+                                            .widthIn(min = 72.dp)
+                                            .clip(RoundedCornerShape(18.dp))
+                                            .border(
+                                                width = if (selected) 2.dp else 1.dp,
+                                                color = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant,
+                                                shape = RoundedCornerShape(18.dp)
+                                            )
+                                            .clickable { selection = icon }
+                                            .padding(horizontal = 10.dp, vertical = 12.dp)
+                                    ) {
+                                        Image(
+                                            painter = painterResource(id = icon.previewResId),
+                                            contentDescription = null,
+                                            modifier = Modifier
+                                                .size(56.dp)
+                                                .clip(RoundedCornerShape(14.dp))
+                                        )
+                                        Spacer(modifier = Modifier.height(8.dp))
+                                        Text(
+                                            text = icon.label,
+                                            style = MaterialTheme.typography.labelMedium,
+                                            color = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                    }
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.height(24.dp))
+
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.End
+                            ) {
+                                TextButton(onClick = { showLauncherIconDialog = false }) {
+                                    Text(stringResource(android.R.string.cancel))
+                                }
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Button(onClick = {
+                                    try {
+                                        LauncherIconManager.setSelected(context, selection)
+                                        currentLauncherIcon = selection
+                                        scope.launch {
+                                            snackBarHost.showSnackbar("App icon updated. If it doesn't change, restart your launcher.")
+                                        }
+                                    } catch (_: Exception) {
+                                        scope.launch {
+                                            snackBarHost.showSnackbar("Failed to change app icon.")
+                                        }
+                                    } finally {
+                                        showLauncherIconDialog = false
+                                    }
+                                }) {
+                                    Text(stringResource(android.R.string.ok))
+                                }
+                            }
+                        }
                     }
 
                     if (currentTheme == AppTheme.CUSTOM) {

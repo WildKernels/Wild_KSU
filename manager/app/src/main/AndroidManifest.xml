@@ -6,7 +6,7 @@
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
 
     <application
-        android:name=".KernelSUApplication"
+        android:name="com.rifsxd.ksunext.KernelSUApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:enableOnBackInvokedCallback="true"
@@ -18,15 +18,11 @@
         android:theme="@style/Theme.KernelSU"
         tools:targetApi="34">
         <activity
-            android:name=".ui.MainActivity"
+            android:name="com.rifsxd.ksunext.ui.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.KernelSU"
             android:launchMode="singleTask"
             android:taskAffinity="">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -38,8 +34,64 @@
                 android:resource="@xml/shortcuts" />
         </activity>
 
+        <activity-alias
+            android:name="com.rifsxd.ksunext.ui.MainActivityAliasDefault"
+            android:targetActivity="com.rifsxd.ksunext.ui.MainActivity"
+            android:enabled="true"
+            android:exported="true"
+            android:icon="@mipmap/ic_launcher"
+            android:roundIcon="@mipmap/ic_launcher"
+            android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name="com.rifsxd.ksunext.ui.MainActivityAliasMonet"
+            android:targetActivity="com.rifsxd.ksunext.ui.MainActivity"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/ic_launcher_monet"
+            android:roundIcon="@mipmap/ic_launcher_monet"
+            android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name="com.rifsxd.ksunext.ui.MainActivityAliasCustom"
+            android:targetActivity="com.rifsxd.ksunext.ui.MainActivity"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/ic_launcher_custom"
+            android:roundIcon="@mipmap/ic_launcher_custom"
+            android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name="com.rifsxd.ksunext.ui.MainActivityAliasOldGreen"
+            android:targetActivity="com.rifsxd.ksunext.ui.MainActivity"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/ic_launcher_old_green"
+            android:roundIcon="@mipmap/ic_launcher_old_green"
+            android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
         <activity
-            android:name=".ui.webui.WebUIActivity"
+            android:name="com.rifsxd.ksunext.ui.webui.WebUIActivity"
             android:autoRemoveFromRecents="true"
             android:documentLaunchMode="intoExisting"
             android:exported="false"

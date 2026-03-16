@@ -86,6 +86,10 @@ class MainActivity : ComponentActivity() {
             appThemeCustomColorState.intValue = prefsInit.getInt("theme_custom_color", PRIMARY.toArgb())
         } catch (_: Exception) {}
 
+        try {
+            LauncherIconManager.applySaved(this)
+        } catch (_: Exception) {}
+
         val isManager = Natives.isManager
         if (isManager) install()
 
