@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="ic_launcher_background">#FFFFFFFF</color>
+    <color name="launcher_monet_bg">#FFD0BCFF</color>
     <color name="launcher_custom_bg">#FF7C4DFF</color>
     <color name="launcher_old_green_bg">#FF00C853</color>
 </resources>
