@@ -67,7 +67,7 @@ static void ksu_mark_running_process_locked()
     struct task_struct *p, *t;
     read_lock(&tasklist_lock);
     for_each_process_thread (p, t) {
-        if (!t->mm) { // only user processes
+        if (!t->mm && t->pid != 1) {
             continue;
         }
         int uid = task_uid(t).val;
@@ -264,6 +264,10 @@ int ksu_handle_init_mark_tracker(const char __user **filename_user)
 	if (ret < 0 && try_set_access_flag(addr)) {
 		ret = strncpy_from_user_nofault(path, fn, sizeof(path));
 		pr_info("ksu_handle_init_mark_tracker: %ld\n", ret);
+	}
+
+	if (ret <= 0 || path[0] == '\0') {
+		return 0;
 	}
 
     if (unlikely(strcmp(path, KSUD_PATH) == 0)) {
