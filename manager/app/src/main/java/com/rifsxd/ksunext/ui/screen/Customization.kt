@@ -40,6 +40,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -570,13 +571,21 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                                             .clickable { selection = icon }
                                             .padding(horizontal = 10.dp, vertical = 12.dp)
                                     ) {
-                                        Image(
-                                            painter = painterResource(id = icon.previewResId),
-                                            contentDescription = null,
+                                        Box(
                                             modifier = Modifier
                                                 .size(56.dp)
                                                 .clip(RoundedCornerShape(14.dp))
-                                        )
+                                                .background(colorResource(id = icon.previewBackgroundColorResId)),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            Image(
+                                                painter = painterResource(id = R.mipmap.ic_launcher_foreground),
+                                                contentDescription = null,
+                                                modifier = Modifier
+                                                    .fillMaxSize()
+                                                    .padding(8.dp)
+                                            )
+                                        }
                                         Spacer(modifier = Modifier.height(8.dp))
                                         Text(
                                             text = icon.label,
