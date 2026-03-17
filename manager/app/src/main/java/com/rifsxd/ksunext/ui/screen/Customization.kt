@@ -39,9 +39,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -111,6 +111,7 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
 
             val context = LocalContext.current
             val scope = rememberCoroutineScope()
+            val density = LocalDensity.current
 
             val prefs = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
 
@@ -528,10 +529,24 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                     }
                     var showLauncherIconDialog by remember { mutableStateOf(false) }
 
+                    val selectedIconBitmap = remember(currentLauncherIcon, density) {
+                        val sizePx = with(density) { 24.dp.roundToPx() }
+                        LauncherIconManager.loadPreviewBitmap(context, currentLauncherIcon, sizePx)
+                    }
+
                     ListItem(
                         headlineContent = { Text(text = "App Icon") },
                         supportingContent = { Text(text = currentLauncherIcon.label) },
                         leadingContent = { Icon(Icons.Filled.Apps, contentDescription = null) },
+                        trailingContent = selectedIconBitmap?.let { bitmap ->
+                            {
+                                Image(
+                                    bitmap = bitmap.asImageBitmap(),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(28.dp)
+                                )
+                            }
+                        },
                         modifier = Modifier
                             .fillMaxWidth()
                             .clip(MaterialTheme.shapes.small)
@@ -558,6 +573,10 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                             ) {
                                 LauncherIcon.entries.forEach { icon ->
                                     val selected = icon == selection
+                                    val previewBitmap = remember(icon, density) {
+                                        val sizePx = with(density) { 56.dp.roundToPx() }
+                                        LauncherIconManager.loadPreviewBitmap(context, icon, sizePx)
+                                    }
                                     Column(
                                         horizontalAlignment = Alignment.CenterHorizontally,
                                         modifier = Modifier
@@ -571,19 +590,12 @@ fun CustomizationScreen(navigator: DestinationsNavigator) {
                                             .clickable { selection = icon }
                                             .padding(horizontal = 10.dp, vertical = 12.dp)
                                     ) {
-                                        Box(
-                                            modifier = Modifier
-                                                .size(56.dp)
-                                                .clip(RoundedCornerShape(14.dp))
-                                                .background(colorResource(id = icon.previewBackgroundColorResId)),
-                                            contentAlignment = Alignment.Center
-                                        ) {
+                                        if (previewBitmap != null) {
                                             Image(
-                                                painter = painterResource(id = R.mipmap.ic_launcher_foreground),
+                                                bitmap = previewBitmap.asImageBitmap(),
                                                 contentDescription = null,
                                                 modifier = Modifier
-                                                    .fillMaxSize()
-                                                    .padding(8.dp)
+                                                    .size(56.dp)
                                             )
                                         }
                                         Spacer(modifier = Modifier.height(8.dp))
