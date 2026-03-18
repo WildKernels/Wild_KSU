@@ -34,6 +34,8 @@ void apply_kernelsu_rules();
 
 int handle_sepolicy(void __user *user_data, u64 data_len);
 
+int handle_sepolicy_compat(void __user *arg);
+
 void setup_ksu_cred();
 
 #ifdef CONFIG_KSU_SUSFS

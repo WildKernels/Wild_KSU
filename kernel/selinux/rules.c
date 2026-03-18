@@ -137,6 +137,7 @@ out_unlock:
 
 #define KSU_SEPOLICY_MAX_BATCH_SIZE (8U * 1024U * 1024U)
 #define KSU_SEPOLICY_MAX_ARGS 5
+#define MAX_SEPOL_LEN 128
 
 #define CMD_NORMAL_PERM 1
 #define CMD_XPERM 2
@@ -533,6 +534,131 @@ out_unlock:
     mutex_unlock(&selinux_state.policy_mutex);
 out_free:
     kvfree(payload);
+
+    return ret;
+}
+
+struct sepol_data_compat {
+    u32 cmd;
+    u32 subcmd;
+    char __user *sepol1;
+    char __user *sepol2;
+    char __user *sepol3;
+    char __user *sepol4;
+    char __user *sepol5;
+    char __user *sepol6;
+    char __user *sepol7;
+};
+
+static int copy_sepol_str(char *dst, size_t dst_sz, char __user *src, const char **out)
+{
+    long n;
+
+    if (!src) {
+        *out = ALL;
+        return 0;
+    }
+
+    n = strncpy_from_user(dst, src, dst_sz);
+    if (n <= 0) {
+        return -EFAULT;
+    }
+    if (n >= (long)dst_sz) {
+        return -E2BIG;
+    }
+
+    dst[dst_sz - 1] = '\0';
+    *out = dst;
+    return 0;
+}
+
+int handle_sepolicy_compat(void __user *arg)
+{
+    struct selinux_policy *pol, *old_pol;
+    struct policydb *db;
+    struct sepol_data_compat data;
+    struct sepol_data header;
+    const char *args[KSU_SEPOLICY_MAX_ARGS] = { 0 };
+    char buf1[MAX_SEPOL_LEN];
+    char buf2[MAX_SEPOL_LEN];
+    char buf3[MAX_SEPOL_LEN];
+    char buf4[MAX_SEPOL_LEN];
+    char buf5[MAX_SEPOL_LEN];
+    int expected_argc;
+    int ret;
+
+    if (!arg) {
+        return -EINVAL;
+    }
+
+    if (copy_from_user(&data, arg, sizeof(data))) {
+        return -EFAULT;
+    }
+
+    header.cmd = data.cmd;
+    header.subcmd = data.subcmd;
+
+    expected_argc = sepol_expected_argc(header.cmd);
+    if (expected_argc < 0 || expected_argc > KSU_SEPOLICY_MAX_ARGS) {
+        return -EINVAL;
+    }
+
+    if (expected_argc >= 1) {
+        ret = copy_sepol_str(buf1, sizeof(buf1), data.sepol1, &args[0]);
+        if (ret)
+            return ret;
+    }
+    if (expected_argc >= 2) {
+        ret = copy_sepol_str(buf2, sizeof(buf2), data.sepol2, &args[1]);
+        if (ret)
+            return ret;
+    }
+    if (expected_argc >= 3) {
+        ret = copy_sepol_str(buf3, sizeof(buf3), data.sepol3, &args[2]);
+        if (ret)
+            return ret;
+    }
+    if (expected_argc >= 4) {
+        ret = copy_sepol_str(buf4, sizeof(buf4), data.sepol4, &args[3]);
+        if (ret)
+            return ret;
+    }
+    if (expected_argc >= 5) {
+        ret = copy_sepol_str(buf5, sizeof(buf5), data.sepol5, &args[4]);
+        if (ret)
+            return ret;
+    }
+
+    if (!getenforce()) {
+        pr_info("SELinux permissive or disabled when handle policy!\n");
+    }
+
+    mutex_lock(&selinux_state.policy_mutex);
+
+    old_pol = selinux_state.policy;
+    pol = ksu_dup_sepolicy(rcu_dereference_protected(
+        old_pol, lockdep_is_held(&selinux_state.policy_mutex)));
+    if (!pol) {
+        ret = -ENOMEM;
+        goto out_unlock;
+    }
+    db = &pol->policydb;
+
+    ret = apply_one_sepolicy_cmd(db, &header, args);
+    if (ret < 0) {
+        ksu_destroy_sepolicy(pol);
+        goto out_unlock;
+    }
+
+    rcu_assign_pointer(selinux_state.policy, pol);
+    synchronize_rcu();
+    ksu_destroy_sepolicy(old_pol);
+
+    reset_avc_cache();
+    ret = 0;
+
+out_unlock:
+    mutex_unlock(&selinux_state.policy_mutex);
 
     return ret;
 }

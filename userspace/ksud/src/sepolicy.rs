@@ -7,7 +7,7 @@ use nom::{
     character::complete::{space0, space1},
     combinator::map,
 };
-use std::{path::Path, vec};
+use std::{ffi::c_char, path::Path, ptr, vec};
 
 type SeObject<'a> = Vec<&'a str>;
 
@@ -758,9 +758,103 @@ fn apply_rules_batch<'a>(statements: &'a [PolicyStatement<'a>], strict: bool) ->
             }
         }
         Err(e) => {
-            log::warn!("apply sepolicy batch failed: {e}");
-            if strict {
-                return Err(anyhow::anyhow!("apply sepolicy batch failed: {e}"));
+            if !crate::ksucalls::is_compat_mismatch_err(&e) {
+                log::warn!("apply sepolicy batch failed: {e}");
+                if strict {
+                    return Err(anyhow::anyhow!("apply sepolicy batch failed: {e}"));
+                }
+                return Ok(());
+            }
+
+            const SEPOLICY_NEXT_MAX_LEN: usize = 128;
+
+            #[repr(C)]
+            struct NextSepolicyData {
+                cmd: u32,
+                subcmd: u32,
+                sepol1: *const c_char,
+                sepol2: *const c_char,
+                sepol3: *const c_char,
+                sepol4: *const c_char,
+                sepol5: *const c_char,
+                sepol6: *const c_char,
+                sepol7: *const c_char,
+            }
+
+            struct NextPolicyCall {
+                data: NextSepolicyData,
+                buf1: [u8; SEPOLICY_NEXT_MAX_LEN],
+                buf2: [u8; SEPOLICY_NEXT_MAX_LEN],
+                buf3: [u8; SEPOLICY_NEXT_MAX_LEN],
+                buf4: [u8; SEPOLICY_NEXT_MAX_LEN],
+                buf5: [u8; SEPOLICY_NEXT_MAX_LEN],
+                buf6: [u8; SEPOLICY_NEXT_MAX_LEN],
+                buf7: [u8; SEPOLICY_NEXT_MAX_LEN],
+            }
+
+            fn to_c_ptr(
+                obj: &PolicyObject,
+                buf: &mut [u8; SEPOLICY_NEXT_MAX_LEN],
+            ) -> Result<*const c_char> {
+                match obj {
+                    PolicyObject::None | PolicyObject::All => Ok(ptr::null()),
+                    PolicyObject::One(bytes) => {
+                        if bytes.len() >= SEPOLICY_NEXT_MAX_LEN {
+                            bail!(
+                                "policy object too long for next ABI (len={}, max={})",
+                                bytes.len(),
+                                SEPOLICY_NEXT_MAX_LEN - 1
+                            );
+                        }
+                        buf[..bytes.len()].copy_from_slice(bytes);
+                        Ok(buf.as_ptr().cast::<c_char>())
+                    }
+                }
+            }
+
+            log::info!("apply sepolicy batch failed, falling back to next ABI");
+
+            for policy in &policies {
+                let mut call = NextPolicyCall {
+                    data: NextSepolicyData {
+                        cmd: policy.cmd,
+                        subcmd: policy.subcmd,
+                        sepol1: ptr::null(),
+                        sepol2: ptr::null(),
+                        sepol3: ptr::null(),
+                        sepol4: ptr::null(),
+                        sepol5: ptr::null(),
+                        sepol6: ptr::null(),
+                        sepol7: ptr::null(),
+                    },
+                    buf1: [0u8; SEPOLICY_NEXT_MAX_LEN],
+                    buf2: [0u8; SEPOLICY_NEXT_MAX_LEN],
+                    buf3: [0u8; SEPOLICY_NEXT_MAX_LEN],
+                    buf4: [0u8; SEPOLICY_NEXT_MAX_LEN],
+                    buf5: [0u8; SEPOLICY_NEXT_MAX_LEN],
+                    buf6: [0u8; SEPOLICY_NEXT_MAX_LEN],
+                    buf7: [0u8; SEPOLICY_NEXT_MAX_LEN],
+                };
+
+                call.data.sepol1 = to_c_ptr(&policy.sepol1, &mut call.buf1)?;
+                call.data.sepol2 = to_c_ptr(&policy.sepol2, &mut call.buf2)?;
+                call.data.sepol3 = to_c_ptr(&policy.sepol3, &mut call.buf3)?;
+                call.data.sepol4 = to_c_ptr(&policy.sepol4, &mut call.buf4)?;
+                call.data.sepol5 = to_c_ptr(&policy.sepol5, &mut call.buf5)?;
+                call.data.sepol6 = to_c_ptr(&policy.sepol6, &mut call.buf6)?;
+                call.data.sepol7 = to_c_ptr(&policy.sepol7, &mut call.buf7)?;
+
+                let cmd = crate::ksucalls::SetSepolicyCmdNext {
+                    cmd: 0,
+                    arg: &raw const call.data as u64,
+                };
+
+                if let Err(e) = crate::ksucalls::set_sepolicy_next(&cmd) {
+                    log::warn!("apply sepolicy rule failed: {e}, rule={policy:?}");
+                    if strict {
+                        return Err(anyhow::anyhow!("apply sepolicy rule failed: {e}"));
+                    }
+                }
             }
         }
     }

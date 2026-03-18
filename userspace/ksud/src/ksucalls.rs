@@ -47,6 +47,13 @@ pub struct SetSepolicyCmd {
 
 #[repr(C)]
 #[derive(Clone, Copy, Default)]
+pub struct SetSepolicyCmdNext {
+    pub cmd: u64,
+    pub arg: u64,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, Default)]
 struct CheckSafemodeCmd {
     in_safe_mode: u8,
 }
@@ -218,6 +225,19 @@ pub fn check_kernel_safemode() -> bool {
 pub fn set_sepolicy(cmd: &SetSepolicyCmd) -> std::io::Result<i32> {
     let mut ioctl_cmd = *cmd;
     ksuctl(KSU_IOCTL_SET_SEPOLICY, &raw mut ioctl_cmd)
+}
+
+pub fn set_sepolicy_next(cmd: &SetSepolicyCmdNext) -> std::io::Result<()> {
+    let mut ioctl_cmd = *cmd;
+    ksuctl(KSU_IOCTL_SET_SEPOLICY, &raw mut ioctl_cmd)?;
+    Ok(())
+}
+
+pub fn is_compat_mismatch_err(err: &std::io::Error) -> bool {
+    match err.raw_os_error() {
+        Some(code) => code == libc::EINVAL || code == libc::EFAULT || code == libc::ENOTTY,
+        None => false,
+    }
 }
 
 /// Get feature value and support status from kernel
