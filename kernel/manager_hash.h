@@ -14,11 +14,6 @@ static const struct manager_signature manager_signatures[] = {
 		.size = EXPECTED_MANAGER_SIZE,
 		.hash = EXPECTED_MANAGER_HASH,
 	},
-	// WKSU
-	{
-		.size = 0x381,
-		.hash = "52d52d8c8bfbe53dc2b6ff1c613184e2c03013e090fe8905d8e3d5dc2658c2e4",
-	},
 	// weishu
 	{
 		.size = 0x033b,
