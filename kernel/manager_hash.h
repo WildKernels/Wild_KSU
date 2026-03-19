@@ -29,26 +29,6 @@ static const struct manager_signature manager_signatures[] = {
 		.size = 0x396,
 		.hash = "f415f4ed9435427e1fdf7f1fccd4dbc07b3d6b8751e4dbcec6f19671f427870b",
 	},
-	// ShirkNeko
-	{
-		.size = 0x35c,
-		.hash = "947ae944f3de4ed4c21a7e4f7953ecf351bfa2b36239da37a34111ad29993eef",
-	},
-	// Neko
-	{
-		.size = 0x29c,
-		.hash = "946b0557e450a6430a0ba6b6bccee5bc12953ec8735d55e26139b0ec12303b21",
-	},
-	// ReSukiSU
-	{
-		.size = 0x377,
-		.hash = "d3469712b6214462764a1d8d3e5cbe1d6819a0b629791b9f4101867821f1df64",
-	},
-	// MamboSU
-	{
-		.size = 0x384,
-		.hash = "a9462b8b98ea1ca7901b0cbdcebfaa35f0aa95e51b01d66e6b6d2c81b97746d8",
-	},
 	// KOWX712
 	{
 		.size = 0x375,
