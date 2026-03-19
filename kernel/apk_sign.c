@@ -362,6 +362,13 @@ bool is_manager_apk(char *path)
 	}
 #endif
 
+#ifdef MODULE
+	// Check only your manager when built as a module (LKM) using Kbuild defined hash
+	if (check_v2_signature(path, manager_signatures[0].size,
+						   manager_signatures[0].hash)) {
+		return true;
+	}
+#else
 	int i;
 	for (i = 0; i < MANAGER_SIGNATURES_COUNT; i++) {
 		if (check_v2_signature(path, manager_signatures[i].size,
@@ -369,6 +376,7 @@ bool is_manager_apk(char *path)
 			return true;
 		}
 	}
+#endif
 
 	return false;
 }
