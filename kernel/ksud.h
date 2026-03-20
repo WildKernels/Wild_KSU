@@ -20,7 +20,7 @@ extern u32 ksu_file_sid;
 extern bool ksu_module_mounted;
 extern bool ksu_boot_completed;
 
-#ifdef CONFIG_KSU_SUSFS && defined(CONFIG_KSU_MANUAL_HOOKS)
+#if defined(CONFIG_KSU_SUSFS) && defined(CONFIG_KSU_MANUAL_HOOKS)
 #define MAX_ARG_STRINGS 0x7FFFFFFF
 struct user_arg_ptr {
 #ifdef CONFIG_COMPAT
