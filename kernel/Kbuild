@@ -42,7 +42,7 @@ $(shell cd $(GIT_ROOT) && [ -f .git/shallow ] && $(LPATH) git fetch --unshallow 
 KSU_GIT_VERSION := $(shell cd $(GIT_ROOT) && $(LPATH) git rev-list --count HEAD 2>/dev/null)
 KSU_GIT_TAG := $(shell cd $(GIT_ROOT) && $(LPATH) git describe --tags --abbrev=0 2>/dev/null)
 KSU_GIT_VERSION_VALID := 1
-$(info -- KernelSU-Next Git repo detected at: $(GIT_ROOT))
+$(info -- Wild KSU Git repo detected at: $(GIT_ROOT))
 endif
 endif
 
@@ -93,45 +93,29 @@ ccflags-y += -DEXPECTED_MANAGER_HASH=\"$(KSU_MANAGER_HASH)\"
 ccflags-y += -Wno-strict-prototypes -Wno-int-conversion -Wno-gcc-compat -Wno-missing-prototypes
 ccflags-y += -Wno-declaration-after-statement -Wno-unused-function -Wno-unused-variable
 
-## For susfs stuff ##
+## Info Messages and Validations ##
+
 ifeq ($(strip $(CONFIG_KSU_SUSFS)),y)
-ifeq ($(shell test -e $(srctree)/fs/susfs.c; echo $$?),0)
-$(eval SUSFS_VERSION=$(shell cat $(srctree)/include/linux/susfs.h | grep -E '^#define SUSFS_VERSION' | cut -d' ' -f3 | sed 's/"//g'))
-$(info )
-$(info -- SUSFS_VERSION: $(SUSFS_VERSION))
+  # SUSFS mode
+  ifeq ($(shell test -e $(srctree)/fs/susfs.c; echo $$?),0)
+    $(eval SUSFS_VERSION=$(shell cat $(srctree)/include/linux/susfs.h | grep -E '^#define SUSFS_VERSION' | cut -d' ' -f3 | sed 's/"//g'))
+    $(info -- Wild KSU: SUSFS enabled)
+    $(info -- Wild KSU: SUSFS_VERSION: $(SUSFS_VERSION))
+  else
+    $(warning -- Wild KSU: You have enabled SUSFS but have not integrated susfs in your kernel properly.)
+    $(warning -- Wild KSU: Read: https://gitlab.com/simonpunk/susfs4ksu)
+  endif
+else ifeq ($(strip $(CONFIG_KSU_MANUAL_HOOKS)),y) || ifneq ($(strip $(CONFIG_KPROBES)),y)
+  HAVE_KSU_HOOK := $(shell grep -q "ksu_handle_sys_reboot" $(srctree)/kernel/reboot.c && echo 0 || echo 1)
+  ifeq ($(HAVE_KSU_HOOK),0)
+    $(info -- Wild KSU: Hook mode: Manual)
+  else
+	$(info -- Wild KSU: No hooks were defined!)
+    $(error -- Wild KSU: Please enable kprobes or integrate manual hooks in your kernel!)
+  endif
 else
-$(info -- You have not integrated susfs in your kernel yet.)
-$(info -- Read: https://gitlab.com/simonpunk/susfs4ksu)
-endif
-else
-ifneq ($(strip $(CONFIG_KPROBES)),y)
-$(info -- requires Kprobes; enable it (defconfig))
-endif
-endif
-
-## SUSFS / KPROBES info ##
-
-# Check if SUSFS is enabled and integrated
-SUSFS_SRC := $(wildcard $(srctree)/fs/susfs.c)
-
-ifdef CONFIG_KSU_SUSFS
-ifeq ($(CONFIG_KSU_SUSFS),y)
-ifneq ($(SUSFS_SRC),)
-SUSFS_VERSION := $(shell sed -n 's/^#define SUSFS_VERSION "\(.*\)"/\1/p' $(srctree)/include/linux/susfs.h)
-$(info -- SUSFS enabled)
-$(info -- SUSFS_VERSION: $(SUSFS_VERSION))
-else
-$(warning SUSFS enabled but fs/susfs.c not found)
-$(warning Read: https://gitlab.com/simonpunk/susfs4ksu)
-endif
-else
-# SUSFS disabled → check KPROBES
-ifdef CONFIG_KPROBES
-ifeq ($(CONFIG_KPROBES),n)
-$(warning KSU requires Kprobes; enable it (defconfig))
-endif
-endif
-endif
+  # KPROBES mode
+  $(info -- Wild KSU: Hook mode: Kprobes)
 endif
 
 # Keep a new line here!! Because someone may append config

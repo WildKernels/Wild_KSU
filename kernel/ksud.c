@@ -59,7 +59,7 @@ static void stop_init_rc_hook();
 static void stop_execve_hook();
 static void stop_input_hook();
 
-#ifndef CONFIG_KSU_SUSFS
+#if !defined(CONFIG_KSU_SUSFS) && !defined(CONFIG_KSU_MANUAL_HOOKS)
 static struct work_struct stop_init_rc_hook_work;
 static struct work_struct stop_execve_hook_work;
 static struct work_struct stop_input_hook_work;
@@ -418,7 +418,7 @@ static bool is_init_rc(struct file *fp)
 	return true;
 }
 
-#ifndef CONFIG_KSU_SUSFS
+#if !defined(CONFIG_KSU_SUSFS) && !defined(CONFIG_KSU_MANUAL_HOOKS)
 static void ksu_handle_sys_read(unsigned int fd)
 #else
 void ksu_handle_sys_read(unsigned int fd)
@@ -524,7 +524,7 @@ bool ksu_is_safe_mode()
 	return false;
 }
 
-#ifndef CONFIG_KSU_SUSFS
+#if !defined(CONFIG_KSU_SUSFS) && !defined(CONFIG_KSU_MANUAL_HOOKS)
 static int sys_execve_handler_pre(struct kprobe *p, struct pt_regs *regs)
 {
 	struct pt_regs *real_regs = PT_REAL_REGS(regs);
@@ -681,7 +681,7 @@ void ksu_handle_vfs_fstat(int fd, loff_t *kstat_size_ptr) {
 
 static void stop_init_rc_hook()
 {
-#ifndef CONFIG_KSU_SUSFS
+#if !defined(CONFIG_KSU_SUSFS) && !defined(CONFIG_KSU_MANUAL_HOOKS)
 	bool ret = schedule_work(&stop_init_rc_hook_work);
 	pr_info("unregister init_rc_hook kprobe: %d!\n", ret);
 #else
@@ -693,7 +693,7 @@ static void stop_init_rc_hook()
 
 static void stop_execve_hook()
 {
-#ifndef CONFIG_KSU_SUSFS
+#if !defined(CONFIG_KSU_SUSFS) && !defined(CONFIG_KSU_MANUAL_HOOKS)
 	bool ret = schedule_work(&stop_execve_hook_work);
 	pr_info("unregister execve kprobe: %d!\n", ret);
 #else
@@ -709,7 +709,7 @@ static void stop_input_hook()
 		return;
 	}
 	input_hook_stopped = true;
-#ifndef CONFIG_KSU_SUSFS
+#if !defined(CONFIG_KSU_SUSFS) && !defined(CONFIG_KSU_MANUAL_HOOKS)
 	bool ret = schedule_work(&stop_input_hook_work);
 	pr_info("unregister input kprobe: %d!\n", ret);
 #else
@@ -721,7 +721,7 @@ static void stop_input_hook()
 // ksud: module support
 void ksu_ksud_init()
 {
-#ifndef CONFIG_KSU_SUSFS
+#if !defined(CONFIG_KSU_SUSFS) && !defined(CONFIG_KSU_MANUAL_HOOKS)
 	int ret;
 
 	ret = register_kprobe(&execve_kp);
@@ -744,7 +744,7 @@ void ksu_ksud_init()
 
 void ksu_ksud_exit()
 {
-#ifndef CONFIG_KSU_SUSFS
+#if !defined(CONFIG_KSU_SUSFS) && !defined(CONFIG_KSU_MANUAL_HOOKS)
 	unregister_kprobe(&execve_kp);
 	// this should be done before unregister sys_read_kp
 	// unregister_kprobe(&sys_read_kp);

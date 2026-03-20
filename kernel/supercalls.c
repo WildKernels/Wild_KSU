@@ -28,7 +28,7 @@
 #include "manager.h"
 #include "selinux/selinux.h"
 #include "file_wrapper.h"
-#ifndef CONFIG_KSU_SUSFS
+#if !defined(CONFIG_KSU_SUSFS) && !defined(CONFIG_KSU_MANUAL_HOOKS)
 #include "syscall_hook_manager.h"
 #endif // #ifndef CONFIG_KSU_SUSFS
 
@@ -1268,7 +1268,7 @@ void ksu_supercalls_exit(void)
     unregister_kprobe(&reboot_kp);
 #else
     pr_info("susfs: do nothing\n");
-#endif // #ifndef CONFIG_KSU_SUSFS
+#endif // #if !defined(CONFIG_KSU_SUSFS) && !defined(CONFIG_KSU_MANUAL_HOOKS)
 }
 
 // IOCTL dispatcher

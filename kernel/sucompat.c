@@ -77,7 +77,7 @@ static char __user *ksud_user_path(void)
 	return userspace_stack_buffer(ksud_path, sizeof(ksud_path));
 }
 
-#ifndef CONFIG_KSU_SUSFS
+#if !defined(CONFIG_KSU_SUSFS) && !defined(CONFIG_KSU_MANUAL_HOOKS)
 int ksu_handle_faccessat(int *dfd, const char __user **filename_user,
 		int *mode, int *__unused_flags)
 {

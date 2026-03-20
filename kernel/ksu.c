@@ -93,7 +93,7 @@ int __init kernelsu_init(void)
 
 	ksu_supercalls_init();
 
-#ifndef CONFIG_KSU_SUSFS
+#if !defined(CONFIG_KSU_SUSFS) && !defined(CONFIG_KSU_MANUAL_HOOKS)
     if (ksu_late_loaded) {
         pr_info("late load mode, skipping kprobe hooks\n");
 
@@ -153,7 +153,9 @@ int __init kernelsu_init(void)
         ksu_setuid_hook_init();
         ksu_sucompat_init();
 
+        #ifdef CONFIG_KSU_SUSFS
         susfs_init();
+        #endif
 
         ksu_throne_tracker_init();
         ksu_observer_init();
@@ -173,7 +175,10 @@ int __init kernelsu_init(void)
         ksu_allowlist_init();
         ksu_throne_tracker_init();
 
+        #ifdef CONFIG_KSU_SUSFS
         susfs_init();
+        #endif
+
         ksu_file_wrapper_init();
     }
 #endif
@@ -195,7 +200,7 @@ void kernelsu_exit(void)
 
 	ksu_observer_exit();
 
-#ifndef CONFIG_KSU_SUSFS
+#if !defined(CONFIG_KSU_SUSFS) && !defined(CONFIG_KSU_MANUAL_HOOKS)
 	if (!ksu_late_loaded) {
 		ksu_ksud_exit();
 	}
