@@ -142,6 +142,11 @@ int __init kernelsu_init(void)
         cache_sid();
         setup_ksu_cred();
 
+        // Grant current process (ksud late-load) root
+        // with KSU SELinux domain before enforcing SELinux, so it
+        // can continue to access /data/app etc. after enforcement.
+        escape_to_root_for_init();
+
         ksu_allowlist_init();
         ksu_load_allow_list();
 
@@ -156,6 +161,11 @@ int __init kernelsu_init(void)
 
         ksu_boot_completed = true;
         track_throne(false);
+
+        if (!getenforce()) {
+            pr_info("Permissive SELinux, enforcing\n");
+            setenforce(true);
+        }
     } else {
         ksu_setuid_hook_init();
         ksu_sucompat_init();
