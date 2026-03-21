@@ -14,12 +14,12 @@
 #include "klog.h" // IWYU pragma: keep
 #include "manager.h"
 #include "throne_tracker.h"
-#ifndef CONFIG_KSU_SUSFS
+#if !defined(CONFIG_KSU_SUSFS) && !defined(CONFIG_KSU_MANUAL_HOOKS)
 #include "syscall_hook_manager.h"
 #else
 #include "setuid_hook.h"
 #include "sucompat.h"
-#endif // #ifndef CONFIG_KSU_SUSFS
+#endif
 #include "ksud.h"
 #include "supercalls.h"
 #include "ksu.h"
@@ -206,7 +206,10 @@ void kernelsu_exit(void)
 	}
 
 	ksu_syscall_hook_manager_exit();
-#endif // #ifndef CONFIG_KSU_SUSFS
+#else
+	ksu_setuid_hook_exit();
+	ksu_sucompat_exit();
+#endif
 
 	ksu_supercalls_exit();
 

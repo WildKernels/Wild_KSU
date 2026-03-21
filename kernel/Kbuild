@@ -105,17 +105,27 @@ ifeq ($(strip $(CONFIG_KSU_SUSFS)),y)
     $(warning -- Wild KSU: You have enabled SUSFS but have not integrated susfs in your kernel properly.)
     $(warning -- Wild KSU: Read: https://gitlab.com/simonpunk/susfs4ksu)
   endif
-else ifeq ($(strip $(CONFIG_KSU_MANUAL_HOOKS)),y) || ifneq ($(strip $(CONFIG_KPROBES)),y)
-  HAVE_KSU_HOOK := $(shell grep -q "ksu_handle_sys_reboot" $(srctree)/kernel/reboot.c && echo 0 || echo 1)
-  ifeq ($(HAVE_KSU_HOOK),0)
-    $(info -- Wild KSU: Hook mode: Manual)
-  else
-	$(info -- Wild KSU: No hooks were defined!)
-    $(error -- Wild KSU: Please enable kprobes or integrate manual hooks in your kernel!)
-  endif
 else
-  # KPROBES mode
-  $(info -- Wild KSU: Hook mode: Kprobes)
+  KSU_USE_MANUAL := n
+  ifeq ($(strip $(CONFIG_KSU_MANUAL_HOOKS)),y)
+    KSU_USE_MANUAL := y
+  endif
+  ifneq ($(strip $(CONFIG_KPROBES)),y)
+    KSU_USE_MANUAL := y
+  endif
+
+  ifeq ($(KSU_USE_MANUAL),y)
+    HAVE_KSU_HOOK := $(shell grep -q "ksu_handle_sys_reboot" $(srctree)/kernel/reboot.c && echo 0 || echo 1)
+    ifeq ($(HAVE_KSU_HOOK),0)
+      $(info -- Wild KSU: Hook mode: Manual)
+    else
+	$(info -- Wild KSU: No hooks were defined!)
+      $(error -- Wild KSU: Please enable kprobes or integrate manual hooks in your kernel!)
+    endif
+  else
+    # KPROBES mode
+    $(info -- Wild KSU: Hook mode: Kprobes)
+  endif
 endif
 
 # Keep a new line here!! Because someone may append config
