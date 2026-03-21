@@ -11,11 +11,13 @@
 #include <linux/version.h>
 #include <linux/sched/task_stack.h>
 #include <linux/ptrace.h>
+#if defined(CONFIG_KSU_SUSFS) || defined(CONFIG_KSU_MANUAL_HOOKS)
+#include "selinux/selinux.h"
+#include "objsec.h"
 #ifdef CONFIG_KSU_SUSFS
 #include <linux/susfs_def.h>
 #include <linux/namei.h>
-#include "selinux/selinux.h"
-#include "objsec.h"
+#endif
 #endif // #ifdef CONFIG_KSU_SUSFS
 
 #include "allowlist.h"
