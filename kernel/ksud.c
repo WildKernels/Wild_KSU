@@ -125,7 +125,7 @@ void on_boot_completed(void)
 #endif // CONFIG_KSU_SUSFS
 }
 
-#ifndef CONFIG_KSU_SUSFS
+#if !defined(CONFIG_KSU_SUSFS) && !defined(CONFIG_KSU_MANUAL_HOOKS)
 #define MAX_ARG_STRINGS 0x7FFFFFFF
 struct user_arg_ptr {
 #ifdef CONFIG_COMPAT
@@ -138,7 +138,7 @@ struct user_arg_ptr {
 #endif
 	} ptr;
 };
-#endif // #ifndef CONFIG_KSU_SUSFS
+#endif
 
 static const char __user *get_user_arg_ptr(struct user_arg_ptr argv, int nr)
 {
@@ -236,9 +236,9 @@ static void ksu_initialize_selinux_tw_func(struct callback_head *cb)
     kfree(cb);
 }
 
-#ifdef CONFIG_KSU_SUSFS
+#if defined(CONFIG_KSU_SUSFS) || defined(CONFIG_KSU_MANUAL_HOOKS)
 extern int ksu_handle_execveat_init(struct filename *filename);
-#endif // #ifdef CONFIG_KSU_SUSFS
+#endif
 
 // IMPORTANT NOTE: the call from execve_handler_pre WON'T provided correct value for envp and flags in GKI version
 int ksu_handle_execveat_ksud(int *fd, struct filename **filename_ptr,
@@ -303,10 +303,10 @@ int ksu_handle_execveat_ksud(int *fd, struct filename **filename_ptr,
 		}
 	}
 
-#ifdef CONFIG_KSU_SUSFS
+#if defined(CONFIG_KSU_SUSFS) || defined(CONFIG_KSU_MANUAL_HOOKS)
     // - We need to run ksu_handle_execveat_init() at the very end in case the above checks are skipped
     (void)ksu_handle_execveat_init(filename);
-#endif // #ifdef CONFIG_KSU_SUSFS
+#endif
 
 	return 0;
 }
@@ -477,11 +477,11 @@ static bool is_volumedown_enough(unsigned int count)
 int ksu_handle_input_handle_event(unsigned int *type, unsigned int *code,
 					int *value)
 {
-#ifdef CONFIG_KSU_SUSFS
+#if defined(CONFIG_KSU_SUSFS) || defined(CONFIG_KSU_MANUAL_HOOKS)
     if (!ksu_input_hook) {
         return 0;
     }
-#endif // #ifdef CONFIG_KSU_SUSFS
+#endif
 
 	if (*type == EV_KEY && *code == KEY_VOLUMEDOWN) {
 		int val = *value;

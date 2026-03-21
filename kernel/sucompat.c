@@ -193,13 +193,16 @@ int ksu_handle_execveat_init(struct filename *filename) {
         if (unlikely(strcmp(filename->name, KSUD_PATH) == 0)) {
             pr_info("hook_manager: escape to root for init executing ksud: %d\n", current->pid);
             escape_to_root_for_init();
-        } else if (likely(strstr(filename->name, "/app_process") == NULL &&
+        }
+#ifdef CONFIG_KSU_SUSFS
+        else if (likely(strstr(filename->name, "/app_process") == NULL &&
                     strstr(filename->name, "/adbd") == NULL) &&
                     !susfs_is_current_proc_umounted())
         {
             pr_info("susfs: mark no sucompat checks for pid: '%d', exec: '%s'\n", current->pid, filename->name);
             susfs_set_current_proc_umounted();
         }
+#endif
         return 0;
     }
     return 1;

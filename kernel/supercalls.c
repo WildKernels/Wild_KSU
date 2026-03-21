@@ -543,13 +543,13 @@ static int do_get_hook_mode(void __user *arg)
 {
 	struct ksu_get_hook_mode_cmd cmd = {0};
 
-#if !defined(CONFIG_KSU_SUSFS) && defined(CONFIG_KPROBES)
-	strscpy(cmd.mode, "Kprobes", sizeof(cmd.mode));
-#elif defined(CONFIG_KSU_SUSFS)
-	strscpy(cmd.mode, "Inline (SUSFS)", sizeof(cmd.mode));
-#else
-	strscpy(cmd.mode, "Inline", sizeof(cmd.mode));
-#endif // CONFIG_KSU_SUSFS
+#if defined(CONFIG_KSU_SUSFS)
+        strscpy(cmd.mode, "Inline (SUSFS)", sizeof(cmd.mode));
+#elif defined(CONFIG_KSU_MANUAL_HOOKS)
+        strscpy(cmd.mode, "Inline (Manual)", sizeof(cmd.mode));
+#elif defined(CONFIG_KPROBES)
+        strscpy(cmd.mode, "Kprobes", sizeof(cmd.mode));
+#endif
 
 	if (copy_to_user(arg, &cmd, sizeof(cmd))) {
 		pr_err("get_hook_mode: copy_to_user failed\n");
@@ -893,11 +893,10 @@ static inline void ksu_copy_reply_user(unsigned long user_ptr, unsigned long rep
 		pr_info("sys_reboot: reply fail\n");
 }
 
-#ifndef CONFIG_KSU_SUSFS
+#if !defined(CONFIG_KSU_SUSFS) && !defined(CONFIG_KSU_MANUAL_HOOKS)
 static int reboot_handler_pre(struct kprobe *p, struct pt_regs *regs)
 {
 	struct pt_regs *real_regs = PT_REAL_REGS(regs);
-	int magic1 = (int)PT_REGS_PARM1(real_regs);
 	int magic2 = (int)PT_REGS_PARM2(real_regs);
 	unsigned int cmd = (unsigned int)PT_REGS_PARM3(real_regs);
 	unsigned long arg4 = (unsigned long)PT_REGS_SYSCALL_PARM4(real_regs);
@@ -1239,7 +1238,7 @@ int ksu_handle_sys_reboot(int magic1, int magic2, unsigned int cmd, void __user 
 	return -EINVAL;
 }
 EXPORT_SYMBOL(ksu_handle_sys_reboot); // required visiblity for toolkit
-#endif // #ifndef CONFIG_KSU_SUSFS
+#endif
 
 void ksu_supercalls_init(void)
 {
@@ -1251,8 +1250,8 @@ void ksu_supercalls_init(void)
                 ksu_ioctl_handlers[i].cmd);
     }
 
-#ifndef CONFIG_KSU_SUSFS
-	int rc = register_kprobe(&reboot_kp);
+#if !defined(CONFIG_KSU_SUSFS) && !defined(CONFIG_KSU_MANUAL_HOOKS)
+        int rc = register_kprobe(&reboot_kp);
 	if (rc) {
 		pr_err("reboot kprobe failed: %d\n", rc);
 	} else {
@@ -1264,7 +1263,7 @@ void ksu_supercalls_init(void)
 
 void ksu_supercalls_exit(void)
 {
-#ifndef CONFIG_KSU_SUSFS
+#if !defined(CONFIG_KSU_SUSFS) && !defined(CONFIG_KSU_MANUAL_HOOKS)
     unregister_kprobe(&reboot_kp);
 #else
     pr_info("susfs: do nothing\n");
