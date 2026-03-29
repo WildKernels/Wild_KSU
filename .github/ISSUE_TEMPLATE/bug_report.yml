@@ -1,5 +1,5 @@
 name: Bug report
-description: Create a report to help us improve KernelSU Next
+description: Create a report to help us improve Wild KSU
 labels: [Bug]
 
 body:
@@ -61,8 +61,8 @@ body:
           - Device:
           - OS Version:
           - Kernel Version:
-          - KSUN Driver Version:
-          - KSUN Manager Version:
+          - WKSU Driver Version:
+          - WKSU Manager Version:
     validations:
         required: true
 

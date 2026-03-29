@@ -3,25 +3,25 @@
 ---
 
 <div align="center">
-  <img src="/assets/kernelsu_next.png" width="96" alt="KernelSU Next Logo">
+  <img src="/assets/wksu.png" width="96" alt="Wild KSU Logo">
 
-  <h2>KernelSU Next</h2>
+  <h2>Wild KSU</h2>
   <p><strong>Una solución de root basada en el kernel para tus dispositivos Android.</strong></p>
 
   <p>
-    <a href="https://github.com/KernelSU-Next/KernelSU-Next/releases/latest">
-      <img src="https://img.shields.io/github/v/release/KernelSU-Next/KernelSU-Next?label=Release&logo=github" alt="Latest Release">
+    <a href="https://github.com/Wild-KSU/Wild-KSU/releases/latest">
+      <img src="https://img.shields.io/github/v/release/Wild-KSU/Wild-KSU?label=Release&logo=github" alt="Latest Release">
     </a>
-    <a href="https://nightly.link/KernelSU-Next/KernelSU-Next/workflows/build-manager-ci/next/Manager">
+    <a href="https://nightly.link/Wild-KSU/Wild-KSU/workflows/build-manager-ci/next/Manager">
       <img src="https://img.shields.io/badge/Nightly%20Release-gray?logo=hackthebox&logoColor=fff" alt="Nightly Build">
     </a>
     <a href="https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html">
       <img src="https://img.shields.io/badge/License-GPL%20v2-orange.svg?logo=gnu" alt="License: GPL v2">
     </a>
     <a href="/LICENSE">
-      <img src="https://img.shields.io/github/license/KernelSU-Next/KernelSU-Next?logo=gnu" alt="GitHub License">
+      <img src="https://img.shields.io/github/license/Wild-KSU/Wild-KSU?logo=gnu" alt="GitHub License">
     </a>
-    <a title="Crowdin" target="_blank" href="https://crowdin.com/project/kernelsu-next"><img src="https://badges.crowdin.net/kernelsu-next/localized.svg"></a>
+    <a title="Crowdin" target="_blank" href="https://crowdin.com/project/wild-ksu"><img src="https://badges.crowdin.net/wild-ksu/localized.svg"></a>
   </p>
 </div>
 
@@ -37,7 +37,7 @@
 
 ## ✅ Compatibilidad
 
-KernelSU Next es compatible con kernels de Android desde la versión **4.4 hasta la 6.6**.
+Wild KSU es compatible con kernels de Android desde la versión **4.4 hasta la 6.6**.
 
 | Versión del kernel   | Notas de soporte                                                                  |
 |----------------------|-----------------------------------------------------------------------------------|
@@ -48,13 +48,13 @@ KernelSU Next es compatible con kernels de Android desde la versión **4.4 hasta
 **Arquitecturas compatibles:** `arm64-v8a`, `armeabi-v7a` y `x86_64`
 
 > [!CAUTION]
-> ¡Las versiones recientes del kernel han implementado un cambio que rompe la compatibilidad, causando que KernelSU Next falle y potencialmente provoque un kernel panic en `x86_64`! ¡Consulta el sitio web para más información!
+> ¡Las versiones recientes del kernel han implementado un cambio que rompe la compatibilidad, causando que Wild KSU falle y potencialmente provoque un kernel panic en `x86_64`! ¡Consulta el sitio web para más información!
 
 ---
 
 ## 📦 Instalación
 
-Por favor, consulta la guía de [Instalación](https://kernelsu-next.github.io/webpage/pages/installation.html) para ver las instrucciones de configuración.
+Por favor, consulta la guía de [Instalación](https://wild-ksu.github.io/webpage/pages/installation.html) para ver las instrucciones de configuración.
 
 ---
 
@@ -90,5 +90,5 @@ Si te gustaría apoyar el proyecto:
 - [Magisk](https://github.com/topjohnwu/Magisk) – Implementación principal del root
 - [Genuine](https://github.com/brevent/genuine/) – Validación de la firma v2 de los APK
 - [Diamorphine](https://github.com/m0nad/Diamorphine) – Técnicas de rootkit
-- [KernelSU](https://github.com/tiann/KernelSU) – La base original que hizo posible KernelSU Next
+- [KernelSU](https://github.com/tiann/KernelSU) – La base original que hizo posible Wild KSU
 - [Magic Mount Port](https://github.com/5ec1cff/KernelSU/blob/main/userspace/ksud/src/magic_mount.rs) – 💜 a 5ec1cff por mantener vivo KernelSU

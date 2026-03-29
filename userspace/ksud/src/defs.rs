@@ -38,7 +38,7 @@ mod android {
     pub const METAMODULE_METAUNINSTALL_SCRIPT: &str = "metauninstall.sh";
 
     pub const KSU_BACKUP_DIR: &str = WORKING_DIR;
-    pub const KSU_BACKUP_FILE_PREFIX: &str = "ksun_backup_";
+    pub const KSU_BACKUP_FILE_PREFIX: &str = "wksu_backup_";
     pub const BACKUP_FILENAME: &str = "stock_image.sha1";
 }
 

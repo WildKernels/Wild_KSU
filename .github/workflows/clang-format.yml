@@ -2,13 +2,13 @@ name: ClangFormat check
 
 on:
   push:
-    branches: [ "next", "dev" ]
+    branches: [ "dev", "stable" ]
     paths:
       - '.github/workflows/clang-format.yml'
       - 'kernel/**/*.c'
       - 'kernel/**/*.h'
   pull_request:
-    branches: [ "next", "dev" ]
+    branches: [ "dev", "stable" ]
     paths:
       - '.github/workflows/clang-format.yml'
       - 'kernel/**/*.c'

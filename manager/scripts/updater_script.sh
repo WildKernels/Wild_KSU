@@ -1,1 +1,1 @@
-# KernelSU-Next installer/uninstaller script
+# Wild KSU installer/uninstaller script

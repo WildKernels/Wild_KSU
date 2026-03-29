@@ -227,9 +227,9 @@ pub fn uninstall(magiskboot_path: Option<PathBuf>) -> Result<()> {
         out: None,
         out_name: None,
     })?;
-    println!("- Uninstall KernelSU-Next manager..");
+    println!("- Uninstall Wild KSU manager..");
     Command::new("pm")
-        .args(["uninstall", "com.rifsxd.ksunext"])
+        .args(["uninstall", "com.twj.wksu"])
         .spawn()?;
     println!("- Rebooting in 5 seconds..");
     std::thread::sleep(std::time::Duration::from_secs(5));

@@ -27,7 +27,7 @@ jobs:
 
     - name: Build kernelsu.ko
       run: |
-        git config --global --add safe.directory /__w/KernelSU-Next/KernelSU-Next
+        git config --global --add safe.directory /__w/Wild-KSU/Wild-KSU
 
         cd kernel
 

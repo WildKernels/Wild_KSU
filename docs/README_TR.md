@@ -3,25 +3,25 @@
 ---
 
 <div align="center">
-  <img src="/assets/kernelsu_next.png" width="96" alt="KernelSU Next Logo">
+  <img src="/assets/wksu.png" width="96" alt="Wild KSU Logo">
 
-  <h2>KernelSU Next</h2>
+  <h2>Wild KSU</h2>
   <p><strong>Android cihazlar için çekirdek tabanlı bir root çözümüdür.</strong></p>
 
   <p>
-    <a href="https://github.com/KernelSU-Next/KernelSU-Next/releases/latest">
-      <img src="https://img.shields.io/github/v/release/KernelSU-Next/KernelSU-Next?label=Release&logo=github" alt="Latest Release">
+    <a href="https://github.com/Wild-KSU/Wild-KSU/releases/latest">
+      <img src="https://img.shields.io/github/v/release/Wild-KSU/Wild-KSU?label=Release&logo=github" alt="Latest Release">
     </a>
-    <a href="https://nightly.link/KernelSU-Next/KernelSU-Next/workflows/build-manager-ci/next/Manager">
+    <a href="https://nightly.link/Wild-KSU/Wild-KSU/workflows/build-manager-ci/next/Manager">
       <img src="https://img.shields.io/badge/Nightly%20Release-gray?logo=hackthebox&logoColor=fff" alt="Nightly Build">
     </a>
     <a href="https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html">
       <img src="https://img.shields.io/badge/License-GPL%20v2-orange.svg?logo=gnu" alt="License: GPL v2">
     </a>
     <a href="/LICENSE">
-      <img src="https://img.shields.io/github/license/KernelSU-Next/KernelSU-Next?logo=gnu" alt="GitHub License">
+      <img src="https://img.shields.io/github/license/Wild-KSU/Wild-KSU?logo=gnu" alt="GitHub License">
     </a>
-    <a title="Crowdin" target="_blank" href="https://crowdin.com/project/kernelsu-next"><img src="https://badges.crowdin.net/kernelsu-next/localized.svg"></a>
+    <a title="Crowdin" target="_blank" href="https://crowdin.com/project/wild-ksu"><img src="https://badges.crowdin.net/wild-ksu/localized.svg"></a>
   </p>
 </div>
 
@@ -37,7 +37,7 @@
 
 ## ✅ Uyumluluk
 
-KernelSU Next, **4.4 ile 6.6** arasındaki Android çekirdeklerini destekler.
+Wild KSU, **4.4 ile 6.6** arasındaki Android çekirdeklerini destekler.
 
 | Çekirdek Sürümü      | Destek Notları                                                      |
 |----------------------|---------------------------------------------------------------------|
@@ -48,13 +48,13 @@ KernelSU Next, **4.4 ile 6.6** arasındaki Android çekirdeklerini destekler.
 **Desteklenen mimariler:** `arm64-v8a`, `armeabi-v7a`, `x86_64`
 
 > [!CAUTION]
-> Yeni çekirdek sürümleri, KernelSU Next'nun çökmesine ve `x86_64` üzerinde kernel panic tetiklemesine neden olabilecek uyumsuz bir değişiklik uyguladı! Daha fazla bilgi için web sitesini kontrol edin!
+> Yeni çekirdek sürümleri, Wild KSU'nun çökmesine ve `x86_64` üzerinde kernel panic tetiklemesine neden olabilecek uyumsuz bir değişiklik uyguladı! Daha fazla bilgi için web sitesini kontrol edin!
 
 ---
 
 ## 📦 Kurulum
 
-Kurulum talimatları için [Kurulum Kılavuzu](https://kernelsu-next.github.io/webpage/pages/installation.html) sayfasına bakınız.
+Kurulum talimatları için [Kurulum Kılavuzu](https://wild-ksu.github.io/webpage/pages/installation.html) sayfasına bakınız.
 
 ---
 
@@ -90,5 +90,5 @@ Projeye destek olmak isterseniz:
 - [Magisk](https://github.com/topjohnwu/Magisk) – Temel root altyapısı
 - [Genuine](https://github.com/brevent/genuine/) – APK v2 imza doğrulaması
 - [Diamorphine](https://github.com/m0nad/Diamorphine) – Rootkit teknikleri
-- [KernelSU](https://github.com/tiann/KernelSU) – KernelSU Next'in temelini oluşturan orijinal proje
+- [KernelSU](https://github.com/tiann/KernelSU) – Wild KSU'in temelini oluşturan orijinal proje
 - [Magic Mount Port](https://github.com/5ec1cff/KernelSU/blob/main/userspace/ksud/src/magic_mount.rs) – KernelSU’yu kurtardığı için 💜 5ec1cff’e teşekkürler

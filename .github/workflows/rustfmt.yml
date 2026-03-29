@@ -2,8 +2,7 @@ name: Rustfmt check
 
 on:
   push:
-    branches:
-      - 'next'
+    branches: [ "dev", "stable" ]
     paths:
       - '.github/workflows/rustfmt.yml'
       - 'userspace/**'

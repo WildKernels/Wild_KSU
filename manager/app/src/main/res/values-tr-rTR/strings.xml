@@ -5,8 +5,8 @@
   <string name="issue_report_body_2">Mümkün olan en kısa sürede bildirin!</string>
   <string name="issue_report_github">GitHub ile bildirin</string>
   <string name="issue_report_telegram">Telegram üzerinden iletişim kurun</string>
-  <string name="issue_report_github_link">https://github.com/KernelSU-Next/KernelSU-Next/issues</string>
-  <string name="issue_report_telegram_link">https://t.me/ksunext</string>
+  <string name="issue_report_github_link">https://github.com/WildKernels/Wild_KSU/issues</string>
+  <string name="issue_report_telegram_link">https://t.me/WildKernels/73910</string>
   <string name="confirm">Onayla</string>
   <string name="home">Ana Ekran</string>
   <string name="home_not_installed">Yüklenmedi</string>
@@ -15,7 +15,7 @@
   <string name="home_working_version">Sürüm: %1$s (%2$d)</string>
   <string name="home_module_update_count">Güncellemeler: %d</string>
   <string name="home_failure">Desteklenmiyor | Entegre edilmedi</string>
-  <string name="home_failure_tip">GKI olmayan çekirdekler desteklenmemektedir. KernelSU-Next eski sürücüsünü çekirdeğinize entegre edin!</string>
+  <string name="home_failure_tip">GKI olmayan çekirdekler desteklenmemektedir. Wild KSU eski sürücüsünü çekirdeğinize entegre edin!</string>
   <string name="home_kernel">Çekirdek sürümü</string>
   <string name="hook_mode">Kanca modu</string>
   <string name="enable">Etkinleştir</string>
@@ -237,11 +237,11 @@
   <string name="settings_enable_avc_spoof">AVC taklidi</string>
   <string name="settings_enable_avc_spoof_summary">Denetim günlüğünde avc reddi nedeniyle oluşan selinux bağlam sızıntısını düzeltin.</string>
   <string name="manage_repositories">Depoları Yönet</string>
-  <string name="app_name">KernelSU-Next</string>
-  <string name="require_kernel_version">Geçerli KernelSU Next sürümü %1$d, yöneticinin düzgün çalışması için çok düşük. Lütfen %2$d veya daha yüksek bir sürüme yükseltin!</string>
-  <string name="profile_umount_modules_summary">Bu seçeneğin etkinleştirilmesi, KernelSU Next\'in bu uygulama için modüller tarafından değiştirilen tüm dosyaları geri yüklemesine izin verecektir.</string>
+  <string name="app_name">Wild KSU</string>
+  <string name="require_kernel_version">Geçerli Wild KSU sürümü %1$d, yöneticinin düzgün çalışması için çok düşük. Lütfen %2$d veya daha yüksek bir sürüme yükseltin!</string>
+  <string name="profile_umount_modules_summary">Bu seçeneğin etkinleştirilmesi, Wild KSU\'in bu uygulama için modüller tarafından değiştirilen tüm dosyaları geri yüklemesine izin verecektir.</string>
   <string name="settings_uninstall_temporary_message">KernelSU\'yu geçici olarak kaldırın, bir sonraki yeniden başlatmadan sonra orijinal duruma geri dönün.</string>
-  <string name="settings_uninstall_permanent_message">KernelSU-Next\'i (kök ve tüm modüller) tamamen ve kalıcı olarak kaldırın.</string>
+  <string name="settings_uninstall_permanent_message">Wild KSU\'i (kök ve tüm modüller) tamamen ve kalıcı olarak kaldırın.</string>
   <string name="settings_restore_stock_image_message">(eğer yedek varsa) Stok fabrika imajını geri yükleyin, genellikle OTA\'dan önce kullanılır; KernelSU\'yu kaldırmanız gerekiyorsa, lütfen \"Kalıcı olarak kaldır\" seçeneğini kullanın.</string>
   <string name="backup_success">Yedekleme başarıyla tamamlandı</string>
   <string name="backup_failed">Yedekleme başarısız oldu</string>

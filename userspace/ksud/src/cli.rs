@@ -8,7 +8,7 @@ use log::{LevelFilter, info};
 use crate::boot_patch::{BootPatchArgs, BootRestoreArgs};
 use crate::{apk_sign, assets, debug, defs, init_event, ksucalls, module, module_config, utils};
 
-/// KernelSU Next userspace cli
+/// Wild KSU userspace cli
 #[derive(Parser, Debug)]
 #[command(author, version = defs::VERSION_NAME, about, long_about = None)]
 struct Args {
@@ -18,7 +18,7 @@ struct Args {
 
 #[derive(clap::Subcommand, Debug)]
 enum Commands {
-    /// Manage KernelSU Next modules
+    /// Manage Wild KSU modules
     Module {
         #[command(subcommand)]
         command: Module,
@@ -36,16 +36,16 @@ enum Commands {
     /// Load kernelsu.ko and execute late-load stage scripts
     LateLoad,
 
-    /// Install KernelSU Next userspace component to system
+    /// Install Wild KSU userspace component to system
     Install {
         #[arg(long, default_value = None)]
         magiskboot: Option<PathBuf>,
     },
 
-    /// Unload KernelSU Next kernel module (LKM Only)
+    /// Unload Wild KSU kernel module (LKM Only)
     Unload,
 
-    /// Uninstall KernelSU Next modules and itself(LKM Only)
+    /// Uninstall Wild KSU modules and itself(LKM Only)
     Uninstall {
         /// magiskboot path, if not specified, will search from $PATH
         #[arg(long, default_value = None)]
@@ -70,7 +70,7 @@ enum Commands {
         command: Feature,
     },
 
-    /// Patch boot or init_boot images to apply KernelSU Next
+    /// Patch boot or init_boot images to apply Wild KSU
     BootPatch(BootPatchArgs),
 
     /// Restore boot or init_boot images patched by KernelSU
@@ -135,7 +135,7 @@ enum Debug {
     /// Set the manager app, kernel CONFIG_KSU_DEBUG should be enabled.
     SetManager {
         /// manager package name
-        #[arg(default_value_t = String::from("com.rifsxd.ksunext"))]
+        #[arg(default_value_t = String::from("com.twj.wksu"))]
         apk: String,
     },
 
@@ -428,7 +428,7 @@ pub fn run() -> Result<()> {
     android_logger::init_once(
         Config::default()
             .with_max_level(crate::debug_select!(LevelFilter::Trace, LevelFilter::Info))
-            .with_tag("KernelSU Next"),
+            .with_tag("Wild KSU"),
     );
 
     // the kernel executes su with argv[0] = "su" and replace it with us
@@ -562,7 +562,7 @@ pub fn run() -> Result<()> {
         Commands::LateLoad => crate::late_load::run(),
         Commands::Services => {
             if ksucalls::get_version() <= 0 {
-                info!("KernelSU Next not available, exiting services");
+                info!("Wild KSU not available, exiting services");
                 std::process::exit(0);
             }
             init_event::on_services();

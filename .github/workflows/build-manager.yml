@@ -2,7 +2,7 @@ name: Build Manager
 
 on:
   push:
-    branches: [ "stable" ]
+    branches: [ "dev", "stable" ]
     paths:
       - '.github/workflows/build-manager.yml'
       - '.github/workflows/build-lkm.yml'
@@ -13,7 +13,7 @@ on:
       - 'kernel/**'
       - 'userspace/**'
   pull_request:
-    branches: [ "stable" ]
+    branches: [ "dev", "stable" ]
     paths:
       - '.github/workflows/build-manager.yml'
       - '.github/workflows/build-lkm.yml'
@@ -200,5 +200,5 @@ jobs:
             export VERSION=$(git rev-list --count HEAD)
             APK=$(find ./app/build/outputs/apk/release -name "*.apk")
             pip3 install telethon
-            python3 $GITHUB_WORKSPACE/scripts/ksunextbot.py $APK
+            python3 $GITHUB_WORKSPACE/scripts/wksubot.py $APK
           fi

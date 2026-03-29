@@ -1,15 +1,15 @@
 [English](README.md) | [简体中文](README_CN.md) | [繁體中文](README_TW.md) | [Türkçe](README_TR.md) | [Português (Brasil)](README_PT-BR.md) | [한국어](README_KO.md) | [Français](README_FR.md) | [Bahasa Indonesia](README_ID.md) | [Русский](README_RU.md) | [Українська](README_UA.md) | **ภาษาไทย** | [Tiếng Việt](README_VI.md) | [Italiano](README_IT.md) | [Polski](README_PL.md) | [Български](README_BG.md) | [日本語](README_JA.md) | [Español](README_ES.md)
 
-# KernelSU Next
+# Wild KSU
 
-<img src="/assets/kernelsu_next.png" style="width: 96px;" alt="logo">
+<img src="/assets/wksu.png" style="width: 96px;" alt="logo">
 
 โซลูชั่นรูทบนพื้นฐานเคอร์เนลสำหรับอุปกรณ์ Android
 
-[![Latest Release](https://img.shields.io/github/v/release/KernelSU-Next/KernelSU-Next?label=Release&logo=github)](https://github.com/KernelSU-Next/KernelSU-Next/releases/latest)
-[![Nightly Release](https://img.shields.io/badge/Nightly%20Release-gray?logo=hackthebox&logoColor=fff)](https://nightly.link/KernelSU-Next/KernelSU-Next/workflows/build-manager-ci/next/Manager)
+[![Latest Release](https://img.shields.io/github/v/release/Wild-KSU/Wild-KSU?label=Release&logo=github)](https://github.com/Wild-KSU/Wild-KSU/releases/latest)
+[![Nightly Release](https://img.shields.io/badge/Nightly%20Release-gray?logo=hackthebox&logoColor=fff)](https://nightly.link/Wild-KSU/Wild-KSU/workflows/build-manager-ci/next/Manager)
 [![License: GPL v2](https://img.shields.io/badge/License-GPL%20v2-orange.svg?logo=gnu)](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html)
-[![GitHub License](https://img.shields.io/github/license/KernelSU-Next/KernelSU-Next?logo=gnu)](/LICENSE)
+[![GitHub License](https://img.shields.io/github/license/Wild-KSU/Wild-KSU?logo=gnu)](/LICENSE)
 
 ## คุณสมบัติ
 
@@ -19,7 +19,7 @@
 
 ## การเข้ากันในอุปกรณ์ต่างๆ
 
-KernelSU Next รองรับแบบเป็นทางการตั้งแต่เคอร์เนลแอนดรอยด์ 4.4 ถึง 6.6
+Wild KSU รองรับแบบเป็นทางการตั้งแต่เคอร์เนลแอนดรอยด์ 4.4 ถึง 6.6
  - GKI 2.0 (5.10+) เคอร์เนลสามารถรันไฟล์อิมเมจสำเร็จรูป และ LKM/KMI ได้
  - GKI 1.0 (4.19 - 5.4) เคอร์เนลจะต้องรีบิ้วร่วมกับไดร์เวอร์ของ KernelSU
  - EOL (<4.14) เคอร์เนลก็ต้องรีบิ้วร่วมกับไดร์เวอร์ของ KernelSU เช่นกัน (3.18+ ยังเป็นเวอร์ชั่นทดลอง และยังต้องเขียนฟังก์ชั่นหลังบ้านเพิ่มเติม)
@@ -28,7 +28,7 @@ KernelSU Next รองรับแบบเป็นทางการตั้
 
 ## การใช้งาน
 
-- [คำแนะนำในการติดตั้ง](https://ksunext.org/pages/installation.html)
+- [คำแนะนำในการติดตั้ง](https://wksu.org/pages/installation.html)
 
 ## ความปลอดภัย
 

@@ -3,25 +3,25 @@
 ---
 
 <div align="center">
-  <img src="/assets/kernelsu_next.png" width="96" alt="KernelSU Next Logo">
+  <img src="/assets/wksu.png" width="96" alt="Wild KSU Logo">
 
-  <h2>KernelSU Next</h2>
+  <h2>Wild KSU</h2>
   <p><strong>Uma solução root baseada em kernel para dispositivos Android.</strong></p>
 
   <p>
-    <a href="https://github.com/KernelSU-Next/KernelSU-Next/releases/latest">
-      <img src="https://img.shields.io/github/v/release/KernelSU-Next/KernelSU-Next?label=Release&logo=github" alt="Latest Release">
+    <a href="https://github.com/Wild-KSU/Wild-KSU/releases/latest">
+      <img src="https://img.shields.io/github/v/release/Wild-KSU/Wild-KSU?label=Release&logo=github" alt="Latest Release">
     </a>
-    <a href="https://nightly.link/KernelSU-Next/KernelSU-Next/workflows/build-manager-ci/next/Manager">
+    <a href="https://nightly.link/Wild-KSU/Wild-KSU/workflows/build-manager-ci/next/Manager">
       <img src="https://img.shields.io/badge/Nightly%20Release-gray?logo=hackthebox&logoColor=fff" alt="Nightly Build">
     </a>
     <a href="https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html">
       <img src="https://img.shields.io/badge/License-GPL%20v2-orange.svg?logo=gnu" alt="License: GPL v2">
     </a>
     <a href="/LICENSE">
-      <img src="https://img.shields.io/github/license/KernelSU-Next/KernelSU-Next?logo=gnu" alt="GitHub License">
+      <img src="https://img.shields.io/github/license/Wild-KSU/Wild-KSU?logo=gnu" alt="GitHub License">
     </a>
-    <a title="Crowdin" target="_blank" href="https://crowdin.com/project/kernelsu-next"><img src="https://badges.crowdin.net/kernelsu-next/localized.svg"></a>
+    <a title="Crowdin" target="_blank" href="https://crowdin.com/project/wild-ksu"><img src="https://badges.crowdin.net/wild-ksu/localized.svg"></a>
   </p>
 </div>
 
@@ -37,7 +37,7 @@
 
 ## ✅ Compatibilidade
 
-O KernelSU Next oferece suporte a kernels Android **4.4 até 6.6**.
+O Wild KSU oferece suporte a kernels Android **4.4 até 6.6**.
 
 | Versão do kernel     | Notas de suporte                                                              |
 |----------------------|-------------------------------------------------------------------------------|
@@ -48,19 +48,19 @@ O KernelSU Next oferece suporte a kernels Android **4.4 até 6.6**.
 **Arquiteturas suportadas:** `arm64-v8a`, `armeabi-v7a` e `x86_64`
 
 > [!CAUTION]
-> Versões recentes do kernel implementaram uma mudança que quebra a compatibilidade, fazendo com que o KernelSU Next falhe e potencialmente cause um kernel panic no `x86_64`! Verifique o site para mais informações!
+> Versões recentes do kernel implementaram uma mudança que quebra a compatibilidade, fazendo com que o Wild KSU falhe e potencialmente cause um kernel panic no `x86_64`! Verifique o site para mais informações!
 
 ---
 
 ## 📦 Instalação
 
-Consulte o guia de [Instalação](https://kernelsu-next.github.io/webpage/pt_BR/pages/installation.html) para obter instruções de configuração.
+Consulte o guia de [Instalação](https://wild-ksu.github.io/webpage/pt_BR/pages/installation.html) para obter instruções de configuração.
 
 ---
 
 ## 🏅 Contribuição
 
-- Acesse o nosso [Crowdin](https://crowdin.com/project/kernelsu-next) para enviar uma tradução para o manager!
+- Acesse o nosso [Crowdin](https://crowdin.com/project/wild-ksu) para enviar uma tradução para o manager!
 - Para relatar problemas de segurança, consulte [SECURITY.md](/SECURITY.md).
 
 ---
@@ -91,5 +91,5 @@ Se você quiser apoiar o projeto:
 - [Magisk](https://github.com/topjohnwu/Magisk) – Implementação root principal
 - [Genuine](https://github.com/brevent/genuine/) – Validação de assinatura APK v2
 - [Diamorphine](https://github.com/m0nad/Diamorphine) – Técnicas de rootkit
-- [KernelSU](https://github.com/tiann/KernelSU) – A base original que tornou o KernelSU Next possível
+- [KernelSU](https://github.com/tiann/KernelSU) – A base original que tornou o Wild KSU possível
 - [Magic Mount Port](https://github.com/5ec1cff/KernelSU/blob/main/userspace/ksud/src/magic_mount.rs) – Para suporte de Magic Mount

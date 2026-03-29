@@ -1,6 +1,8 @@
 #!/bin/bash
 
-# This script builds the KernelSU Next manager APK.
+set -euo pipefail
+
+# This script builds the Wild KSU manager APK.
 
 # Ensure you have the setup Android SDK & NDK installed and necessary environment variables set and sourced.
 
@@ -24,4 +26,14 @@ cd manager
 
 cd ..
 
-adb install manager/app/build/outputs/apk/release/KernelSU_Next_v*.apk
+# get exact APK filename (the one just built)
+APK=$(ls -t manager/app/build/outputs/apk/release/Wild_KSU_*.apk | head -n 1)
+APK_NAME=$(basename "$APK")
+
+# Copy to Windows desktop
+cp "$APK" /mnt/c/Users/james/Desktop/apk/
+
+# Better way: use full path and proper quoting for PowerShell
+WIN_APK_PATH="C:\\Users\\james\\Desktop\\apk\\$APK_NAME"
+
+powershell.exe -Command "& 'C:\Users\james\Desktop\platform-tools\adb.exe' install \"$WIN_APK_PATH\""

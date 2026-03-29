@@ -3,25 +3,25 @@
 ---
 
 <div align="center">
-  <img src="/assets/kernelsu_next.png" width="96" alt="KernelSU Next Logo">
+  <img src="/assets/wksu.png" width="96" alt="Wild KSU Logo">
 
-  <h2>KernelSU Next</h2>
+  <h2>Wild KSU</h2>
   <p><strong>基於內核的 Android 設備 Root 解決方案。</strong></p>
 
   <p>
-    <a href="https://github.com/KernelSU-Next/KernelSU-Next/releases/latest">
-      <img src="https://img.shields.io/github/v/release/KernelSU-Next/KernelSU-Next?label=Release&logo=github" alt="Latest Release">
+    <a href="https://github.com/Wild-KSU/Wild-KSU/releases/latest">
+      <img src="https://img.shields.io/github/v/release/Wild-KSU/Wild-KSU?label=Release&logo=github" alt="Latest Release">
     </a>
-    <a href="https://nightly.link/KernelSU-Next/KernelSU-Next/workflows/build-manager-ci/next/Manager">
+    <a href="https://nightly.link/Wild-KSU/Wild-KSU/workflows/build-manager-ci/next/Manager">
       <img src="https://img.shields.io/badge/Nightly%20Release-gray?logo=hackthebox&logoColor=fff" alt="Nightly Build">
     </a>
     <a href="https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html">
       <img src="https://img.shields.io/badge/License-GPL%20v2-orange.svg?logo=gnu" alt="License: GPL v2">
     </a>
     <a href="/LICENSE">
-      <img src="https://img.shields.io/github/license/KernelSU-Next/KernelSU-Next?logo=gnu" alt="GitHub License">
+      <img src="https://img.shields.io/github/license/Wild-KSU/Wild-KSU?logo=gnu" alt="GitHub License">
     </a>
-    <a title="Crowdin" target="_blank" href="https://crowdin.com/project/kernelsu-next"><img src="https://badges.crowdin.net/kernelsu-next/localized.svg"></a>
+    <a title="Crowdin" target="_blank" href="https://crowdin.com/project/wild-ksu"><img src="https://badges.crowdin.net/wild-ksu/localized.svg"></a>
   </p>
 </div>
 
@@ -37,7 +37,7 @@
 
 ## ✅ 兼容狀態
 
-KernelSU Next 正式支持大多數從 **4.4 到 6.6** 的 Android 內核。
+Wild KSU 正式支持大多數從 **4.4 到 6.6** 的 Android 內核。
 
 | 内核版本              | 支援狀況                                                               |
 |----------------------|------------------------------------------------------------------------|
@@ -48,20 +48,20 @@ KernelSU Next 正式支持大多數從 **4.4 到 6.6** 的 Android 內核。
 **支援的架構：** `arm64-v8a`、`armeabi-v7a`、`x86_64`
 
 > [!CAUTION]
-> 最近的核心版本引入了一項破壞性更改，導致 KernelSU Next 在 `x86_64` 上執行失敗，甚至可能引發核心恐慌 (kernel panic)！請查看網站獲取更多資訊！
+> 最近的核心版本引入了一項破壞性更改，導致 Wild KSU 在 `x86_64` 上執行失敗，甚至可能引發核心恐慌 (kernel panic)！請查看網站獲取更多資訊！
 
 ---
 
 ## 📦 用法
 
-請遵循[安裝説明](https://kernelsu-next.github.io/webpage/pages/installation.html)進行操作。
+請遵循[安裝説明](https://wild-ksu.github.io/webpage/pages/installation.html)進行操作。
 
 ---
 
 ## 🏅 貢獻
 
-- 前往我們的 [Crowdin](https://crowdin.com/project/kernelsu-next) 為管理器提交翻譯！
-- 有關報告 KernelSU Next 漏洞的信息，請參閱 [SECURITY.md](/SECURITY.md)。
+- 前往我們的 [Crowdin](https://crowdin.com/project/wild-ksu) 為管理器提交翻譯！
+- 有關報告 Wild KSU 漏洞的信息，請參閱 [SECURITY.md](/SECURITY.md)。
 
 ---
 
@@ -89,5 +89,5 @@ KernelSU Next 正式支持大多數從 **4.4 到 6.6** 的 Android 內核。
 - [Magisk](https://github.com/topjohnwu/Magisk)：強大的 Root 工具。
 - [Genuine](https://github.com/brevent/genuine/)：APK v2 簽名驗證。
 - [Diamorphine](https://github.com/m0nad/Diamorphine)：一些 Rootkit 技巧。
-- [KernelSU](https://github.com/tiann/KernelSU)：感謝 tiann，否則 KernelSU Next 根本不會存在。
+- [KernelSU](https://github.com/tiann/KernelSU)：感謝 tiann，否則 Wild KSU 根本不會存在。
 - [Magic Mount Port](https://github.com/5ec1cff/KernelSU/blob/main/userspace/ksud/src/magic_mount.rs)：💜 5ec1cff 為了拯救 KernelSU！
