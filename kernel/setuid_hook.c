@@ -16,14 +16,23 @@
 #include "setuid_hook.h"
 #include "klog.h" // IWYU pragma: keep
 #include "manager.h"
+#include "selinux/selinux.h"
 #include "seccomp_cache.h"
 #include "supercalls.h"
-#include "tp_marker.h"
+#include "syscall_hook_manager.h"
 #include "kernel_umount.h"
 
-int ksu_handle_setresuid(uid_t old_uid, uid_t new_uid)
+static void ksu_install_manager_fd_tw_func(struct callback_head *cb)
+{
+    ksu_install_fd();
+    kfree(cb);
+}
+
+int ksu_handle_setresuid(uid_t ruid, uid_t euid, uid_t suid)
 {
     // we rely on the fact that zygote always call setresuid(3) with same uids
+    uid_t new_uid = ruid;
+    uid_t old_uid = current_uid().val;
 
     pr_info("handle_setresuid from %d to %d\n", old_uid, new_uid);
 
@@ -35,7 +44,14 @@ int ksu_handle_setresuid(uid_t old_uid, uid_t new_uid)
         spin_unlock_irq(&current->sighand->siglock);
 
         pr_info("install fd for manager: %d\n", new_uid);
-        ksu_install_fd();
+        struct callback_head *cb = kzalloc(sizeof(*cb), GFP_ATOMIC);
+        if (!cb)
+            return 0;
+        cb->func = ksu_install_manager_fd_tw_func;
+        if (task_work_add(current, cb, TWA_RESUME)) {
+            kfree(cb);
+            pr_warn("install manager fd add task_work failed\n");
+        }
         return 0;
     }
 

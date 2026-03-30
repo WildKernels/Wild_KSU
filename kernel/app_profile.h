@@ -61,7 +61,7 @@ struct app_profile {
 };
 
 // Escalate current process to root with the appropriate profile
-int escape_with_root_profile(void);
+void escape_with_root_profile(void);
 
 void escape_to_root_for_init(void);
 

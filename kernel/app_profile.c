@@ -14,7 +14,7 @@
 #include "klog.h" // IWYU pragma: keep
 #include "selinux/selinux.h"
 #include "su_mount_ns.h"
-#include "tp_marker.h"
+#include "syscall_hook_manager.h"
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 7, 0)
 static struct group_info root_groups = { .usage = REFCOUNT_INIT(2) };
@@ -67,7 +67,7 @@ static void disable_seccomp(void)
 {
     struct task_struct *fake;
 
-    fake = kmalloc(sizeof(*fake), GFP_KERNEL);
+    fake = kmalloc(sizeof(*fake), GFP_ATOMIC);
     if (!fake) {
         pr_warn("failed to alloc fake task_struct\n");
         return;
@@ -103,9 +103,8 @@ static void disable_seccomp(void)
     kfree(fake);
 }
 
-int escape_with_root_profile(void)
+void escape_with_root_profile(void)
 {
-    int ret = 0;
     struct cred *cred;
     struct task_struct *p = current;
     struct task_struct *t;
@@ -115,7 +114,7 @@ int escape_with_root_profile(void)
     cred = prepare_creds();
     if (!cred) {
         pr_warn("prepare_creds failed!\n");
-        return -ENOMEM;
+        return;
     }
 
     if (cred->euid.val == 0) {
@@ -152,7 +151,6 @@ int escape_with_root_profile(void)
      */
     new_user = alloc_uid(cred->uid);
     if (!new_user) {
-        ret = -ENOMEM;
         goto out_abort_creds;
     }
 
@@ -190,11 +188,10 @@ int escape_with_root_profile(void)
     }
 
     setup_mount_ns(profile.namespaces);
-    return 0;
+    return;
 
 out_abort_creds:
     abort_creds(cred);
-    return ret;
 }
 
 void escape_to_root_for_init(void)
