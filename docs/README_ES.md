@@ -47,9 +47,6 @@ Wild KSU es compatible con kernels de Android desde la versión **4.4 hasta la 6
 
 **Arquitecturas compatibles:** `arm64-v8a`, `armeabi-v7a` y `x86_64`
 
-> [!CAUTION]
-> ¡Las versiones recientes del kernel han implementado un cambio que rompe la compatibilidad, causando que Wild KSU falle y potencialmente provoque un kernel panic en `x86_64`! ¡Consulta el sitio web para más información!
-
 ---
 
 ## 📦 Instalación

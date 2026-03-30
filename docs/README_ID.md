@@ -26,9 +26,6 @@ Wild KSU secara resmi mendukung sebagian besar kernel Android mulai dari 4.4 hin
 
 Saat ini, hanya `arm64-v8a`, `armeabi-v7a` & `x86_64` yang didukung.
 
-> [!CAUTION]
-> Versi kernel terbaru telah menerapkan perubahan yang merusak yang menyebabkan Wild KSU gagal dan berpotensi memicu kernel panic pada `x86_64`! Cek situs web untuk info lebih lanjut!
-
 ## Penggunaan
 
 - [Petunjuk instalasi](https://wksu.org/pages/installation.html)

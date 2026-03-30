@@ -26,9 +26,6 @@ Wild KSU supporta ufficialmente la maggior parte dei kernel Android dalla versio
 
 Attualmente è supportata solo l'architettura `arm64-v8a`, `armeabi-v7a` & `x86_64`.
 
-> [!CAUTION]
-> Le versioni recenti del kernel hanno implementato una modifica che causa il fallimento di Wild KSU e potenzialmente innesca un kernel panic su `x86_64`! Controlla il sito web per maggiori informazioni!
-
 ## Utilizzo
 
 - [Istruzioni per l'installazione](https://wksu.org/pages/installation.html)

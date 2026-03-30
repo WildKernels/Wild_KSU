@@ -3,25 +3,25 @@
 ---
 
 <div align="center">
-  <img src="/assets/wksu.png" width="96" alt="Wild KSU Logo">
+  <img src="/assets/kernelsu_next.png" width="96" alt="KernelSU Next Logo">
 
-  <h2>Wild KSU</h2>
+  <h2>KernelSU Next</h2>
   <p><strong>Решение root на базе ядра для устройств Android.</strong></p>
 
   <p>
-    <a href="https://github.com/Wild-KSU/Wild-KSU/releases/latest">
-      <img src="https://img.shields.io/github/v/release/Wild-KSU/Wild-KSU?label=Release&logo=github" alt="Latest Release">
+    <a href="https://github.com/KernelSU-Next/KernelSU-Next/releases/latest">
+      <img src="https://img.shields.io/github/v/release/KernelSU-Next/KernelSU-Next?label=Release&logo=github" alt="Latest Release">
     </a>
-    <a href="https://nightly.link/Wild-KSU/Wild-KSU/workflows/build-manager-ci/next/Manager">
+    <a href="https://nightly.link/KernelSU-Next/KernelSU-Next/workflows/build-manager-ci/next/Manager">
       <img src="https://img.shields.io/badge/Nightly%20Release-gray?logo=hackthebox&logoColor=fff" alt="Nightly Build">
     </a>
     <a href="https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html">
       <img src="https://img.shields.io/badge/License-GPL%20v2-orange.svg?logo=gnu" alt="License: GPL v2">
     </a>
     <a href="/LICENSE">
-      <img src="https://img.shields.io/github/license/Wild-KSU/Wild-KSU?logo=gnu" alt="GitHub License">
+      <img src="https://img.shields.io/github/license/KernelSU-Next/KernelSU-Next?logo=gnu" alt="GitHub License">
     </a>
-    <a title="Crowdin" target="_blank" href="https://crowdin.com/project/wild-ksu"><img src="https://badges.crowdin.net/wild-ksu/localized.svg"></a>
+    <a title="Crowdin" target="_blank" href="https://crowdin.com/project/kernelsu-next"><img src="https://badges.crowdin.net/kernelsu-next/localized.svg"></a>
   </p>
 </div>
 
@@ -37,7 +37,7 @@
 
 ## ✅ Совместимость
 
-Wild KSU поддерживает ядра Android версий **от 4.4 до 6.6**.
+KernelSU Next поддерживает ядра Android версий **от 4.4 до 6.6**.
 
 | Версия ядра          | Примечания по поддержке                                                                  |
 |----------------------|------------------------------------------------------------------------------------------|
@@ -47,14 +47,11 @@ Wild KSU поддерживает ядра Android версий **от 4.4 до 
 
 **Поддерживаемые архитектуры:** `arm64-v8a`, `armeabi-v7a`, `x86_64`
 
-> [!CAUTION]
-> В последних версиях ядра реализовано критическое изменение, из-за которого Wild KSU перестает работать и может вызвать панику ядра (kernel panic) на `x86_64`! Дополнительную информацию смотрите на сайте!
-
 ---
 
 ## 📦 Установка
 
-Пожалуйста, ознакомьтесь с [руководством по установке](https://wild-ksu.github.io/webpage/pages/installation.html) для получения инструкций по настройке.
+Пожалуйста, ознакомьтесь с [руководством по установке](https://kernelsu-next.github.io/webpage/pages/installation.html) для получения инструкций по настройке.
 
 ---
 
@@ -90,5 +87,5 @@ Wild KSU поддерживает ядра Android версий **от 4.4 до 
 - [Magisk](https://github.com/topjohnwu/Magisk) – Основная реализация root
 - [Genuine](https://github.com/brevent/genuine/) – Проверка подписи APK v2
 - [Diamorphine](https://github.com/m0nad/Diamorphine) – Техники Rootkit
-- [KernelSU](https://github.com/tiann/KernelSU) – Основа для создания Wild KSU
+- [KernelSU](https://github.com/tiann/KernelSU) – Основа для создания KernelSU Next
 - [Magic Mount Port](https://github.com/5ec1cff/KernelSU/blob/main/userspace/ksud/src/magic_mount.rs) – За поддержку Magic Mount
