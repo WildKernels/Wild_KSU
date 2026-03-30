@@ -3,7 +3,7 @@ use clap::Parser;
 use std::path::PathBuf;
 
 use android_logger::Config;
-use log::{LevelFilter, info};
+use log::LevelFilter;
 
 use crate::boot_patch::{BootPatchArgs, BootRestoreArgs};
 use crate::{apk_sign, assets, debug, defs, init_event, ksucalls, module, module_config, utils};
@@ -42,10 +42,7 @@ enum Commands {
         magiskboot: Option<PathBuf>,
     },
 
-    /// Unload Wild KSU kernel module (LKM Only)
-    Unload,
-
-    /// Uninstall Wild KSU modules and itself(LKM Only)
+    /// Uninstall KernelSU Next modules and itself(LKM Only)
     Uninstall {
         /// magiskboot path, if not specified, will search from $PATH
         #[arg(long, default_value = None)]
@@ -552,7 +549,6 @@ pub fn run() -> Result<()> {
             }
         }
         Commands::Install { magiskboot } => utils::install(magiskboot),
-        Commands::Unload => crate::unload::unload(),
         Commands::Uninstall { magiskboot } => utils::uninstall(magiskboot),
         Commands::Sepolicy { command } => match command {
             Sepolicy::Patch { sepolicy } => crate::sepolicy::live_patch(&sepolicy),
@@ -561,10 +557,6 @@ pub fn run() -> Result<()> {
         },
         Commands::LateLoad => crate::late_load::run(),
         Commands::Services => {
-            if ksucalls::get_version() <= 0 {
-                info!("Wild KSU not available, exiting services");
-                std::process::exit(0);
-            }
             init_event::on_services();
             Ok(())
         }

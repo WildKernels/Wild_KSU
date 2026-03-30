@@ -45,8 +45,6 @@ mod sepolicy;
 #[cfg(target_os = "android")]
 mod su;
 #[cfg(target_os = "android")]
-mod unload;
-#[cfg(target_os = "android")]
 mod utils;
 
 fn main() -> anyhow::Result<()> {
