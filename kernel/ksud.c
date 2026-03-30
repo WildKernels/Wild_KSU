@@ -238,7 +238,7 @@ void ksu_handle_execveat_ksud(const char *path, struct user_arg_ptr *argv)
 				init_second_stage_executed);
 			on_post_fs_data();
 			first_zygote = false;
-			ksu_stop_ksud_execve_hook();
+			stop_execve_hook();
 		}
 	}
 }
@@ -449,7 +449,8 @@ bool ksu_is_safe_mode()
 	return false;
 }
 
-void ksu_execve_hook_ksud(const struct pt_regs *regs)
+static long (*orig_sys_execve)(const struct pt_regs *regs);
+static long ksu_sys_execve(const struct pt_regs *regs)
 {
 	const char __user **filename_user = (const char **)&PT_REGS_PARM1(regs);
 	const char __user *const __user *__argv =
@@ -461,7 +462,7 @@ void ksu_execve_hook_ksud(const struct pt_regs *regs)
 	const char __user *fn;
 
 	if (!filename_user)
-		return;
+		goto do_orig;
 
 	addr = untagged_addr((unsigned long)*filename_user);
 	fn = (const char __user *)addr;
@@ -470,10 +471,13 @@ void ksu_execve_hook_ksud(const struct pt_regs *regs)
 	ret = strncpy_from_user(path, fn, 32);
 	if (ret < 0) {
 		pr_err("Access filename failed for execve_handler_pre\n");
-		return;
+		goto do_orig;
 	}
 
 	ksu_handle_execveat_ksud(path, &argv);
+
+do_orig:
+	return orig_sys_execve(regs);
 }
 
 static long (*orig_sys_read)(const struct pt_regs *regs);
@@ -552,6 +556,12 @@ static void stop_init_rc_hook()
 	pr_info("unregister init_rc syscall hook\n");
 }
 
+static void stop_execve_hook()
+{
+	ksu_syscall_table_unhook(__NR_execve);
+	pr_info("unhook sys_execve\n");
+}
+
 static void stop_input_hook()
 {
 	static bool input_hook_stopped = false;
@@ -568,6 +578,7 @@ void ksu_ksud_init()
 {
 	int ret;
 
+	ksu_syscall_table_hook(__NR_execve, ksu_sys_execve, &orig_sys_execve);
 	ksu_syscall_table_hook(__NR_read, ksu_sys_read, &orig_sys_read);
 	ksu_syscall_table_hook(__NR_fstat, ksu_sys_fstat, &orig_sys_fstat);
 
@@ -579,6 +590,7 @@ void ksu_ksud_init()
 
 void ksu_ksud_exit()
 {
+	stop_execve_hook();
 	// TODO:
 	// this should be done before unregister vfs_read_kp
 	// stop_init_rc_hook();
