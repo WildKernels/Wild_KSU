@@ -41,14 +41,9 @@ struct Asset;
 #[folder = "bin/aarch64"]
 struct Asset;
 
-pub fn get_asset_data(name: &str) -> Result<std::borrow::Cow<'static, [u8]>> {
-    let asset = Asset::get(name).ok_or_else(|| anyhow::anyhow!("asset not found: {name}"))?;
-    Ok(asset.data)
-}
-
 pub fn copy_assets_to_file(name: &str, dst: impl AsRef<Path>) -> Result<()> {
-    let data = get_asset_data(name)?;
-    std::fs::write(dst, &*data)?;
+    let asset = Asset::get(name).ok_or_else(|| anyhow::anyhow!("asset not found: {name}"))?;
+    std::fs::write(dst, asset.data)?;
     Ok(())
 }
 

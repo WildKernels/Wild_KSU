@@ -22,7 +22,6 @@
 #include "allowlist.h"
 #include "arch.h"
 #include "klog.h" // IWYU pragma: keep
-#include "ksu.h"
 #include "ksud.h"
 #include "util.h"
 #include "selinux/selinux.h"
@@ -460,10 +459,6 @@ bool ksu_is_safe_mode()
 	if (safe_mode) {
 		// don't need to check again, userspace may call multiple times
 		return true;
-	}
-
-	if (ksu_late_loaded) {
-		return false;
 	}
 
 	// stop hook first!

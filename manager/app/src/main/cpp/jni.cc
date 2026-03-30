@@ -86,12 +86,6 @@ Java_com_twj_wksu_Natives_isLkmMode(JNIEnv *env, jclass clazz) {
 
 extern "C"
 JNIEXPORT jboolean JNICALL
-Java_com_twj_wksu_Natives_isLateLoadMode(JNIEnv *env, jclass clazz) {
-    return is_late_load_mode();
-}
-
-extern "C"
-JNIEXPORT jboolean JNICALL
 Java_com_twj_wksu_Natives_isManager(JNIEnv *env, jclass clazz) {
     return is_manager();
 }

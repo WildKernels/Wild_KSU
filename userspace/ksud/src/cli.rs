@@ -33,10 +33,7 @@ enum Commands {
     /// Trigger `boot-complete` event
     BootCompleted,
 
-    /// Load kernelsu.ko and execute late-load stage scripts
-    LateLoad,
-
-    /// Install Wild KSU userspace component to system
+    /// Install KernelSU Next userspace component to system
     Install {
         #[arg(long, default_value = None)]
         magiskboot: Option<PathBuf>,
@@ -530,7 +527,6 @@ pub fn run() -> Result<()> {
             Sepolicy::Apply { file } => crate::sepolicy::apply_file(file),
             Sepolicy::Check { sepolicy } => crate::sepolicy::check_rule(&sepolicy),
         },
-        Commands::LateLoad => crate::late_load::run(),
         Commands::Services => {
             init_event::on_services();
             Ok(())
