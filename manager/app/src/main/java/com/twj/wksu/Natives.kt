@@ -20,7 +20,8 @@ object Natives {
     // 32310: new get_allow_list ioctl
     // 33070: SET_SEPOLICY ioctl
     // 33075: add set_init_pgrp ioctl
-    const val MINIMAL_SUPPORTED_KERNEL = 33075
+    // 33103: Revert "manager / userspace: Add soft reboot (setprop; zygote)" [1st stage revert]
+    const val MINIMAL_SUPPORTED_KERNEL = 33103
 
     const val KERNEL_SU_DOMAIN = "u:r:su:s0"
 
