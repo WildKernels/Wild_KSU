@@ -29,8 +29,7 @@ impl std::error::Error for WaitTimeoutError {}
     name = "resetprop",
     version,
     about = "Magisk-compatible system property tool",
-    disable_help_subcommand = true,
-    after_help = "Arguments:\n  NAME   Property name.\n  VALUE  Property value (for set or wait-for-value)."
+    disable_help_subcommand = true
 )]
 #[allow(clippy::struct_excessive_bools)]
 struct Args {
@@ -75,23 +74,11 @@ struct Args {
     #[arg(short = 'Z')]
     show_context: bool,
 
-    #[arg(
-        allow_hyphen_values = true,
-        trailing_var_arg = true,
-        num_args = 0..=2,
-        hide = true,
-    )]
-    arguments: Vec<String>,
-}
+    /// Property name.
+    name: Option<String>,
 
-impl Args {
-    fn name(&self) -> Option<&String> {
-        self.arguments.first()
-    }
-
-    fn value(&self) -> Option<&String> {
-        self.arguments.get(1)
-    }
+    /// Property value (for set or wait-for-value).
+    value: Option<String>,
 }
 
 pub fn resetprop_main(args: &[String]) -> ! {
@@ -146,10 +133,13 @@ fn run_from_args(args: &[String]) -> Result<()> {
 
     // -w: wait mode
     if cli.wait {
-        let name = cli.name().context("--wait requires a property name")?;
+        let name = cli
+            .name
+            .as_deref()
+            .context("--wait requires a property name")?;
         let timeout = cli.timeout.map(Duration::from_secs_f64);
         let ok = rp
-            .wait(name, cli.value().map(std::string::String::as_str), timeout)
+            .wait(name, cli.value.as_deref(), timeout)
             .context("wait failed")?;
         if !ok {
             return Err(WaitTimeoutError {
@@ -163,7 +153,7 @@ fn run_from_args(args: &[String]) -> Result<()> {
     // -c: compact property area memory
     // When a positional argument is given, treat it as a SELinux context name.
     if cli.compact {
-        let context = cli.name().map(std::string::String::as_str);
+        let context = cli.name.as_deref();
         let compacted = sys_prop::compact(context).context("compact failed")?;
         if !compacted {
             bail!("nothing to compact");
@@ -182,7 +172,10 @@ fn run_from_args(args: &[String]) -> Result<()> {
 
     // -d: delete
     if cli.delete {
-        let name = cli.name().context("--delete requires a property name")?;
+        let name = cli
+            .name
+            .as_deref()
+            .context("--delete requires a property name")?;
         let deleted = rp.delete(name).context("delete failed")?;
         if !deleted {
             bail!("{name} not found");
@@ -190,10 +183,7 @@ fn run_from_args(args: &[String]) -> Result<()> {
         return Ok(());
     }
 
-    let name = cli.name();
-    let value = cli.value();
-
-    match (name, value) {
+    match (&cli.name, &cli.value) {
         // resetprop name value (set)
         (Some(name), Some(value)) => {
             rp.set(name, value)
