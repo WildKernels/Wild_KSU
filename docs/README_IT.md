@@ -20,7 +20,7 @@ Una soluzione root basata sul kernel per dispositivi Android.
 ## Stato compatibilità
 
 Wild KSU supporta ufficialmente la maggior parte dei kernel Android dalla versione 4.4 alla 6.6.
- - I kernel GKI 2.0 (5.10+) possono eseguire immagini precostruite e LKM/KMI.
+ - I kernel GKI 2.0 (5.10+) possono eseguire immagini precostruite e GKI.
  - I kernel GKI 1.0 (4.19 - 5.4) devono essere ricostruiti con il driver KernelSU.
  - Anche i kernel EOL (<4.14) devono essere ricostruiti con il driver KernelSU (la versione 3.18+ è sperimentale e potrebbe richiedere alcuni backport di funzioni).
 

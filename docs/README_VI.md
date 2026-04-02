@@ -20,7 +20,7 @@ Một giải pháp root từ nhân linux dành cho các thiết bị chạy Andr
 ## Danh sách tương thích
 
 Wild KSU hỗ trợ chính thức các kernel Android từ phiên bản 4.4 đến 6.6
- - GKI 2.0 (5.10+) kernels có thể cài đặt qua những .img/.zip đã được build sẵn và LKM/KMI hoặc tự vá qua manager (nếu được)
+ - GKI 2.0 (5.10+) kernels có thể cài đặt qua những .img/.zip đã được build sẵn và GKI hoặc tự vá qua manager (nếu được)
  - GKI 1.0 (4.19 - 5.4) kernels cần dược build lại với các nhân Wild KSU
  - EOL (<4.14) kernels cần dược build lại với các nhân Wild KSU (các kernels 3.18+ đang dược thử nghiệm và có thể cần backports 1 vài thứ ).
 

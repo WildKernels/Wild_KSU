@@ -41,7 +41,7 @@ Wild KSU, **4.4 ile 6.6** arasındaki Android çekirdeklerini destekler.
 
 | Çekirdek Sürümü      | Destek Notları                                                      |
 |----------------------|---------------------------------------------------------------------|
-| 5.10+ (GKI 2.0)      | Hazır imajlar ve LKM/KMI desteği                                    |
+| 5.10+ (GKI 2.0)      | Hazır imajlar ve GKI desteği                                    |
 | 4.19 – 5.4 (GKI 1.0) | KernelSU sürücüsünün çekirdeğe gömülü olması gerekir                |
 | < 4.14 (EOL)         | KernelSU sürücüsü gerekir (3.18+ deneysel olup yama gerektirebilir) |
 

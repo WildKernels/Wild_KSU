@@ -41,7 +41,7 @@ O Wild KSU oferece suporte a kernels Android **4.4 até 6.6**.
 
 | Versão do kernel     | Notas de suporte                                                              |
 |----------------------|-------------------------------------------------------------------------------|
-| 5.10+ (GKI 2.0)      | Suporta imagens pré-compiladas e LKM/KMI                                      |
+| 5.10+ (GKI 2.0)      | Suporta imagens pré-compiladas e GKI                                      |
 | 4.19 – 5.4 (GKI 1.0) | Requer driver do KernelSU integrado                                           |
 | < 4.14 (EOL)         | Requer driver do KernelSU (3.18+ é experimental e pode precisar de backports) |
 

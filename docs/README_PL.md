@@ -41,7 +41,7 @@ Wild KSU obsługuje jądra Androida od wersji **4.4 do 6.6**:
 
 | Wersja jądra         | Informacje techniczne                                                                     |
 |----------------------|-------------------------------------------------------------------------------------------|
-| 5.10+ (GKI 2.0)      | Obsługuje wstępnie skompilowane obrazy i LKM/KMI                                          |
+| 5.10+ (GKI 2.0)      | Obsługuje wstępnie skompilowane obrazy i GKI                                          |
 | 4.19 – 5.4 (GKI 1.0) | Wymaga wbudowania sterownika KernelSU                                                     |
 | < 4.14 (EOL)         | Wymaga sterownika KernelSU (obsługa 3.18+ jest eksperymentalna i może wymagać backportów) |
 
