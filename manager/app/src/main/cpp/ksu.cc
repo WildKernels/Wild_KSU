@@ -98,22 +98,6 @@ bool is_safe_mode() {
     return cmd.in_safe_mode;
 }
 
-bool is_lkm_mode() {
-    auto info = get_info();
-    if (info.version > 0) {
-        return (info.flags & KSU_GET_INFO_FLAG_LKM) != 0;
-    }
-    return (legacy_get_info().second & KSU_GET_INFO_FLAG_LKM) != 0;
-}
-
-bool is_late_load_mode() {
-    auto info = get_info();
-    if (info.version > 0) {
-        return (info.flags & KSU_GET_INFO_FLAG_LATE_LOAD) != 0;
-    }
-    return false;
-}
-
 bool is_manager() {
     auto info = get_info();
     if (info.version > 0) {

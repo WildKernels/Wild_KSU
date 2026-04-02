@@ -58,7 +58,7 @@ pub fn validate_module_id(module_id: &str) -> Result<()> {
 
 /// Get common environment variables for script execution
 pub fn get_common_script_envs() -> Vec<(&'static str, String)> {
-    let mut envs = vec![
+    let envs = vec![
         ("ASH_STANDALONE", "1".to_string()),
         ("KSU", "true".to_string()),
         ("KSU_KERNEL_VER_CODE", ksucalls::get_version().to_string()),
@@ -73,10 +73,6 @@ pub fn get_common_script_envs() -> Vec<(&'static str, String)> {
             ),
         ),
     ];
-
-    if ksucalls::is_late_load() {
-        envs.push(("KSU_LATE_LOAD", "1".to_string()));
-    }
 
     envs
 }
@@ -618,11 +614,6 @@ pub fn disable_module(id: &str) -> Result<()> {
 
 pub fn disable_all_modules() -> Result<()> {
     mark_all_modules(defs::DISABLE_FILE_NAME)
-}
-
-pub fn uninstall_all_modules() -> Result<()> {
-    info!("Uninstalling all modules");
-    mark_all_modules(defs::REMOVE_FILE_NAME)
 }
 
 fn mark_all_modules(flag_file: &str) -> Result<()> {

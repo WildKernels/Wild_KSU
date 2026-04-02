@@ -9,18 +9,15 @@ use std::{
         Write,
     },
     path::Path,
-    process::Command,
 };
 
-use crate::{assets, boot_patch, defs, ksucalls, module, restorecon};
+use crate::{assets, defs, ksucalls, restorecon};
 #[allow(unused_imports)]
 use std::fs::{Permissions, set_permissions};
 #[cfg(unix)]
 use std::os::unix::prelude::PermissionsExt;
 
 use std::path::PathBuf;
-
-use crate::boot_patch::BootRestoreArgs;
 
 use rustix::{
     process,
@@ -206,34 +203,6 @@ pub fn install(magiskboot: Option<PathBuf>) -> Result<()> {
         let _ = std::fs::copy(magiskboot, defs::MAGISKBOOT_PATH);
     }
 
-    Ok(())
-}
-
-pub fn uninstall(magiskboot_path: Option<PathBuf>) -> Result<()> {
-    if Path::new(defs::MODULE_DIR).exists() {
-        println!("- Uninstall modules..");
-        module::uninstall_all_modules()?;
-        module::prune_modules()?;
-    }
-    println!("- Removing directories..");
-    std::fs::remove_dir_all(defs::WORKING_DIR).ok();
-    std::fs::remove_file(defs::DAEMON_PATH).ok();
-    std::fs::remove_dir_all(defs::MODULE_DIR).ok();
-    println!("- Restore boot image..");
-    boot_patch::restore(BootRestoreArgs {
-        boot: None,
-        flash: true,
-        magiskboot: magiskboot_path,
-        out: None,
-        out_name: None,
-    })?;
-    println!("- Uninstall Wild KSU manager..");
-    Command::new("pm")
-        .args(["uninstall", "com.twj.wksu"])
-        .spawn()?;
-    println!("- Rebooting in 5 seconds..");
-    std::thread::sleep(std::time::Duration::from_secs(5));
-    Command::new("reboot").spawn()?;
     Ok(())
 }
 

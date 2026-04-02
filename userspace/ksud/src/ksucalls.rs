@@ -7,7 +7,6 @@ use std::sync::OnceLock;
 // Event constants
 const EVENT_POST_FS_DATA: u32 = 1;
 const EVENT_BOOT_COMPLETED: u32 = 2;
-const EVENT_MODULE_MOUNTED: u32 = 3;
 
 const K: u32 = b'K' as u32;
 const KSU_IOCTL_GRANT_ROOT: i32 = _IO(K, 1);
@@ -22,9 +21,6 @@ const KSU_IOCTL_MANAGE_MARK: i32 = _IOWR::<()>(K, 16);
 const KSU_IOCTL_NUKE_EXT4_SYSFS: i32 = _IOW::<()>(K, 17);
 const KSU_IOCTL_ADD_TRY_UMOUNT: i32 = _IOW::<()>(K, 18);
 const KSU_IOCTL_SET_INIT_PGRP: i32 = _IO(K, 19);
-
-// Keep in sync with kernel/supercalls.h.
-const KSU_GET_INFO_FLAG_LATE_LOAD: u32 = 1 << 2;
 
 #[repr(C)]
 #[derive(Clone, Copy, Default)]
@@ -184,10 +180,6 @@ pub fn get_version() -> i32 {
     get_info().version as i32
 }
 
-pub fn is_late_load() -> bool {
-    get_info().flags & KSU_GET_INFO_FLAG_LATE_LOAD != 0
-}
-
 pub fn grant_root() -> std::io::Result<()> {
     ksuctl(KSU_IOCTL_GRANT_ROOT, std::ptr::null_mut::<u8>())?;
     Ok(())
@@ -204,10 +196,6 @@ pub fn report_post_fs_data() {
 
 pub fn report_boot_complete() {
     report_event(EVENT_BOOT_COMPLETED);
-}
-
-pub fn report_module_mounted() {
-    report_event(EVENT_MODULE_MOUNTED);
 }
 
 pub fn check_kernel_safemode() -> bool {

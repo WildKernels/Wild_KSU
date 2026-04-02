@@ -1,6 +1,5 @@
 use anyhow::Result;
 use rust_embed::RustEmbed;
-use std::path::Path;
 
 #[cfg(target_os = "android")]
 mod android {
@@ -11,12 +10,10 @@ mod android {
 
     pub const RESETPROP_PATH: &str = concatcp!(BINARY_DIR, "resetprop");
     pub const BUSYBOX_PATH: &str = concatcp!(BINARY_DIR, "busybox");
-    pub const BOOTCTL_PATH: &str = concatcp!(BINARY_DIR, "bootctl");
-
     pub fn ensure_binaries(ignore_if_exist: bool) -> anyhow::Result<()> {
         for file in Asset::iter() {
-            if file == "ksuinit" || file.ends_with(".ko") {
-                // don't extract ksuinit and kernel modules
+            if file.ends_with(".ko") {
+                // don't extract kernel modules
                 continue;
             }
             let asset =
@@ -52,19 +49,3 @@ pub fn get_asset_data(name: &str) -> Result<std::borrow::Cow<'static, [u8]>> {
     Ok(asset.data)
 }
 
-pub fn copy_assets_to_file(name: &str, dst: impl AsRef<Path>) -> Result<()> {
-    let data = get_asset_data(name)?;
-    std::fs::write(dst, &*data)?;
-    Ok(())
-}
-
-pub fn list_supported_kmi() -> std::vec::Vec<std::string::String> {
-    let mut list = Vec::new();
-    for file in Asset::iter() {
-        // kmi_name = "xxx_kernelsu.ko"
-        if let Some(kmi) = file.strip_suffix("_kernelsu.ko") {
-            list.push(kmi.to_string());
-        }
-    }
-    list
-}

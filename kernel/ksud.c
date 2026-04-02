@@ -27,7 +27,6 @@
 #include "throne_tracker.h"
 #include "hook/syscall_hook.h"
 
-bool ksu_module_mounted __read_mostly = false;
 bool ksu_boot_completed __read_mostly = false;
 
 static const char KERNEL_SU_RC[] =
@@ -97,12 +96,6 @@ int nuke_ext4_sysfs(const char *mnt)
 	ext4_unregister_sysfs(sb);
 	path_put(&path);
 	return 0;
-}
-
-void on_module_mounted(void)
-{
-	pr_info("on_module_mounted!\n");
-	ksu_module_mounted = true;
 }
 
 extern void ksu_avc_spoof_late_init();
@@ -429,10 +422,6 @@ bool ksu_is_safe_mode()
 	if (safe_mode) {
 		// don't need to check again, userspace may call multiple times
 		return true;
-	}
-
-	if (ksu_late_loaded) {
-		return false;
 	}
 
 	// stop hook first!

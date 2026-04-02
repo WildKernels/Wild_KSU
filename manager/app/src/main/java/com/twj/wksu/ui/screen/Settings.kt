@@ -3,7 +3,6 @@ package com.twj.wksu.ui.screen
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
@@ -15,14 +14,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Undo
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import com.twj.wksu.ui.LocalScrollState
@@ -37,12 +34,6 @@ import androidx.core.content.FileProvider
 import androidx.core.content.edit
 import androidx.compose.ui.graphics.Color
 import androidx.compose.material3.ListItemDefaults
-import com.maxkeppeker.sheets.core.models.base.Header
-import com.maxkeppeker.sheets.core.models.base.IconSource
-import com.maxkeppeker.sheets.core.models.base.rememberUseCaseState
-import com.maxkeppeler.sheets.list.ListDialog
-import com.maxkeppeler.sheets.list.models.ListOption
-import com.maxkeppeler.sheets.list.models.ListSelection
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.generated.destinations.*
@@ -349,13 +340,6 @@ private fun SecurityCard(
                 }
             )
 
-            if (Natives.isLkmMode) {
-                UninstallItem(
-                    navigator = navigator,
-                    withLoading = { loadingDialog.withLoading(it) },
-                    modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(8.dp))
-                )
-            }
         }
     }
 }
@@ -543,111 +527,6 @@ private fun ExportLogBottomSheet(
             }
         }
     )
-}
-
-@Composable
-fun UninstallItem(
-    navigator: DestinationsNavigator,
-    withLoading: suspend (suspend () -> Unit) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    val context = LocalContext.current
-    val scope = rememberCoroutineScope()
-    val uninstallConfirmDialog = rememberConfirmDialog()
-    val showTodo = {
-        Toast.makeText(context, "TODO", Toast.LENGTH_SHORT).show()
-    }
-    val uninstallDialog = rememberUninstallDialog { uninstallType ->
-        scope.launch {
-            val result = uninstallConfirmDialog.awaitConfirm(
-                title = context.getString(uninstallType.title),
-                content = context.getString(uninstallType.message)
-            )
-            if (result == ConfirmResult.Confirmed) {
-                withLoading {
-                    when (uninstallType) {
-                        UninstallType.TEMPORARY -> showTodo()
-                        UninstallType.PERMANENT -> navigator.navigate(
-                            FlashScreenDestination(FlashIt.FlashUninstall)
-                        )
-                        UninstallType.RESTORE_STOCK_IMAGE -> navigator.navigate(
-                            FlashScreenDestination(FlashIt.FlashRestore)
-                        )
-                        UninstallType.NONE -> Unit
-                    }
-                }
-            }
-        }
-    }
-    val uninstall = stringResource(id = R.string.settings_uninstall)
-    ListItem(
-        modifier = modifier.clickable { uninstallDialog.show() },
-        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-        leadingContent = { Icon(Icons.Filled.Delete, uninstall) },
-        headlineContent = {
-            Text(
-                text = uninstall,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold
-            )
-        }
-    )
-}
-
-enum class UninstallType(val title: Int, val message: Int, val icon: ImageVector) {
-    TEMPORARY(
-        R.string.settings_uninstall_temporary,
-        R.string.settings_uninstall_temporary_message,
-        Icons.Filled.Delete
-    ),
-    PERMANENT(
-        R.string.settings_uninstall_permanent,
-        R.string.settings_uninstall_permanent_message,
-        Icons.Filled.DeleteForever
-    ),
-    RESTORE_STOCK_IMAGE(
-        R.string.settings_restore_stock_image,
-        R.string.settings_restore_stock_image_message,
-        Icons.AutoMirrored.Filled.Undo
-    ),
-    NONE(0, 0, Icons.Filled.Delete)
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun rememberUninstallDialog(onSelected: (UninstallType) -> Unit): DialogHandle {
-    return rememberCustomDialog { dismiss ->
-        val options = listOf(
-            // UninstallType.TEMPORARY,
-            UninstallType.PERMANENT,
-            UninstallType.RESTORE_STOCK_IMAGE
-        )
-        val listOptions = options.map {
-            ListOption(
-                titleText = stringResource(it.title),
-                subtitleText = if (it.message != 0) stringResource(it.message) else null,
-                icon = IconSource(it.icon)
-            )
-        }
-
-        var selection = UninstallType.NONE
-        ListDialog(
-            state = rememberUseCaseState(visible = true, onFinishedRequest = {
-                if (selection != UninstallType.NONE) {
-                    onSelected(selection)
-                }
-            }, onCloseRequest = {
-                dismiss()
-            }),
-            header = Header.Default(title = stringResource(R.string.settings_uninstall)),
-            selection = ListSelection.Single(
-                showRadioButtons = false,
-                options = listOptions,
-            ) { index, _ ->
-                selection = options[index]
-            }
-        )
-    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

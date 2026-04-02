@@ -12,7 +12,6 @@
 
 mod apk_sign;
 mod assets;
-mod boot_patch;
 #[cfg(target_os = "android")]
 mod cli;
 #[cfg(not(target_os = "android"))]
@@ -26,8 +25,6 @@ mod feature;
 mod init_event;
 #[cfg(target_os = "android")]
 mod ksucalls;
-#[cfg(target_os = "android")]
-mod late_load;
 #[cfg(target_os = "android")]
 mod metamodule;
 #[cfg(target_os = "android")]
@@ -44,8 +41,6 @@ mod restorecon;
 mod sepolicy;
 #[cfg(target_os = "android")]
 mod su;
-#[cfg(target_os = "android")]
-mod unload;
 #[cfg(target_os = "android")]
 mod utils;
 

@@ -42,12 +42,6 @@ object Natives {
     val isSafeMode: Boolean
         external get
 
-    val isLkmMode: Boolean
-        external get
-
-    val isLateLoadMode: Boolean
-        external get
-
     val isManager: Boolean
         external get
 

@@ -6,7 +6,6 @@ import android.content.ContentResolver
 import android.content.Context
 import android.database.Cursor
 import android.net.Uri
-import android.os.Environment
 import android.os.Parcelable
 import android.os.SystemClock
 import android.provider.OpenableColumns
@@ -298,101 +297,6 @@ fun runModuleAction(
     return result.isSuccess
 }
 
-fun restoreBoot(
-    onStdout: (String) -> Unit, onStderr: (String) -> Unit
-): FlashResult {
-    val magiskboot = File(ksuApp.applicationInfo.nativeLibraryDir, "libmagiskboot.so")
-    val result = flashWithIO("${getKsuDaemonPath()} boot-restore -f --magiskboot $magiskboot", onStdout, onStderr)
-    return FlashResult(result)
-}
-
-fun uninstallPermanently(
-    onStdout: (String) -> Unit, onStderr: (String) -> Unit
-): FlashResult {
-    val magiskboot = File(ksuApp.applicationInfo.nativeLibraryDir, "libmagiskboot.so")
-    val result = flashWithIO("${getKsuDaemonPath()} uninstall --magiskboot $magiskboot", onStdout, onStderr)
-    return FlashResult(result)
-}
-
-@Parcelize
-sealed class LkmSelection : Parcelable {
-    data class LkmUri(val uri: Uri) : LkmSelection()
-    data class KmiString(val value: String) : LkmSelection()
-    data object KmiNone : LkmSelection()
-}
-
-fun installBoot(
-    bootUri: Uri?,
-    lkm: LkmSelection,
-    ota: Boolean,
-    onStdout: (String) -> Unit,
-    onStderr: (String) -> Unit,
-): FlashResult {
-    val resolver = ksuApp.contentResolver
-
-    val bootFile = bootUri?.let { uri ->
-        with(resolver.openInputStream(uri)) {
-            val bootFile = File(ksuApp.cacheDir, "boot.img")
-            bootFile.outputStream().use { output ->
-                this?.copyTo(output)
-            }
-
-            bootFile
-        }
-    }
-
-    val magiskboot = File(ksuApp.applicationInfo.nativeLibraryDir, "libmagiskboot.so")
-    var cmd = "boot-patch --magiskboot ${magiskboot.absolutePath}"
-
-    cmd += if (bootFile == null) {
-        // no boot.img, use -f to force install
-        " -f"
-    } else {
-        " -b ${bootFile.absolutePath}"
-    }
-
-    if (ota) {
-        cmd += " -u"
-    }
-
-    var lkmFile: File? = null
-    when (lkm) {
-        is LkmSelection.LkmUri -> {
-            lkmFile = with(resolver.openInputStream(lkm.uri)) {
-                val file = File(ksuApp.cacheDir, "kernelsu-tmp-lkm.ko")
-                file.outputStream().use { output ->
-                    this?.copyTo(output)
-                }
-
-                file
-            }
-            cmd += " -m ${lkmFile.absolutePath}"
-        }
-
-        is LkmSelection.KmiString -> {
-            cmd += " --kmi ${lkm.value}"
-        }
-
-        LkmSelection.KmiNone -> {
-            // do nothing
-        }
-    }
-
-    // output dir
-    val downloadsDir =
-        Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-    cmd += " -o $downloadsDir"
-
-    val result = flashWithIO("${getKsuDaemonPath()} $cmd", onStdout, onStderr)
-    Log.i("KernelSU", "install boot result: ${result.isSuccess}")
-
-    bootFile?.delete()
-    lkmFile?.delete()
-
-    // if boot uri is empty, it is direct install, when success, we should show reboot button
-    return FlashResult(result, bootUri == null && result.isSuccess)
-}
-
 fun reboot(reason: String = "") {
     if (reason == "soft-reboot") {
         // ksud (userspace)
@@ -474,17 +378,6 @@ fun rootAvailable() = Shell.isAppGrantedRoot() == true
 
 fun isInitBoot(): Boolean {
     return !Os.uname().release.contains("android12-")
-}
-
-suspend fun getCurrentKmi(): String = withContext(Dispatchers.IO) {
-    val cmd = "boot-info current-kmi"
-    ShellUtils.fastCmd("${getKsuDaemonPath()} $cmd")
-}
-
-suspend fun getSupportedKmis(): List<String> = withContext(Dispatchers.IO) {
-    val cmd = "boot-info supported-kmis"
-    val out = Shell.cmd("${getKsuDaemonPath()} $cmd").to(ArrayList(), null).exec().out
-    out.filter { it.isNotBlank() }.map { it.trim() }
 }
 
 suspend fun isAbDevice(): Boolean = withContext(Dispatchers.IO) {

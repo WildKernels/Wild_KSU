@@ -9,14 +9,6 @@ on:
         required: false
         type: string
         default: ubuntu-latest
-      pack_lkm:
-        required: false
-        type: boolean
-        default: true
-      pack_ksuinit:
-        required: false
-        type: boolean
-        default: true
       use_cache:
         required: false
         type: boolean
@@ -32,16 +24,6 @@ jobs:
     - name: Download artifacts
       uses: actions/download-artifact@v6
     
-    - name: Prepare LKM fies
-      if: ${{ inputs.pack_lkm }}
-      run: |
-        cp android*-lkm/*_kernelsu.ko ./userspace/ksud/bin/aarch64/
-    
-    - name: Prepare ksuinit
-      if: ${{ inputs.pack_ksuinit }}
-      run: |
-        mv ksuinit/*/release/ksuinit ./userspace/ksud/bin/aarch64/
-        
     - name: Setup rustup
       run: |
         rustup update stable

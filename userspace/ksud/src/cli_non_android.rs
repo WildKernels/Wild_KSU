@@ -1,7 +1,6 @@
 use anyhow::Result;
 use clap::Parser;
 
-use crate::boot_patch::{BootPatchArgs, BootRestoreArgs};
 use crate::{apk_sign, defs};
 
 /// KernelSU cli for non-android
@@ -14,20 +13,11 @@ struct Args {
 
 #[derive(clap::Subcommand, Debug)]
 enum Commands {
-    /// Patch boot or init_boot images to apply KernelSU
-    BootPatch(BootPatchArgs),
-
-    /// Restore boot or init_boot images patched by KernelSU
-    BootRestore(BootRestoreArgs),
-
     /// Get apk size and hash
     GetSign {
         /// apk path
         apk: String,
     },
-
-    /// show supported kmi versions
-    SupportedKmis,
 }
 
 pub fn run() -> Result<()> {
@@ -44,17 +34,6 @@ pub fn run() -> Result<()> {
             Ok(())
         }
 
-        Commands::BootPatch(boot_patch) => crate::boot_patch::patch(boot_patch),
-
-        Commands::BootRestore(boot_restore) => crate::boot_patch::restore(boot_restore),
-
-        Commands::SupportedKmis => {
-            let kmi = crate::assets::list_supported_kmi();
-            for kmi in &kmi {
-                println!("{kmi}");
-            }
-            Ok(())
-        }
     };
 
     if let Err(e) = &result {

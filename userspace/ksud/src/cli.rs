@@ -5,7 +5,6 @@ use std::path::PathBuf;
 use android_logger::Config;
 use log::{LevelFilter, info};
 
-use crate::boot_patch::{BootPatchArgs, BootRestoreArgs};
 use crate::{apk_sign, assets, debug, defs, init_event, ksucalls, module, module_config, utils};
 
 /// Wild KSU userspace cli
@@ -33,21 +32,8 @@ enum Commands {
     /// Trigger `boot-complete` event
     BootCompleted,
 
-    /// Load kernelsu.ko and execute late-load stage scripts
-    LateLoad,
-
     /// Install Wild KSU userspace component to system
     Install {
-        #[arg(long, default_value = None)]
-        magiskboot: Option<PathBuf>,
-    },
-
-    /// Unload Wild KSU kernel module (LKM Only)
-    Unload,
-
-    /// Uninstall Wild KSU modules and itself(LKM Only)
-    Uninstall {
-        /// magiskboot path, if not specified, will search from $PATH
         #[arg(long, default_value = None)]
         magiskboot: Option<PathBuf>,
     },
@@ -70,17 +56,6 @@ enum Commands {
         command: Feature,
     },
 
-    /// Patch boot or init_boot images to apply Wild KSU
-    BootPatch(BootPatchArgs),
-
-    /// Restore boot or init_boot images patched by KernelSU
-    BootRestore(BootRestoreArgs),
-
-    /// Show boot information
-    BootInfo {
-        #[command(subcommand)]
-        command: BootInfo,
-    },
     /// For developers
     Debug {
         #[command(subcommand)]
@@ -103,31 +78,6 @@ enum Commands {
     /// Emulate soft reboot (ksud; zygote)
     #[command(name = "soft-reboot")]
     SoftReboot,
-}
-
-#[derive(clap::Subcommand, Debug)]
-enum BootInfo {
-    /// show current kmi version
-    CurrentKmi,
-
-    /// show supported kmi versions
-    SupportedKmis,
-
-    /// check if device is A/B capable
-    IsAbDevice,
-
-    /// show auto-selected boot partition name
-    DefaultPartition,
-
-    /// list available partitions for current or OTA toggled slot
-    AvailablePartitions,
-
-    /// show slot suffix for current or OTA toggled slot
-    SlotSuffix {
-        /// toggle to another slot
-        #[arg(short = 'u', long, default_value = "false")]
-        ota: bool,
-    },
 }
 
 #[derive(clap::Subcommand, Debug)]
@@ -401,8 +351,6 @@ enum Kernel {
         #[command(subcommand)]
         command: UmountOp,
     },
-    /// Notify that module is mounted
-    NotifyModuleMounted,
 }
 
 #[derive(clap::Subcommand, Debug)]
@@ -552,14 +500,11 @@ pub fn run() -> Result<()> {
             }
         }
         Commands::Install { magiskboot } => utils::install(magiskboot),
-        Commands::Unload => crate::unload::unload(),
-        Commands::Uninstall { magiskboot } => utils::uninstall(magiskboot),
         Commands::Sepolicy { command } => match command {
             Sepolicy::Patch { sepolicy } => crate::sepolicy::live_patch(&sepolicy),
             Sepolicy::Apply { file } => crate::sepolicy::apply_file(file),
             Sepolicy::Check { sepolicy } => crate::sepolicy::check_rule(&sepolicy),
         },
-        Commands::LateLoad => crate::late_load::run(),
         Commands::Services => {
             if ksucalls::get_version() <= 0 {
                 info!("Wild KSU not available, exiting services");
@@ -622,49 +567,6 @@ pub fn run() -> Result<()> {
             },
         },
 
-        Commands::BootPatch(boot_patch) => crate::boot_patch::patch(boot_patch),
-
-        Commands::BootInfo { command } => match command {
-            BootInfo::CurrentKmi => {
-                let kmi = crate::boot_patch::get_current_kmi()?;
-                println!("{kmi}");
-                // return here to avoid printing the error message
-                return Ok(());
-            }
-            BootInfo::SupportedKmis => {
-                let kmi = crate::assets::list_supported_kmi();
-                for kmi in &kmi {
-                    println!("{kmi}");
-                }
-                return Ok(());
-            }
-            BootInfo::IsAbDevice => {
-                let val = crate::utils::getprop("ro.build.ab_update")
-                    .unwrap_or_else(|| String::from("false"));
-                let is_ab = val.trim().to_lowercase() == "true";
-                println!("{}", if is_ab { "true" } else { "false" });
-                return Ok(());
-            }
-            BootInfo::DefaultPartition => {
-                let kmi = crate::boot_patch::get_current_kmi().unwrap_or_else(|_| String::new());
-                let name = crate::boot_patch::choose_boot_partition(&kmi, false, &None);
-                println!("{name}");
-                return Ok(());
-            }
-            BootInfo::SlotSuffix { ota } => {
-                let suffix = crate::boot_patch::get_slot_suffix(ota);
-                println!("{suffix}");
-                return Ok(());
-            }
-            BootInfo::AvailablePartitions => {
-                let parts = crate::boot_patch::list_available_partitions();
-                for p in &parts {
-                    println!("{p}");
-                }
-                return Ok(());
-            }
-        },
-        Commands::BootRestore(boot_restore) => crate::boot_patch::restore(boot_restore),
         Commands::Resetprop { args } => {
             let mut full_args = vec!["resetprop".to_string()];
             full_args.extend(args);
@@ -679,10 +581,6 @@ pub fn run() -> Result<()> {
                 UmountOp::Del { mnt } => ksucalls::umount_list_del(&mnt),
                 UmountOp::Wipe => ksucalls::umount_list_wipe().map_err(Into::into),
             },
-            Kernel::NotifyModuleMounted => {
-                ksucalls::report_module_mounted();
-                Ok(())
-            }
         },
     };
 

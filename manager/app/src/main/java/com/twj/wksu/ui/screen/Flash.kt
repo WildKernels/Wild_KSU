@@ -278,71 +278,6 @@ fun FlashScreen(
                 )
             }
 
-            if (flashIt is FlashIt.FlashBoot && (flashing == FlashingStatus.SUCCESS || flashing == FlashingStatus.FAILED)) {
-                val isLocalPatch = flashIt.boot != null && !flashIt.ota
-                val isDirectOrOta = flashIt.boot == null || flashIt.ota
-
-                if (flashing == FlashingStatus.FAILED) {
-                    // Always show close on failure
-                    ExtendedFloatingActionButton(
-                        text = { Text(text = stringResource(R.string.close)) },
-                        icon = { Icon(Icons.Filled.Close, contentDescription = null) },
-                        onClick = {
-                            navigator.popBackStack()
-                        }
-                    )
-                } else if (flashing == FlashingStatus.SUCCESS) {
-                    if (isLocalPatch) {
-                        // Local patching: show only Close
-                        ExtendedFloatingActionButton(
-                            text = { Text(text = stringResource(R.string.close)) },
-                            icon = { Icon(Icons.Filled.Close, contentDescription = null) },
-                            onClick = {
-                                navigator.popBackStack()
-                            }
-                        )
-                    } else if (isDirectOrOta) {
-                        // Direct install or OTA inactive slot: show only Reboot
-                        ExtendedFloatingActionButton(
-                            onClick = {
-                                scope.launch {
-                                    withContext(Dispatchers.IO) {
-                                        reboot()
-                                    }
-                                }
-                            },
-                            icon = { Icon(Icons.Filled.Refresh, contentDescription = stringResource(R.string.reboot)) },
-                            text = { Text(text = stringResource(R.string.reboot)) }
-                        )
-                    }
-                }
-            }
-
-            if ((flashIt is FlashIt.FlashUninstall || flashIt is FlashIt.FlashRestore) && (flashing == FlashingStatus.SUCCESS || flashing == FlashingStatus.FAILED)) {
-                if (flashing == FlashingStatus.SUCCESS) {
-                    // Show reboot button on successful uninstall or restore
-                    ExtendedFloatingActionButton(
-                        onClick = {
-                            scope.launch {
-                                withContext(Dispatchers.IO) {
-                                    reboot()
-                                }
-                            }
-                        },
-                        icon = { Icon(Icons.Filled.Refresh, contentDescription = stringResource(R.string.reboot)) },
-                        text = { Text(text = stringResource(R.string.reboot)) }
-                    )
-                } else {
-                    // Show close button on failure
-                    ExtendedFloatingActionButton(
-                        text = { Text(text = stringResource(R.string.close)) },
-                        icon = { Icon(Icons.Filled.Close, contentDescription = null) },
-                        onClick = {
-                            navigator.popBackStack()
-                        }
-                    )
-                }
-            }
         },
         contentWindowInsets = WindowInsets.safeDrawing,
         snackbarHost = { SnackbarHost(hostState = snackBarHost) }
@@ -386,16 +321,9 @@ fun Uri.getFileName(context: Context): String {
 
 @Parcelize
 sealed class FlashIt : Parcelable {
-    data class FlashBoot(val boot: Uri? = null, val lkm: LkmSelection, val ota: Boolean) :
-        FlashIt()
-
     data class FlashModules(val uris: List<Uri>) : FlashIt()
 
     data class FlashAnyKernel(val uri: Uri) : FlashIt()
-
-    data object FlashRestore : FlashIt()
-
-    data object FlashUninstall : FlashIt()
 }
 
 fun flashIt(
@@ -404,14 +332,6 @@ fun flashIt(
     onStderr: (String) -> Unit
 ): FlashResult {
     return when (flashIt) {
-        is FlashIt.FlashBoot -> installBoot(
-            flashIt.boot,
-            flashIt.lkm,
-            flashIt.ota,
-            onStdout,
-            onStderr
-        )
-
         is FlashIt.FlashAnyKernel -> flashAnyKernelZip(
             flashIt.uri,
             onStdout,
@@ -421,10 +341,6 @@ fun flashIt(
         is FlashIt.FlashModules -> {
             flashModulesSequentially(flashIt.uris, onStdout, onStderr)
         }
-
-        FlashIt.FlashRestore -> restoreBoot(onStdout, onStderr)
-
-        FlashIt.FlashUninstall -> uninstallPermanently(onStdout, onStderr)
     }
 }
 

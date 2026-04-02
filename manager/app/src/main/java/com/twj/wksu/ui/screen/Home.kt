@@ -146,11 +146,7 @@ fun HomeScreen(navigator: DestinationsNavigator) {
                 .padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            val lkmMode = ksuVersion?.let {
-                Natives.isLkmMode
-            }
-
-            StatusCard(kernelVersion, ksuVersion, lkmMode, ksuVersionTag = ksuVersionTag) {
+            StatusCard(kernelVersion, ksuVersion, ksuVersionTag = ksuVersionTag) {
                 navigator.navigate(InstallScreenDestination)
             }
 
@@ -705,7 +701,6 @@ private fun TopBar(
 private fun StatusCard(
     kernelVersion: KernelVersion,
     ksuVersion: Int?,
-    lkmMode: Boolean?,
     moduleUpdateCount: Int = 0,
     ksuVersionTag: String? = null,
     onClickInstall: () -> Unit = {}
@@ -730,10 +725,7 @@ private fun StatusCard(
                 .padding(24.dp), verticalAlignment = Alignment.CenterVertically) {
             when {
                 ksuVersion != null -> {
-                    val workingMode = if (lkmMode == true || lkmMode == false) {
-                        val mode = if (lkmMode == true) "LKM" else "BUILT-IN"
-                        "$mode (" + kernelVersion.getKernelType() + ")"
-                    } else kernelVersion.getKernelType()
+                    val workingMode = kernelVersion.getKernelType()
 
                     Icon(
                         imageVector = Icons.Filled.Mood,
@@ -799,28 +791,6 @@ private fun StatusCard(
                                             },
                                             style = LabelItemDefaults.style.copy(
                                                 containerColor = MaterialTheme.colorScheme.tertiaryContainer
-                                            )
-                                        )
-                                    }
-                                    if (Natives.isLateLoadMode) {
-                                        LabelItem(
-                                            icon = {
-                                                Icon(
-                                                    imageVector = Icons.Filled.Warning,
-                                                    tint = MaterialTheme.colorScheme.onErrorContainer,
-                                                    contentDescription = null
-                                                )
-                                            },
-                                            text = {
-                                                Text(
-                                                    text = stringResource(R.string.jailbreak_mode),
-                                                    style = labelStyle.textStyle.copy(
-                                                        color = MaterialTheme.colorScheme.onErrorContainer,
-                                                    )
-                                                )
-                                            },
-                                            style = LabelItemDefaults.style.copy(
-                                                containerColor = MaterialTheme.colorScheme.errorContainer
                                             )
                                         )
                                     }
@@ -1183,10 +1153,10 @@ fun getManagerVersion(context: Context): Pair<String, Long> {
 @Composable
 private fun StatusCardPreview() {
     Column {
-        StatusCard(KernelVersion(5, 10, 101), 1, null)
-        StatusCard(KernelVersion(5, 10, 101), 20000, true)
-        StatusCard(KernelVersion(5, 10, 101), null, true)
-        StatusCard(KernelVersion(4, 10, 101), null, false)
+        StatusCard(KernelVersion(5, 10, 101), 1)
+        StatusCard(KernelVersion(5, 10, 101), 20000)
+        StatusCard(KernelVersion(5, 10, 101), null)
+        StatusCard(KernelVersion(4, 10, 101), null)
     }
 }
 
