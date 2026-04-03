@@ -3,6 +3,7 @@
 
 #include <linux/types.h>
 #include <asm/syscall.h>
+#include <linux/stat.h>
 
 struct filename;
 
@@ -15,6 +16,10 @@ void on_post_fs_data(void);
 void on_boot_completed(void);
 
 bool ksu_is_safe_mode(void);
+void ksu_handle_newfstat_ret(unsigned int *fd, struct stat __user **statbuf_ptr);
+#if defined(__ARCH_WANT_STAT64) || defined(__ARCH_WANT_COMPAT_STAT64)
+void ksu_handle_fstat64_ret(unsigned long *fd, struct stat64 __user **statbuf_ptr);
+#endif
 
 int nuke_ext4_sysfs(const char *mnt);
 

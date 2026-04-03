@@ -7,14 +7,13 @@
 #include <linux/err.h>
 #include <linux/file.h>
 #include <linux/fs.h>
+#include <linux/input.h>
 #include <linux/version.h>
 #include <linux/input-event-codes.h>
-#include <linux/kprobes.h>
 #include <linux/printk.h>
 #include <linux/types.h>
 #include <linux/uaccess.h>
 #include <linux/namei.h>
-#include <linux/workqueue.h>
 #include <linux/uio.h>
 
 #include "manager.h"
@@ -56,8 +55,6 @@ static const char KERNEL_SU_RC[] =
 static void stop_init_rc_hook();
 static void stop_execve_hook();
 static void stop_input_hook();
-
-static struct work_struct stop_input_hook_work;
 
 void on_post_fs_data(void)
 {
@@ -425,35 +422,124 @@ static void ksu_handle_sys_read(unsigned int fd, char __user **buf_ptr,
 	fput(file);
 }
 
-static unsigned int volumedown_pressed_count = 0;
-
-static bool is_volumedown_enough(unsigned int count)
+/* Compatibility stub for legacy manual patch sets. */
+int __maybe_unused ksu_handle_input_handle_event(unsigned int *type,
+						  unsigned int *code,
+						  int *value)
 {
-	return count >= 3;
+	return 0;
 }
 
-int ksu_handle_input_handle_event(unsigned int *type, unsigned int *code,
-					int *value)
+static bool safe_mode_flag = false;
+#define VOLUME_PRESS_THRESHOLD_COUNT 3
+
+static void vol_detector_event(struct input_handle *handle, unsigned int type,
+			       unsigned int code, int value)
 {
-	if (*type == EV_KEY && *code == KEY_VOLUMEDOWN) {
-		int val = *value;
-		pr_info("KEY_VOLUMEDOWN val: %d\n", val);
-		if (val) {
-			// key pressed, count it
-			volumedown_pressed_count += 1;
-			if (is_volumedown_enough(volumedown_pressed_count)) {
-				stop_input_hook();
-			}
-		}
+	static int vol_up_cnt = 0;
+	static int vol_down_cnt = 0;
+
+	if (!value || type != EV_KEY)
+		return;
+
+	if (code == KEY_VOLUMEDOWN) {
+		vol_down_cnt++;
+		pr_info("KEY_VOLUMEDOWN press detected!\n");
 	}
 
+	if (code == KEY_VOLUMEUP) {
+		vol_up_cnt++;
+		pr_info("KEY_VOLUMEUP press detected!\n");
+	}
+
+	pr_info("volume_pressed_count: vol_up: %d vol_down: %d\n",
+		vol_up_cnt, vol_down_cnt);
+
+	if (vol_up_cnt >= VOLUME_PRESS_THRESHOLD_COUNT ||
+	    vol_down_cnt >= VOLUME_PRESS_THRESHOLD_COUNT) {
+		pr_info("volume keys pressed max times, safe mode detected!\n");
+		safe_mode_flag = true;
+	}
+}
+
+static int vol_detector_connect(struct input_handler *handler,
+				 struct input_dev *dev,
+				 const struct input_device_id *id)
+{
+	struct input_handle *handle;
+	int error;
+
+	handle = kzalloc(sizeof(struct input_handle), GFP_KERNEL);
+	if (!handle)
+		return -ENOMEM;
+
+	handle->dev = dev;
+	handle->handler = handler;
+	handle->name = "ksu_handle_input";
+
+	error = input_register_handle(handle);
+	if (error)
+		goto err_free_handle;
+
+	error = input_open_device(handle);
+	if (error)
+		goto err_unregister_handle;
+
+	return 0;
+
+err_unregister_handle:
+	input_unregister_handle(handle);
+err_free_handle:
+	kfree(handle);
+	return error;
+}
+
+static const struct input_device_id vol_detector_ids[] = {
+	{
+		.flags = INPUT_DEVICE_ID_MATCH_EVBIT | INPUT_DEVICE_ID_MATCH_KEYBIT,
+		.evbit = { BIT_MASK(EV_KEY) },
+		.keybit = { [BIT_WORD(KEY_VOLUMEUP)] = BIT_MASK(KEY_VOLUMEUP) },
+	},
+	{
+		.flags = INPUT_DEVICE_ID_MATCH_EVBIT | INPUT_DEVICE_ID_MATCH_KEYBIT,
+		.evbit = { BIT_MASK(EV_KEY) },
+		.keybit = { [BIT_WORD(KEY_VOLUMEDOWN)] = BIT_MASK(KEY_VOLUMEDOWN) },
+	},
+	{}
+};
+
+static void vol_detector_disconnect(struct input_handle *handle)
+{
+	input_close_device(handle);
+	input_unregister_handle(handle);
+	kfree(handle);
+}
+
+static struct input_handler vol_detector_handler = {
+	.event = vol_detector_event,
+	.connect = vol_detector_connect,
+	.disconnect = vol_detector_disconnect,
+	.name = "ksu",
+	.id_table = vol_detector_ids,
+};
+
+static int vol_detector_init(void)
+{
+	pr_info("vol_detector: init\n");
+	return input_register_handler(&vol_detector_handler);
+}
+
+static int vol_detector_exit(void)
+{
+	pr_info("vol_detector: exit\n");
+	input_unregister_handler(&vol_detector_handler);
 	return 0;
 }
 
 bool ksu_is_safe_mode()
 {
-	static bool safe_mode = false;
-	if (safe_mode) {
+	static bool already_checked = false;
+	if (already_checked) {
 		// don't need to check again, userspace may call multiple times
 		return true;
 	}
@@ -461,15 +547,12 @@ bool ksu_is_safe_mode()
 	// stop hook first!
 	stop_input_hook();
 
-	pr_info("volumedown_pressed_count: %d\n", volumedown_pressed_count);
-	if (is_volumedown_enough(volumedown_pressed_count)) {
-		// pressed over 3 times
-		pr_info("KEY_VOLUMEDOWN pressed max times, safe mode detected!\n");
-		safe_mode = true;
-		return true;
-	}
+	if (!safe_mode_flag)
+		return false;
 
-	return false;
+	pr_info("volume keys pressed max times, safe mode detected!\n");
+	already_checked = true;
+	return true;
 }
 
 void ksu_execve_hook_ksud(const struct pt_regs *regs)
@@ -549,29 +632,69 @@ static long ksu_sys_fstat(const struct pt_regs *regs)
 	return ret;
 }
 
-static int input_handle_event_handler_pre(struct kprobe *p,
-						struct pt_regs *regs)
+static void ksu_common_newfstat_ret(unsigned int fd, void __user *statbuf,
+				     bool is_stat64, const char *syscall_name)
 {
-	unsigned int *type = (unsigned int *)&PT_REGS_PARM2(regs);
-	unsigned int *code = (unsigned int *)&PT_REGS_PARM3(regs);
-	int *value = (int *)&PT_REGS_CCALL_PARM4(regs);
-	return ksu_handle_input_handle_event(type, code, value);
-}
+	struct file *file;
+	void __user *st_size_ptr;
+	long size;
+	long new_size;
+	size_t len = sizeof(long);
 
-static struct kprobe input_event_kp = {
-	.symbol_name = "input_event",
-	.pre_handler = input_handle_event_handler_pre,
-};
-
-static bool input_kprobe_registered;
-
-static void do_stop_input_hook(struct work_struct *work)
-{
-	if (!input_kprobe_registered)
+	if (!statbuf)
 		return;
-	unregister_kprobe(&input_event_kp);
-	input_kprobe_registered = false;
+
+	file = fget(fd);
+	if (!file)
+		return;
+
+	if (!is_init_rc(file)) {
+		fput(file);
+		return;
+	}
+	fput(file);
+
+	/* WARNING: this keeps compatibility with legacy behavior for stat64 layouts. */
+	if (is_stat64)
+		st_size_ptr = (char __user *)statbuf + 44;
+	else
+		st_size_ptr = (char __user *)statbuf + offsetof(struct stat, st_size);
+
+	if (copy_from_user_nofault(&size, st_size_ptr, len)) {
+		pr_err("%s: read statbuf failed: 0x%lx\n", syscall_name,
+		       (unsigned long)st_size_ptr);
+		return;
+	}
+
+	new_size = size + ksu_rc_len;
+	pr_info("%s: adding ksu_rc_len: %ld -> %ld\n", syscall_name, size,
+		new_size);
+
+	if (!copy_to_user_nofault(st_size_ptr, &new_size, len))
+		pr_info("%s: added ksu_rc_len\n", syscall_name);
+	else
+		pr_err("%s: add ksu_rc_len failed: 0x%lx\n", syscall_name,
+		       (unsigned long)st_size_ptr);
 }
+
+void ksu_handle_newfstat_ret(unsigned int *fd, struct stat __user **statbuf_ptr)
+{
+	if (!fd || !statbuf_ptr)
+		return;
+
+	ksu_common_newfstat_ret(*fd, *statbuf_ptr, false, "sys_newfstat");
+}
+
+#if defined(__ARCH_WANT_STAT64) || defined(__ARCH_WANT_COMPAT_STAT64)
+void ksu_handle_fstat64_ret(unsigned long *fd, struct stat64 __user **statbuf_ptr)
+{
+	if (!fd || !statbuf_ptr)
+		return;
+
+	ksu_common_newfstat_ret((unsigned int)*fd, *statbuf_ptr, true,
+			       "sys_fstat64");
+}
+#endif
 
 static void stop_init_rc_hook()
 {
@@ -581,24 +704,23 @@ static void stop_init_rc_hook()
 static void stop_input_hook()
 {
 	static bool input_hook_stopped = false;
-	if (!input_kprobe_registered)
+
+	if (input_hook_stopped)
 		return;
-	if (input_hook_stopped) {
-		return;
-	}
+
 	input_hook_stopped = true;
-	bool ret = schedule_work(&stop_input_hook_work);
-	pr_info("unregister input kprobe: %d!\n", ret);
+	pr_info("stop input_hook\n");
+	vol_detector_exit();
 }
 
 // ksud: module support
 void ksu_ksud_init()
 {
-	pr_info("ksud: manual mode runtime hooks disabled\n");
-	INIT_WORK(&stop_input_hook_work, do_stop_input_hook);
+	vol_detector_init();
 }
 
 void ksu_ksud_exit()
 {
+	stop_input_hook();
 	pr_info("ksud: manual mode exit\n");
 }

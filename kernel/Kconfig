@@ -10,14 +10,6 @@ config KSU
 	  Requires CONFIG_EXT4_FS for `ext4_unregister_sysfs`.
 	  Built-in mode only.
 
-config KSU_MANUAL_HOOK
-	bool "KernelSU manual hook mode"
-	depends on KSU
-	default y
-	help
-	  Enable manual hook integration mode.
-	  This mode requires call sites to be added in kernel syscall paths.
-
 config KSU_DEBUG
 	bool "KernelSU debug mode"
 	depends on KSU

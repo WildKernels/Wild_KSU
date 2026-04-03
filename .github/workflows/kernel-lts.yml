@@ -1,0 +1,118 @@
+name: Kernel LTS Status Check
+
+on:
+  workflow_dispatch:
+    inputs:
+      ksu_branch:
+        description: Wild KSU branch/commit/tag to setup
+        required: false
+        default: dev
+  push:
+    branches:
+      - dev
+      - stable
+    paths:
+      - kernel/**
+      - .github/workflows/kernel-lts.yml
+  pull_request:
+    branches:
+      - dev
+      - stable
+    paths:
+      - kernel/**
+      - .github/workflows/kernel-lts.yml
+
+permissions:
+  contents: read
+
+jobs:
+  build-lts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    env:
+      KSU_BRANCH: ${{ inputs.ksu_branch || 'dev' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        branch:
+          - common-android12-5.10-lts
+          - common-android13-5.10-lts
+          - common-android13-5.15-lts
+          - common-android14-5.15-lts
+          - common-android14-6.1-lts
+          - common-android15-6.6-lts
+          - common-android16-6.12-lts
+
+    steps:
+      - name: Checkout Wild KSU
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Free Disk Space
+        uses: endersonmenezes/free-disk-space@v3
+        with:
+          remove_android: true
+          remove_dotnet: true
+          remove_haskell: true
+          remove_tool_cache: true
+          remove_swap: true
+          remove_packages: "azure-cli google-cloud-cli microsoft-edge-stable google-chrome-stable firefox postgresql* temurin-* *llvm* mysql* dotnet-sdk-*"
+          remove_packages_one_command: true
+          remove_folders: "/usr/share/swift /usr/share/miniconda /usr/share/az* /usr/local/lib/node_modules /usr/local/share/chromium /usr/local/share/powershell /usr/local/julia /usr/local/aws-cli /usr/local/aws-sam-cli /usr/share/gradle"
+          rm_cmd: rmz
+          rmz_version: "3.1.1"
+          testing: false
+
+      - name: Install repo tool
+        run: |
+          mkdir -p "$GITHUB_WORKSPACE/bin"
+          curl -L https://storage.googleapis.com/git-repo-downloads/repo -o "$GITHUB_WORKSPACE/bin/repo"
+          chmod +x "$GITHUB_WORKSPACE/bin/repo"
+          echo "$GITHUB_WORKSPACE/bin" >> "$GITHUB_PATH"
+
+      - name: Prepare kernel source
+        run: |
+          set -euxo pipefail
+          mkdir -p "$GITHUB_WORKSPACE/android-kernel"
+          cd "$GITHUB_WORKSPACE/android-kernel"
+          repo init -u https://android.googlesource.com/kernel/manifest -b "${{ matrix.branch }}" --depth=1
+          repo sync -c -j"$(nproc --all)" --fail-fast --no-tags --force-sync --no-clone-bundle
+
+      - name: Setup Wild KSU in source tree
+        run: |
+          set -euxo pipefail
+          cd "$GITHUB_WORKSPACE/android-kernel"
+          curl -LSs "https://raw.githubusercontent.com/WildKernels/Wild_KSU/stable/kernel/setup.sh" | bash -s "$KSU_BRANCH"
+
+      - name: Write KSU fragment
+        run: |
+          cat > "$GITHUB_WORKSPACE/android-kernel/wild_gki.fragment" << 'EOF'
+          CONFIG_KSU=y
+          CONFIG_KSU_MANUAL_HOOK=y
+          EOF
+
+      - name: Build kernel
+        working-directory: ${{ github.workspace }}/android-kernel
+        run: |
+          set -euxo pipefail
+          if [ -f build/build.sh ]; then
+            SKIP_MRPROPER=1 GKI_DEFCONFIG_FRAGMENT="$GITHUB_WORKSPACE/android-kernel/wild_gki.fragment" LTO=thin BUILD_CONFIG=common/build.config.gki.aarch64 build/build.sh
+          else
+            cp "$GITHUB_WORKSPACE/android-kernel/wild_gki.fragment" common/arch/arm64/configs/wild_gki.fragment
+            if [[ "${{ matrix.branch }}" == *android14* ]]; then
+              tools/bazel build --config=fast --lto=thin --defconfig_fragment=//common:arch/arm64/configs/wild_gki.fragment //common:kernel_aarch64_dist
+            else
+              tools/bazel build --config=fast --lto=none --defconfig_fragment=//common:arch/arm64/configs/wild_gki.fragment //common:kernel_aarch64_dist
+            fi
+          fi
+
+      - name: Verify build output
+        run: |
+          OUTDIR=$(echo "${{ matrix.branch }}" | sed 's/^common-//')
+          if [ -f "$GITHUB_WORKSPACE/android-kernel/out/$OUTDIR/dist/Image" ] || [ -f "$GITHUB_WORKSPACE/android-kernel/bazel-bin/common/kernel_aarch64/Image" ]; then
+            echo "Kernel build succeeded for $OUTDIR"
+          else
+            echo "Kernel build output not found for $OUTDIR"
+            exit 1
+          fi
