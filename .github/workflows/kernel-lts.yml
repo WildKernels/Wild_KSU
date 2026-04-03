@@ -40,6 +40,7 @@ jobs:
           - common-android13-5.15-lts
           - common-android14-5.15-lts
           - common-android14-6.1-lts
+          - common-android14-6.1-09-2025
           - common-android15-6.6-lts
           - common-android16-6.12-lts
 
@@ -108,10 +109,51 @@ jobs:
 
       - name: Verify build output
         run: |
-          OUTDIR=$(echo "${{ matrix.branch }}" | sed 's/^common-//')
-          if [ -f "$GITHUB_WORKSPACE/android-kernel/out/$OUTDIR/dist/Image" ] || [ -f "$GITHUB_WORKSPACE/android-kernel/bazel-bin/common/kernel_aarch64/Image" ]; then
-            echo "Kernel build succeeded for $OUTDIR"
+          OUTDIR_FULL=$(echo "${{ matrix.branch }}" | sed 's/^common-//')
+          OUTDIR_BASE=$(echo "$OUTDIR_FULL" | sed 's/-lts$//')
+
+          if [ -f "$GITHUB_WORKSPACE/android-kernel/out/$OUTDIR_FULL/dist/Image" ] || \
+             [ -f "$GITHUB_WORKSPACE/android-kernel/out/$OUTDIR_BASE/dist/Image" ] || \
+             [ -f "$GITHUB_WORKSPACE/android-kernel/bazel-bin/common/kernel_aarch64/Image" ]; then
+            echo "Kernel build succeeded for $OUTDIR_FULL"
           else
-            echo "Kernel build output not found for $OUTDIR"
+            echo "Kernel build output not found for $OUTDIR_FULL or $OUTDIR_BASE"
             exit 1
           fi
+
+      - name: Clone AnyKernel3 (flash test only)
+        if: ${{ matrix.branch == 'common-android14-6.1-09-2025' }}
+        run: |
+          set -euxo pipefail
+          git clone --depth 1 -b gki-2.0 https://github.com/WildKernels/AnyKernel3.git "$GITHUB_WORKSPACE/AnyKernel3"
+
+      - name: Prepare AnyKernel3 Zip (flash test only)
+        if: ${{ matrix.branch == 'common-android14-6.1-09-2025' }}
+        run: |
+          set -euxo pipefail
+          OUTDIR_FULL=$(echo "${{ matrix.branch }}" | sed 's/^common-//')
+          OUTDIR_BASE=$(echo "$OUTDIR_FULL" | sed 's/-lts$//')
+
+          if [ -f "$GITHUB_WORKSPACE/android-kernel/out/$OUTDIR_FULL/dist/Image" ]; then
+            cp "$GITHUB_WORKSPACE/android-kernel/out/$OUTDIR_FULL/dist/Image" "$GITHUB_WORKSPACE/AnyKernel3/Image"
+          elif [ -f "$GITHUB_WORKSPACE/android-kernel/out/$OUTDIR_BASE/dist/Image" ]; then
+            cp "$GITHUB_WORKSPACE/android-kernel/out/$OUTDIR_BASE/dist/Image" "$GITHUB_WORKSPACE/AnyKernel3/Image"
+          elif [ -f "$GITHUB_WORKSPACE/android-kernel/bazel-bin/common/kernel_aarch64/Image" ]; then
+            cp "$GITHUB_WORKSPACE/android-kernel/bazel-bin/common/kernel_aarch64/Image" "$GITHUB_WORKSPACE/AnyKernel3/Image"
+          else
+            echo "Error: Image file not found in any expected location"
+            exit 1
+          fi
+
+          ZIP_NAME="AnyKernel3-${OUTDIR_FULL}.zip"
+          (cd "$GITHUB_WORKSPACE/AnyKernel3" && zip -r9 "$GITHUB_WORKSPACE/$ZIP_NAME" ./* -x .git .gitignore ./*.zip)
+          echo "ZIP_NAME=$ZIP_NAME" >> "$GITHUB_ENV"
+
+      - name: Upload AnyKernel3 Artifact (flash test only)
+        if: ${{ matrix.branch == 'common-android14-6.1-09-2025' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.branch }}-AnyKernel3
+          path: ${{ github.workspace }}/AnyKernel3-*.zip
+          if-no-files-found: error
+          compression-level: 9
