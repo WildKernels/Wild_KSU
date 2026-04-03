@@ -89,7 +89,6 @@ jobs:
         run: |
           cat > "$GITHUB_WORKSPACE/android-kernel/wild_gki.fragment" << 'EOF'
           CONFIG_KSU=y
-          CONFIG_KSU_MANUAL_HOOK=y
           EOF
 
       - name: Build kernel
