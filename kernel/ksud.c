@@ -25,7 +25,7 @@
 #include "ksud.h"
 #include "selinux/selinux.h"
 #include "throne_tracker.h"
-#include "hook/syscall_hook.h"
+#include "sucompat.h"
 
 bool ksu_boot_completed __read_mostly = false;
 
@@ -200,7 +200,8 @@ fail:
 	return false;
 }
 
-void ksu_handle_execveat_ksud(const char *path, struct user_arg_ptr *argv)
+static void ksu_handle_execveat_ksud_path(const char *path,
+					  struct user_arg_ptr *argv)
 {
 	static const char app_process[] = "/system/bin/app_process";
 	static bool first_zygote = true;
@@ -234,6 +235,39 @@ void ksu_handle_execveat_ksud(const char *path, struct user_arg_ptr *argv)
 			ksu_stop_ksud_execve_hook();
 		}
 	}
+}
+
+int ksu_handle_execveat_ksud(int *fd, struct filename **filename_ptr,
+				     void *argv, void *envp, int *flags)
+{
+	struct filename *filename;
+	struct user_arg_ptr argv_ptr = { 0 };
+
+	if (!filename_ptr)
+		return 0;
+
+	filename = *filename_ptr;
+	if (IS_ERR(filename) || !filename->name)
+		return 0;
+
+	if (argv) {
+		argv_ptr.ptr.native = (const char __user *const __user *)argv;
+	}
+
+	ksu_handle_execveat_ksud_path(filename->name, argv ? &argv_ptr : NULL);
+	return 0;
+}
+
+int ksu_handle_execveat(int *fd, struct filename **filename_ptr,
+			      void *argv, void *envp, int *flags)
+{
+	ksu_handle_execveat_ksud(fd, filename_ptr, argv, envp, flags);
+	return ksu_handle_execveat_sucompat(fd, filename_ptr, argv, envp, flags);
+}
+
+void ksu_stop_ksud_execve_hook()
+{
+	pr_info("ksud: manual mode execve hook stop requested\n");
 }
 
 static ssize_t (*orig_read)(struct file *, char __user *, size_t, loff_t *);
@@ -462,7 +496,7 @@ void ksu_execve_hook_ksud(const struct pt_regs *regs)
 		return;
 	}
 
-	ksu_handle_execveat_ksud(path, &argv);
+	ksu_handle_execveat_ksud_path(path, &argv);
 }
 
 static long (*orig_sys_read)(const struct pt_regs *regs);
@@ -529,21 +563,26 @@ static struct kprobe input_event_kp = {
 	.pre_handler = input_handle_event_handler_pre,
 };
 
+static bool input_kprobe_registered;
+
 static void do_stop_input_hook(struct work_struct *work)
 {
+	if (!input_kprobe_registered)
+		return;
 	unregister_kprobe(&input_event_kp);
+	input_kprobe_registered = false;
 }
 
 static void stop_init_rc_hook()
 {
-	ksu_syscall_table_unhook(__NR_read);
-	ksu_syscall_table_unhook(__NR_fstat);
-	pr_info("unregister init_rc syscall hook\n");
+	pr_info("manual mode: init_rc runtime hook disabled\n");
 }
 
 static void stop_input_hook()
 {
 	static bool input_hook_stopped = false;
+	if (!input_kprobe_registered)
+		return;
 	if (input_hook_stopped) {
 		return;
 	}
@@ -555,21 +594,11 @@ static void stop_input_hook()
 // ksud: module support
 void ksu_ksud_init()
 {
-	int ret;
-
-	ksu_syscall_table_hook(__NR_read, ksu_sys_read, &orig_sys_read);
-	ksu_syscall_table_hook(__NR_fstat, ksu_sys_fstat, &orig_sys_fstat);
-
-	ret = register_kprobe(&input_event_kp);
-	pr_info("ksud: input_event_kp: %d\n", ret);
-
+	pr_info("ksud: manual mode runtime hooks disabled\n");
 	INIT_WORK(&stop_input_hook_work, do_stop_input_hook);
 }
 
 void ksu_ksud_exit()
 {
-	// TODO:
-	// this should be done before unregister vfs_read_kp
-	// stop_init_rc_hook();
-	unregister_kprobe(&input_event_kp);
+	pr_info("ksud: manual mode exit\n");
 }

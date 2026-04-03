@@ -155,6 +155,34 @@ int ksu_handle_execve_sucompat(const char __user **filename_user,
     return escape_with_root_profile();
 }
 
+int ksu_handle_execveat_sucompat(int *fd, struct filename **filename_ptr,
+					 void *argv, void *__never_use_envp,
+					 int *__never_use_flags)
+{
+	struct filename *filename;
+	const char su[] = SU_PATH;
+	static const char ksud_path[] = KSUD_PATH;
+
+	if (unlikely(!filename_ptr))
+		return 0;
+
+	if (!ksu_is_allow_uid_for_current(current_uid().val))
+		return 0;
+
+	filename = *filename_ptr;
+	if (IS_ERR(filename))
+		return 0;
+
+	if (likely(memcmp(filename->name, su, sizeof(su))))
+		return 0;
+
+	write_sulog('x');
+	pr_info("do_execveat_common su found\n");
+	memcpy((void *)filename->name, ksud_path, sizeof(ksud_path));
+
+	return escape_with_root_profile();
+}
+
 // sucompat: permitted process can execute 'su' to gain root access.
 void ksu_sucompat_init()
 {

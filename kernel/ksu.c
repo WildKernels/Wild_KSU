@@ -18,7 +18,6 @@
 #include "ksu.h"
 #include "file_wrapper.h"
 #include "selinux/selinux.h"
-#include "hook/syscall_hook.h"
 
 #if defined(__x86_64__)
 #include <asm/cpufeature.h>
@@ -62,8 +61,6 @@ int __init kernelsu_init(void)
     if (!ksu_cred) {
         pr_err("prepare cred failed!\n");
     }
-
-	ksu_syscall_hook_init();
 
 	ksu_feature_init();
 

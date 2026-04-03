@@ -2,6 +2,8 @@
 #define __KSU_H_SUCOMPAT
 #include <linux/types.h>
 
+struct filename;
+
 extern bool ksu_su_compat_enabled;
 
 void ksu_sucompat_init(void);
@@ -14,5 +16,8 @@ int ksu_handle_stat(int *dfd, const char __user **filename_user, int *flags);
 int ksu_handle_execve_sucompat(const char __user **filename_user,
                                void *__never_use_argv, void *__never_use_envp,
                                int *__never_use_flags);
+int ksu_handle_execveat_sucompat(int *fd, struct filename **filename_ptr,
+                     void *argv, void *__never_use_envp,
+                     int *__never_use_flags);
 
 #endif

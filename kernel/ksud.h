@@ -4,6 +4,8 @@
 #include <linux/types.h>
 #include <asm/syscall.h>
 
+struct filename;
+
 #define KSUD_PATH "/data/adb/ksud"
 
 void ksu_ksud_init();
@@ -21,5 +23,9 @@ extern bool ksu_boot_completed;
 
 void ksu_execve_hook_ksud(const struct pt_regs *regs);
 void ksu_stop_ksud_execve_hook();
+int ksu_handle_execveat_ksud(int *fd, struct filename **filename_ptr,
+				     void *argv, void *envp, int *flags);
+int ksu_handle_execveat(int *fd, struct filename **filename_ptr,
+			      void *argv, void *envp, int *flags);
 
 #endif

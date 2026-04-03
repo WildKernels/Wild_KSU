@@ -6,7 +6,6 @@
 #include <linux/file.h>
 #include <linux/fs.h>
 #include <linux/slab.h>
-#include <linux/kprobes.h>
 #include <linux/syscalls.h>
 #include <linux/task_work.h>
 #include <linux/uaccess.h>
@@ -481,7 +480,7 @@ static int do_get_hook_mode(void __user *arg)
 {
 	struct ksu_get_hook_mode_cmd cmd = {0};
 
-	strscpy(cmd.mode, "Kprobes", sizeof(cmd.mode));
+    strscpy(cmd.mode, "Manual", sizeof(cmd.mode));
 
 	if (copy_to_user(arg, &cmd, sizeof(cmd))) {
 		pr_err("get_hook_mode: copy_to_user failed\n");
@@ -850,14 +849,11 @@ static void ksu_install_fd_tw_func(struct callback_head *cb)
 	kfree(tw);
 }
 
-static int reboot_handler_pre(struct kprobe *p, struct pt_regs *regs)
+int ksu_handle_sys_reboot(int magic1, int magic2, unsigned int cmd,
+                  void __user **arg)
 {
-	struct pt_regs *real_regs = PT_REAL_REGS(regs);
-	int magic1 = (int)PT_REGS_PARM1(real_regs);
-	int magic2 = (int)PT_REGS_PARM2(real_regs);
-	unsigned int cmd = (unsigned int)PT_REGS_PARM3(real_regs);
-	unsigned long arg4 = (unsigned long)PT_REGS_SYSCALL_PARM4(real_regs);
-	unsigned long reply = (unsigned long)arg4;
+    unsigned long arg4 = (unsigned long)*arg;
+    u64 reply = (u64)arg4;
 
 	/* Check if this is a request to install KSU fd */
 	if (magic1 == KSU_INSTALL_MAGIC1 && magic2 == KSU_INSTALL_MAGIC2) {
@@ -867,7 +863,7 @@ static int reboot_handler_pre(struct kprobe *p, struct pt_regs *regs)
 		if (!tw)
 			return 0;
 
-		tw->outp = (int __user *)arg4;
+        tw->outp = (int __user *)*arg;
 		tw->cb.func = ksu_install_fd_tw_func;
 
 		if (task_work_add(current, &tw->cb, TWA_RESUME)) {
@@ -896,11 +892,11 @@ static int reboot_handler_pre(struct kprobe *p, struct pt_regs *regs)
 		if (current_uid().val != 0)
 			return 0;
 
-		int ret = send_sulog_dump((void __user *)arg4);
+        int ret = send_sulog_dump((void __user *)*arg);
             if (ret)
                 return 0;
 
-        if (copy_to_user((void __user *)arg4, &reply, sizeof(reply) ))
+        if (copy_to_user((void __user *)*arg, &reply, sizeof(reply) ))
             return 0;
 	}
 
@@ -928,7 +924,7 @@ static int reboot_handler_pre(struct kprobe *p, struct pt_regs *regs)
 		static char original_version_buf[65] = {0};
 
 		// basically void * void __user * void __user *arg
-		void __user **ppptr = (void __user **)arg4;
+        void __user **ppptr = (void __user **)*arg;
 
 		// user pointer storage
 		// init this as zero so this works on 32-on-64 compat (LE)
@@ -985,17 +981,12 @@ static int reboot_handler_pre(struct kprobe *p, struct pt_regs *regs)
 		up_write(&uts_sem);
 
 		// we write our confirmation on **
-		if (copy_to_user((void __user *)arg4, &reply, sizeof(reply)))
+        if (copy_to_user((void __user *)*arg, &reply, sizeof(reply)))
 			return 0;
 	}
 
 	return 0;
 }
-
-static struct kprobe reboot_kp = {
-	.symbol_name = REBOOT_SYMBOL,
-	.pre_handler = reboot_handler_pre,
-};
 
 void ksu_supercalls_init(void)
 {
@@ -1007,12 +998,7 @@ void ksu_supercalls_init(void)
                 ksu_ioctl_handlers[i].cmd);
     }
 
-	int rc = register_kprobe(&reboot_kp);
-	if (rc) {
-		pr_err("reboot kprobe failed: %d\n", rc);
-	} else {
-		pr_info("reboot kprobe registered successfully\n");
-	}
+    pr_info("supercalls: reboot manual hook mode enabled\n");
 
     sulog_init_heap(); // grab heap memory
 }
@@ -1020,8 +1006,6 @@ void ksu_supercalls_init(void)
 void ksu_supercalls_exit(void)
 {
     struct mount_entry *entry, *tmp;
-
-    unregister_kprobe(&reboot_kp);
 
     down_write(&mount_list_lock);
     list_for_each_entry_safe (entry, tmp, &mount_list, list) {
