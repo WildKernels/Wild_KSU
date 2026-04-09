@@ -1,22 +1,7 @@
 
-/* LSM hooks are always built-in when CONFIG_KSU is enabled (ksu.c includes this file). */
-#include <linux/version.h>
-#include <linux/lsm_hooks.h>
-#include <linux/kernel.h>
-#include <linux/uidgid.h>
-
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(6,12,0)
-#include <linux/lsm_id.h>
-static struct lsm_id ksu_lsmid __lsm_ro_after_init = LSM_ID_INIT("ksu");
-#endif
 #define LSM_HOOK_TYPE static int
 
-/* Forward declarations for functions used in hooks */
-void disable_seccomp(void);
-int ksu_install_fd(void);
-int ksu_handle_umount(uid_t old_uid, uid_t new_uid);
-
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 10, 0) || defined(CONFIG_IS_HW_HISI) || \
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 10, 0) || defined(CONFIG_IS_HW_HISI) ||                                     \
     defined(CONFIG_KSU_ALLOWLIST_WORKAROUND)
 LSM_HOOK_TYPE ksu_key_permission(key_ref_t key_ref, const struct cred *cred, unsigned perm)
 {
@@ -25,7 +10,7 @@ LSM_HOOK_TYPE ksu_key_permission(key_ref_t key_ref, const struct cred *cred, uns
     }
 
     if (strcmp(current->comm, "init")) {
-        /* we are only interested in `init` process */
+        // we are only interested in `init` process
         return 0;
     }
     init_session_keyring = cred->session_keyring;
@@ -55,11 +40,13 @@ LSM_HOOK_TYPE ksu_task_fix_setuid(struct cred *new, const struct cred *old, int 
         disable_seccomp();
     }
 
-    /* Handle kernel umount */
+    // Handle kernel umount
     ksu_handle_umount(old_uid, new_uid);
 
     return 0;
 }
+
+#ifdef CONFIG_KSU_LSM_HOOKS
 
 static struct security_hook_list ksu_hooks[] = {
 #if LINUX_VERSION_CODE < KERNEL_VERSION(4, 10, 0) || defined(CONFIG_IS_HW_HISI) || \
@@ -71,10 +58,7 @@ static struct security_hook_list ksu_hooks[] = {
 
 void __init ksu_lsm_hook_init(void)
 {
-    /* Linux 6.12+ requires struct lsm_id, older kernels use string or nothing */
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(6,12,0)
-    security_add_hooks(ksu_hooks, ARRAY_SIZE(ksu_hooks), &ksu_lsmid);
-#elif LINUX_VERSION_CODE >= KERNEL_VERSION(4, 11, 0)
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 11, 0)
     security_add_hooks(ksu_hooks, ARRAY_SIZE(ksu_hooks), "ksu");
 #else
     security_add_hooks(ksu_hooks, ARRAY_SIZE(ksu_hooks));
