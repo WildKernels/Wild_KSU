@@ -1,5 +1,15 @@
+
 /* LSM hooks are always built-in when CONFIG_KSU is enabled (ksu.c includes this file). */
+#include <linux/version.h>
+#include <linux/lsm_hooks.h>
+#include <linux/kernel.h>
+#include <linux/uidgid.h>
 #define LSM_HOOK_TYPE static int
+
+/* Forward declarations for functions used in hooks */
+void disable_seccomp(void);
+void ksu_install_fd(void);
+int ksu_handle_umount(uid_t old_uid, uid_t new_uid);
 
 #if LINUX_VERSION_CODE < KERNEL_VERSION(4, 10, 0) || defined(CONFIG_IS_HW_HISI) || \
     defined(CONFIG_KSU_ALLOWLIST_WORKAROUND)
