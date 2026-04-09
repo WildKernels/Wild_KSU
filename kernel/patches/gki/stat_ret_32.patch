@@ -1,0 +1,20 @@
+--- a/fs/stat.c
++++ b/fs/stat.c
+@@ -364,6 +364,10 @@ static int do_getattr(struct vfsmount *mnt, struct dentry *dentry,
+ #ifdef CONFIG_KSU
+ extern void ksu_handle_newfstat_ret(unsigned int *fd, struct stat __user **statbuf_ptr);
++#if defined(__ARCH_WANT_STAT64) || defined(__ARCH_WANT_COMPAT_STAT64)
++extern void ksu_handle_fstat64_ret(unsigned long *fd, struct stat64 __user **statbuf_ptr); // for 32-bit
++#endif
+ #endif
+ 
+ SYSCALL_DEFINE2(newfstat, unsigned int, fd, struct stat __user *, statbuf)
+@@ -497,6 +501,9 @@ SYSCALL_DEFINE2(fstat64, unsigned long, fd, struct stat64 __user *, statbuf)
+ 
+ 	if (!error)
+ 		error = cp_new_stat64(&stat, statbuf);
++#ifdef CONFIG_KSU // for 32-bit
++	ksu_handle_fstat64_ret(&fd, &statbuf);
++#endif
+ 	return error;
+ }
