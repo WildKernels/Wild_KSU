@@ -55,11 +55,10 @@ object Natives {
 
     /**
      * Get a string indicating the SU hook mode enabled in kernel.
-     * The return values are:
-     * - "Manual": Manual hooks was enabled.
-     * - "Kprobes": Kprobes hooks was enabled (CONFIG_KSU_KPROBES_HOOK).
-     *
-     * @return return hook mode, or null if unavailable.
+    * The return values are:
+    * - "Manual": Manual hooks are enabled.
+    *
+    * @return return hook mode, or null if unavailable.
      */
     external fun getHookMode(): String?
     

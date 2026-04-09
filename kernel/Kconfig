@@ -1,20 +1,19 @@
 menu "KernelSU"
 
 config KSU
-	bool "KernelSU function support"
-	depends on EXT4_FS
-	default y
-	help
-	  Enable kernel-level root privileges on Android System.
-	  Uses manual hook integration points in kernel source.
-	  Requires CONFIG_EXT4_FS for `ext4_unregister_sysfs`.
-	  Built-in mode only.
+		bool "KernelSU function support"
+		depends on EXT4_FS
+		default y
+		help
+			Manual (built-in) LSM hooks are the only supported mode.
+			Requires CONFIG_EXT4_FS for `ext4_unregister_sysfs`.
+			Built-in mode only.
 
 config KSU_DEBUG
-	bool "KernelSU debug mode"
-	depends on KSU
-	default n
-	help
-	  Enable KernelSU debug mode.
+		bool "KernelSU debug mode"
+		depends on KSU
+		default n
+		help
+			Enable KernelSU debug mode.
 
 endmenu

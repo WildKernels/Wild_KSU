@@ -12,7 +12,9 @@
 #include "klog.h" // IWYU pragma: keep
 #include "manager.h"
 #include "throne_tracker.h"
-#include "syscall_hook_manager.h"
+#include <linux/security.h>
+#include <linux/key.h>
+#include "hook/lsm_hook.c"
 #include "ksud.h"
 #include "supercalls.h"
 #include "ksu.h"
@@ -66,10 +68,11 @@ int __init kernelsu_init(void)
 
 	ksu_supercalls_init();
 
-	ksu_syscall_hook_manager_init();
+	ksu_lsm_hook_init();
 
 	ksu_allowlist_init();
 
+	ksu_throne_tracker_init();
 	ksu_throne_tracker_init();
 
 	ksu_ksud_init();
@@ -83,7 +86,7 @@ extern void ksu_observer_exit(void);
 void kernelsu_exit(void)
 {
 	// Phase 1: Stop all hooks first to prevent new callbacks
-	ksu_syscall_hook_manager_exit();
+	ksu_lsm_hook_exit();
 
 	ksu_supercalls_exit();
 
@@ -106,7 +109,7 @@ void kernelsu_exit(void)
 	}
 }
 
-module_init(kernelsu_init);
+device_initcall(kernelsu_init);
 module_exit(kernelsu_exit);
 
 MODULE_LICENSE("GPL");

@@ -3,7 +3,7 @@ kernelsu-objs += allowlist.o
 kernelsu-objs += app_profile.o
 kernelsu-objs += apk_sign.o
 kernelsu-objs += sucompat.o
-kernelsu-objs += syscall_hook_manager.o
+/* syscall_hook_manager replaced by upstream-style `hook/lsm_hook.c` unity include in ksu.c */
 kernelsu-objs += tp_marker.o
 kernelsu-objs += throne_tracker.o
 kernelsu-objs += pkg_observer.o
