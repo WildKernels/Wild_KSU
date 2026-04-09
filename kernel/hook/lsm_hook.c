@@ -1,11 +1,14 @@
-/* Minimal stub for GKI/manual-hook builds: */
-void disable_seccomp(void) { /* no-op */ }
 
 /* LSM hooks are always built-in when CONFIG_KSU is enabled (ksu.c includes this file). */
 #include <linux/version.h>
 #include <linux/lsm_hooks.h>
 #include <linux/kernel.h>
 #include <linux/uidgid.h>
+
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6,12,0)
+#include <linux/lsm_id.h>
+static struct lsm_id ksu_lsmid __lsm_ro_after_init = LSM_ID_INIT("ksu");
+#endif
 #define LSM_HOOK_TYPE static int
 
 /* Forward declarations for functions used in hooks */
@@ -68,7 +71,10 @@ static struct security_hook_list ksu_hooks[] = {
 
 void __init ksu_lsm_hook_init(void)
 {
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 11, 0)
+    /* Linux 6.12+ requires struct lsm_id, older kernels use string or nothing */
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6,12,0)
+    security_add_hooks(ksu_hooks, ARRAY_SIZE(ksu_hooks), &ksu_lsmid);
+#elif LINUX_VERSION_CODE >= KERNEL_VERSION(4, 11, 0)
     security_add_hooks(ksu_hooks, ARRAY_SIZE(ksu_hooks), "ksu");
 #else
     security_add_hooks(ksu_hooks, ARRAY_SIZE(ksu_hooks));
