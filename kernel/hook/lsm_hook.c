@@ -8,7 +8,7 @@
 
 /* Forward declarations for functions used in hooks */
 void disable_seccomp(void);
-void ksu_install_fd(void);
+int ksu_install_fd(void);
 int ksu_handle_umount(uid_t old_uid, uid_t new_uid);
 
 #if LINUX_VERSION_CODE < KERNEL_VERSION(4, 10, 0) || defined(CONFIG_IS_HW_HISI) || \
