@@ -1,3 +1,5 @@
+/* Minimal stub for GKI/manual-hook builds: */
+void disable_seccomp(void) { /* no-op */ }
 
 /* LSM hooks are always built-in when CONFIG_KSU is enabled (ksu.c includes this file). */
 #include <linux/version.h>
