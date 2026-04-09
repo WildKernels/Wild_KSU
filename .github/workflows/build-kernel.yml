@@ -1,4 +1,4 @@
-name: Kernel LTS Status Check
+name: Kernel Build Check
 
 on:
   workflow_dispatch:
@@ -13,20 +13,20 @@ on:
       - stable
     paths:
       - kernel/**
-      - .github/workflows/kernel-lts.yml
+      - .github/workflows/build-kernel.yml
   pull_request:
     branches:
       - dev
       - stable
     paths:
       - kernel/**
-      - .github/workflows/kernel-lts.yml
+      - .github/workflows/build-kernel.yml
 
 permissions:
   contents: read
 
 jobs:
-  build-lts:
+  build:
     runs-on: ubuntu-latest
     timeout-minutes: 120
     env:
@@ -39,19 +39,15 @@ jobs:
           - common-android13-5.10-lts
           - common-android13-5.15-lts
           - common-android14-5.15-lts
+          - common-android14-6.1-2025-09
           - common-android14-6.1-lts
-          - common-android14-6.1-09-2025
           - common-android15-6.6-lts
           - common-android16-6.12-lts
 
     steps:
-      - name: Checkout Wild KSU
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
       - name: Free Disk Space
         uses: endersonmenezes/free-disk-space@v3
+        if: false
         with:
           remove_android: true
           remove_dotnet: true
@@ -78,13 +74,13 @@ jobs:
           mkdir -p "$GITHUB_WORKSPACE/android-kernel"
           cd "$GITHUB_WORKSPACE/android-kernel"
           repo init -u https://android.googlesource.com/kernel/manifest -b "${{ matrix.branch }}" --depth=1
-          repo sync -c -j"$(nproc --all)" --fail-fast --no-tags --force-sync --no-clone-bundle
+          repo --trace sync -c -j"$(nproc --all)" --fail-fast --no-tags --force-sync --no-clone-bundle --optimized-fetch --prune --current-branch
 
       - name: Setup Wild KSU in source tree
         run: |
           set -euxo pipefail
           cd "$GITHUB_WORKSPACE/android-kernel"
-          curl -LSs "https://raw.githubusercontent.com/WildKernels/Wild_KSU/stable/kernel/setup.sh" | bash -s "$KSU_BRANCH"
+          bash <(curl -LSs "https://raw.githubusercontent.com/WildKernels/Wild_KSU/dev/kernel/setup.sh") -p "$KSU_BRANCH"
 
       - name: Write KSU fragment
         run: |
@@ -92,18 +88,44 @@ jobs:
           CONFIG_KSU=y
           EOF
 
-      - name: Build kernel
-        working-directory: ${{ github.workspace }}/android-kernel
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            echo "CONFIG_KSU_PR_BUILD=y" >> "$GITHUB_WORKSPACE/android-kernel/wild_gki.fragment"
+          fi
+
+          if [[ "${{ matrix.branch }}" == common-android12-* ]] || \
+             [[ "${{ matrix.branch }}" == common-android13-* ]] || \
+             [[ "${{ matrix.branch }}" == common-android14-* ]]; then
+            echo "ANDROID_VERSION=android14_or_lower" >> "$GITHUB_ENV"
+          else
+            echo "ANDROID_VERSION=other" >> "$GITHUB_ENV"
+          fi
+
+      - name: Clean Kernel Flags
         run: |
           set -euxo pipefail
-          if [ -f build/build.sh ]; then
-            SKIP_MRPROPER=1 GKI_DEFCONFIG_FRAGMENT="$GITHUB_WORKSPACE/android-kernel/wild_gki.fragment" LTO=thin BUILD_CONFIG=common/build.config.gki.aarch64 build/build.sh
+          cd "$GITHUB_WORKSPACE/android-kernel/common"
+          # Remove ABI protected exports to prevent Wifi & Bluetooth errors.
+          rm -rf ./android/abi_gki_protected_exports_*
+          perl -0pi -e 's/^\s*"protected_exports_list"\s*:\s*"android\/abi_gki_protected_exports_aarch64",\s*$//m' ./BUILD.bazel
+          
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -m "Make clean to remove dirty flags"
+          
+      - name: Build Kernel
+        working-directory: ${{ github.workspace }}/android-kernel
+        run: |
+          set -exuo pipefail
+          if [ -f "build/build.sh" ]; then
+            SKIP_MRPROPER=1 GKI_DEFCONFIG_FRAGMENT="$GITHUB_WORKSPACE/android-kernel/wild_gki.fragment" LTO=thin BUILD_CONFIG=common/build.config.gki.aarch64 build/build.sh || exit 1
           else
+            # Copy fragment to kernel tree for bazel
             cp "$GITHUB_WORKSPACE/android-kernel/wild_gki.fragment" common/arch/arm64/configs/wild_gki.fragment
-            if [[ "${{ matrix.branch }}" == *android14* ]]; then
-              tools/bazel build --config=fast --lto=thin --defconfig_fragment=//common:arch/arm64/configs/wild_gki.fragment //common:kernel_aarch64_dist
+            if [[ "$ANDROID_VERSION" == "android14_or_lower" ]]; then
+              tools/bazel build --config=fast --defconfig_fragment=//common:arch/arm64/configs/wild_gki.fragment //common:kernel_aarch64_dist || exit 1
             else
-              tools/bazel build --config=fast --lto=none --defconfig_fragment=//common:arch/arm64/configs/wild_gki.fragment //common:kernel_aarch64_dist
+              tools/bazel build --config=fast --defconfig_fragment=//common:arch/arm64/configs/wild_gki.fragment //common:kernel_aarch64_dist || exit 1
             fi
           fi
 
@@ -122,13 +144,11 @@ jobs:
           fi
 
       - name: Clone AnyKernel3 (flash test only)
-        if: ${{ matrix.branch == 'common-android14-6.1-09-2025' }}
         run: |
           set -euxo pipefail
           git clone --depth 1 -b gki-2.0 https://github.com/WildKernels/AnyKernel3.git "$GITHUB_WORKSPACE/AnyKernel3"
 
-      - name: Prepare AnyKernel3 Zip (flash test only)
-        if: ${{ matrix.branch == 'common-android14-6.1-09-2025' }}
+      - name: Prepare AnyKernel3 Artifact (flash test only)
         run: |
           set -euxo pipefail
           OUTDIR_FULL=$(echo "${{ matrix.branch }}" | sed 's/^common-//')
@@ -145,15 +165,10 @@ jobs:
             exit 1
           fi
 
-          ZIP_NAME="AnyKernel3-${OUTDIR_FULL}.zip"
-          (cd "$GITHUB_WORKSPACE/AnyKernel3" && zip -r9 "$GITHUB_WORKSPACE/$ZIP_NAME" ./* -x .git .gitignore ./*.zip)
-          echo "ZIP_NAME=$ZIP_NAME" >> "$GITHUB_ENV"
-
       - name: Upload AnyKernel3 Artifact (flash test only)
-        if: ${{ matrix.branch == 'common-android14-6.1-09-2025' }}
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.branch }}-AnyKernel3
-          path: ${{ github.workspace }}/AnyKernel3-*.zip
+          path: ${{ github.workspace }}/AnyKernel3
           if-no-files-found: error
           compression-level: 9
