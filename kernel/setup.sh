@@ -2,8 +2,8 @@
 set -eu
 
 GKI_ROOT=$(pwd)
-OWNER="Wild KSU"
-REPO="$OWNER"
+OWNER="WildKernels"
+REPO="Wild_KSU"
 
 display_usage() {
     echo "Usage: $0 [--cleanup | <commit-or-tag>]"
