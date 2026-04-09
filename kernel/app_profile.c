@@ -63,41 +63,57 @@ void setup_groups(struct root_profile *profile, struct cred *cred)
 
 void seccomp_filter_release(struct task_struct *tsk);
 
+// Reference-style disable_seccomp implementation for full compatibility
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 9, 0) || defined(KSU_OPTIONAL_SECCOMP_FILTER_RELEASE))
+void seccomp_filter_release(struct task_struct *tsk);
+#define KSU_HAS_SECCOMP_FILTER_RELEASE
+#endif
+
 static void disable_seccomp(void)
 {
-    struct task_struct *fake;
-
-    fake = kmalloc(sizeof(*fake), GFP_KERNEL);
-    if (!fake) {
-        pr_warn("failed to alloc fake task_struct\n");
+    if (!!!current->seccomp.mode) {
         return;
     }
-
+#ifdef KSU_HAS_SECCOMP_FILTER_RELEASE
+    struct task_struct *fake;
+    fake = kmalloc(sizeof(*fake), GFP_ATOMIC);
+    if (!fake) {
+        pr_err("%s: cannot allocate fake struct!\n", __func__);
+        return;
+    }
+#endif
     // Refer to kernel/seccomp.c: seccomp_set_mode_strict
     // When disabling Seccomp, ensure that current->sighand->siglock is held during the operation.
     spin_lock_irq(&current->sighand->siglock);
     // disable seccomp
-#if defined(CONFIG_GENERIC_ENTRY) &&                                           \
-    LINUX_VERSION_CODE >= KERNEL_VERSION(5, 11, 0)
+#if defined(CONFIG_GENERIC_ENTRY) && LINUX_VERSION_CODE >= KERNEL_VERSION(5, 11, 0)
     clear_syscall_work(SECCOMP);
 #else
     clear_thread_flag(TIF_SECCOMP);
 #endif
-
+#ifdef KSU_HAS_SECCOMP_FILTER_RELEASE
     memcpy(fake, current, sizeof(*fake));
-
+#endif
     current->seccomp.mode = 0;
+#ifndef KSU_HAS_SECCOMP_FILTER_RELEASE
+    // put_seccomp_filter is allowed while we holding sighand
+    put_seccomp_filter(current);
+#endif
     current->seccomp.filter = NULL;
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 7, 0) || defined(KSU_OPTIONAL_SECCOMP_FILTER_CNT))
     atomic_set(&current->seccomp.filter_count, 0);
+#endif
     spin_unlock_irq(&current->sighand->siglock);
-
+#ifdef KSU_HAS_SECCOMP_FILTER_RELEASE
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 11, 0)
-    // https://github.com/torvalds/linux/commit/bfafe5efa9754ebc991750da0bcca2a6694f3ed3#diff-45eb79a57536d8eccfc1436932f093eb5c0b60d9361c39edb46581ad313e8987R576-R577
     fake->flags |= PF_EXITING;
 #elif LINUX_VERSION_CODE >= KERNEL_VERSION(5, 11, 0)
-    // https://github.com/torvalds/linux/commit/0d8315dddd2899f519fe1ca3d4d5cdaf44ea421e#diff-45eb79a57536d8eccfc1436932f093eb5c0b60d9361c39edb46581ad313e8987R556-R558
     fake->sighand = NULL;
 #endif
+    seccomp_filter_release(fake);
+    kfree(fake);
+#endif
+}
 
     seccomp_filter_release(fake);
     kfree(fake);
