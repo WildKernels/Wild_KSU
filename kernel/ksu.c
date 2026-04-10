@@ -10,6 +10,7 @@
 #include "app_profile.h"
 #include "feature.h"
 #include "klog.h" // IWYU pragma: keep
+#include <linux/version.h>
 #include "manager.h"
 #include "throne_tracker.h"
 #include <linux/security.h>
