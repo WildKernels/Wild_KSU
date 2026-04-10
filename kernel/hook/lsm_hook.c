@@ -3,6 +3,7 @@
 #include <linux/version.h>
 #include <linux/cred.h>
 #include <linux/key.h>
+#include <linux/lsm_hooks.h>
 #include <linux/security.h>
 #include <linux/string.h>
 #include <linux/init.h>
@@ -89,5 +90,4 @@ void __init ksu_lsm_hook_init(void)
 
 void ksu_lsm_hook_exit(void)
 {
-}
 }

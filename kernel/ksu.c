@@ -46,4 +46,4 @@
 #include "ksud.c"
 #include "selinux/selinux.c"
 #include "selinux/sepolicy.c"
-        return -ENOSYS;
+#endif
