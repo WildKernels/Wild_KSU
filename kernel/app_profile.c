@@ -115,9 +115,7 @@ static void disable_seccomp(void)
 #endif
 }
 
-    seccomp_filter_release(fake);
-    kfree(fake);
-}
+
 
 int escape_with_root_profile(void)
 {
