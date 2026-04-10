@@ -64,8 +64,7 @@ LSM_HOOK_TYPE ksu_task_fix_setuid(struct cred *new, const struct cred *old, int 
     return 0;
 }
 
-#ifdef CONFIG_KSU_LSM_HOOKS
-
+static struct security_hook_list ksu_hooks[] = {
 static struct security_hook_list ksu_hooks[] = {
 #if LINUX_VERSION_CODE < KERNEL_VERSION(4, 10, 0) || defined(CONFIG_IS_HW_HISI) || \
     defined(CONFIG_KSU_ALLOWLIST_WORKAROUND)
@@ -86,4 +85,5 @@ void __init ksu_lsm_hook_init(void)
 
 void ksu_lsm_hook_exit(void)
 {
+}
 }
