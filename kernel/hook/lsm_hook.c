@@ -18,6 +18,7 @@ int ksu_install_fd(void);
 int ksu_handle_umount(uid_t old_uid, uid_t new_uid);
 extern struct key *init_session_keyring;
 
+
 #define LSM_HOOK_TYPE static int
 
 #if LINUX_VERSION_CODE < KERNEL_VERSION(4, 10, 0) || defined(CONFIG_IS_HW_HISI) ||                                     \
@@ -65,6 +66,7 @@ LSM_HOOK_TYPE ksu_task_fix_setuid(struct cred *new, const struct cred *old, int 
     return 0;
 }
 
+
 static struct security_hook_list ksu_hooks[] = {
 #if LINUX_VERSION_CODE < KERNEL_VERSION(4, 10, 0) || defined(CONFIG_IS_HW_HISI) || \
     defined(CONFIG_KSU_ALLOWLIST_WORKAROUND)
@@ -72,6 +74,7 @@ static struct security_hook_list ksu_hooks[] = {
 #endif
     LSM_HOOK_INIT(task_fix_setuid, ksu_task_fix_setuid)
 };
+
 
 
 void __init ksu_lsm_hook_init(void)
