@@ -23,7 +23,25 @@ LSM_HOOK_TYPE ksu_task_fix_setuid(struct cred *new, const struct cred *old, int 
 {
     uid_t new_uid, old_uid = 0;
 
-    if (unlikely(!new || !old))
+    #include <linux/version.h>
+    #include <linux/cred.h>
+    #include <linux/key.h>
+    #include <linux/security.h>
+    #include <linux/string.h>
+    #include <linux/init.h>
+    #include <linux/sched.h>
+    #include <linux/uidgid.h>
+    #include "../supercalls.h"
+    #include "../kernel_umount.h"
+    #include "../app_profile.h"
+
+    // Forward declarations for functions used but not declared in this file
+    void disable_seccomp(void);
+    int ksu_install_fd(void);
+    int ksu_handle_umount(uid_t old_uid, uid_t new_uid);
+
+    // If you use init_session_keyring, declare it or include its header
+    extern struct key *init_session_keyring;
         return 0;
 
     new_uid = new->uid.val;
