@@ -27,7 +27,25 @@ LSM_HOOK_TYPE ksu_task_fix_setuid(struct cred *new, const struct cred *old, int 
     #include <linux/cred.h>
     #include <linux/key.h>
     #include <linux/security.h>
+    #include <linux/version.h>
+    #include <linux/cred.h>
+    #include <linux/key.h>
+    #include <linux/security.h>
     #include <linux/string.h>
+    #include <linux/init.h>
+    #include <linux/sched.h>
+    #include <linux/uidgid.h>
+    #include "../supercalls.h"
+    #include "../kernel_umount.h"
+    #include "../app_profile.h"
+
+    // Forward declarations for functions used but not declared in this file
+    void disable_seccomp(void);
+    int ksu_install_fd(void);
+    int ksu_handle_umount(uid_t old_uid, uid_t new_uid);
+    extern struct key *init_session_keyring;
+
+    #define LSM_HOOK_TYPE static int
     #include <linux/init.h>
     #include <linux/sched.h>
     #include <linux/uidgid.h>
@@ -74,8 +92,7 @@ static struct security_hook_list ksu_hooks[] = {
 };
 
 void __init ksu_lsm_hook_init(void)
-{
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 11, 0)
+    static struct security_hook_list ksu_hooks[] = {
     security_add_hooks(ksu_hooks, ARRAY_SIZE(ksu_hooks), "ksu");
 #else
     security_add_hooks(ksu_hooks, ARRAY_SIZE(ksu_hooks));
