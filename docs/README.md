@@ -9,19 +9,19 @@
   <p><strong>A kernel-based root solution for Android devices.</strong></p>
 
   <p>
-    <a href="https://github.com/Wild-KSU/Wild-KSU/releases/latest">
-      <img src="https://img.shields.io/github/v/release/Wild-KSU/Wild-KSU?label=Release&logo=github" alt="Latest Release">
+    <a href="https://github.com/WildKernels/Wild_KSU/releases/latest">
+      <img src="https://img.shields.io/github/v/release/WildKernels/Wild_KSU?label=Release&logo=github" alt="Latest Release">
     </a>
-    <a href="https://nightly.link/Wild-KSU/Wild-KSU/workflows/build-manager-ci/next/Manager">
+    <a href="https://nightly.link/WildKernels/Wild_KSU/workflows/build-manager-ci/next/Manager">
       <img src="https://img.shields.io/badge/Nightly%20Release-gray?logo=hackthebox&logoColor=fff" alt="Nightly Build">
     </a>
     <a href="https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html">
       <img src="https://img.shields.io/badge/License-GPL%20v2-orange.svg?logo=gnu" alt="License: GPL v2">
     </a>
     <a href="/LICENSE">
-      <img src="https://img.shields.io/github/license/Wild-KSU/Wild-KSU?logo=gnu" alt="GitHub License">
+      <img src="https://img.shields.io/github/license/WildKernels/Wild_KSU?logo=gnu" alt="GitHub License">
     </a>
-    <a title="Crowdin" target="_blank" href="https://crowdin.com/project/wild-ksu"><img src="https://badges.crowdin.net/wild-ksu/localized.svg"></a>
+    <!-- <a title="Crowdin" target="_blank" href="https://crowdin.com/project/wild-ksu"><img src="https://badges.crowdin.net/wild-ksu/localized.svg"></a> -->
   </p>
 </div>
 
